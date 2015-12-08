@@ -13,7 +13,7 @@ In Your working directory type
 
 Then Checkout the repository
 
-`git clone https://github.com/architecture-building-systems/LCA_Paper.git `
+`git clone https://github.com/architecture-building-systems/ASF_Simulation.git`
 
 To download the files type
 
