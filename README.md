@@ -13,7 +13,7 @@ In Your working directory type
 Then Checkout the repository
 `git clone https://github.com/architecture-building-systems/LCA_Paper.git `
 
-Download Files
+To download the files type
 
 `git pull`
 
@@ -25,7 +25,7 @@ To add your changes
 
 `git add <filename>`
 or
-`git add *`
+`git add *` to add all files in your working directory
 
 
 Then commit the changes
@@ -33,5 +33,17 @@ Then commit the changes
 
 At this point it is good to run a `git pull` in case someone was working on the same file at the same time
 
-Then push the changes
+If there are no conflicts then do a 
 `git push origin master`
+
+##If you get a confilct
+Github will tell you which files were conflicting. Open these files in your text editor and there will be the following markers
+```
+<<<<<<< HEAD:file.txt
+What your version is
+=======
+What the confliciting version is
+>>>>>>> 77976da35a11db4580b80ae27e8d65caf5208086:file.txt
+```
+Pick which ever version you like. Delete everything else `<<<<<<< HEAD:file.txt`, `=======`, `>>>>>>> 77976da35a11db4580b80ae27e8d65caf5208086:file.txt`
+If everything fails, then save your work somewhere, delete your work, and download a fresh copy...
