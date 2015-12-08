@@ -21,12 +21,15 @@ To download the files type
 
 Always do a `git pull` before starting work, just so you have the latest update
 
-To add your changes
 
+I like to first type `git status`so you know exactly what files are different
+
+To add your changes:
 `git add <filename>`
 or
 `git add *` to add all files in your working directory
 
+I like to also do a `git status` here again to make sure that everything you want has been added
 
 Then commit the changes
 `git commit -m "commit message"`
@@ -47,3 +50,6 @@ What the confliciting version is
 ```
 Pick which ever version you like. Delete everything else `<<<<<<< HEAD:file.txt`, `=======`, `>>>>>>> 77976da35a11db4580b80ae27e8d65caf5208086:file.txt`
 If everything fails, then save your work somewhere, delete your work, and download a fresh copy...
+
+The do another `git commit -m "commit message"` and `git push origin master`
+Follow this up with a `git pull` just to make sure its all ok. And then finish it up with a `git status` to make sure that everything is clean
