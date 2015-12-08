@@ -8,9 +8,11 @@ http://rogerdudler.github.io/git-guide/
 ##Git Setup
 
 In Your working directory type
+
 `git init`
 
 Then Checkout the repository
+
 `git clone https://github.com/architecture-building-systems/LCA_Paper.git `
 
 To download the files type
@@ -25,18 +27,22 @@ Always do a `git pull` before starting work, just so you have the latest update
 I like to first type `git status`so you know exactly what files are different
 
 To add your changes:
+
 `git add <filename>`
+
 or
 `git add *` to add all files in your working directory
 
 I like to also do a `git status` here again to make sure that everything you want has been added
 
 Then commit the changes
+
 `git commit -m "commit message"`
 
 At this point it is good to run a `git pull` in case someone was working on the same file at the same time
 
 If there are no conflicts then do a 
+
 `git push origin master`
 
 ##If you get a confilct
