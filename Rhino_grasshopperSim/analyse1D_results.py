@@ -15,7 +15,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-
+path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_141216_729_comb_rectangular/"
 
 
 
@@ -52,9 +52,9 @@ def scattermin4(X,Xcolour,offset=0,m=4):
 
 
 #Upload data from csv
-C=np.genfromtxt('cooling.csv',delimiter=',')
-H=np.genfromtxt('heating.csv',delimiter=',')
-L=np.genfromtxt('lighting.csv',delimiter=',')
+C=np.genfromtxt(path + 'cooling.csv',delimiter=',')
+H=np.genfromtxt(path + 'heating.csv',delimiter=',')
+L=np.genfromtxt(path + 'lighting.csv',delimiter=',')
 
 
 

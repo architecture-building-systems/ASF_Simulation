@@ -15,6 +15,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
+path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_141216_729_comb_rectangular/"
 
 #Function that takes a number from 0-2400 and outputs x and y angles
 
@@ -55,8 +56,10 @@ def compareAngles(X):
 	Xind=range(0,X.shape[0])
 	plt.scatter(Xind,totalEng)
 	plt.show()
-
+ 
+# this function finds minimum energy use at a fixed angle
 def compareCHL(C,H,L):
+    
 	cool=np.sum(C,axis=1)
 	heat=np.sum(H,axis=1)
 	light=np.sum(L,axis=1)
@@ -69,9 +72,9 @@ def compareCHL(C,H,L):
 
 
 #Upload data from csv
-C=np.genfromtxt('cooling.csv',delimiter=',')
-H=np.genfromtxt('heating.csv',delimiter=',')
-L=np.genfromtxt('lighting.csv',delimiter=',')
+C=np.genfromtxt(path + 'cooling.csv',delimiter=',')
+H=np.genfromtxt(path + 'heating.csv',delimiter=',')
+L=np.genfromtxt(path + 'lighting.csv',delimiter=',')
 
 #Calculate the total Energy Consumption
 E=C+H+L
