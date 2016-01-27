@@ -1,0 +1,104 @@
+\documentclass[preprint,12pt]{elsarticle} %review, or preprint
+
+\usepackage{amssymb}
+\usepackage{graphics}
+\usepackage{float}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage{lscape}
+
+
+%Some code to display the units after the equation 
+\usepackage{mathtools}
+\makeatletter
+\providecommand\add@text{}
+\newcommand\tagaddtext[1]{%
+  \gdef\add@text{#1\gdef\add@text{}}}% 
+\renewcommand\tagform@[1]{%
+  \maketag@@@{\llap{\add@text\quad}(\ignorespaces#1\unskip\@@italiccorr)}%
+}
+\makeatother
+
+
+
+\graphicspath{{./Images/}}
+
+\journal{PVSEC Conference}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Energy performance of PV modules as dynamic building shading systems} 
+
+\author[ita]{P. Jayathissa\corref{cor2}}
+    \ead{jayathissa@arch.ethz.ch}
+\address[ita]{Architecture and Building Systems, Institute of Technology in Architecture, Department of Architecture, ETH Zurich, Switzerland} 
+% For whatever reason the affiliation needs to be defined after the authors. Otherwise the numbering gets messed up.
+
+\author[ita]{J. Schmidli}
+    \ead{schmidje@student.ethz.ch}
+
+\author[ita]{J. Hoffer}
+    \ead{heeren@ifu.baug.ethz.ch}
+\address[baug]{Ecological System Design, Institute of Environmental Engineering,\\ ETH Zurich, Switzerland}
+
+
+\author[ita]{A. Schlueter \corref{cor1} }
+    \ead{schlueter@arch.ethz.ch}
+
+
+\cortext[cor2]{Corresponding author}
+
+
+\begin{abstract}
+Abstract
+
+\end{abstract}
+
+\begin{keyword}
+\sep Dynamic Photovoltaics \sep Multi Functional Envelope \sep BIPV \sep Adaptive Shading
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}
+\label{ch:introduction}
+\input{1_introduction}
+
+\section{Methodology}
+\label{ch:method}
+\input{2_methodology}
+
+\section{Results}
+\label{ch:results}
+\input{3_results}
+
+
+% \section{Discussion}
+% \label{ch:discussion}
+% \input{5_discussion}
+
+\section{Discussion and Conclusion}
+\label{ch:conclusion}
+\input{6_conclusion}
+
+% \section{Acknowledgments}
+% \label{ch:acknowledgments}
+% \input{7_acknowledgments}
+
+% \section{Appendix}
+% \label{ch:appendix}
+% \input{8_appendix}
+
+%% appendix sections are then done as normal sections
+%% \appendix
+%% \section{}
+%% \label{}
+
+%% bibitems, please use
+  \bibliographystyle{elsarticle-num} 
+  \bibliography{references}
+
+\end{document}
+\endinput
