@@ -2,9 +2,9 @@
 
 To study the electricity generation and building energy consumption, a 3D geometry of the room and solar facade is built using the Rhinoceros \cite{Rhino}, and its parametric modelling plugin Grasshopper \cite{grasshopper}. The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open) position in steps of 22.5$^{\circ}$, in the vertical axis it can move from 45$^{\circ}$ to -45$^{\circ}$ in 22.5$^{\circ}$ steps. Existing ASF systems \cite{nagy2015frontiers} have independently actuated panels, however for simplicity we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system. 
 
-The building energy simulation is conducted using Energy Plus \cite{energyplus} through the DIVA \cite{DIVA} interface. The geometric solar facade is interpreted in energyplus as an external shading system. A solar radiance simulation is run in parallel using ladybug \cite{roudsari2014ladybug} /RADIANCE \cite{ward1994radiance} to determine the incident insolation on the solar facade. The approach enables us to calculate solar irradiance on the modules with high spatial resolution including the effect of module mutual shading as seen in Figure \ref{fig:radiation}. The results are coupled to an electrical circuit simulation of thin-film PV modules with sub-cell level representation \cite{hofer2015PVSEC}.
+The building energy simulation is conducted using Energy Plus \cite{energyplus} through the DIVA \cite{DIVA} interface. The geometric solar facade is interpreted in energyplus as an external shading system. A solar radiance simulation is run in parallel with \cite{roudsari2014ladybug}  which uses Radiance \cite{ward1994radiance} to determine the incident insolation on the solar facade. The approach enables us to calculate solar irradiance on the modules with high spatial resolution including the effect of module mutual shading as seen in Figure \ref{fig:radiation}. The results are coupled to an electrical circuit simulation of thin-film PV modules with sub-cell level representation \cite{hofer2015PVSEC}.
 
-A simulation of each possible dynamic configuration of the facade is run for each hourly timestep of the year using the Geneva weather file \cite{genevaweatherfile}. The results are then post processed in Python \cite{python} to extract the configurations that minimized building energy consumption while maximising PV electricity production. A corresponding workflow can be seen in Figure \ref{fig:workflow}. 
+A simulation of each possible dynamic configuration of the facade is run for each hourly timestep of the year using the Geneva weather file \cite{genevaweatherfile}. The results are then post processed in Python \cite{python} to extract the configurations that minimized building energy consumption and maximise PV electricity production. A corresponding workflow can be seen in Figure \ref{fig:workflow}. 
 
 %Johanes Comment for cyan text- This describes how it has been previously done. Please check the Ladybug/Radiance method used now and quickly describe it (calculation cumulative sky matrix for diffuse and beam radiation, etc). 
 
@@ -43,7 +43,7 @@ A simulation of each possible dynamic configuration of the facade is run for eac
 \begin{figure}
 \begin{center}
 \includegraphics[width=10cm, trim= 0cm 0cm 0cm 0cm,clip]{radiationanalysis.png}
-\caption{A simulation result from a single configuration at 11:00-12:00 on the 1st January}
+\caption{A simulation result from a single configuration at 14:00-15:00 on the 1st January}
 \label{fig:radiation}
 \end{center}
 \end{figure}
