@@ -7,6 +7,19 @@
 \usepackage{color}
 \usepackage{lscape}
 
+%Flowcharts
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+
 
 %Some code to display the units after the equation 
 \usepackage{mathtools}
@@ -29,7 +42,7 @@
 
 \begin{frontmatter}
 
-\title{Energy performance of PV modules as dynamic building shading systems} 
+\title{Energy performance of PV modules as adaptive building shading systems} 
 
 \author[ita]{P. Jayathissa\corref{cor2}}
     \ead{jayathissa@arch.ethz.ch}
@@ -39,9 +52,8 @@
 \author[ita]{J. Schmidli}
     \ead{schmidje@student.ethz.ch}
 
-\author[ita]{J. Hoffer}
-    \ead{heeren@ifu.baug.ethz.ch}
-\address[baug]{Ecological System Design, Institute of Environmental Engineering,\\ ETH Zurich, Switzerland}
+\author[ita]{J. Hofer}
+    \ead{hofer@arch.ethz.ch}
 
 
 \author[ita]{A. Schlueter \corref{cor1} }
@@ -57,7 +69,7 @@ Abstract
 \end{abstract}
 
 \begin{keyword}
-\sep Dynamic Photovoltaics \sep Multi Functional Envelope \sep BIPV \sep Adaptive Shading
+Dynamic Photovoltaics \sep Multi Functional Envelope \sep BIPV \sep Adaptive Shading
 \end{keyword}
 
 \end{frontmatter}

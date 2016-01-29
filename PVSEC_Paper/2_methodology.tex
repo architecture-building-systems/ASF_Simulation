@@ -1,10 +1,50 @@
 % !TEX root = 99_main.tex
 
-To study the electricity generation and building energy consumption a 3D geometry of the room and solar facade is built using the Rhinoceros \cite{Rhino}, and its parametric modelling plugin Grasshopper \cite{grasshopper}. In our case the room is XX meters in length, YY meters wide, and X meters high. The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis it can move from 90$^{\circ}$ (closed) to 0$^{\circ}$ (open) position in steps of 15$^{\circ}$, in the vertical axis it can move from 45$^{\circ}$ to -45$^{\circ}$ in steps of 15$^{\circ}$. This leaves us with \textcolor{red}{49} possible dynamic configurations of the facade system. 
+To study the electricity generation and building energy consumption a 3D geometry of the room and solar facade is built using the Rhinoceros \cite{Rhino}, and its parametric modelling plugin Grasshopper \cite{grasshopper}. In our case the room is XX meters in length, YY meters wide, and X meters high. The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. Existing ASF systems have independently actuated rows of panels, however for simplicity we group all panels into one cluster. On the horizontal axis the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open) position in steps of 22.5$^{\circ}$, in the vertical axis it can move from 45$^{\circ}$ to -45$^{\circ}$ in 22.5$^{\circ}$ steps. This leaves us with 25 possible dynamic configurations of the facade system. 
 
-The building energy simulation is conducted using Energy Plus \cite{energyplus} through the DIVA \cite{DIVA} interface. The geometric solar facade is interpreted in energyplus as an external shading system. A solar radiance simulation is run in parallel using ladybug [Citation required] to determine the incident insolation on the solar facade. Reflected and diffuse light are taken into account using the global radiation data, visible sky fraction for each panel, and the reflection of surrounding elements. The results enables us to calculate the electricity generation, while taking into account aspects of self shading. 
+The building energy simulation is conducted using Energy Plus \cite{energyplus} through the DIVA \cite{DIVA} interface. The geometric solar facade is interpreted in energyplus as an external shading system. A solar radiance simulation is run in parallel using ladybug \cite{roudsari2014ladybug} to determine the incident insolation on the solar facade. \textcolor{cyan}{Reflected and diffuse light are taken into account using the global radiation data, visible sky fraction for each panel, and the reflection of surrounding elements - See Comments}. The approach enables us to calculate solar irradiance on the modules with high spatial resolution including the effect of module mutual shading \ref{fig:radiation}. The results are coupled to an electrical circuit simulation of thin-film PV modules with sub-cell level representation [PVSEC 2015].
 
-A simulation of each possible dynamic configuration of the facade is run for each hourly timestep of the year using the Geneva weather file. The results are then post processed in Python to extract the configurations that minimized building energy consumption while maximising PV electricity production. 
+A simulation of each possible dynamic configuration of the facade is run for each hourly timestep of the year using the Geneva weather file [ciatation]. The results are then post processed in Python to extract the configurations that minimized building energy consumption while maximising PV electricity production. A corresponding workflow can be seen in figure \ref{fig:workflow}. 
+
+%Johanes Comment for cyan text- This describes how it has been previously done. Please check the Ladybug/Radiance method used now and quickly describe it (calculation cumulative sky matrix for diffuse and beam radiation, etc). 
+
+
+% \begin{tikzpicture}[node distance = 3cm, auto]
+% 	\node [decision] (rhino) {Rhino / Grasshopper};
+% 	\node [block, left of=rhino] (geo) {Solar Facade Geometry};
+% 	\node [block, below of=geo] (building) {Building Geometry};
+% \end{tikzpicture}
+
+% \begin{tikzpicture}[node distance = 2cm, auto]
+%     % Place nodes
+%     \node [block] (init) {initialize model};
+%     \node [cloud, left of=init] (expert) {expert};
+%     \node [cloud, right of=init] (system) {system};
+%     \node [block, below of=init] (identify) {identify candidate models};
+%     \node [block, below of=identify] (evaluate) {evaluate candidate models};
+%     \node [block, left of=evaluate, node distance=3cm] (update) {update model};
+%     \node [decision, below of=evaluate] (decide) {is best candidate better?};
+%     \node [block, below of=decide, node distance=3cm] (stop) {stop};
+%     % Draw edges
+%     \path [line] (init) -- (identify);
+%     \path [line] (identify) -- (evaluate);
+%     \path [line] (evaluate) -- (decide);
+%     \path [line] (decide) -| node [near start] {yes} (update);
+%     \path [line] (update) |- (identify);
+%     \path [line] (decide) -- node {no}(stop);
+%     \path [line,dashed] (expert) -- (init);
+%     \path [line,dashed] (system) -- (init);
+%     \path [line,dashed] (system) |- (evaluate);
+% \end{tikzpicture}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=10cm, trim= 0cm 0cm 0cm 0cm,clip]{radiationanalysis.png}
+\caption{A simulation result from a single timestep for one configuration}
+\label{fig:radiation}
+\end{center}
+\end{figure}
+
 
 \begin{figure}
 \begin{center}
