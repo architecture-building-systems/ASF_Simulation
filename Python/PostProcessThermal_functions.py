@@ -33,15 +33,33 @@ def scatterResults(X, Xcolour,offset,x_angles,x_angle_location,y_angles,y_angle_
     
     
 # function that shows optimal angle combinations for every hour of the year for one axis
-def pcolorDays(X, rotation_axis, x_angle_location, y_angle_location):
+def pcolorDays(X, rotation_axis, x_angle_location, y_angle_location, allAngles, *arg):
+
+    if len(arg)==0:
+        max_min = 'min'
+    else:
+        max_min = arg[0]
+        
     axis_ind =[]
-    ind=np.argmin(X,axis=0)
+    
+    if max_min == 'min':
+        ind=np.argmin(X,axis=0)
+    elif max_min == 'max':
+        ind=np.argmax(X,axis=0)
+
+
+    z_min=0
     if rotation_axis == 'x':
         for i in range(len(ind)):
             axis_ind.append(x_angle_location[ind[i]])
+            z_max=max(x_angle_location)
     elif rotation_axis == 'y':
         for i in range(len(ind)):
             axis_ind.append(y_angle_location[ind[i]])
+            z_max=max(y_angle_location)
+    elif rotation_axis == 'xy':
+        axis_ind = ind
+        z_max=len(allAngles[0])-1
     else:
         print 'axis not available'
     dx, dy = 1, 1
@@ -56,7 +74,7 @@ def pcolorDays(X, rotation_axis, x_angle_location, y_angle_location):
             z[i].append(axis_ind[24*j + i])
     z = np.asarray(z)
     
-    z_min, z_max = 0, 27
+   # z_min, z_max = 0, len()
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
@@ -64,8 +82,8 @@ def pcolorDays(X, rotation_axis, x_angle_location, y_angle_location):
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 
     #plt.title('pcolor')
-    plt.xlabel("Day of the Year")
-    plt.ylabel("Hour of the Day")
+#    plt.xlabel("Day of the Year")
+#    plt.ylabel("Hour of the Day")
     # set the limits of the plot to the limits of the data
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     
@@ -109,24 +127,31 @@ def pcolorEnergyDays(X):
 
 
 # function that shows histograms of angle combinations for one axis
-def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_location):
+def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_location,allAngles):
     axis_ind =[]
     ind=np.argmin(X,axis=0)
     if rotation_axis == 'x':
         for i in range(len(ind)):
             axis_ind.append(x_angle_location[ind[i]])
-        plt.hist(axis_ind, bins=np.array(range(0,len(x_angles)))-0.5)
+        plt.hist(axis_ind, bins=np.array(range(-1,len(x_angles)))+0.5)
         plt.xticks(np.array(range(0,len(x_angles))),x_angles)
-        pylab.xlim(-1,len(x_angles)+1)
+        pylab.xlim(-1,len(x_angles))
         plt.xlabel("x-angles")
         plt.ylabel("frequency")
     elif rotation_axis == 'y':
         for i in range(len(ind)):
             axis_ind.append(y_angle_location[ind[i]])
-        plt.hist(axis_ind, bins=np.array(range(0,len(y_angles)))-0.5)
+        plt.hist(axis_ind, bins=np.array(range(-1,len(y_angles)))+0.5)
         plt.xticks(np.array(range(0,len(y_angles))),y_angles)
-        pylab.xlim(-1,len(y_angles)+1)
+        pylab.xlim(-1,len(y_angles))
         plt.xlabel("y-angles")
+        plt.ylabel("frequency")
+    elif rotation_axis == 'xy':
+        axis_ind=ind
+        plt.hist(axis_ind, bins=np.array(range(-1,len(allAngles[0])))+0.5)
+        plt.xticks(np.array(range(0,len(allAngles[0]))),allAngles[0])
+        pylab.xlim(-1,len(allAngles[0]))
+        plt.xlabel("angles")
         plt.ylabel("frequency")
     else:
         print 'axis not available'
