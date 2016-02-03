@@ -134,8 +134,8 @@ def pcolorMonths(X, rotation_axis, x_angle_location, y_angle_location, allAngles
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-    #plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
-    plt.pcolor(x, y, z, cmap='CMRmap', vmin=z_min, vmax=z_max)
+    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
+    #plt.pcolor(x, y, z, cmap='CMRmap', vmin=z_min, vmax=z_max)
 
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 
@@ -182,11 +182,16 @@ def pcolorEnergyDays(X):
     # set the limits of the plot to the limits of the data
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     
-def pcolorEnergyMonths(X,*arg):
+def pcolorEnergyMonths(X, maxMin, *arg):
     
     axis_ind =[]
     if len(arg)==0:
-        ind=np.argmin(X,axis=0)
+        if maxMin == 'min':
+            ind=np.argmin(X,axis=0)
+        elif maxMin == 'max':
+            ind=np.argmax(X,axis=0)
+        else:
+            raise ValueError("maxMin must be either 'max' or 'min'")
     else:
         ind=[arg]*np.shape(X)[1]
 #    if rotation_axis == 'x':
@@ -209,7 +214,7 @@ def pcolorEnergyMonths(X,*arg):
             z[i].append(X[ind[24*j + i]][24*j + i])
     z = np.asarray(z)
     
-    z_min, z_max = 0, 15
+    z_min, z_max = 0, 30
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
