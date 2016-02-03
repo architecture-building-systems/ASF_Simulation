@@ -22,7 +22,7 @@ importDataFlag = False
 #define if plots should be created
 createPlotsFlag = True
 #define options used for creating plots "xy_separate", "xy_together"
-createPlotsOptions = "xy_together"
+createPlotsOptions = "xy_separate"
 
 #only single angle result flag (not yet complete)
 oneDimensionalFlag = False
@@ -74,11 +74,11 @@ if createPlotsFlag:
         pcolorDays(C, 'x', x_angle_location, y_angle_location, allAngles)
         plt.title("Cooling Demand")
         p1 = plt.subplot(2,2,3)
-        pcolorDays(L, 'x', x_angle_location, y_angle_location, allAngles)
+        pcolorDays(R_tot, 'x', x_angle_location, y_angle_location, allAngles,'max')
         plt.title("Lighting Demand")
         p1 = plt.subplot(2,2,4)
         #pcolorDays(E, 'x', x_angle_location, y_angle_location, allAngles)
-        pcolorDays(R_tot, 'x', x_angle_location, y_angle_location, allAngles, 'max')
+        pcolorDays(R_week, 'x', x_angle_location, y_angle_location, allAngles, 'max')
         plt.title("Total Energy Demand")
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
@@ -97,11 +97,11 @@ if createPlotsFlag:
         pcolorDays(C, 'y', x_angle_location, y_angle_location, allAngles)
         plt.title("Cooling Demand")
         plt.subplot(2,2,3)
-        pcolorDays(L, 'y', x_angle_location, y_angle_location, allAngles)
+        pcolorDays(R_tot, 'y', x_angle_location, y_angle_location, allAngles,'max')
         plt.title("Lighting Demand")
         plt.subplot(2,2,4)
         #pcolorDays(E, 'y', x_angle_location, y_angle_location, allAngles)
-        pcolorDays(R_tot, 'y', x_angle_location, y_angle_location, allAngles, 'max')
+        pcolorDays(R_week, 'y', x_angle_location, y_angle_location, allAngles, 'max')
         plt.title("Total Energy Demand")
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
@@ -179,6 +179,7 @@ if createPlotsFlag:
         plt.xlabel("Day of the Year")
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+        plt.title("(x-angle, y-angle)", fontsize=12, loc='left', verticalalignment = 'bottom')
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
         cbar.ax.set_yticklabels(allAngles[0])
         plt.show()
@@ -244,8 +245,8 @@ if createPlotsFlag:
     plt.title("Total Energy Demand")
     fig.subplots_adjust(right=0.8)
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-    cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,int(E.max()*10)))/10.)
-    cbar.set_label('Power Use in kW', rotation=270, labelpad=20)
+    cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,int(E_month.max()*10)))/10.)
+    cbar.set_label('Power Use in kWh', rotation=270, labelpad=20)
     plt.show()
 # calculate energy use at optimal angle combination
 if not oneDimensionalFlag:
@@ -253,6 +254,8 @@ if not oneDimensionalFlag:
     TotalCooling = np.round(np.sum(np.min(C, axis=0)), decimals=1)
     TotalLighting = np.round(np.sum(np.min(L, axis=0)), decimals=1)
     TotalEnergy = np.round(np.sum(np.min(E, axis=0)), decimals=1)
+    TotalPV = np.round(np.sum(np.max(PV, axis=0)), decimals=1)
+    TotalEnergy_withPV = np.round(np.sum(np.min(E_withPV, axis=0)), decimals=1)
     TradeoffLosses = np.round(TotalEnergy-TotalLighting-TotalCooling-TotalHeating, decimals=2)
 else:
     TotalHeating = np.round(np.sum(H), decimals=1)

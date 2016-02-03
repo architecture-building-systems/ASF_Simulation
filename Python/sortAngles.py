@@ -67,4 +67,6 @@ def CalcXYAnglesAndLocation(ASFarray, XANGLES, YANGLES, NoClusters):
         y_angle_location.append(0)
         y_angle_location[i]=y_angles.index(y_angles_full[i])
         
-    return (x_angles, x_angles_full, x_angle_location, y_angles, y_angles_full, y_angle_location)
+    return (allAngles, x_angles, x_angles_full, x_angle_location, y_angles, y_angles_full, y_angle_location)
+    
+#x_angles, x_angles_full, x_angle_location, y_angles, y_angles_full, y_angle_location = CalcXYAnglesAndLocation(ASFarray, XANGLES, YANGLES, NoClusters)

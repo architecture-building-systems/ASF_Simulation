@@ -101,6 +101,9 @@ def create_ASF_angles(ASFarray, XANGLES, YANGLES, NoClusters):
     #Number of angle combinations
     NoAngles=len(XANGLES)*len(YANGLES)
     
+    #Number of total combinations
+    NoCombinations=NoAngles**NoClusters
+    
     #Define the angle value that a row is in
     #the value is between 0 and NoAngles
     rowVal=[0]*NoClusters
@@ -136,7 +139,7 @@ def create_ASF_angles(ASFarray, XANGLES, YANGLES, NoClusters):
     
     ####---CHAPTER3-------------------------
     
-    for oc in range(729):
+    for oc in range(NoCombinations):
         #Loop through all combinations of the facade
         keepLooping=True
         combcount=0
@@ -203,10 +206,7 @@ def create_ASF_angles(ASFarray, XANGLES, YANGLES, NoClusters):
         #else:
         #    outputASFangles=json.dumps(ListASFangles[0])
             
-        #print ListASFangles
-        
-        maxcomb=NoAngles**NoClusters
-        
+
         #print 'max number of combinations is', maxcomb
         if combination>combcount:
             print 'Warning! Requested Combination is not available'
@@ -221,6 +221,8 @@ def create_ASF_angles(ASFarray, XANGLES, YANGLES, NoClusters):
         combination +=1
         
     return allAngles
+    
+#allAngles = create_ASF_angles(ASFarray, XANGLES, YANGLES, NoClusters)
 
 #allAngles = create_ASF_angles(ASFarray, XANGLES, YANGLES, NoClusters)
 ####--- Chapter 5 --------------
