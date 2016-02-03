@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 #define if data should be imported, set False if desired radiation data is already in workspace:
 importDataFlag = True
-importDataOption = 'monthly' #'year', 'week', 'monthly'
+importDataOption = 'year' #'year', 'week', 'monthly'
 
 if importDataFlag:
     if importDataOption == 'year':
@@ -25,9 +25,10 @@ if importDataFlag:
         start_combination = 9
         end_combination = 24
         panelSize = 400.0
+        numberOfPanels = 50
         R_2=[]
         
-        R = create_npArray_with_total_Radiation(Radiation,panelSize,numberOfPanels)
+        R = create_npArray_with_total_Radiation(Radiation,panelSize,numberOfPanels,'year')
         
         for i in range(start_combination, end_combination+1):
                 
@@ -35,7 +36,7 @@ if importDataFlag:
             print 'importing file ' + iterateFile
             RadiationData, missingIteration, IterationNumbers, header =  import_radiation_year(path, iterateFile)
             iterateRad = add_hours_without_sun(RadiationData, sunRisen)
-            R_i = create_npArray_with_total_Radiation(iterateRad,panelSize,numberOfPanels)
+            R_i = create_npArray_with_total_Radiation(iterateRad,panelSize,numberOfPanels,'year')
             if i==start_combination:
                 R_2 = R_i
             else:

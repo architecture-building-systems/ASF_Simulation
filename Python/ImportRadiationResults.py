@@ -209,9 +209,11 @@ def create_npArray_with_total_Radiation(Radiation,panelSize,numberOfPanels, *arg
     if arg[0]=='monthly':
         numberOfHours = 288
         numberOfLines = len(Radiation)/numberOfHours
-    else:
+    elif arg[0]=='year':
         numberOfHours=8760
         numberOfLines=len(Radiation)/numberOfHours
+    else:
+        raise ValueError("additional argument must be defined")
     totRad=[]
 #    counter=0
     for i in range(numberOfLines):

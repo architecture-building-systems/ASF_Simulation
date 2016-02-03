@@ -87,7 +87,7 @@ def pcolorDays(X, rotation_axis, x_angle_location, y_angle_location, allAngles, 
     # set the limits of the plot to the limits of the data
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     
-def pcolorMonths(X, rotation_axis, x_angle_location, y_angle_location, allAngles, *arg):
+def pcolorMonths(X, rotation_axis, x_angle_location, y_angle_location, allAngles, sunMask, *arg):
     
     if len(arg)==0:
         max_min = 'min'
@@ -130,11 +130,15 @@ def pcolorMonths(X, rotation_axis, x_angle_location, y_angle_location, allAngles
             z[i].append(axis_ind[24*j + i])
     z = np.asarray(z)
     
+    masked_array = np.ma.array(z, mask=sunMask)
+    cmap = plt.cm.cubehelix
+    cmap.set_bad('grey',1.)
+    
    # z_min, z_max = 0, len()
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
+    plt.pcolor(x, y, masked_array, cmap=cmap, vmin=z_min, vmax=z_max)
     #plt.pcolor(x, y, z, cmap='CMRmap', vmin=z_min, vmax=z_max)
 
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
@@ -264,7 +268,6 @@ def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_lo
     
     locs, labels = plt.xticks()
     plt.setp(labels, rotation=90)
-
 
 
 #fig = plt.figure()
