@@ -2,6 +2,8 @@
 """
 Created on Wed Dec 16 11:27:46 2015
 
+functions used for plotting data (thermal and radiation)
+
 @author: Assistenz
 """
 

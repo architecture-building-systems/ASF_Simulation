@@ -3,6 +3,8 @@
 Created on Tue Jan 05 14:16:24 2016
 
 Function to read .epw file
+takes one value for radiation in epw file for every hour which is used as a 
+reference on whether there is radiation or not. should probably include more values
 
 @author: Jeremias Schmidli
 """

@@ -2,6 +2,8 @@
 """
 Created on Tue Feb 02 14:55:48 2016
 
+functions needed to average hourly DIVA data of a whole year for to monthly hours
+
 @author: Jeremias
 """
 import numpy as np

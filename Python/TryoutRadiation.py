@@ -2,6 +2,9 @@
 """
 Created on Fri Jan 29 20:32:10 2016
 
+some python script to tryout some things concerning radiation, not longer needed
+probably not worth it to be looked at again!
+
 @author: Assistenz
 """
 

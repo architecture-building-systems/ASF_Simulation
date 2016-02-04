@@ -2,6 +2,9 @@
 """
 Created on Wed Feb 03 18:43:02 2016
 
+function that generates a mask for monthly data, needs cleanup and a new name 
+that has to be changed in postProcessMonthly.py 
+
 @author: Assistenz
 """
 import numpy as np
@@ -34,7 +37,7 @@ import matplotlib.pyplot as plt
 #    
 #SunAround = np.array(SunAround)
 
-def createMonthsNan(L_month, R_month):#, rotation_axis, x_angle_location, y_angle_location, allAngles, *arg):
+def createMonthsNan(L_month, R_month, allAngles):#, rotation_axis, x_angle_location, y_angle_location, allAngles, *arg):
         
     ind=np.argmin(L_month,axis=0)
     
@@ -99,7 +102,7 @@ def createMonthsNan(L_month, R_month):#, rotation_axis, x_angle_location, y_angl
     
     return sunMask
    
-sunMask = createMonthsNan(L_month, R_month)
+#sunMask = createMonthsNan(L_month, R_month)
 #   # z_min, z_max = 0, len()
 #    #print z_min, z_max
 #    

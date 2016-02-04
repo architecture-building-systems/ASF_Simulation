@@ -2,7 +2,7 @@
 """
 Created on Tue Jan 05 14:16:24 2016
 
-Functions to read RadiationResults.csv
+Functions to read RadiationResults and bring them into a suitable format
 
 @author: Jeremias Schmidli
 """
@@ -180,6 +180,7 @@ def import_radiation_week(path, filename):
     f.close()
     return (RadiationData, missingIteration, IterationNumbers, header)
     
+#function to add hours without sun to RadiationData
 def add_hours_without_sun(RadiationData, sunRisen):
     
     Radiation = []
@@ -205,6 +206,7 @@ def add_hours_without_sun(RadiationData, sunRisen):
     
     return Radiation
         
+#function to bring Radiation data into same format as heating, lighting and cooling data from diva (numpy array)
 def create_npArray_with_total_Radiation(Radiation,panelSize,numberOfPanels, *arg):
     if arg[0]=='monthly':
         numberOfHours = 288
@@ -227,10 +229,10 @@ def create_npArray_with_total_Radiation(Radiation,panelSize,numberOfPanels, *arg
         
     
     
-    
-path = 'C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/RadiationEvaluation/Radiation_yearly_25_angles_incomplete/'
-filename = 'RadiationResultsForPY.csv'
-
-RadiationData, missingIteration, IterationNumbers, header = import_radiation_year(path, filename)
-
-add_hours_without_sun(RadiationData, sunRisen)
+#    
+#path = 'C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/RadiationEvaluation/Radiation_yearly_25_angles_incomplete/'
+#filename = 'RadiationResultsForPY.csv'
+#
+#RadiationData, missingIteration, IterationNumbers, header = import_radiation_year(path, filename)
+#
+#add_hours_without_sun(RadiationData, sunRisen)

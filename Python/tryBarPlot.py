@@ -2,6 +2,8 @@
 """
 Created on Wed Feb 03 16:25:14 2016
 
+copied from internet, typical barplot
+
 @author: Assistenz
 """
 

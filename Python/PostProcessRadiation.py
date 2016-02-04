@@ -2,7 +2,10 @@
 """
 Created on Tue Jan 05 17:25:56 2016
 
-Analyse Radiation Results
+Post process the radiation evaluation results 
+
+options 'year' and 'week' of import option not working automaticaly - to be done if needed
+
 
 @author: Jeremias Schmidli
 """
@@ -137,33 +140,36 @@ if importDataFlag:
         efficiency = 0.08*0.9
         PV_month = R_monthly*efficiency
         
-        E_month_withPV = C_month+H_month+L_month-PV_month
+        #this is not a very nice solution but unfortunately month and monthly ar not consistently differentiated:
+        R_month = R_monthly
+        
+#        E_month_withPV = C_month+H_month+L_month-PV_month
         # load simulation data:
         #Radiation, total_radiation, panel_size = import_radiation(path, filename)
     
     else:
         raise ValueError('unable to read importDataOption!')
         
+#this analysis was developed for yearly option, which is currently not under further developement:
+if importDataOption == 'year':
+    
+    averageRadiation = []
+    for i in Radiation:
+        averageRadiation.append(np.sum(i)/len(i))
+    
+    #plot average radiation for each panel:
+    #plt.rc('text', usetex=False)
+    #plt.rc('font', family='serif')
+    plt.plot(range(0,len(averageRadiation)),averageRadiation, 'bo')
+    plt.title('Average Radiation on Panels', size = 20)
+    plt.xticks(range(0,len(averageRadiation)),range(1,len(averageRadiation)+1))
+    plt.xlabel(r'panel number',size=16)
+    plt.ylabel(r'average radiation on panel $\left[\frac{kWh}{m^2 year}\right]$', size=16)
+    plt.grid(b=True, which='both')
+    
+    #calculate total radiation:
+    totRadCal=sum(averageRadiation)*(panel_size/1000)**2
 
-averageRadiation = []
-for i in Radiation:
-    averageRadiation.append(np.sum(i)/len(i))
-
-#plot average radiation for each panel:
-#plt.rc('text', usetex=False)
-#plt.rc('font', family='serif')
-plt.plot(range(0,len(averageRadiation)),averageRadiation, 'bo')
-plt.title('Average Radiation on Panels', size = 20)
-plt.xticks(range(0,len(averageRadiation)),range(1,len(averageRadiation)+1))
-plt.xlabel(r'panel number',size=16)
-plt.ylabel(r'average radiation on panel $\left[\frac{kWh}{m^2 year}\right]$', size=16)
-plt.grid(b=True, which='both')
-
-#calculate total radiation:
-totRadCal=sum(averageRadiation)*(panel_size/1000)**2
-
-
-
-#compare ladybug total radiation with own calculation:
-print 'total radiation calculated by ladybug:', total_radiation, 'kWh/year'
-print 'total radiation calculated based on evaluation of all results: ',  totRadCal, 'kWh/year'
+    #compare ladybug total radiation with own calculation:
+    print 'total radiation calculated by ladybug:', total_radiation, 'kWh/year'
+    print 'total radiation calculated based on evaluation of all results: ',  totRadCal, 'kWh/year'
