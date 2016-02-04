@@ -228,9 +228,9 @@ def create_npArray_with_total_Radiation(Radiation,panelSize,numberOfPanels, *arg
     
     
     
-#path = 'C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/RadiationEvaluation/Radiation_yearly_25_angles_incomplete/'
-#filename = 'RadiationResultsForPY.csv'
+path = 'C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/RadiationEvaluation/Radiation_yearly_25_angles_incomplete/'
+filename = 'RadiationResultsForPY.csv'
 
-#RadiationData, missingIteration, IterationNumbers, header = import_radiation_year(path, filename)
+RadiationData, missingIteration, IterationNumbers, header = import_radiation_year(path, filename)
 
-#add_hours_without_sun(RadiationData, sunRisen)
+add_hours_without_sun(RadiationData, sunRisen)

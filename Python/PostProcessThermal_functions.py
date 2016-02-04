@@ -139,6 +139,7 @@ def pcolorMonths(X, rotation_axis, x_angle_location, y_angle_location, allAngles
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
     plt.pcolor(x, y, masked_array, cmap=cmap, vmin=z_min, vmax=z_max)
+
     #plt.pcolor(x, y, z, cmap='CMRmap', vmin=z_min, vmax=z_max)
 
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
@@ -147,7 +148,8 @@ def pcolorMonths(X, rotation_axis, x_angle_location, y_angle_location, allAngles
 #    plt.xlabel("Day of the Year")
 #    plt.ylabel("Hour of the Day")
     # set the limits of the plot to the limits of the data
-    plt.axis([x.min(), x.max(), y.min(), y.max()])
+    plt.axis([x.min(), x.max(), 3, 22])
+    plt.tick_params(axis=u'both',labelsize=14)
     
 # function that shows optimal angle combinations for every hour of the year for one axis
 def pcolorEnergyDays(X):
@@ -181,8 +183,8 @@ def pcolorEnergyDays(X):
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 
     #plt.title('pcolor')
-    plt.xlabel("Day of the Year")
-    plt.ylabel("Hour of the Day")
+#    plt.xlabel("Day of the Year")
+#    plt.ylabel("Hour of the Day")
     # set the limits of the plot to the limits of the data
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     
@@ -218,19 +220,22 @@ def pcolorEnergyMonths(X, maxMin, *arg):
             z[i].append(X[ind[24*j + i]][24*j + i])
     z = np.asarray(z)
     
-    z_min, z_max = 0, 30
+    z_min, z_max = -21, 21
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-    plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)
+    #plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)
+    plt.pcolor(x, y, z, cmap='RdBu_r', vmin=z_min, vmax=z_max)
+    #plt.pcolor(x, y, z, cmap='coolwarm', vmin=z_min, vmax=z_max)
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 
     #plt.title('pcolor')
-    plt.xlabel("Day of the Year")
-    plt.ylabel("Hour of the Day")
+    #plt.xlabel("Month of the Year")
+    #plt.ylabel("Hour of the Day")
     # set the limits of the plot to the limits of the data
+#    plt.axis([x.min(), x.max(), y.min(), y.max()])
     plt.axis([x.min(), x.max(), y.min(), y.max()])
-    
+    plt.tick_params(axis=u'both',labelsize=14)
     print "maximum energy for axis has to be assigned smarter"
 
 

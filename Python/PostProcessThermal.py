@@ -17,7 +17,7 @@ from calculate_angles_function import create_ASF_angles
 from PostProcessThermal_functions import scatterResults, pcolorDays, AngleHistogram, pcolorEnergyDays
 
 #define if data should be imported, set False if desired evaluation data is already in workspace:
-importDataFlag = False
+importDataFlag = True
 
 #define if plots should be created
 createPlotsFlag = True

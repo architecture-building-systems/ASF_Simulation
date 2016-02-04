@@ -7,32 +7,32 @@ Created on Wed Feb 03 18:43:02 2016
 import numpy as np
 import matplotlib.pyplot as plt
 #
-f = plt.figure()
-ax = f.add_subplot(111)
-a = np.arange(25).reshape((5,5)).astype(float)
-a[3,:] = np.nan
-masked_array = np.ma.array (a, mask=mask)#=np.isnan(a))
-cmap = plt.cm.afmhot
-cmap.set_bad('grey',1.)
-ax.imshow(masked_array, interpolation='nearest', cmap=cmap)
-f.canvas.draw()
-#
-#masked_array = np.ma.array (z, mask=np.isnan(z))
-#cmap = plt.cm.jet
-#cmap.set_bad('w',1.)
+#f = plt.figure()
+#ax = f.add_subplot(111)
+#a = np.arange(25).reshape((5,5)).astype(float)
+#a[3,:] = np.nan
+#masked_array = np.ma.array (a, mask=mask)#=np.isnan(a))
+#cmap = plt.cm.afmhot
+#cmap.set_bad('grey',1.)
 #ax.imshow(masked_array, interpolation='nearest', cmap=cmap)
-#sunNan = []
-for i in range(len(sunRisen)):
-    if sunRisen[i] == 0:
-        sunNan.append(np.nan)
-    else:
-        sunNan.append(1)
-        
-SunAround = []
-for i in range(25):
-    SunAround.append(np.array(sunNan))
-    
-SunAround = np.array(SunAround)
+#f.canvas.draw()
+##
+##masked_array = np.ma.array (z, mask=np.isnan(z))
+##cmap = plt.cm.jet
+##cmap.set_bad('w',1.)
+##ax.imshow(masked_array, interpolation='nearest', cmap=cmap)
+##sunNan = []
+#for i in range(len(sunRisen)):
+#    if sunRisen[i] == 0:
+#        sunNan.append(np.nan)
+#    else:
+#        sunNan.append(1)
+#        
+#SunAround = []
+#for i in range(25):
+#    SunAround.append(np.array(sunNan))
+#    
+#SunAround = np.array(SunAround)
 
 def createMonthsNan(L_month, R_month):#, rotation_axis, x_angle_location, y_angle_location, allAngles, *arg):
         
@@ -71,19 +71,31 @@ def createMonthsNan(L_month, R_month):#, rotation_axis, x_angle_location, y_angl
         for j in range(12):
             z2[i].append(axis_ind[24*j + i])
     z2 = np.asarray(z2)
+
     
-    z_tot=z+z2
+    zalwaysDay=np.ones((9,12))
+    zDay = z
+    zDay[range(8,17)]=zalwaysDay
+    
+    zBool = np.ceil(zDay/100.)
+    z2Bool = np.ceil(z2/100.)
+    
+    zDiff = np.abs(zBool-z2Bool)
+    zBooladd = zBool+z2Bool
+    zBool_tot=(zBooladd-zDiff)/2
     
 #    nanSun=np.ones((24,12))
 #    for i in z_tot:
 #        if i == 0:
 #            i=np.nan
             
-    ztest = z_tot.astype('float')
-    ztest[ztest == 0] = np.nan
-    ztest[ztest >0] = 1
+#    ztest = z_tot.astype('float')
+#    ztest[ztest == 0] = np.nan
+#    ztest[ztest >0] = 1
     
-    sunMask=np.isnan(ztest)    
+    zBool_tot[zBool_tot == 0] = np.nan
+    
+    sunMask=np.isnan(zBool_tot)    
     
     return sunMask
    

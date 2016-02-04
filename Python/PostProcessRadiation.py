@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 #define if data should be imported, set False if desired radiation data is already in workspace:
 importDataFlag = True
-importDataOption = 'year' #'year', 'week', 'monthly'
+importDataOption = 'monthly' #'year', 'week', 'monthly'
 
 if importDataFlag:
     if importDataOption == 'year':
@@ -134,7 +134,7 @@ if importDataFlag:
             #R_tot = np.append(R,R_2,axis=0)
         
         #calculate PV energy production with average efficiency:
-        efficiency = 0.1
+        efficiency = 0.08*0.9
         PV_month = R_monthly*efficiency
         
         E_month_withPV = C_month+H_month+L_month-PV_month
