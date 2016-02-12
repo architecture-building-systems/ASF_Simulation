@@ -99,6 +99,7 @@ def import_radiation_monthly(path, filename):
     counter=0
     IterationNumbers = []
     RadiationData = []
+    TotRadLB = []
     for i in range(0,len(Radiation_string),53):
         for j in range(0,53):
             line = i + j
@@ -106,6 +107,7 @@ def import_radiation_monthly(path, filename):
             if j==1:
                 IterationNumbers.append(int(Radiation_string[line][0]))
                 RadiationData.append([])
+                TotRadLB.append(float(Radiation_string[line][4]))
             elif j>2:
                 RadiationData[counter].append(float(Radiation_string[line][0]))
         counter += 1
@@ -129,7 +131,7 @@ def import_radiation_monthly(path, filename):
                 
 
     f.close()
-    return (RadiationData, missingIteration, IterationNumbers, header)
+    return (RadiationData, missingIteration, IterationNumbers, header, TotRadLB)
     
 def import_radiation_week(path, filename):
 
@@ -181,11 +183,12 @@ def import_radiation_week(path, filename):
     return (RadiationData, missingIteration, IterationNumbers, header)
     
 #function to add hours without sun to RadiationData
-def add_hours_without_sun(RadiationData, sunRisen):
+def add_hours_without_sun(RadiationData, sunRisen, totRadLB):
     
     Radiation = []
     hoursWithSun = 0
     hoursWithoutSun = 0
+    RadiationLB = []
     for i in sunRisen:
         if i==0:
             hoursWithoutSun +=1
@@ -200,11 +203,13 @@ def add_hours_without_sun(RadiationData, sunRisen):
         for j in range(len(sunRisen)):
             if sunRisen[j]==0:
                 Radiation.append(zeroRadiation)
+                RadiationLB.append(0.0)
             else:
                 Radiation.append(RadiationData[RadiationDataCounter])
+                RadiationLB.append(totRadLB[RadiationDataCounter])
                 RadiationDataCounter+=1
     
-    return Radiation
+    return Radiation, RadiationLB
         
 #function to bring Radiation data into same format as heating, lighting and cooling data from diva (numpy array)
 def create_npArray_with_total_Radiation(Radiation,panelSize,numberOfPanels, *arg):

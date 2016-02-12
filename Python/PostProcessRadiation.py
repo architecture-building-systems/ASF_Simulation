@@ -119,7 +119,7 @@ if importDataFlag:
                 
             iterateFile = filename + str(i) + '.csv'
             print 'importing file ' + iterateFile
-            RadiationDataMonthly, missingIteration, IterationNumbers, header =  import_radiation_monthly(path, iterateFile)
+            RadiationDataMonthly, missingIteration, IterationNumbers, header, totRadLB =  import_radiation_monthly(path, iterateFile)
    
             allHours = [0]*(months*TotalHoursPerDay)
             for month in range(months):
@@ -127,12 +127,17 @@ if importDataFlag:
                     if hour>=startHour and hour<endHour:
                         allHours[month*TotalHoursPerDay +hour] = 1
                 
-            iterateRad = add_hours_without_sun(RadiationDataMonthly, allHours)
+            iterateRad, iterateRadLB = add_hours_without_sun(RadiationDataMonthly, allHours, totRadLB)
             R_i = create_npArray_with_total_Radiation(iterateRad,panelSize,numberOfPanels,'monthly')
+            R_iLB = []
+            R_iLB.append([])
+            R_iLB[0] = np.array(iterateRadLB)
             if i==start_combination:
                 R_monthly = R_i
+                R_monthlyLB  = R_iLB
             else:
                 R_monthly = np.append(R_monthly,R_i, axis=0)
+                R_monthlyLB = np.append(R_monthlyLB,R_iLB, axis=0)
             
             #R_tot = np.append(R,R_2,axis=0)
         

@@ -17,7 +17,7 @@ from average_monthly import average_monthly, daysPassedMonth
 from PostProcessThermal_functions import pcolorMonths, pcolorEnergyMonths
 from try_nan_values import createMonthsNan
 
-importData = True
+importData = False
 
 if importData:
     
@@ -28,6 +28,8 @@ if importData:
     execfile("PostProcessThermal.py")
     
     daysPassedMonth=daysPassedMonth()
+    
+    PV_month=PV_month/2
     
     C_month = average_monthly(C,daysPassedMonth)
     H_month = average_monthly(H,daysPassedMonth)
@@ -402,5 +404,15 @@ TotalLighting = np.round(np.sum(np.min(L_month, axis=0)), decimals=1)
 TotalEnergy = np.round(np.sum(np.min(E_month, axis=0)), decimals=1)
 TotalPV = np.round(np.sum(np.max(PV_month, axis=0)), decimals=1)
 TotalR = np.round(np.sum(np.max(R_month, axis=0)), decimals=1)
+TotalR_LB = np.round(np.sum(np.max(R_monthlyLB, axis=0)), decimals=1)
 TotalEnergy_withPV = np.round(np.sum(np.min(E_month_withPV, axis=0)), decimals=1)
 TradeoffLosses = np.round(TotalEnergy-TotalLighting-TotalCooling-TotalHeating, decimals=2)
+
+TotalR_comb = []
+for i in range(len(R_month)):
+    TotalR_comb.append([])
+    TotalR_comb[i] =  np.round(np.sum(R_month[i]), decimals=1)
+    
+figcounter+=1
+fig = plt.figure(num = figcounter, figsize=(16, 8))
+plt.bar(range(len(TotalR_comb)),TotalR_comb)
