@@ -21,13 +21,38 @@ def calculate_sum_for_index(X,Xind):
         sumX = np.sum(X[Xind])
         
     return sumX
-    
-def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP_eval, L_data, L_power_data, L_power_eval, PV_data, PV_eff_data, PV_eff_eval):
+def create_evalList(dataType, month, startHour, endHour):
+    """
+    example: \n
+    create_evalList('monthly', 6, 12, 13) \n
+    outputs a list which corresponds to the monthly data of june for hours between 11:00 and 13:00. 
+    Note that month, startHour and endHour correspond to a counter value that starts with 1.
+    """
+    if dataType == 'monthly':
+        evalList=[]
+        for i in range(endHour-(startHour-1)):
+            evalList.append((month-1)*24 + startHour - 1 + i)
+    else:
+        raise ValueError("dataType: "+str(dataType)+" not (yet) implemented")
         
-    H = H_data*H_COP_data/H_COP_eval
-    C = C_data*C_COP_data/C_COP_eval
-    L = L_data*L_power_eval/L_power_data
-    PV = PV_data*PV_eff_eval/PV_eff_data
+    return evalList
+    
+def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP_eval, L_data, L_power_data, L_power_eval, PV_data, PV_eff_data, PV_eff_eval, *evalList):
+    
+    if len(evalList[0])>0:
+        print 'there is an evalList'
+        evalList = evalList[0]
+        H = H_data[:,evalList]*H_COP_data/H_COP_eval
+        C = C_data[:,evalList]*C_COP_data/C_COP_eval
+        L = L_data[:,evalList]*L_power_eval/L_power_data
+        PV = PV_data[:,evalList]*PV_eff_eval/PV_eff_data
+    else:
+        print 'there is no evalList or it is empty, results will be shown for the whole year'
+        
+        H = H_data*H_COP_data/H_COP_eval
+        C = C_data*C_COP_data/C_COP_eval
+        L = L_data*L_power_eval/L_power_data
+        PV = PV_data*PV_eff_eval/PV_eff_data
     
     E_HCL = H+C+L
     E_tot = E_HCL-PV
@@ -194,7 +219,7 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     #                 label='Women')
     
     plt.xlabel('Combinations')
-    plt.ylabel('Energy')
+    plt.ylabel('Energy [kWh]')
     plt.title('Energy Dependency on Angle Combinations')
     plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '67.5 deg', '45 deg', '22.5 deg', '0 deg'))
     plt.legend(loc=0)
@@ -260,7 +285,7 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     #                 label='Women')
     
     plt.xlabel('Combinations')
-    plt.ylabel('$\Delta$ Energy')
+    plt.ylabel('$\Delta$ Energy [kWh]')
     plt.title('Energy Difference Dependency on Angle Combinations')
     plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '67.5 deg', '45 deg', '22.5 deg', '0 deg'))
     plt.legend(loc=0)
@@ -268,6 +293,13 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     plt.tight_layout()
     plt.show()
 
+dataType='monthly'
+month=7
+startHour=21
+endHour=21
+
+evalList = []
+evalList = create_evalList(dataType, month, startHour, endHour)
 #
 H_COP_data = 5
 H_COP_eval = 5
@@ -277,7 +309,9 @@ L_power_data = 11.74    # [W/m^2]
 L_power_eval = 11.74    # [W/m^2]
 PV_eff_data = 0.072     # = 0.08*0.9
 PV_eff_eval = 0.072
-compareTotalEnergy(H_month, H_COP_data, H_COP_eval, C_month, C_COP_data, C_COP_eval, L_month, L_power_data, L_power_eval, PV_month, PV_eff_data, PV_eff_eval)
+
+compareTotalEnergy(H_month, H_COP_data, H_COP_eval, C_month, C_COP_data, C_COP_eval, L_month, L_power_data, L_power_eval, PV_month, PV_eff_data, PV_eff_eval, evalList)
+
 
 #TotalHeating = np.sum(np.min(H_month, axis=0))
 #TotalCooling = np.round(np.sum(np.min(C_month, axis=0)), decimals=1)
