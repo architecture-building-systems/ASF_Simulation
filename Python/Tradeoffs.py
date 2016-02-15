@@ -299,7 +299,7 @@ startHour=21
 endHour=21
 
 evalList = []
-evalList = create_evalList(dataType, month, startHour, endHour)
+#evalList = create_evalList(dataType, month, startHour, endHour)
 #
 H_COP_data = 5
 H_COP_eval = 5

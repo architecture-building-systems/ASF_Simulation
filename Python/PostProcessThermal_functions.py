@@ -12,6 +12,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
+from matplotlib.colors import LinearSegmentedColormap
 
 # function to show frequencies of x and y angle combinations
 def scatterResults(X, Xcolour,offset,x_angles,x_angle_location,y_angles,y_angle_location):
@@ -225,9 +226,25 @@ def pcolorEnergyMonths(X, maxMin, *arg):
     z_min, z_max = -21, 21
     #print z_min, z_max
     
+    # create custum colormap:
+    cdict1 = {'red':   ((0.0, 0.0, 0.0),
+                       (0.5, 0.0, 0.1),
+                       (1.0, 1.0, 1.0)),
+    
+             'green': ((0.0, 0.0, 0.0),
+                       (1.0, 0.0, 0.0)),
+    
+             'blue':  ((0.0, 0.0, 1.0),
+                       (0.5, 0.1, 0.0),
+                       (1.0, 0.0, 0.0))
+            }
+    
+    blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)    
+    
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
     #plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)
     plt.pcolor(x, y, z, cmap='RdBu_r', vmin=z_min, vmax=z_max)
+    plt.pcolor(x, y, z, cmap=blue_red1, vmin=z_min, vmax=z_max)   
     #plt.pcolor(x, y, z, cmap='coolwarm', vmin=z_min, vmax=z_max)
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 

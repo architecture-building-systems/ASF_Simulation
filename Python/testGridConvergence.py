@@ -22,6 +22,21 @@ numberOfTestSizes = 5
 
 gridConvergenceRad = []
 
+## create custum colormap:
+#cdict1 = {'red':   ((0.0, 0.0, 0.0),
+#                   (0.5, 0.0, 0.1),
+#                   (1.0, 1.0, 1.0)),
+#
+#         'green': ((0.0, 0.0, 0.0),
+#                   (1.0, 0.0, 0.0)),
+#
+#         'blue':  ((0.0, 0.0, 1.0),
+#                   (0.5, 0.1, 0.0),
+#                   (1.0, 0.0, 0.0))
+#        }
+#
+#blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)
+
 for i in range(numberOfHours):
     gridConvergenceRad.append([])
     
@@ -31,11 +46,14 @@ for i in range(numberOfHours):
         for k in range(numberOfTestSizes):
             gridConvergenceRad[i][j].append(gridConvergence[i*numberOfComb*numberOfTestSizes+j*numberOfTestSizes +k][3])
             
-fig = plt.figure()
+fig = plt.figure(figsize=(16, 12))
+plt.suptitle("Grid Convergence", size=16)
+
 plt.subplot(2,1,2)
 cmap = mpl.cm.cubehelix
 cmap = mpl.cm.jet
 cmap = mpl.cm.RdYlGn
+#cmap = blue_red1
 xindex = [1,2,3,4,5] #[400,199,99.5,49.8,24.9]
 for i in range(numberOfHours):
     for j in range(numberOfComb):
@@ -43,14 +61,14 @@ for i in range(numberOfHours):
             plt.plot(xindex,np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][4], color=cmap(i/float(numberOfHours)), label='hour'+str(5+i))
         else:
             plt.plot(xindex,np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][4], color=cmap(i/float(numberOfHours)))
-plt.xlabel('grid size [mm]')
+plt.xlabel('grid size [mm]',fontsize=14)
 plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9'))
-plt.ylabel('normalized radiation')
-plt.subplot(2,1,1)
+plt.ylabel('normalized radiation [-]',fontsize=14)#, verticalalignment = 'top', horizontalalignment = 'left')
+ax = plt.gca()
+ax.yaxis.set_label_coords(-0.05, 0.5)
+plt.tick_params(axis=u'both',labelsize=14)
 
-cmap = mpl.cm.cubehelix
-cmap = mpl.cm.jet
-cmap = mpl.cm.RdYlGn
+plt.subplot(2,1,1)
 for i in range(numberOfHours):
     for j in range(numberOfComb):
         if j==0:
@@ -58,9 +76,12 @@ for i in range(numberOfHours):
         else:
             plt.plot(xindex,np.array(gridConvergenceRad[i][j]), color=cmap(i/float(numberOfHours)))
 plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9'))
-plt.ylabel('total Radiation [kWh/h]')
+plt.ylabel('total radiation [kWh/h]',fontsize=14)#, verticalalignment = 'bottom', horizontalalignment = 'left')
+ax = plt.gca()
+ax.yaxis.set_label_coords(-0.05, 0.5)
+plt.tick_params(axis=u'both',labelsize=14)
 fig.subplots_adjust(right=0.8)
-plt.legend(loc=2, bbox_to_anchor=(1., 1))    
+plt.legend(loc=2, bbox_to_anchor=(1.02, 1),fontsize = 14)    
     #plt.legend(['hour'+str(5+i)])
 
 #cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,numberOfHours))
