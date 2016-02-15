@@ -32,14 +32,33 @@ for i in range(numberOfHours):
             gridConvergenceRad[i][j].append(gridConvergence[i*numberOfComb*numberOfTestSizes+j*numberOfTestSizes +k][3])
             
 fig = plt.figure()
+plt.subplot(2,1,2)
 cmap = mpl.cm.cubehelix
 cmap = mpl.cm.jet
+cmap = mpl.cm.RdYlGn
+xindex = [1,2,3,4,5] #[400,199,99.5,49.8,24.9]
 for i in range(numberOfHours):
     for j in range(numberOfComb):
         if j==0:
-            plt.plot([1,2,3,4,5],np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][4], color=cmap(i/float(numberOfHours)), label='hour'+str(5+i))
+            plt.plot(xindex,np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][4], color=cmap(i/float(numberOfHours)), label='hour'+str(5+i))
         else:
-            plt.plot([1,2,3,4,5],np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][4], color=cmap(i/float(numberOfHours)))
+            plt.plot(xindex,np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][4], color=cmap(i/float(numberOfHours)))
+plt.xlabel('grid size [mm]')
+plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9'))
+plt.ylabel('normalized radiation')
+plt.subplot(2,1,1)
+
+cmap = mpl.cm.cubehelix
+cmap = mpl.cm.jet
+cmap = mpl.cm.RdYlGn
+for i in range(numberOfHours):
+    for j in range(numberOfComb):
+        if j==0:
+            plt.plot(xindex,np.array(gridConvergenceRad[i][j]), color=cmap(i/float(numberOfHours)), label='hour'+str(5+i))
+        else:
+            plt.plot(xindex,np.array(gridConvergenceRad[i][j]), color=cmap(i/float(numberOfHours)))
+plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9'))
+plt.ylabel('total Radiation [kWh/h]')
 fig.subplots_adjust(right=0.8)
 plt.legend(loc=2, bbox_to_anchor=(1., 1))    
     #plt.legend(['hour'+str(5+i)])
