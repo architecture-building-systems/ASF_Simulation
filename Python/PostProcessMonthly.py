@@ -29,7 +29,7 @@ if importData:
     
     daysPassedMonth=daysPassedMonth()
     
-    PV_month=PV_month/2
+    #PV_month=PV_month
     
     C_month = average_monthly(C,daysPassedMonth)
     H_month = average_monthly(H,daysPassedMonth)
@@ -360,7 +360,7 @@ plt.show()
 # Energy Use at opmtimum angle combination for the hole year:
 figcounter+=1
 fig = plt.figure(num = figcounter, figsize=(16, 8))
-plt.suptitle("(b) Net Energy Use at Optimum Orientation", size=16)
+#plt.suptitle("(b) Net Energy Use at Optimum Orientation", size=16)
 plt.subplot(2,3,1)
 pcolorEnergyMonths(H_month,'min')
 plt.title("Heating Demand")

@@ -223,7 +223,7 @@ def pcolorEnergyMonths(X, maxMin, *arg):
             z[i].append(X[ind[24*j + i]][24*j + i])
     z = np.asarray(z)
     
-    z_min, z_max = -21, 21
+    z_min, z_max = -15, 15
     #print z_min, z_max
     
     # create custum colormap:
