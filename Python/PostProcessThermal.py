@@ -27,11 +27,11 @@ createPlotsFlag = False
 createPlotsOptions = "xy_separate"
 
 #only single angle result flag (not yet complete)
-oneDimensionalFlag = True
+oneDimensionalFlag = False
 
 if importDataFlag:
     # set path to folder containing .csv files to analyse
-    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_noASF_Frankfurt/"
+#    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_noASF_Frankfurt/"
 #    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_324_comb_rect_Frankfurt/delete_NONE_line_191/"
 #    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_324_comb_rect_Madrid/"
 #    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_noASF_Madrid/"
@@ -39,7 +39,7 @@ if importDataFlag:
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160108_noshade_1stepPerHour/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_141216_729_comb_rectangular/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160125_diamond_25com_2/"
-    #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160128_diamond_25comb_newReflection/"
+    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160128_diamond_25comb_newReflection/"
     
     #Import data from csv
     C=np.genfromtxt(path + 'cooling.csv',delimiter=',')

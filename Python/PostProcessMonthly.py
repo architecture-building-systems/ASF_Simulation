@@ -17,7 +17,7 @@ from average_monthly import average_monthly, daysPassedMonth
 from PostProcessThermal_functions import pcolorMonths, pcolorEnergyMonths
 from try_nan_values import createMonthsNan
 
-importData = False
+importData = True
 
 if importData:
     
