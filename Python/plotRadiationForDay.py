@@ -17,7 +17,7 @@ filename = "days_per_month.csv"
 daysPerMonth=np.genfromtxt(path + filename, delimiter=',')
 daysPerMonth=np.asarray(daysPerMonth, dtype='int32')
 
-m2Flag = False
+m2Flag = True
 
 
 path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/RadiationEvaluation/dailyTotalRadiation/"
