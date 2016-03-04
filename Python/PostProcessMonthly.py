@@ -39,6 +39,8 @@ if importData:
     
     sunMask = createMonthsNan(L_month, R_month, allAngles)
 
+if not (('figcounter' in locals()) or ('figcounter' in globals())):
+    figcounter = 0
     
  # Optimal x-angle combinations for every hour of the year
 figcounter+=1
