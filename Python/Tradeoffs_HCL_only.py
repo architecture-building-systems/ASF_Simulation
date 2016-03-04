@@ -248,7 +248,8 @@ C_COP_data = 3
 C_COP_eval = 3
 L_power_data = 11.74    # [W/m^2]
 L_power_eval = 11.74    # [W/m^2]
-indices = {'0':0, '22.5':0, '45':171, '67.5':0, '90':0}
+#indices = {'0':0, '22.5':0, '45':171, '67.5':0, '90':0}
+indices = {'0':0, '22.5':0, '45':18, '67.5':0, '90':0}
 
 tradeoff_results2 = compareTotalEnergyHCL(H, H_COP_data, H_COP_eval, C, C_COP_data, C_COP_eval, L, L_power_data, L_power_eval, indices, evalList)
 

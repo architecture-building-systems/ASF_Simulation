@@ -27,7 +27,7 @@ createPlotsFlag = False
 createPlotsOptions = "xy_separate"
 
 #only single angle result flag (not yet complete)
-oneDimensionalFlag = True
+oneDimensionalFlag = False
 
 if importDataFlag:
     # set path to folder containing .csv files to analyse
@@ -41,7 +41,8 @@ if importDataFlag:
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160125_diamond_25com_2/"
 #    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160128_diamond_25comb_newReflection/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_324_comb_rect_Geneva/"
-    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_noASF_Geneva/"
+    #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_noASF_Geneva/"
+    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_3x9_comb_1_cluster_Geneva/"
     
     #Import data from csv
     C=np.genfromtxt(path + 'cooling.csv',delimiter=',')
