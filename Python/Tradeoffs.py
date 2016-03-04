@@ -314,7 +314,7 @@ L_power_eval = 11.74    # [W/m^2]
 PV_eff_data = 0.072     # = 0.08*0.9
 PV_eff_eval = 0.072
 
-tradeoff_results = compareTotalEnergy(H_month, H_COP_data, H_COP_eval, C_month, C_COP_data, C_COP_eval, L_month, L_power_data, L_power_eval, PV_month, PV_eff_data, PV_eff_eval, evalList)
+#tradeoff_results = compareTotalEnergy(H_month, H_COP_data, H_COP_eval, C_month, C_COP_data, C_COP_eval, L_month, L_power_data, L_power_eval, PV_month, PV_eff_data, PV_eff_eval, evalList)
 tradeoff_results2 = compareTotalEnergy(H, H_COP_data, H_COP_eval, C, C_COP_data, C_COP_eval, L, L_power_data, L_power_eval, PV, PV_eff_data, PV_eff_eval, evalList)
 
 
