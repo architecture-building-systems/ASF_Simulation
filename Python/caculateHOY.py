@@ -26,3 +26,8 @@ def calcHOY(month, day, hour, daysPerMonth):
     
 HOY = calcHOY(month, day, hour, daysPerMonth)
     
+MiddleOfMonth=np.ones((12,1))
+
+for i in range(1,13):
+    MiddleOfMonth[i-1]=calcHOY(i,int(np.round(daysPerMonth[i-1]/2.0)),1,daysPerMonth)
+    print 'use day ' + str(int(np.round(daysPerMonth[i-1]/2.0))) + ' for month ' + str(i)

@@ -13,7 +13,7 @@ creates plots based on thermal/lighting/radiation data
 import numpy as np
 import matplotlib.pyplot as plt
 
-from average_monthly import average_monthly, daysPassedMonth
+from average_monthly import sum_monthly, average_monthly, daysPassedMonth
 from PostProcessThermal_functions import pcolorMonths, pcolorEnergyMonths
 from try_nan_values import createMonthsNan
 
@@ -31,10 +31,10 @@ if importData:
     
     #PV_month=PV_month
     
-    C_month = average_monthly(C,daysPassedMonth)
-    H_month = average_monthly(H,daysPassedMonth)
-    L_month = average_monthly(L,daysPassedMonth)
-    E_month = average_monthly(E,daysPassedMonth)
+    C_month = sum_monthly(C,daysPassedMonth)
+    H_month = sum_monthly(H,daysPassedMonth)
+    L_month = sum_monthly(L,daysPassedMonth)
+    E_month = sum_monthly(E,daysPassedMonth)
     E_month_withPV = C_month+H_month+L_month-PV_month
     
     sunMask = createMonthsNan(L_month, R_month, allAngles)
