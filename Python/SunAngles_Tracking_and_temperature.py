@@ -2,7 +2,10 @@
 """
 Created on Tue Mar 08 10:46:36 2016
 
-@author: Assistenz
+Script to calculate sun-tracking-angles and temperatures for evaluation of 
+average days for every month. corresponding data is generated in grasshopper. 
+
+@author: Jeremias
 """
 
 import numpy as np
@@ -102,4 +105,9 @@ SunTrackingData = {'HOY': HoursToEvaluate, 'Xangles': XanglesTracking, 'Yangles'
 # save dictionary with json:
 with open('SunTrackingData.json', 'w') as fp:
     json.dump(SunTrackingData, fp)
+    fp.close()
+
+#save temperature to seperate json:
+with open('TempTracking.json', 'w') as fp:
+    json.dump(TempTracking, fp)
     fp.close()
