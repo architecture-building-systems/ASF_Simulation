@@ -29,9 +29,9 @@ def diode_equation_eval(fitparams=None, x=None, modparams=None, ins=None, temp=N
     # -> 0 = y - Iphi + Io * (exp(a/CC*(x(i) + y * AA))-1) + (x(i) + y * AA)/BB2
 
     # insolation and temperature
-    phi_ref = ins[0]
-    phi = ins[1]
-    Tc = temp
+    phi_ref = float(ins[0])
+    phi = float(ins[1])
+    Tc = float(temp)
     Tc_ref = modparams[2]
 
     # constants
@@ -40,7 +40,7 @@ def diode_equation_eval(fitparams=None, x=None, modparams=None, ins=None, temp=N
 
     # module parameters
     Isc = modparams[0]
-    Ncs = modparams[1]
+    Ncs = float(modparams[1])
     muIsc = modparams[3]
     egap = modparams[4]
     a = q / (Ncs * k * Tc)
@@ -48,7 +48,7 @@ def diode_equation_eval(fitparams=None, x=None, modparams=None, ins=None, temp=N
 
     # fit parameters
     AA = fitparams[0]# Rs
-    BB = fitparams[1]# Rp_ref
+    BB = float(fitparams[1])# Rp_ref
     CC = fitparams[2]# gamma
     DD = fitparams[3]# Io_ref
 
@@ -67,9 +67,9 @@ def diode_equation_eval(fitparams=None, x=None, modparams=None, ins=None, temp=N
     NN = len(x)
 #    opt = optimset(mstring('display'), mstring('off'))
 
-    for i in range(NN):
-        args = (Iphi,Io,a,CC,x[i],AA,BB2)
-        y[i] = optimize.fsolve(diode_equation, 1, args )[0]
+    for j in range(NN):
+        args = (Iphi,Io,a,CC,x[j],AA,BB2)
+        y[j] = optimize.fsolve(diode_equation, 1, args )[0]
     
     return y
 
@@ -94,7 +94,7 @@ for i in range(301):#i=1:301
         
         ins_submod = ([1000, ins_ref])
         curr_model_submod_lookup[i, t,:] = diode_equation_eval(fitparam, volt_model_var, modparams, ins_submod, temp)
-        
+        curr_model_test = curr_model_submod_lookup[i, t,:]
     toc = time.time() - tic
     print toc
     
