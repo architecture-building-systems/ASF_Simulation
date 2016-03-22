@@ -33,3 +33,8 @@ for i in range(301):
     for j in range(20):
         efficiencies_lookup[i,j]=max(curr_model_submod_lookup[i,j]*volt_model_var)/ref_power_lookup[i]*100.
         
+        
+figure()
+    
+for i in range(48):
+    plot(volt_model_var, Icell_comb[i])

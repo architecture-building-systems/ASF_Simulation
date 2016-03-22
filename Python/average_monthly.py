@@ -13,7 +13,7 @@ def daysPassedMonth():
     filename = "days_per_month.csv"
     daysPerMonth=np.genfromtxt(path + filename, delimiter=',')
     daysPerMonth=np.asarray(daysPerMonth, dtype='int32')
-    hoursPerMonth = daysPerMonth*24
+    #hoursPerMonth = daysPerMonth*24
     daysPassedMonth = []
     for i in range(12):
         if i == 0:
@@ -30,13 +30,13 @@ def sum_monthly(X, daysPassedMonth):
     for combination in range(NumberCombinations):
         #dayi=0
         monthi=0
-        testmonth=[]
+        #testmonth=[]
         for day in range(365):
             for hour in range(24):
                 X_sum[combination][monthi*24+hour]+=X[combination][day*24+hour]
                 if day == daysPassedMonth[monthi]:
                     monthi+=1
-    return X_average
+    return X_sum
 #            testmonth.append(monthi)
 def average_monthly(X, daysPassedMonth, daysPerMonth):
    
@@ -45,7 +45,7 @@ def average_monthly(X, daysPassedMonth, daysPerMonth):
     for combination in range(NumberCombinations):
         #dayi=0
         monthi=0
-        testmonth=[]
+        #testmonth=[]
         for day in range(365):
             for hour in range(24):
                 X_average[combination][monthi*24+hour]+=X[combination][day*24+hour]/daysPerMonth[monthi]

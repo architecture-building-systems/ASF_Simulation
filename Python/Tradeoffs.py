@@ -293,8 +293,9 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     plt.tight_layout()
     plt.show()
         
-    energy_optHCL = {'H_HCL': H_HCL, 'C_HCL': C_HCL, 'L_HCL': L_HCL, 'E_HCL_HCL': E_HCL_HCL, 'PV_HCL': PV_HCL}
-    tradeoff_results = {'energy_optHCL': energy_optHCL}
+    energy_optHCL = {'H_HCL': H_HCL, 'C_HCL': C_HCL, 'L_HCL': L_HCL, 'E_HCL_HCL': E_HCL_HCL, 'E_tot_HCL': E_tot_HCL, 'PV_HCL': PV_HCL}
+    energy_opttot = {'H_tot': H_tot, 'C_tot': C_tot, 'L_tot': L_tot, 'E_HCL_tot': E_HCL_tot, 'E_tot_tot': E_tot_tot, 'PV_tot': PV_tot}
+    tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_opttot': energy_opttot}
     return tradeoff_results
 
 dataType='monthly'
@@ -314,8 +315,8 @@ L_power_eval = 11.74    # [W/m^2]
 PV_eff_data = 0.072     # = 0.08*0.9
 PV_eff_eval = 0.072
 
-#tradeoff_results = compareTotalEnergy(H_month, H_COP_data, H_COP_eval, C_month, C_COP_data, C_COP_eval, L_month, L_power_data, L_power_eval, PV_month, PV_eff_data, PV_eff_eval, evalList)
-tradeoff_results2 = compareTotalEnergy(H, H_COP_data, H_COP_eval, C, C_COP_data, C_COP_eval, L, L_power_data, L_power_eval, PV, PV_eff_data, PV_eff_eval, evalList)
+tradeoff_results = compareTotalEnergy(H_month, H_COP_data, H_COP_eval, C_month, C_COP_data, C_COP_eval, L_month, L_power_data, L_power_eval, PV_month, PV_eff_data, PV_eff_eval, evalList)
+#tradeoff_results2 = compareTotalEnergy(H, H_COP_data, H_COP_eval, C, C_COP_data, C_COP_eval, L, L_power_data, L_power_eval, PV, PV_eff_data, PV_eff_eval, evalList)
 
 
 #TotalHeating = np.sum(np.min(H_month, axis=0))

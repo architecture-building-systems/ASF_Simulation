@@ -39,7 +39,7 @@ if importDataFlag:
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160108_noshade_1stepPerHour/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_141216_729_comb_rectangular/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160125_diamond_25com_2/"
-    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_160128_diamond_25comb_newReflection/"
+    path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_Kloten_25comb/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_324_comb_rect_Geneva/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_noASF_Geneva/"
     #path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/Simulation_3x9_comb_1_cluster_Geneva/"

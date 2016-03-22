@@ -76,9 +76,11 @@ def createMonthsNan(L_month, R_month, allAngles):#, rotation_axis, x_angle_locat
     z2 = np.asarray(z2)
 
     
-    zalwaysDay=np.ones((9,12))
+    #zalwaysDay=np.ones((9,12))
+    zalwaysDay=np.ones((6,12))
     zDay = z
-    zDay[range(8,17)]=zalwaysDay
+    #zDay[range(8,17)]=zalwaysDay
+    zDay[range(8,14)]=zalwaysDay
     
     zBool = np.ceil(zDay/100.)
     z2Bool = np.ceil(z2/100.)
@@ -99,6 +101,7 @@ def createMonthsNan(L_month, R_month, allAngles):#, rotation_axis, x_angle_locat
     zBool_tot[zBool_tot == 0] = np.nan
     
     sunMask=np.isnan(zBool_tot)    
+    sunMask[:,:] = False
     
     return sunMask
    

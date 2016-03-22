@@ -27,7 +27,7 @@ if importData:
     #imports yearly results:
     execfile("PostProcessThermal.py")
     
-    daysPassedMonth=daysPassedMonth()
+    daysPassedMonth, daysPerMonth =daysPassedMonth()
     
     #PV_month=PV_month
     
@@ -37,6 +37,7 @@ if importData:
     E_month = sum_monthly(E,daysPassedMonth)
     E_month_withPV = C_month+H_month+L_month-PV_month
     
+    #sunMask = createMonthsNan(L_month, R_month, allAngles)
     sunMask = createMonthsNan(L_month, R_month, allAngles)
 
 if not (('figcounter' in locals()) or ('figcounter' in globals())):
@@ -406,7 +407,7 @@ TotalLighting = np.round(np.sum(np.min(L_month, axis=0)), decimals=1)
 TotalEnergy = np.round(np.sum(np.min(E_month, axis=0)), decimals=1)
 TotalPV = np.round(np.sum(np.max(PV_month, axis=0)), decimals=1)
 TotalR = np.round(np.sum(np.max(R_month, axis=0)), decimals=1)
-TotalR_LB = np.round(np.sum(np.max(R_monthlyLB, axis=0)), decimals=1)
+#TotalR_LB = np.round(np.sum(np.max(R_monthlyLB, axis=0)), decimals=1)
 TotalEnergy_withPV = np.round(np.sum(np.min(E_month_withPV, axis=0)), decimals=1)
 TradeoffLosses = np.round(TotalEnergy-TotalLighting-TotalCooling-TotalHeating, decimals=2)
 

@@ -29,7 +29,7 @@ path = "C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/RadiationEvalua
 SunAngles=np.genfromtxt(path + 'SunPosition.csv',delimiter=',', skiprows = 1)
 
 #create np.array with asf angles
-asfSunTracking = np.empty((3,4400))
+asfSunTracking = np.empty((3,4405))
 asfSunTracking[:] = np.NAN
 asfSunTracking[0,:]=SunAngles[0]
 asfSunTracking[1,:]=SunAngles[1]
