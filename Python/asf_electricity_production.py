@@ -19,8 +19,8 @@ from scipy import interpolate
 from average_monthly import daysPassedMonth
 
 create_plots_flag = True
-
-Simulation_Data_Folder = 'C:\Users\Assistenz\Documents\MT_Jeremias\Simulation_Data\RadiationEvaluation\Radiation_electrical_monthly_25comb';
+Simulation_Data_Folder = 'C:\Users\Assistenz\Documents\MT_Jeremias\Simulation_Data\RadiationEvaluation\Radiation_electrical_sunTracking_Kloten'
+#Simulation_Data_Folder = 'C:\Users\Assistenz\Documents\MT_Jeremias\Simulation_Data\RadiationEvaluation\Radiation_electrical_monthly_25comb'
 #Simulation_Data_Folder = ('C:\\Users\\Assistenz\\Documents\\MT_Jeremias\\Simulation_Data\\RadiationEvaluation\\Radiation_electrical_sunTracking_allFiles_sameHour')
 #Read_json_Folder = ('C:\\Users\\Assistenz\\Documents\\MT_Jeremias\\python-matlab-bridge-master\\pymatbridge\\matlab')
 
@@ -38,7 +38,7 @@ pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
 
 
 numHours = 145
-numCombPerHour = 25
+numCombPerHour = 1
 
 numASFit = numHours*numCombPerHour
 

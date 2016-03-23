@@ -294,8 +294,9 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     plt.show()
         
     energy_optHCL = {'H_HCL': H_HCL, 'C_HCL': C_HCL, 'L_HCL': L_HCL, 'E_HCL_HCL': E_HCL_HCL, 'E_tot_HCL': E_tot_HCL, 'PV_HCL': PV_HCL}
+    energy_optPV = {'H_PV': H_PV, 'C_PV': C_PV, 'L_PV': L_PV, 'E_HCL_PV': E_HCL_PV, 'E_tot_PV': E_tot_PV, 'PV_PV': PV_PV}
     energy_opttot = {'H_tot': H_tot, 'C_tot': C_tot, 'L_tot': L_tot, 'E_HCL_tot': E_HCL_tot, 'E_tot_tot': E_tot_tot, 'PV_tot': PV_tot}
-    tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_opttot': energy_opttot}
+    tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_optPV':energy_optPV, 'energy_opttot': energy_opttot}
     return tradeoff_results
 
 dataType='monthly'

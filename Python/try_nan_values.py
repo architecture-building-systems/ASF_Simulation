@@ -101,7 +101,7 @@ def createMonthsNan(L_month, R_month, allAngles):#, rotation_axis, x_angle_locat
     zBool_tot[zBool_tot == 0] = np.nan
     
     sunMask=np.isnan(zBool_tot)    
-    sunMask[:,:] = False
+    #sunMask[:,:] = False
     
     return sunMask
    
