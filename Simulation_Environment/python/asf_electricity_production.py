@@ -8,7 +8,6 @@ Authors: Johannes Hofer, Jeremias Schmidli
 
 """
 
-
 import json
 import numpy as np
 import time
@@ -18,8 +17,8 @@ import matplotlib.pyplot as plt
 from scipy import interpolate
 from average_monthly import daysPassedMonth
 
-create_plots_flag = True
-Simulation_Data_Folder = 'C:\Users\Assistenz\Documents\MT_Jeremias\Simulation_Data\RadiationEvaluation\Radiation_electrical_sunTracking_Kloten'
+create_plots_flag = createPlots
+Simulation_Data_Folder = lb_path
 #Simulation_Data_Folder = 'C:\Users\Assistenz\Documents\MT_Jeremias\Simulation_Data\RadiationEvaluation\Radiation_electrical_monthly_25comb'
 #Simulation_Data_Folder = ('C:\\Users\\Assistenz\\Documents\\MT_Jeremias\\Simulation_Data\\RadiationEvaluation\\Radiation_electrical_sunTracking_allFiles_sameHour')
 #Read_json_Folder = ('C:\\Users\\Assistenz\\Documents\\MT_Jeremias\\python-matlab-bridge-master\\pymatbridge\\matlab')
@@ -37,8 +36,8 @@ pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
 #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
 
 
-numHours = 10
-numCombPerHour = 1
+numHours = numHoursLB
+numCombPerHour = numCombLB
 
 numASFit = numHours*numCombPerHour
 
@@ -62,7 +61,7 @@ panelsize = panelwidth * panellength
 
 scellsize = (panelwidth / ncell) * (panellength / nparcell)
 
-varPVsize = 1#change the size of the PV area, this is done in steps of 2
+varPVsize = pvSizeOption#change the size of the PV area, this is done in steps of 2
 # times the radiation gridsize, so 0 corresponds a PV-size of 400mm, 
 # 1 corresponds to PV-size of 350mm, 2 corresponds to 300mm etc. 
 
