@@ -37,7 +37,7 @@ pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
 #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
 
 
-numHours = 10
+numHours = 2
 numCombPerHour = 1
 
 numASFit = numHours*numCombPerHour
