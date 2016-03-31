@@ -95,9 +95,6 @@ def create_ASF_angles(ASFarray, XANGLES, YANGLES, NoClusters):
     #ASFarray=json.loads(outputASFarray)
     ASFangles=copy.deepcopy(ASFarray)
     
-    #Array to hold final list
-    ListASFangles=[]
-    
     #Number of angle combinations
     NoAngles=len(XANGLES)*len(YANGLES)
     

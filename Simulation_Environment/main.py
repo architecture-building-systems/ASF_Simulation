@@ -87,9 +87,19 @@ if mainMode == 'initialize':
     
 # calculate and save PV electricity production:
 if mainMode == 'post_processing':
+    
+    from prepareData import prepareMonthlyRadiatonData, importDIVAresults, readLayoutAndCombinations, CalcXYAnglesAndLocation, sum_monthly
+    
+    # create dictionary to save monthly data:
+    monthlyData = {}
+    
     # set panelsize used for simulations (sidelength in mm):
     panelsize = 400
+    
+    # calculate aperturesize according to pvSizeOption:
     aperturesize = panelsize - pvSizeOption*50
+    
+    # check if pv results already exist, if not, create them, else load them
     if not os.path.isfile(electrical_path + '\\aperturesize_' + str(aperturesize) + '\PV_electricity_results.npy'): 
         if not os.path.isdir(electrical_path + '\\aperturesize_' + str(aperturesize)):
             os.makedirs(electrical_path + '\\aperturesize_' + str(aperturesize))
@@ -99,4 +109,34 @@ if mainMode == 'post_processing':
     else: 
         PV_electricity_results = np.load(electrical_path + '\\aperturesize_' + str(aperturesize) + '\PV_electricity_results.npy').item()
         print 'PV_electricity_results loaded from folder'
+        
+    # prepare monthly PV and Radiation data and write it to the monthlyData dictionary:
+    monthlyData['PV'], monthlyData['R']  = prepareMonthlyRadiatonData(PV_electricity_results)
+    
+    # import DIVA results:
+    DIVA_results = importDIVAresults(diva_path)    
+    
+    # import DIVA LayoutAndCombinations and write to DIVA_results dict.:
+    DIVA_results['LayoutAndCombinations'] = readLayoutAndCombinations(diva_path)
+
+    # import LadyBug LayoutAndCombinations and write to PV_electricity_results dict.:
+    PV_electricity_results['LayoutAndCombinations'] = readLayoutAndCombinations(lb_path)
+    
+    # check if the two LayoutAndCombinations files are the same
+    if DIVA_results['LayoutAndCombinations'] == PV_electricity_results['LayoutAndCombinations']:
+        # calculate angles corresponding to the layoutAndCombination file:
+        monthlyData['angles'] = CalcXYAnglesAndLocation(DIVA_results['LayoutAndCombinations'])
+    else:
+        raise ValueError('LayoutAndCombination of DIVA and LadyBug files are not the same, check the data-folders!')
+        
+    # sum up data for every month:
+    monthlyData['H'] = sum_monthly(DIVA_results['H'])
+    monthlyData['C'] = sum_monthly(DIVA_results['C'])
+    monthlyData['L'] = sum_monthly(DIVA_results['L'])
+    monthlyData['E_HCL'] = sum_monthly(DIVA_results['E'])
+    monthlyData['E_tot'] = monthlyData['E_HCL'] + monthlyData['PV']
+
+    
+    # prepare monthly DIVA data and write it to the monthlyData dictionary:
+
        #execfile(python_path + "\PostProcessRadiation.py")
