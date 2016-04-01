@@ -134,7 +134,23 @@ if mainMode == 'post_processing':
     monthlyData['C'] = sum_monthly(DIVA_results['C'])
     monthlyData['L'] = sum_monthly(DIVA_results['L'])
     monthlyData['E_HCL'] = sum_monthly(DIVA_results['E'])
-    monthlyData['E_tot'] = monthlyData['E_HCL'] + monthlyData['PV']
+    monthlyData['E_tot'] = monthlyData['E_HCL'] - monthlyData['PV']
+    
+    if createPlots:
+        from createMasks import createDIVAmask, createLBmask
+        from createFigures import createCarpetPlots
+        from plotDataFunctions import pcolorMonths
+        
+        # create masks for plotting:
+        monthlyData['DIVAmask'] = createDIVAmask(monthlyData['L'])
+        monthlyData['LBmask'] = createLBmask(monthlyData['R'])
+        
+        # plot the monthly data
+        createCarpetPlots(pcolorMonths, monthlyData, 'xy')
+        createCarpetPlots(pcolorMonths, monthlyData, 'x')
+        createCarpetPlots(pcolorMonths, monthlyData, 'y')
+        
+
 
     
     # prepare monthly DIVA data and write it to the monthlyData dictionary:
