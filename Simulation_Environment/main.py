@@ -113,6 +113,10 @@ if mainMode == 'post_processing':
     # prepare monthly PV and Radiation data and write it to the monthlyData dictionary:
     monthlyData['PV'], monthlyData['R']  = prepareMonthlyRadiatonData(PV_electricity_results)
     
+    # make data negative to be consitent:    
+    monthlyData['PV'] = -monthlyData['PV']
+    monthlyData['R'] = monthlyData['R']
+    
     # import DIVA results:
     DIVA_results = importDIVAresults(diva_path)    
     
@@ -134,22 +138,25 @@ if mainMode == 'post_processing':
     monthlyData['C'] = sum_monthly(DIVA_results['C'])
     monthlyData['L'] = sum_monthly(DIVA_results['L'])
     monthlyData['E_HCL'] = sum_monthly(DIVA_results['E'])
-    monthlyData['E_tot'] = monthlyData['E_HCL'] - monthlyData['PV']
+    monthlyData['E_tot'] = monthlyData['E_HCL'] + monthlyData['PV']
     
     if createPlots:
         from createMasks import createDIVAmask, createLBmask
         from createFigures import createCarpetPlots
-        from plotDataFunctions import pcolorMonths
+        from plotDataFunctions import pcolorMonths, pcolorEnergyMonths
         
         # create masks for plotting:
         monthlyData['DIVAmask'] = createDIVAmask(monthlyData['L'])
         monthlyData['LBmask'] = createLBmask(monthlyData['R'])
         
-        # plot the monthly data
+        # plot the optimum angles of the monthly data:
         createCarpetPlots(pcolorMonths, monthlyData, 'xy')
         createCarpetPlots(pcolorMonths, monthlyData, 'x')
         createCarpetPlots(pcolorMonths, monthlyData, 'y')
         
+        # plot the energy use at the corresponding optimum orientation:
+        createCarpetPlots(pcolorEnergyMonths, monthlyData)
+    
 
 
     

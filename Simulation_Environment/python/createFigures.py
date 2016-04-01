@@ -9,25 +9,30 @@ Create Figures Functions
 
 #import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 #from average_monthly import sum_monthly, average_monthly, daysPassedMonth
 ##from PostProcessThermal_functions import pcolorMonths, pcolorEnergyMonths
 #from try_nan_values import createMonthsNan
-#from plotDataFunctions import pcolorMonths
+from plotDataFunctions import pcolorMonths, pcolorEnergyMonths
 
 
 
-def createCarpetPlots(plotFunction, monthlyData, rotation_axis):
+def createCarpetPlots(plotFunction, monthlyData, *arg):
      # Optimal x- and y-angle combinations for every hour of the year
     
-    if rotation_axis == 'xy':
-        angles = monthlyData['angles']['allAngles'][0]    
-    elif rotation_axis == 'x':
-        angles = monthlyData['angles']['x_angles']    
-    elif rotation_axis == 'y':
-        angles = monthlyData['angles']['y_angles']    
+    if not len(arg) == 0:
+        rotation_axis = arg[0]
+        if arg[0] == 'xy':
+            angles = monthlyData['angles']['allAngles'][0]   
+        elif arg[0] == 'x':
+            angles = monthlyData['angles']['x_angles']    
+        elif arg[0] == 'y':
+            angles = monthlyData['angles']['y_angles']    
+        else:
+            raise ValueError('rotation_axis does not exist')
     else:
-        raise ValueError('rotation_axis does not exist')
+        rotation_axis = np.nan
         
     
     fig = plt.figure(figsize=(16, 8))
@@ -65,12 +70,18 @@ def createCarpetPlots(plotFunction, monthlyData, rotation_axis):
     #cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
     cbar_ax = fig.add_axes([0.85, 0.1, 0.05, 0.78])
     #cbart = plt.title("Altitude / Azimuth", fontsize=14, loc='left', verticalalignment = 'bottom')
-    cbart = plt.title("Altitude / Azimuth", fontsize=14)
-    cbart.set_position((1.1,1.02))
-    cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
-    cbar.ax.set_yticklabels(angles)
-    #cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
-    #cbar.ax.set_yticklabels(AnglesString)
+    
+    if plotFunction == pcolorMonths:
+        cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        cbart.set_position((1.1,1.02))
+        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
+        cbar.ax.set_yticklabels(angles)
+    elif plotFunction == pcolorEnergyMonths:
+        cbar = plt.colorbar(cax=cbar_ax)
+        cbart = plt.title("Net Energy [kWh]", fontsize=14)
+        cbart.set_position((1.1,1.02))
+#        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
+        #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
     plt.show()   
 #
