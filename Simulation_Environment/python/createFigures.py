@@ -14,11 +14,11 @@ import numpy as np
 #from average_monthly import sum_monthly, average_monthly, daysPassedMonth
 ##from PostProcessThermal_functions import pcolorMonths, pcolorEnergyMonths
 #from try_nan_values import createMonthsNan
-from plotDataFunctions import pcolorMonths, pcolorEnergyMonths
+from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcolorEnergyDays
 
 
 
-def createDIVAcarpetPlots(plotFunction, DIVA_data, *arg):
+def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
      # Optimal x- and y-angle combinations for every hour of the year
     
     if not len(arg) == 0:
@@ -36,39 +36,30 @@ def createDIVAcarpetPlots(plotFunction, DIVA_data, *arg):
     
     #set max/min for energy plot:
     z_min = 0
-    z_max = np.max(np.min(DIVA_results['E_HCL'], axis=0))
+    z_max = np.max(np.min(DIVA_results['E'], axis=0))
     
     fig = plt.figure(figsize=(16, 8))
 #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
-    plt.subplot(2,3,1)
+    plt.subplot(2,2,1)
     arg = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg)
     plt.title("Heating Demand")
     plt.ylabel("Hour of the Day",size=14)
-    plt.subplot(2,3,2)
+    plt.subplot(2,2,2)
     arg = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg)
     plt.title("Cooling Demand")
-    plt.subplot(2,3,3)
+    plt.subplot(2,2,3)
     arg = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg)
     plt.title("Lighting Demand")
-    plt.subplot(2,3,4)
-    arg = ['min','PV', rotation_axis, 'LB', z_min, z_max]
-    plotFunction(DIVA_results, arg)
-    plt.title("PV Supply")
-    plt.xlabel("Month of the Year",size=14)
+    plt.xlabel("Day of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
-    plt.subplot(2,3,5)
-    arg = ['min','E_HCL', rotation_axis, 'DIVA', z_min, z_max]
+    plt.subplot(2,2,4)
+    arg = ['min','E', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg)
     plt.title("Total Thermal/Lighting Demand")
-    plt.xlabel("Month of the Year",size=14)
-    plt.subplot(2,3,6)
-    arg = ['min','E_tot', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(DIVA_results, arg)
-    plt.title("Net Demand including PV")
-    plt.xlabel("Month of the Year",size=14)
+    plt.xlabel("Day of the Year",size=14)
     fig.subplots_adjust(right=0.8)
     #cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
     cbar_ax = fig.add_axes([0.85, 0.1, 0.05, 0.78])
@@ -85,10 +76,24 @@ def createDIVAcarpetPlots(plotFunction, DIVA_data, *arg):
         cbar = plt.colorbar(cax=cbar_ax)
         cbart = plt.title("Net Energy [kWh]", fontsize=14)
         cbart.set_position((1.1,1.02))
+    elif plotFunction == pcolorDays:
+        plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+        cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        cbart.set_position((1.1,1.02))
+        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
+        cbar.ax.set_yticklabels(angles)
+    elif plotFunction == pcolorEnergyDays:
+        plt.suptitle("Energy Demand at Optimum Orientation", size=16)
+        cbar = plt.colorbar(cax=cbar_ax)
+        cbart = plt.title("Net Energy [kWh]", fontsize=14)
+        cbart.set_position((1.1,1.02))
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
     plt.show()   
+
+
+
 
 def createCarpetPlots(plotFunction, monthlyData, *arg):
      # Optimal x- and y-angle combinations for every hour of the year

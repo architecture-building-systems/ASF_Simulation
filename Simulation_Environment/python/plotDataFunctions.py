@@ -32,9 +32,18 @@ def scatterResults(X, Xcolour,offset,x_angles,x_angle_location,y_angles,y_angle_
     
     
 # function that shows optimal angle combinations for every hour of the year for one axis
-def pcolorDays(DIVA_results, rotation_axis, *arg):
+def pcolorDays(DIVA_results, arg):
     
-        # assign angles and angle_locations:    
+    # use maximum or minimum value:
+    max_min = arg[0]
+    
+    # define what data should be plotted:
+    X = DIVA_results[arg[1]]
+    
+    # define rotation axis:
+    rotation_axis = arg[2]
+    
+    # assign angles and angle_locations:    
     x_angle_location = DIVA_results['angles']['x_angle_location']
     y_angle_location = DIVA_results['angles']['y_angle_location']
     allAngles = DIVA_results['angles']['allAngles']
@@ -91,69 +100,6 @@ def pcolorDays(DIVA_results, rotation_axis, *arg):
     # set the limits of the plot to the limits of the data
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     
-#def pcolorMonths(X, rotation_axis, x_angle_location, y_angle_location, allAngles, sunMask, *arg):
-#    
-#    if len(arg)==0:
-#        max_min = 'min'
-#    else:
-#        max_min = arg[0]
-#        
-#    axis_ind =[]
-#    
-#    if max_min == 'min':
-#        ind=np.argmin(X,axis=0)
-#    elif max_min == 'max':
-#        ind=np.argmax(X,axis=0)
-#    else:
-#        print "somehow max min is not working"
-#
-#
-#    z_min=0
-#    if rotation_axis == 'x':
-#        for i in range(len(ind)):
-#            axis_ind.append(x_angle_location[ind[i]])
-#            z_max=max(x_angle_location)
-#    elif rotation_axis == 'y':
-#        for i in range(len(ind)):
-#            axis_ind.append(y_angle_location[ind[i]])
-#            z_max=max(y_angle_location)
-#    elif rotation_axis == 'xy':
-#        axis_ind = ind
-#        z_max=len(allAngles[0])-1
-#    else:
-#        print 'axis not available'
-#    dx, dy = 1, 1
-#    
-#    # generate 2 2d grids for the x & y bounds
-#    y, x = np.mgrid[slice(0, 24 + dy, dy),
-#                    slice(0, 12 + dx, dx)]
-#    z=[]
-#    for i in range(24):
-#        z.append([])
-#        for j in range(12):
-#            z[i].append(axis_ind[24*j + i])
-#    z = np.asarray(z)
-#    
-#    masked_array = np.ma.array(z, mask=sunMask)
-#    cmap = plt.cm.cubehelix
-#    cmap.set_bad('grey',1.)
-#    
-#   # z_min, z_max = 0, len()
-#    #print z_min, z_max
-#    
-#    #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-#    plt.pcolor(x, y, masked_array, cmap=cmap, vmin=z_min, vmax=z_max)
-#
-#    #plt.pcolor(x, y, z, cmap='CMRmap', vmin=z_min, vmax=z_max)
-#
-#    #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
-#
-#    #plt.title('pcolor')
-##    plt.xlabel("Day of the Year")
-##    plt.ylabel("Hour of the Day")
-#    # set the limits of the plot to the limits of the data
-#    plt.axis([x.min(), x.max(), 3, 22])
-#    plt.tick_params(axis=u'both',labelsize=14)
     
 def pcolorMonths(monthlyData, arg):
     """
@@ -303,23 +249,36 @@ def pcolorEnergyMonths(monthlyData, arg):
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     plt.tick_params(axis=u'both',labelsize=14)
 
-# function that shows optimal angle combinations for every hour of the year for one axis
-def pcolorEnergyDays(X):
-    axis_ind =[]
-    ind=np.argmin(X,axis=0)
-#    if rotation_axis == 'x':
-#        for i in range(len(ind)):
-#            axis_ind.append(x_angle_location[ind[i]])
-#    elif rotation_axis == 'y':
-#        for i in range(len(ind)):
-#            axis_ind.append(y_angle_location[ind[i]])
-#    else:
-#        print 'axis not available'
-    dx, dy = 1, 1
+def pcolorEnergyDays(DIVA_results, arg):
+    """
+    create carpet plot for the energy from monthly data \n
+    inputs: DIVA_results dictionary, arg (['min'/'max', 'X']) \n
+    output: carpetplot
+    """
+    # use maximum or minimum value:
+    max_min = arg[0]
+            
+    # define what data should be plotted:
+    X = DIVA_results[arg[1]]
+
+    # define maximum and minimum values of data, used for plotting:
+    z_min = arg[4]
+    z_max = arg[5]    
     
+    # find indices:
+    if max_min == 'min':
+        ind=np.argmin(X,axis=0)
+    elif max_min == 'max':
+        ind=np.argmax(X,axis=0)
+    else:
+        raise ValueError("maxMin must be either 'max' or 'min'")
+ 
     # generate 2 2d grids for the x & y bounds
+    dx, dy = 1, 1
     y, x = np.mgrid[slice(0, 24 + dy, dy),
                     slice(0, 365 + dx, dx)]
+                    
+    # assign values used for colormap:
     z=[]
     for i in range(24):
         z.append([])
@@ -327,19 +286,71 @@ def pcolorEnergyDays(X):
             z[i].append(X[ind[24*j + i]][24*j + i])
     z = np.asarray(z)
     
-    z_min, z_max = 0, 1
-    #print z_min, z_max
+    # create custum colormap:
     
-    #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-    plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)
-    #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
-
-    #plt.title('pcolor')
-#    plt.xlabel("Day of the Year")
-#    plt.ylabel("Hour of the Day")
-    # set the limits of the plot to the limits of the data
+    # define the location of the middle number (where 0 is):
+    z_middle = float(abs(z_min)) / (z_max-z_min) 
+    
+    # create custom color dictionary:
+    cdict1 = {'red':   ((0.0, 0.0, 0.0),
+                       (z_middle, 0.0, 0.1),
+                       (1.0, 1.0, 1.0)),
+    
+             'green': ((0.0, 0.0, 0.0),
+                       (z_middle, 0.0, 0.0),
+                       (1.0, 0.0, 0.0)),
+    
+             'blue': ((0.0, 0.0, 1.0),
+                       (z_middle, 0.1, 0.0),
+                       (1.0, 0.0, 0.0))
+            }
+    
+    # create colormap:
+    blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)   
+   
+   # plot data:
+    plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)   
     plt.axis([x.min(), x.max(), y.min(), y.max()])
+    plt.tick_params(axis=u'both',labelsize=14)
     
+#    
+## function that shows optimal angle combinations for every hour of the year for one axis
+#def pcolorEnergyDays(X):
+#    axis_ind =[]
+#    ind=np.argmin(X,axis=0)
+##    if rotation_axis == 'x':
+##        for i in range(len(ind)):
+##            axis_ind.append(x_angle_location[ind[i]])
+##    elif rotation_axis == 'y':
+##        for i in range(len(ind)):
+##            axis_ind.append(y_angle_location[ind[i]])
+##    else:
+##        print 'axis not available'
+#    dx, dy = 1, 1
+#    
+#    # generate 2 2d grids for the x & y bounds
+#    y, x = np.mgrid[slice(0, 24 + dy, dy),
+#                    slice(0, 365 + dx, dx)]
+#    z=[]
+#    for i in range(24):
+#        z.append([])
+#        for j in range(365):
+#            z[i].append(X[ind[24*j + i]][24*j + i])
+#    z = np.asarray(z)
+#    
+#    z_min, z_max = 0, 1
+#    #print z_min, z_max
+#    
+#    #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
+#    plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)
+#    #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
+#
+#    #plt.title('pcolor')
+##    plt.xlabel("Day of the Year")
+##    plt.ylabel("Hour of the Day")
+#    # set the limits of the plot to the limits of the data
+#    plt.axis([x.min(), x.max(), y.min(), y.max()])
+#    
 #def pcolorEnergyMonths(X, maxMin, *arg):
 #    
 #    axis_ind =[]

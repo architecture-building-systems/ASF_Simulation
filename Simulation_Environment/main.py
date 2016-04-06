@@ -20,12 +20,13 @@ mainMode = 'post_processing' #'initialize'
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
 # new locations can be added with the grasshopper main script for any .epw weather data
-#geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP'
-geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
+geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP'
+#geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
 
 
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
-diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
+#diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
+diva_folder = 'Simulation_Kloten_25comb'
 
 # set the number of combinations used for the analysis
 numCombDIVA = 25
@@ -34,8 +35,8 @@ numCombDIVA = 25
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
 # This folder has the same name as the generated folder for the electrical 
 # results in data\python\electrical:
-#radiation_folder = 'Radiation_electrical_monthly_25comb'
-radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
+radiation_folder = 'Radiation_electrical_monthly_25comb'
+#radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 
 # set the number of combinations used for the LadyBug analysis:
 numCombLB = 25
@@ -51,18 +52,18 @@ pvSizeOption = 0
 createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = False
+onlyTradeoffs = True
 
 # post processing tradeoff options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(efficiency) set changeEfficiency to 
 # True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':False, 'H_COP': 1, 'C_COP': 1, 'L_Load': 5, 'PV': 0.1}
+efficiencyChanges = {'changeEfficiency':True, 'H_COP': 1, 'C_COP': 1, 'L_Load': 5, 'PV': 0.1}
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
 # incluseive, so startHour=1 and endHour=24 corresponds to a time period from 
 # 0:00-24:00. month is defined in the classical sense, so month=1 corresponds to 
 # january.
-tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
+tradeoffPeriod = {'enabled':True, 'month':7, 'startHour':1, 'endHour':24}
     
 ######### -----END OF USER INTERACTION------ #############
 
@@ -157,6 +158,9 @@ if mainMode == 'post_processing':
     
     # import DIVA LayoutAndCombinations and write to DIVA_results dict.:
     DIVA_results['LayoutAndCombinations'] = readLayoutAndCombinations(diva_path)
+    
+    # calculate angles of DIVA_results
+    DIVA_results['angles'] = CalcXYAnglesAndLocation(DIVA_results['LayoutAndCombinations'])
 
     # import LadyBug LayoutAndCombinations and write to PV_electricity_results dict.:
     PV_electricity_results['LayoutAndCombinations'] = readLayoutAndCombinations(lb_path)
@@ -183,9 +187,16 @@ if mainMode == 'post_processing':
         
         print "creating plots"
         
+
         from createMasks import createDIVAmask, createLBmask
-        from createFigures import createCarpetPlots
-        from plotDataFunctions import pcolorMonths, pcolorEnergyMonths
+        from createFigures import createCarpetPlots, createDIVAcarpetPlots
+        from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcolorEnergyDays
+        
+        # plot detailed DIVA Results:
+        createDIVAcarpetPlots(pcolorDays, DIVA_results, 'xy')
+        createDIVAcarpetPlots(pcolorDays, DIVA_results, 'x')
+        createDIVAcarpetPlots(pcolorDays, DIVA_results, 'y')
+        createDIVAcarpetPlots(pcolorEnergyDays, DIVA_results)        
         
         # create masks for plotting:
         monthlyData['DIVAmask'] = createDIVAmask(monthlyData['L'])
