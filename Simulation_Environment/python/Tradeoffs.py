@@ -9,59 +9,73 @@ Tradeoff Funtions
 import numpy as np
 import matplotlib.pyplot as plt
 
+from auxFunctions import calculate_sum_for_index, create_evalList
 
-def calculate_sum_for_index(X,Xind):
-    Xsum = []
     
-    if not np.shape(Xind)==():
-        for i in range(len(Xind)):
-            Xsum.append(X[Xind[i]][i])
-            sumX = np.sum(Xsum)
+def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod):
+    
+    # assign data:
+    H_data = monthlyData['H']
+    H_COP_data = monthlyData['efficiencies']['H_COP']
+    C_data = monthlyData['C']
+    C_COP_data = monthlyData['efficiencies']['C_COP']
+    L_data = monthlyData['L']
+    L_power_data = monthlyData['efficiencies']['L_Load']
+    PV_data = monthlyData['PV']
+    PV_eff_data = monthlyData['efficiencies']['PV']
+
+
+    
+    # set changes if demanded:
+    if efficiencyChanges['changeEfficiency']:
+        H_COP_eval = efficiencyChanges['H_COP']
+        C_COP_eval = efficiencyChanges['C_COP']
+        L_power_eval = efficiencyChanges['L_Load']
+        PV_eff_eval = efficiencyChanges['PV']
     else:
-        sumX = np.sum(X[Xind])
-        
-    return sumX
-def create_evalList(dataType, month, startHour, endHour):
-    """
-    example: \n
-    create_evalList('monthly', 6, 12, 13) \n
-    outputs a list which corresponds to the monthly data of june for hours between 11:00 and 13:00. 
-    Note that month, startHour and endHour correspond to a counter value that starts with 1.
-    """
-    if dataType == 'monthly':
-        evalList=[]
-        for i in range(endHour-(startHour-1)):
-            evalList.append((month-1)*24 + startHour - 1 + i)
-    else:
-        raise ValueError("dataType: "+str(dataType)+" not (yet) implemented")
-        
-    return evalList
+        H_COP_eval = H_COP_data
+        C_COP_eval = C_COP_data
+        L_power_eval = L_power_data
+        PV_eff_eval = PV_eff_data
     
-def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP_eval, L_data, L_power_data, L_power_eval, PV_data, PV_eff_data, PV_eff_eval, *evalList):
-    
-    if len(evalList[0])>0:
-        print 'there is an evalList'
-        evalList = evalList[0]
+    if tradeoffPeriod['enabled']:
+        print 'showing tradeoffs for month: ' + str(tradeoffPeriod['month']) + ', hours: ' +  str(tradeoffPeriod['startHour']) +'-' +  str(tradeoffPeriod['endHour']) 
+        evalList = create_evalList('monthly', tradeoffPeriod['month'], tradeoffPeriod['startHour'], tradeoffPeriod['endHour'])
         H = H_data[:,evalList]*H_COP_data/H_COP_eval
         C = C_data[:,evalList]*C_COP_data/C_COP_eval
         L = L_data[:,evalList]*L_power_eval/L_power_data
         PV = PV_data[:,evalList]*PV_eff_eval/PV_eff_data
     else:
-        print 'there is no evalList or it is empty, results will be shown for the whole year'
+        print 'showing tradeoffs for the whole year'
         
         H = H_data*H_COP_data/H_COP_eval
         C = C_data*C_COP_data/C_COP_eval
         L = L_data*L_power_eval/L_power_data
         PV = PV_data*PV_eff_eval/PV_eff_data
+        
+#    if len(evalList[0])>0:
+#        print 'there is an evalList'
+#        evalList = evalList[0]
+#        H = H_data[:,evalList]*H_COP_data/H_COP_eval
+#        C = C_data[:,evalList]*C_COP_data/C_COP_eval
+#        L = L_data[:,evalList]*L_power_eval/L_power_data
+#        PV = PV_data[:,evalList]*PV_eff_eval/PV_eff_data
+#    else:
+#        print 'there is no evalList or it is empty, results will be shown for the whole year'
+#        
+#        H = H_data*H_COP_data/H_COP_eval
+#        C = C_data*C_COP_data/C_COP_eval
+#        L = L_data*L_power_eval/L_power_data
+#        PV = PV_data*PV_eff_eval/PV_eff_data
     
     E_HCL = H+C+L
-    E_tot = E_HCL-PV
+    E_tot = E_HCL+PV
     
     
     Hind = np.argmin(H,axis=0)
     Cind = np.argmin(C,axis=0)
     Lind = np.argmin(L,axis=0)
-    PVind = np.argmax(PV,axis=0)
+    PVind = np.argmin(PV,axis=0)
     E_HCLind = np.argmin(E_HCL,axis=0)
     E_totind = np.argmin(E_tot,axis=0)
     
@@ -154,11 +168,6 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     
     n_groups = 10
     
-#    means_men = (20, 35, 30, 35, 27)
-#    std_men = (2, 3, 4, 1, 2)
-#    
-#    means_women = (25, 32, 34, 20, 25)
-#    std_women = (3, 5, 2, 3, 3)
     
     fig, ax = plt.subplots()
     p1 = plt.subplot(2,1,1)
@@ -172,51 +181,32 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     rects1 = plt.bar(index, TotalHbyPos, bar_width,
                      alpha=opacity,
                      color='r',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='H')
     
     rects2 = plt.bar(index+ bar_width, TotalCbyPos, bar_width,
                      alpha=opacity,
                      color='b',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='C')
                      
     rects3 = plt.bar(index+ bar_width*2, TotalLbyPos, bar_width,
                      alpha=opacity,
                      color='g',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='L')
                      
     rects4 = plt.bar(index+ bar_width*3, TotalPVbyPos, bar_width,
                      alpha=opacity,
                      color='c',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='PV')
                      
     rects5 = plt.bar(index+ bar_width*4, TotalE_HCLbyPos, bar_width,
                      alpha=opacity,
                      color='m',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='E_HCL')
                      
     rects6 = plt.bar(index+ bar_width*5, TotalE_totbyPos, bar_width,
                      alpha=opacity,
                      color='k',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='E_tot')
-                     
-    #rects2 = plt.bar(index + bar_width, means_women, bar_width,
-    #                 alpha=opacity,
-    #                 color='r',
-    #                 yerr=std_women,
-    #                 error_kw=error_config,
-    #                 label='Women')
     
     plt.xlabel('Combinations')
     plt.ylabel('Energy [kWh]')
@@ -238,52 +228,34 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     rects1 = plt.bar(index, DiffH, bar_width,
                      alpha=opacity,
                      color='r',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='H')
     
     rects2 = plt.bar(index+ bar_width, DiffC, bar_width,
                      alpha=opacity,
                      color='b',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='C')
                      
     rects3 = plt.bar(index+ bar_width*2, DiffL, bar_width,
                      alpha=opacity,
                      color='g',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='L')
                      
     rects4 = plt.bar(index+ bar_width*3, DiffPV, bar_width,
                      alpha=opacity,
                      color='c',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='PV')
                      
     rects5 = plt.bar(index+ bar_width*4, DiffE_HCL, bar_width,
                      alpha=opacity,
                      color='m',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='E_HCL')
                      
     rects6 = plt.bar(index+ bar_width*5, DiffE_tot, bar_width,
                      alpha=opacity,
                      color='k',
-    #                 yerr=std_men,
-    #                 error_kw=error_config,
                      label='E_tot')
                      
-    #rects2 = plt.bar(index + bar_width, means_women, bar_width,
-    #                 alpha=opacity,
-    #                 color='r',
-    #                 yerr=std_women,
-    #                 error_kw=error_config,
-    #                 label='Women')
-    
+                     
     plt.xlabel('Combinations')
     plt.ylabel('$\Delta$ Energy [kWh]')
     plt.title('Energy Difference Dependency on Angle Combinations')
@@ -299,25 +271,24 @@ def compareTotalEnergy(H_data, H_COP_data, H_COP_eval, C_data, C_COP_data, C_COP
     tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_optPV':energy_optPV, 'energy_opttot': energy_opttot}
     return tradeoff_results
 
-dataType='monthly'
-month=7
-startHour=21
-endHour=21
-
-evalList = []
-#evalList = create_evalList(dataType, month, startHour, endHour)
+#dataType='monthly'
+#month=7
+#startHour=21
+#endHour=22
 #
-H_COP_data = 4
-H_COP_eval = 4
-C_COP_data = 3
-C_COP_eval = 3
-L_power_data = 11.74    # [W/m^2]
-L_power_eval = 11.74    # [W/m^2]
-PV_eff_data = 0.072     # = 0.08*0.9
-PV_eff_eval = 0.072
-
-tradeoff_results = compareTotalEnergy(H_month, H_COP_data, H_COP_eval, C_month, C_COP_data, C_COP_eval, L_month, L_power_data, L_power_eval, PV_month, PV_eff_data, PV_eff_eval, evalList)
-#tradeoff_results2 = compareTotalEnergy(H, H_COP_data, H_COP_eval, C, C_COP_data, C_COP_eval, L, L_power_data, L_power_eval, PV, PV_eff_data, PV_eff_eval, evalList)
+#evalList = []
+#evalList = create_evalList(dataType, month, startHour, endHour)
+##
+##H_COP_data = 4
+##H_COP_eval = 4
+##C_COP_data = 3
+##C_COP_eval = 3
+##L_power_data = 11.74    # [W/m^2]
+##L_power_eval = 11.74    # [W/m^2]
+##PV_eff_data = 0.072     # = 0.08*0.9
+##PV_eff_eval = 0.072
+#
+#tradeoff_results = compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, evalList)
 
 
 #TotalHeating = np.sum(np.min(H_month, axis=0))

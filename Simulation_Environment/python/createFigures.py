@@ -18,6 +18,78 @@ from plotDataFunctions import pcolorMonths, pcolorEnergyMonths
 
 
 
+def createDIVAcarpetPlots(plotFunction, DIVA_data, *arg):
+     # Optimal x- and y-angle combinations for every hour of the year
+    
+    if not len(arg) == 0:
+        rotation_axis = arg[0]
+        if arg[0] == 'xy':
+            angles = DIVA_results['angles']['allAngles'][0]   
+        elif arg[0] == 'x':
+            angles = DIVA_results['angles']['x_angles']    
+        elif arg[0] == 'y':
+            angles = DIVA_results['angles']['y_angles']    
+        else:
+            raise ValueError('rotation_axis does not exist')
+    else:
+        rotation_axis = np.nan
+    
+    #set max/min for energy plot:
+    z_min = 0
+    z_max = np.max(np.min(DIVA_results['E_HCL'], axis=0))
+    
+    fig = plt.figure(figsize=(16, 8))
+#    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+    plt.subplot(2,3,1)
+    arg = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg)
+    plt.title("Heating Demand")
+    plt.ylabel("Hour of the Day",size=14)
+    plt.subplot(2,3,2)
+    arg = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg)
+    plt.title("Cooling Demand")
+    plt.subplot(2,3,3)
+    arg = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg)
+    plt.title("Lighting Demand")
+    plt.subplot(2,3,4)
+    arg = ['min','PV', rotation_axis, 'LB', z_min, z_max]
+    plotFunction(DIVA_results, arg)
+    plt.title("PV Supply")
+    plt.xlabel("Month of the Year",size=14)
+    plt.ylabel("Hour of the Day",size=14)
+    plt.subplot(2,3,5)
+    arg = ['min','E_HCL', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg)
+    plt.title("Total Thermal/Lighting Demand")
+    plt.xlabel("Month of the Year",size=14)
+    plt.subplot(2,3,6)
+    arg = ['min','E_tot', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg)
+    plt.title("Net Demand including PV")
+    plt.xlabel("Month of the Year",size=14)
+    fig.subplots_adjust(right=0.8)
+    #cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+    cbar_ax = fig.add_axes([0.85, 0.1, 0.05, 0.78])
+    #cbart = plt.title("Altitude / Azimuth", fontsize=14, loc='left', verticalalignment = 'bottom')
+    
+    if plotFunction == pcolorMonths:
+        plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+        cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        cbart.set_position((1.1,1.02))
+        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
+        cbar.ax.set_yticklabels(angles)
+    elif plotFunction == pcolorEnergyMonths:
+        plt.suptitle("Energy Demand at Optimum Orientation", size=16)
+        cbar = plt.colorbar(cax=cbar_ax)
+        cbart = plt.title("Net Energy [kWh]", fontsize=14)
+        cbart.set_position((1.1,1.02))
+#        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
+        #cbar.ax.set_yticklabels(AnglesString)
+    cbar.ax.tick_params(labelsize=14)
+    plt.show()   
+
 def createCarpetPlots(plotFunction, monthlyData, *arg):
      # Optimal x- and y-angle combinations for every hour of the year
     
@@ -33,36 +105,39 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
             raise ValueError('rotation_axis does not exist')
     else:
         rotation_axis = np.nan
-        
+    
+    #set max/min for energy plot:
+    z_min = np.min(monthlyData['PV'])
+    z_max = np.max(np.min(monthlyData['E_HCL'], axis=0))
     
     fig = plt.figure(figsize=(16, 8))
-    plt.suptitle("(a) Optimum Altitude and Azimuth Orientation", size=16)
+#    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
     plt.subplot(2,3,1)
-    arg = ['min','H', rotation_axis, 'DIVA']
+    arg = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg)
     plt.title("Heating Demand")
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,2)
-    arg = ['min','C', rotation_axis, 'DIVA']
+    arg = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg)
     plt.title("Cooling Demand")
     plt.subplot(2,3,3)
-    arg = ['min','L', rotation_axis, 'DIVA']
+    arg = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg)
     plt.title("Lighting Demand")
     plt.subplot(2,3,4)
-    arg = ['min','PV', rotation_axis, 'LB']
+    arg = ['min','PV', rotation_axis, 'LB', z_min, z_max]
     plotFunction(monthlyData, arg)
     plt.title("PV Supply")
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,5)
-    arg = ['min','E_HCL', rotation_axis, 'DIVA']
+    arg = ['min','E_HCL', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg)
     plt.title("Total Thermal/Lighting Demand")
     plt.xlabel("Month of the Year",size=14)
     plt.subplot(2,3,6)
-    arg = ['min','E_tot', rotation_axis, 'DIVA']
+    arg = ['min','E_tot', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg)
     plt.title("Net Demand including PV")
     plt.xlabel("Month of the Year",size=14)
@@ -72,11 +147,13 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     #cbart = plt.title("Altitude / Azimuth", fontsize=14, loc='left', verticalalignment = 'bottom')
     
     if plotFunction == pcolorMonths:
+        plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
         cbart = plt.title("Altitude / Azimuth", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
         cbar.ax.set_yticklabels(angles)
     elif plotFunction == pcolorEnergyMonths:
+        plt.suptitle("Energy Demand at Optimum Orientation", size=16)
         cbar = plt.colorbar(cax=cbar_ax)
         cbart = plt.title("Net Energy [kWh]", fontsize=14)
         cbart.set_position((1.1,1.02))
@@ -84,7 +161,6 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
     plt.show()   
-#
 #if not (('figcounter' in locals()) or ('figcounter' in globals())):
 #    figcounter = 0
 #    

@@ -7,7 +7,7 @@ Calculate Electrical Power of ASF
 Authors: Johannes Hofer, Jeremias Schmidli
 
 """
-def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None):
+def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None, geo_path = None):
     import json
     import numpy as np
     import time
@@ -94,7 +94,7 @@ def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radi
     currscale = modmpprating / modmppsim
     
     # load temperature corresponding to Simulation Data:
-    with open('C:/Users/Assistenz/Documents/MT_Jeremias/Simulation_Data/RadiationEvaluation/' + 'SunTrackingData.json', 'r') as fp:
+    with open(geo_path + '\SunTrackingData.json', 'r') as fp:
         SunTrackingData = json.load(fp)
         fp.close()
         

@@ -9,7 +9,6 @@ main file for simulation environment
 
 import os, sys
 import numpy as np
-import json
 
 
 ######### -----USER INTERACTION------ #############
@@ -20,12 +19,11 @@ mainMode = 'post_processing' #'initialize'
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
 # new locations can be added with the grasshopper main script for any .epw weather data
-#geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP'
-geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
-
+geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP'
 
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
-diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
+diva_folder = 'Simulation_Kloten_25comb' #'Simulation_Kloten_25comb'
+
 
 # set the number of combinations used for the analysis
 numCombDIVA = 25
@@ -34,11 +32,13 @@ numCombDIVA = 25
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
 # This folder has the same name as the generated folder for the electrical 
 # results in data\python\electrical:
-#radiation_folder = 'Radiation_electrical_monthly_25comb'
-radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
+radiation_folder = 'Radiation_electrical_monthly_25comb'
+#radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 
-# set the number of combinations used for the LadyBug analysis:
+
+# set the number of combinations and hours used for the LadyBug analysis:
 numCombLB = 25
+numHoursLB = 144
 
 # set option to change the size of the PV area for the electrical simulation, 
 # this is done in steps of 2 times the radiation gridsize, so 0 corresponds a 
@@ -51,17 +51,14 @@ pvSizeOption = 0
 createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = False
+onlyTradeoffs = True
 
 # post processing tradeoff options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(efficiency) set changeEfficiency to 
 # True if data should be changed, set False if simulation efficiencies should be used:
 efficiencyChanges = {'changeEfficiency':False, 'H_COP': 1, 'C_COP': 1, 'L_Load': 5, 'PV': 0.1}
 
-# define tradeoff period and if it should be enabled, startHour and endHour are
-# incluseive, so startHour=1 and endHour=24 corresponds to a time period from 
-# 0:00-24:00. month is defined in the classical sense, so month=1 corresponds to 
-# january.
+# define tradeoff period and if it should be enabled
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
     
 ######### -----END OF USER INTERACTION------ #############
@@ -122,14 +119,6 @@ if mainMode == 'post_processing':
     
     # define path of geographical location:
     geo_path = os.path.join(( data_path + "\geographical_location"), geoLocation)
-    
-    # load sunTrackingData used for the LadyBug simulation:
-    with open(geo_path + '\SunTrackingData.json', 'r') as fp:
-        SunTrackingData = json.load(fp)
-        fp.close()
-        
-    # find the number of hours analised by ladybug:
-        numHoursLB = np.shape(SunTrackingData['HOY'])[0]
     
     # check if pv results already exist, if not, create them, else load them
     if not os.path.isfile(electrical_path + '\\aperturesize_' + str(aperturesize) + '\PV_electricity_results.npy'): 

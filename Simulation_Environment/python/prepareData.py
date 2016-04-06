@@ -8,8 +8,9 @@ functions to import and prepare data for post processing
 """
 
 import numpy as np 
+import json
 from calculate_angles_function import create_ASF_angles  
-from auxFunctions import unique, calcDaysPassedMonth
+from auxFunctions import unique, calcDaysPassedMonth, calculate_sum_for_index
 
 
 def prepareMonthlyRadiatonData(PV_electricity_results):
@@ -71,11 +72,14 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     # fill in the evaluated hours with the data from R_monthly_array:
     R_monthly[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=R_monthly_array
     
-    return PV_monthly, R_monthly
+    # calculate average efficiency at optimum angle combination
+    PV_eff_opt = calculate_sum_for_index(PV_monthly, np.argmax(PV_monthly,axis=0))/calculate_sum_for_index(R_monthly, np.argmax(PV_monthly,axis=0))
+    return PV_monthly, R_monthly, PV_eff_opt
     
 def importDIVAresults(path):
     """
-    reads heating, cooling and lighting csv files form path \n
+    reads heating, cooling and lighting csv files form path as well as json 
+    file with the corresponding efficiencies for the simulation \n
     input: path to DIVA results folder \n
     output: dictionary with results
     """
@@ -86,11 +90,15 @@ def importDIVAresults(path):
     H=np.genfromtxt(path + '\heating.csv',delimiter=',')
     L=np.genfromtxt(path + '\lighting.csv',delimiter=',')
     
+    with open(path + '\efficiencies.json', 'r') as fp:
+        efficiencies = json.load(fp)
+        fp.close()
+    
     # Calculate the total Energy Consumption
     E=C+H+L
     
     # write data to dictionary:
-    DIVA_results = {'H':H, 'C':C, 'L':L,'E':E}
+    DIVA_results = {'H':H, 'C':C, 'L':L, 'E':E, 'efficiencies':efficiencies}
     
     return DIVA_results
     
