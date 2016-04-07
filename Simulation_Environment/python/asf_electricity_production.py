@@ -7,7 +7,7 @@ Calculate Electrical Power of ASF
 Authors: Johannes Hofer, Jeremias Schmidli
 
 """
-def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None, geo_path = None):
+def asf_electricity_production(createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None, geo_path = None):
     import json
     import numpy as np
     import time
@@ -15,6 +15,7 @@ def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radi
     import matplotlib.pyplot as plt
     from scipy import interpolate
     from average_monthly import daysPassedMonth
+    from prepareData import readLayoutAndCombinations, CalcXYAnglesAndLocation
     
     create_plots_flag = createPlots
     Simulation_Data_Folder = lb_radiation_path
@@ -30,10 +31,18 @@ def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radi
     pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
     #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
     
+    # load weather file data corresponding to Simulation Data:
+    with open(geo_path + '\SunTrackingData.json', 'r') as fp:
+        SunTrackingData = json.load(fp)
+        fp.close()
+        
+     # find the number of hours analysed by ladybug:
+    numHours = np.shape(SunTrackingData['HOY'])[0]
     
-    numHours = numHours
-    numCombPerHour = numComb
+    # find the number of combinations analysed by ladybug:
+    numCombPerHour = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_radiation_path))['allAngles'][0])
     
+   
     numASFit = numHours*numCombPerHour
     
     
@@ -45,11 +54,17 @@ def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radi
     
     
     
-    # module and cell dimensions
+    # module and cell dimensions:
     
-    ncell = 48
-    nparcell = 16
+     # panelsize used for simulations (sidelength in mm):
+    panelsize = readLayoutAndCombinations(lb_radiation_path)['panelSize']  
+    
+    # gridpoint size input of GH, not equal to the actual grid point size if the panelsize is not a multiple of 25mm:
+    desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['desiredGridPointSize']  
+    
+    nparcell = int(round(panelsize/float(desiredGridPointSize)))
     cellsPerGridpoint = 3
+    ncell = nparcell*cellsPerGridpoint
     panelwidth = panelsize/1000.
     panellength = panelsize/1000.
     panelarea = panelwidth * panellength
@@ -93,10 +108,6 @@ def asf_electricity_production(numHours=0, numComb=0, createPlots=False, lb_radi
     modmppsim = max(volt_model_var * curr_model_submod_lookup[insrefind, trefind,:])#module maximum power point simulation
     currscale = modmpprating / modmppsim
     
-    # load temperature corresponding to Simulation Data:
-    with open(geo_path + '\SunTrackingData.json', 'r') as fp:
-        SunTrackingData = json.load(fp)
-        fp.close()
         
     temp_amb = SunTrackingData['TempTracking']
     

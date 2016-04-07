@@ -54,37 +54,38 @@ onlyTradeoffs = True
 # post processing tradeoff options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(efficiency) set changeEfficiency to 
 # True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':True, 'H_COP': 1, 'C_COP': 1, 'L_Load': 5, 'PV': 0.1}
+efficiencyChanges = {'changeEfficiency':False, 'H_COP': 5, 'C_COP': 5, 'L_Load': 3, 'PV': 0.1}
 
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
 # incluseive, so startHour=1 and endHour=24 corresponds to a time period from 
 # 0:00-24:00. month is defined in the classical sense, so month=1 corresponds to 
 # january.
-tradeoffPeriod = {'enabled':True, 'month':7, 'startHour':1, 'endHour':24}
+tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
     
 ######### -----END OF USER INTERACTION------ #############
 
 print "variables set"
 
 
-
+# create dictionary to write all paths:
+paths = {}
 
 # find path of current folder (simulation_environment)
-main_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 # define paths of subfolders:
-data_path = main_path + '\data'
-python_path = main_path + '\python'
-gh_path = main_path + '\grasshopper'
+paths['data'] = paths['main'] + '\data'
+paths['python'] = paths['main'] + '\python'
+paths['gh'] = paths['main'] + '\grasshopper'
 
 # add python_path to system path, so that all files are available:
-sys.path.insert(0, python_path)
+sys.path.insert(0, paths['python'])
 
 # define paths of data_folders:
-diva_path = os.path.join(( data_path + "\grasshopper\DIVA"), diva_folder)
-lb_path = os.path.join(( data_path + "\grasshopper\LadyBug"), radiation_folder)
-electrical_path = os.path.join(( data_path + "\python\electrical_simulation"), radiation_folder)
+paths['diva'] = os.path.join(( paths['data'] + "\grasshopper\DIVA"), diva_folder)
+paths['lb'] = os.path.join(( paths['data'] + "\grasshopper\LadyBug"), radiation_folder)
+paths['electrical'] = os.path.join(( paths['data'] + "\python\electrical_simulation"), radiation_folder)
 
 print "paths defined"
 
@@ -92,14 +93,16 @@ if mainMode == 'initialize':
     
     print "start initializing"
     
+
+    
     # define path of geographical location:
-    geo_path = os.path.join(( data_path + "\geographical_location"), geoLocation)
+    paths['geo'] = os.path.join(( paths['data'] + "\geographical_location"), geoLocation)
     # create sun data based on grasshopper file
-    execfile(python_path + "\SunAngles_Tracking_and_temperature.py")
+    execfile(paths['python'] + "\SunAngles_Tracking_and_temperature.py")
 
     # calculate and save lookup table if it does not yet exist:
-    if not os.path.isfile(data_path + '\python\electrical_simulation\curr_model_submod_lookup.npy'): 
-        execfile(python_path + '\create_lookup_table.py')
+    if not os.path.isfile(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup.npy'): 
+        execfile(paths['python'] + '\create_lookup_table.py')
     else:
         print 'lookup table not created as it already exists'
     
@@ -113,44 +116,52 @@ if mainMode == 'post_processing':
     # create dictionary to save monthly data:
     monthlyData = {}
     
-    # set panelsize used for simulations (sidelength in mm):
-    panelsize = 400
+    # create dictionary with ladybug simulation settings:
+    lbSettings = {}
+    
+    # panelsize used for simulation:
+    lbSettings['panelsize'] = readLayoutAndCombinations(paths['lb'])['panelSize']  
+    
+    # desired grid point size used for simulation:
+    lbSettings['desiredGridPointSize'] = readLayoutAndCombinations(paths['lb'])['desiredGridPointSize']  
+    
+    # actual grid point size used for simulation:
+    lbSettings['actualGridPointSize'] = lbSettings['panelsize']/(round(lbSettings['panelsize']/float(lbSettings['desiredGridPointSize'])))
     
     # calculate aperturesize according to pvSizeOption:
-    aperturesize = panelsize - pvSizeOption*50
+    lbSettings['aperturesize'] = int(lbSettings['panelsize'] - pvSizeOption*2*lbSettings['actualGridPointSize'])
     
     # define path of geographical location:
-    geo_path = os.path.join(( data_path + "\geographical_location"), geoLocation)
+    paths['geo'] = os.path.join(( paths['data'] + "\geographical_location"), geoLocation)
     
     # load sunTrackingData used for the LadyBug simulation:
-    with open(geo_path + '\SunTrackingData.json', 'r') as fp:
+    with open(paths['geo'] + '\SunTrackingData.json', 'r') as fp:
         SunTrackingData = json.load(fp)
         fp.close()
         
     # find the number of hours analysed by ladybug:
-    numHoursLB = np.shape(SunTrackingData['HOY'])[0]
+    lbSettings['numHoursLB'] = np.shape(SunTrackingData['HOY'])[0]
     
     # find the number of combinations analysed by ladybug:
-    numCombLB = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_path))['allAngles'][0])
-    
+    lbSettings['numCombLB'] = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(paths['lb']))['allAngles'][0])
+
     # check if pv results already exist, if not, create them, else load them
-    if not os.path.isfile(electrical_path + '\\aperturesize_' + str(aperturesize) + '\PV_electricity_results.npy'): 
-        if not os.path.isdir(electrical_path + '\\aperturesize_' + str(aperturesize)):
-            os.makedirs(electrical_path + '\\aperturesize_' + str(aperturesize))
+    if not os.path.isfile(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '\PV_electricity_results.npy'): 
+        if not os.path.isdir(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize'])):
+            os.makedirs(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']))
         from asf_electricity_production import asf_electricity_production
         print 'calculating PV electricity production'     
         
         PV_electricity_results, PV_detailed_results, fig1, fig2 = \
-            asf_electricity_production(numHours=numHoursLB, numComb=numCombLB,
-                                       createPlots=createPlots, 
-                                       lb_radiation_path=lb_path, 
-                                       panelsize=panelsize, 
+            asf_electricity_production(createPlots=createPlots, 
+                                       lb_radiation_path=paths['lb'], 
+                                       panelsize=lbSettings['panelsize'], 
                                        pvSizeOption=pvSizeOption, 
-                                       save_results_path = electrical_path + '\\aperturesize_' + str(aperturesize),
-                                       lookup_table_path = data_path + '\python\electrical_simulation',
-                                       geo_path=geo_path)
+                                       save_results_path = paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']),
+                                       lookup_table_path = paths['data'] + '\python\electrical_simulation',
+                                       geo_path=paths['geo'])
     else: 
-        PV_electricity_results = np.load(electrical_path + '\\aperturesize_' + str(aperturesize) + '\PV_electricity_results.npy').item()
+        PV_electricity_results = np.load(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '\PV_electricity_results.npy').item()
         print 'PV_electricity_results loaded from folder'
         
     print "preparing data"
@@ -164,16 +175,16 @@ if mainMode == 'post_processing':
     monthlyData['R'] = monthlyData['R']
     
     # import DIVA results:
-    DIVA_results = importDIVAresults(diva_path)    
+    DIVA_results = importDIVAresults(paths['diva'])    
     
     # import DIVA LayoutAndCombinations and write to DIVA_results dict.:
-    DIVA_results['LayoutAndCombinations'] = readLayoutAndCombinations(diva_path)
+    DIVA_results['LayoutAndCombinations'] = readLayoutAndCombinations(paths['diva'])
     
     # calculate angles of DIVA_results
     DIVA_results['angles'] = CalcXYAnglesAndLocation(DIVA_results['LayoutAndCombinations'])
 
     # import LadyBug LayoutAndCombinations and write to PV_electricity_results dict.:
-    PV_electricity_results['LayoutAndCombinations'] = readLayoutAndCombinations(lb_path)
+    PV_electricity_results['LayoutAndCombinations'] = readLayoutAndCombinations(paths['lb'])
     
     # check if the two LayoutAndCombinations files are the same
     if DIVA_results['LayoutAndCombinations'] == PV_electricity_results['LayoutAndCombinations']:
