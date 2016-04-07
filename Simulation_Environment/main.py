@@ -28,9 +28,6 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP'
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
 diva_folder = 'Simulation_Kloten_25comb'
 
-# set the number of combinations used for the analysis
-numCombDIVA = 25
-
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
 # This folder has the same name as the generated folder for the electrical 
@@ -38,8 +35,6 @@ numCombDIVA = 25
 radiation_folder = 'Radiation_electrical_monthly_25comb'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 
-# set the number of combinations used for the LadyBug analysis:
-numCombLB = 25
 
 # set option to change the size of the PV area for the electrical simulation, 
 # this is done in steps of 2 times the radiation gridsize, so 0 corresponds a 
@@ -51,13 +46,16 @@ pvSizeOption = 0
 # specify if  plots should be created (True or False):
 createPlots = True
 
+
 # only tradeoffs flag, set true if general data plots should not be evaluated:
 onlyTradeoffs = True
+
 
 # post processing tradeoff options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(efficiency) set changeEfficiency to 
 # True if data should be changed, set False if simulation efficiencies should be used:
 efficiencyChanges = {'changeEfficiency':True, 'H_COP': 1, 'C_COP': 1, 'L_Load': 5, 'PV': 0.1}
+
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
 # incluseive, so startHour=1 and endHour=24 corresponds to a time period from 
@@ -129,16 +127,28 @@ if mainMode == 'post_processing':
         SunTrackingData = json.load(fp)
         fp.close()
         
-    # find the number of hours analised by ladybug:
-        numHoursLB = np.shape(SunTrackingData['HOY'])[0]
+    # find the number of hours analysed by ladybug:
+    numHoursLB = np.shape(SunTrackingData['HOY'])[0]
+    
+    # find the number of combinations analysed by ladybug:
+    numCombLB = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_path))['allAngles'][0])
     
     # check if pv results already exist, if not, create them, else load them
     if not os.path.isfile(electrical_path + '\\aperturesize_' + str(aperturesize) + '\PV_electricity_results.npy'): 
         if not os.path.isdir(electrical_path + '\\aperturesize_' + str(aperturesize)):
             os.makedirs(electrical_path + '\\aperturesize_' + str(aperturesize))
         from asf_electricity_production import asf_electricity_production
-        print 'calculating PV electricity production'        
-        PV_electricity_results, PV_detailed_results, fig1, fig2= asf_electricity_production(numHours=numHoursLB, numComb=numCombLB, createPlots=createPlots, lb_radiation_path=lb_path, panelsize=panelsize, pvSizeOption=pvSizeOption, save_results_path = electrical_path + '\\aperturesize_' + str(aperturesize), lookup_table_path = data_path + '\python\electrical_simulation', geo_path=geo_path)
+        print 'calculating PV electricity production'     
+        
+        PV_electricity_results, PV_detailed_results, fig1, fig2 = \
+            asf_electricity_production(numHours=numHoursLB, numComb=numCombLB,
+                                       createPlots=createPlots, 
+                                       lb_radiation_path=lb_path, 
+                                       panelsize=panelsize, 
+                                       pvSizeOption=pvSizeOption, 
+                                       save_results_path = electrical_path + '\\aperturesize_' + str(aperturesize),
+                                       lookup_table_path = data_path + '\python\electrical_simulation',
+                                       geo_path=geo_path)
     else: 
         PV_electricity_results = np.load(electrical_path + '\\aperturesize_' + str(aperturesize) + '\PV_electricity_results.npy').item()
         print 'PV_electricity_results loaded from folder'
@@ -222,8 +232,3 @@ if mainMode == 'post_processing':
     # evaluate tradeoffs:
     TradeoffResults = compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod)
 
-
-    
-    # prepare monthly DIVA data and write it to the monthlyData dictionary:
-
-       #execfile(python_path + "\PostProcessRadiation.py")

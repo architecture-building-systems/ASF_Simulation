@@ -81,7 +81,7 @@ ncell = 48
 vmin = -6 * ncell
 vmax = 0.8 * ncell#30
 volt_model_var = np.linspace(vmin, vmax, 1000)
-curr_model_submod_lookup = np.empty((301, 20,1000))
+curr_model_submod_lookup = np.empty((301, 20, 1000))
 
 print 'calculating lookup-table for electricity production:'
 tic = time.time()
