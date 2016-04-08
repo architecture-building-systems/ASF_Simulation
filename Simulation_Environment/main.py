@@ -10,7 +10,7 @@ main file for simulation environment
 import os, sys
 import numpy as np
 import json
-
+import csv
 
 ######### -----USER INTERACTION------ #############
 
@@ -52,9 +52,9 @@ onlyTradeoffs = True
 
 
 # post processing tradeoff options: change efficiencies of heating(COP)/
-# cooling(COP)/lighting(Lighting Load)/PV(efficiency) set changeEfficiency to 
-# True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':False, 'H_COP': 5, 'C_COP': 5, 'L_Load': 3, 'PV': 0.1}
+# cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
+# set changeEfficiency to True if data should be changed, set False if simulation efficiencies should be used:
+efficiencyChanges = {'changeEfficiency':False, 'H_COP': 5, 'C_COP': 5, 'L_Load': 3, 'PV': 1}
 
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
@@ -162,6 +162,7 @@ if mainMode == 'post_processing':
                                        geo_path=paths['geo'])
     else: 
         PV_electricity_results = np.load(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '\PV_electricity_results.npy').item()
+        PV_detailed_results = np.load(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '\PV_detailed_results.npy').item()
         print 'PV_electricity_results loaded from folder'
         
     print "preparing data"
@@ -242,4 +243,51 @@ if mainMode == 'post_processing':
     
     # evaluate tradeoffs:
     TradeoffResults = compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod)
-
+    
+    monthList = ['January','February','March','April','May','June','July','August','September','November','October','December']
+    with open('test.csv', 'w') as f:
+        f.write('Simulation Results\n\n')
+        f.write('Location\n' + geoLocation + '\n\n')
+        f.write('Number of Combinations\n' + str(lbSettings['numCombLB']) + '\n\n')
+        f.write('Azimuth Angles\n')
+        [f.write('{0};'.format(value)) for value in PV_electricity_results['LayoutAndCombinations']['Yangles']]
+        f.write('\n\nAltitude Angles\n')
+        [f.write('{0};'.format(value)) for value in PV_electricity_results['LayoutAndCombinations']['Xangles']]
+        f.write('\n\nNumber of Clusters\n')
+        f.write(str(int(PV_electricity_results['LayoutAndCombinations']['NoClusters'])) + '\n\n')
+        f.write('Panel Size [mm]\n')
+        f.write(str(int(PV_electricity_results['LayoutAndCombinations']['panelSize'])) + '\n\n')
+        f.write('Panel Spacing [mm] (shortest midpoint to midpoint distance)\n')
+        f.write(str(int(PV_electricity_results['LayoutAndCombinations']['panelSpacing'])) + '\n\n')
+        f.write('Number of Panels\n')
+        f.write(str(int(np.shape(PV_detailed_results['Ins_ap'])[1])) + '\n\n')
+        f.write('Evaluation Period\n')
+        if tradeoffPeriod['enabled']:
+            f.write('Energy Usage evaluated for the cumulative hours ' + 
+                    str(tradeoffPeriod['startHour']-1) + ':00-' + 
+                    str(tradeoffPeriod['endHour']) + ':00 in ' + 
+                    monthList[tradeoffPeriod['month']-1] +'\n\n')
+        else:
+            f.write('Energy Usage evaluated for the whole year\n\n')
+            
+        if efficiencyChanges['changeEfficiency']:
+            f.write('Heating COP\n')
+            f.write(str(efficiencyChanges['H_COP']) + '\n\n')
+            f.write('Cooling COP\n')
+            f.write(str(efficiencyChanges['C_COP']) + '\n\n')
+            f.write('Lighting Load [W/m2]\n')
+            f.write(str(efficiencyChanges['L_Load']) + '\n\n')
+            f.write('Average PV Efficiency [%]\n')
+            f.write(str(np.round(efficiencyChanges['PV']*monthlyData['efficiencies']['PV']*100, decimals = 1)) + '\n\n')
+        else:
+            f.write('Heating COP\n')
+            f.write(str(monthlyData['efficiencies']['H_COP']) + '\n\n')
+            f.write('Cooling COP\n')
+            f.write(str(monthlyData['efficiencies']['C_COP']) + '\n\n')
+            f.write('Lighting Load [W/m2]\n')
+            f.write(str(monthlyData['efficiencies']['L_Load']) + '\n\n')
+            f.write('Average PV Efficiency [%]\n')
+            f.write(str(np.round(monthlyData['efficiencies']['PV']*100, decimals = 1)) + '\n\n')
+            
+        [f.write('{0};{1}\n'.format(key, value)) for key, value in TradeoffResults['energy_opttot'].items()]
+        f.close()

@@ -31,7 +31,7 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
         H_COP_eval = efficiencyChanges['H_COP']
         C_COP_eval = efficiencyChanges['C_COP']
         L_power_eval = efficiencyChanges['L_Load']
-        PV_eff_eval = efficiencyChanges['PV']
+        PV_eff_eval = PV_eff_data*efficiencyChanges['PV']
     else:
         H_COP_eval = H_COP_data
         C_COP_eval = C_COP_data
