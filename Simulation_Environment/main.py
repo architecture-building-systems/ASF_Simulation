@@ -10,7 +10,6 @@ main file for simulation environment
 import os, sys
 import numpy as np
 import json
-import csv
 
 ######### -----USER INTERACTION------ #############
 
@@ -245,6 +244,8 @@ if mainMode == 'post_processing':
     TradeoffResults = compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod)
     
     monthList = ['January','February','March','April','May','June','July','August','September','November','October','December']
+    
+    # write csv file    
     with open('test.csv', 'w') as f:
         f.write('Simulation Results\n\n')
         f.write('Location\n' + geoLocation + '\n\n')
@@ -288,6 +289,13 @@ if mainMode == 'post_processing':
             f.write(str(monthlyData['efficiencies']['L_Load']) + '\n\n')
             f.write('Average PV Efficiency [%]\n')
             f.write(str(np.round(monthlyData['efficiencies']['PV']*100, decimals = 1)) + '\n\n')
-            
-        [f.write('{0};{1}\n'.format(key, value)) for key, value in TradeoffResults['energy_opttot'].items()]
+        
+        f.write('Net Energy Demand\n')
+        f.write(';optimized;fixed at 90 deg;fixed at 45 deg;fixed at 0 deg\n')
+        f.write('Heating;'+str(TradeoffResults['energy_opttot']['H'])+';'+str(TradeoffResults['energy_90']['H'])+';'+str(TradeoffResults['energy_45']['H'])+';'+str(TradeoffResults['energy_0']['H']) +'\n')
+        f.write('Cooling;'+str(TradeoffResults['energy_opttot']['C'])+';'+str(TradeoffResults['energy_90']['C'])+';'+str(TradeoffResults['energy_45']['C'])+';'+str(TradeoffResults['energy_0']['C'])+'\n')
+        f.write('Lighting;'+str(TradeoffResults['energy_opttot']['L'])+';'+str(TradeoffResults['energy_90']['L'])+';'+str(TradeoffResults['energy_45']['L'])+';'+str(TradeoffResults['energy_0']['L'])+'\n')
+        f.write('PV;'+str(TradeoffResults['energy_opttot']['PV'])+';'+str(TradeoffResults['energy_90']['PV'])+';'+str(TradeoffResults['energy_45']['PV'])+';'+str(TradeoffResults['energy_0']['PV'])+'\n')
+        f.write('Total;'+str(TradeoffResults['energy_opttot']['E_tot'])+';'+str(TradeoffResults['energy_90']['E_tot'])+';'+str(TradeoffResults['energy_45']['E_tot'])+';'+str(TradeoffResults['energy_0']['E_tot'])+'\n')
+
         f.close()
