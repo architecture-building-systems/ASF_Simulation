@@ -15,7 +15,7 @@ from average_monthly import average_monthly, daysPassedMonth
 from calculateHOY import calcHOY
 
 # set path equal to the one defined in main.py script:
-location_path = geo_path
+location_path = paths['geo']
 
 #import temperature:
 Temperature=np.genfromtxt(location_path + '\Temperature.csv',delimiter=',', skiprows = 2)

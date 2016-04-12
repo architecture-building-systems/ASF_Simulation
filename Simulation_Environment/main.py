@@ -10,28 +10,32 @@ main file for simulation environment
 import os, sys
 import numpy as np
 import json
+import time
 
 ######### -----USER INTERACTION------ #############
 
 # set mode of this main script ('initialize', 'post_processing')
-mainMode = 'post_processing' #'initialize'
+mainMode = 'initialize' #'initialize'
 
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
 # new locations can be added with the grasshopper main script for any .epw weather data
-geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP'
+#geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
+geoLocation = 'SINGAPORE_SGP' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 
 
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-diva_folder = 'Simulation_Kloten_25comb'
+diva_folder = 'DIVA_Kloten_25comb'
+#diva_folder = 'DIVA_Kloten_49comb'
 
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
 # This folder has the same name as the generated folder for the electrical 
 # results in data\python\electrical:
 radiation_folder = 'Radiation_electrical_monthly_25comb'
+#radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 
 
@@ -47,7 +51,7 @@ createPlots = True
 
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = True
+onlyTradeoffs = False
 
 
 # post processing tradeoff options: change efficiencies of heating(COP)/
@@ -63,6 +67,10 @@ efficiencyChanges = {'changeEfficiency':False, 'H_COP': 5, 'C_COP': 5, 'L_Load':
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
     
 ######### -----END OF USER INTERACTION------ #############
+    
+# get current time
+now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+print "simulation start: " + now
 
 print "variables set"
 
@@ -74,9 +82,10 @@ paths = {}
 paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 # define paths of subfolders:
-paths['data'] = paths['main'] + '\data'
-paths['python'] = paths['main'] + '\python'
-paths['gh'] = paths['main'] + '\grasshopper'
+paths['data'] = paths['main'] + '\\data'
+paths['python'] = paths['main'] + '\\python'
+paths['gh'] = paths['main'] + '\\grasshopper'
+paths['results'] = paths['main'] + '\\results'
 
 # add python_path to system path, so that all files are available:
 sys.path.insert(0, paths['python'])
@@ -245,8 +254,11 @@ if mainMode == 'post_processing':
     
     monthList = ['January','February','March','April','May','June','July','August','September','November','October','December']
     
-    # write csv file    
-    with open('test.csv', 'w') as f:
+    # create folder where results will be saved:
+    os.makedirs(paths['results'] + '\\' + now )
+    
+    # write csv file that summarizes results  
+    with open(paths['results'] + '\\' + now + '\\summary.csv', 'w') as f:
         f.write('Simulation Results\n\n')
         f.write('Location\n' + geoLocation + '\n\n')
         f.write('Number of Combinations\n' + str(lbSettings['numCombLB']) + '\n\n')
@@ -290,7 +302,7 @@ if mainMode == 'post_processing':
             f.write('Average PV Efficiency [%]\n')
             f.write(str(np.round(monthlyData['efficiencies']['PV']*100, decimals = 1)) + '\n\n')
         
-        f.write('Net Energy Demand\n')
+        f.write('Net Energy Demand [kWh]\n')
         f.write(';optimized;fixed at 90 deg;fixed at 45 deg;fixed at 0 deg\n')
         f.write('Heating;'+str(TradeoffResults['energy_opttot']['H'])+';'+str(TradeoffResults['energy_90']['H'])+';'+str(TradeoffResults['energy_45']['H'])+';'+str(TradeoffResults['energy_0']['H']) +'\n')
         f.write('Cooling;'+str(TradeoffResults['energy_opttot']['C'])+';'+str(TradeoffResults['energy_90']['C'])+';'+str(TradeoffResults['energy_45']['C'])+';'+str(TradeoffResults['energy_0']['C'])+'\n')
@@ -299,3 +311,14 @@ if mainMode == 'post_processing':
         f.write('Total;'+str(TradeoffResults['energy_opttot']['E_tot'])+';'+str(TradeoffResults['energy_90']['E_tot'])+';'+str(TradeoffResults['energy_45']['E_tot'])+';'+str(TradeoffResults['energy_0']['E_tot'])+'\n')
 
         f.close()
+        
+    # bundle all results into one dictionary
+    all_results = {'DIVA_results':DIVA_results, 'PV_detailed_results':PV_detailed_results, 
+                   'PV_electricity_results':PV_electricity_results, 'SunTrackingData':SunTrackingData, 
+                   'TradeoffResults':TradeoffResults, 'diva_folder':diva_folder, 'efficiencyChanges':efficiencyChanges,
+                   'geoLocation':geoLocation, 'lbSettings':lbSettings, 'monthlyData':monthlyData, 
+                   'radiation_folder':radiation_folder, 'tradeoffPeriod':tradeoffPeriod}
+    # save all results
+    np.save(paths['results'] + '\\' + now + '\\all_results.npy', all_results)
+    
+print "simulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
