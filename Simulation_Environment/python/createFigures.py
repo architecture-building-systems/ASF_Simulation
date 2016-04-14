@@ -41,23 +41,23 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
     fig = plt.figure(figsize=(16, 8))
 #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
     plt.subplot(2,2,1)
-    arg = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(DIVA_results, arg)
+    arg1 = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg1)
     plt.title("Heating Demand")
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,2,2)
-    arg = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(DIVA_results, arg)
+    arg1 = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg1)
     plt.title("Cooling Demand")
     plt.subplot(2,2,3)
-    arg = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(DIVA_results, arg)
+    arg1 = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg1)
     plt.title("Lighting Demand")
     plt.xlabel("Day of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,2,4)
-    arg = ['min','E', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(DIVA_results, arg)
+    arg1 = ['min','E', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(DIVA_results, arg1)
     plt.title("Total Thermal/Lighting Demand")
     plt.xlabel("Day of the Year",size=14)
     fig.subplots_adjust(right=0.8)
@@ -66,8 +66,15 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
     #cbart = plt.title("Altitude / Azimuth", fontsize=14, loc='left', verticalalignment = 'bottom')
     
     if plotFunction == pcolorMonths:
-        plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
-        cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        if arg[0] == 'xy':
+            plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+            cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        elif arg[0] == 'x':
+            plt.suptitle("Optimum Altitude Orientation", size=16)
+            cbart = plt.title("Altitude", fontsize=14)
+        elif arg[0] == 'y':
+            plt.suptitle("Optimum Azimuth Orientation", size=16)
+            cbart = plt.title("Azimuth", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
         cbar.ax.set_yticklabels(angles)
@@ -77,8 +84,15 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
         cbart = plt.title("Net Energy [kWh]", fontsize=14)
         cbart.set_position((1.1,1.02))
     elif plotFunction == pcolorDays:
-        plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
-        cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        if arg[0] == 'xy':
+            plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+            cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        elif arg[0] == 'x':
+            plt.suptitle("Optimum Altitude Orientation", size=16)
+            cbart = plt.title("Altitude", fontsize=14)
+        elif arg[0] == 'y':
+            plt.suptitle("Optimum Azimuth Orientation", size=16)
+            cbart = plt.title("Azimuth", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
         cbar.ax.set_yticklabels(angles)
@@ -118,32 +132,32 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     fig = plt.figure(figsize=(16, 8))
 #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
     plt.subplot(2,3,1)
-    arg = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg)
+    arg1 = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(monthlyData, arg1)
     plt.title("Heating Demand")
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,2)
-    arg = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg)
+    arg1 = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(monthlyData, arg1)
     plt.title("Cooling Demand")
     plt.subplot(2,3,3)
-    arg = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg)
+    arg1 = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(monthlyData, arg1)
     plt.title("Lighting Demand")
     plt.subplot(2,3,4)
-    arg = ['min','PV', rotation_axis, 'LB', z_min, z_max]
-    plotFunction(monthlyData, arg)
+    arg1 = ['min','PV', rotation_axis, 'LB', z_min, z_max]
+    plotFunction(monthlyData, arg1)
     plt.title("PV Supply")
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,5)
-    arg = ['min','E_HCL', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg)
+    arg1 = ['min','E_HCL', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(monthlyData, arg1)
     plt.title("Total Thermal/Lighting Demand")
     plt.xlabel("Month of the Year",size=14)
     plt.subplot(2,3,6)
-    arg = ['min','E_tot', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg)
+    arg1 = ['min','E_tot', rotation_axis, 'DIVA', z_min, z_max]
+    plotFunction(monthlyData, arg1)
     plt.title("Net Demand including PV")
     plt.xlabel("Month of the Year",size=14)
     fig.subplots_adjust(right=0.8)
@@ -152,8 +166,15 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     #cbart = plt.title("Altitude / Azimuth", fontsize=14, loc='left', verticalalignment = 'bottom')
     
     if plotFunction == pcolorMonths:
-        plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
-        cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        if arg[0] == 'xy':
+            plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+            cbart = plt.title("Altitude / Azimuth", fontsize=14)
+        elif arg[0] == 'x':
+            plt.suptitle("Optimum Altitude Orientation", size=16)
+            cbart = plt.title("Altitude", fontsize=14)
+        elif arg[0] == 'y':
+            plt.suptitle("Optimum Azimuth Orientation", size=16)
+            cbart = plt.title("Azimuth", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
         cbar.ax.set_yticklabels(angles)

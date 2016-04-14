@@ -313,110 +313,43 @@ def pcolorEnergyDays(DIVA_results, arg):
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     plt.tick_params(axis=u'both',labelsize=14)
     
-#    
-## function that shows optimal angle combinations for every hour of the year for one axis
-#def pcolorEnergyDays(X):
-#    axis_ind =[]
-#    ind=np.argmin(X,axis=0)
-##    if rotation_axis == 'x':
-##        for i in range(len(ind)):
-##            axis_ind.append(x_angle_location[ind[i]])
-##    elif rotation_axis == 'y':
-##        for i in range(len(ind)):
-##            axis_ind.append(y_angle_location[ind[i]])
-##    else:
-##        print 'axis not available'
-#    dx, dy = 1, 1
-#    
-#    # generate 2 2d grids for the x & y bounds
-#    y, x = np.mgrid[slice(0, 24 + dy, dy),
-#                    slice(0, 365 + dx, dx)]
-#    z=[]
-#    for i in range(24):
-#        z.append([])
-#        for j in range(365):
-#            z[i].append(X[ind[24*j + i]][24*j + i])
-#    z = np.asarray(z)
-#    
-#    z_min, z_max = 0, 1
-#    #print z_min, z_max
-#    
-#    #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-#    plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)
-#    #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
-#
-#    #plt.title('pcolor')
-##    plt.xlabel("Day of the Year")
-##    plt.ylabel("Hour of the Day")
-#    # set the limits of the plot to the limits of the data
-#    plt.axis([x.min(), x.max(), y.min(), y.max()])
-#    
-#def pcolorEnergyMonths(X, maxMin, *arg):
-#    
-#    axis_ind =[]
-#    if len(arg)==0:
-#        if maxMin == 'min':
-#            ind=np.argmin(X,axis=0)
-#        elif maxMin == 'max':
-#            ind=np.argmax(X,axis=0)
-#        else:
-#            raise ValueError("maxMin must be either 'max' or 'min'")
-#    else:
-#        ind=[arg]*np.shape(X)[1]
-##    if rotation_axis == 'x':
-##        for i in range(len(ind)):
-##            axis_ind.append(x_angle_location[ind[i]])
-##    elif rotation_axis == 'y':
-##        for i in range(len(ind)):
-##            axis_ind.append(y_angle_location[ind[i]])
-##    else:
-##        print 'axis not available'
-#    dx, dy = 1, 1
-#    
-#    # generate 2 2d grids for the x & y bounds
-#    y, x = np.mgrid[slice(0, 24 + dy, dy),
-#                    slice(0, 12 + dx, dx)]
-#    z=[]
-#    for i in range(24):
-#        z.append([])
-#        for j in range(12):
-#            z[i].append(X[ind[24*j + i]][24*j + i])
-#    z = np.asarray(z)
-#    
-#    z_min, z_max = -15, 15
-#    #print z_min, z_max
-#    
-#    # create custum colormap:
-#    cdict1 = {'red':   ((0.0, 0.0, 0.0),
-#                       (0.5, 0.0, 0.1),
-#                       (1.0, 1.0, 1.0)),
-#    
-#             'green': ((0.0, 0.0, 0.0),
-#                       (1.0, 0.0, 0.0)),
-#    
-#             'blue':  ((0.0, 0.0, 1.0),
-#                       (0.5, 0.1, 0.0),
-#                       (1.0, 0.0, 0.0))
-#            }
-#    
-#    blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)    
-#    
-#    #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-#    #plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)
-#    plt.pcolor(x, y, z, cmap='RdBu_r', vmin=z_min, vmax=z_max)
-#    plt.pcolor(x, y, z, cmap=blue_red1, vmin=z_min, vmax=z_max)   
-#    #plt.pcolor(x, y, z, cmap='coolwarm', vmin=z_min, vmax=z_max)
-#    #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
-#
-#    #plt.title('pcolor')
-#    #plt.xlabel("Month of the Year")
-#    #plt.ylabel("Hour of the Day")
-#    # set the limits of the plot to the limits of the data
-##    plt.axis([x.min(), x.max(), y.min(), y.max()])
-#    plt.axis([x.min(), x.max(), y.min(), y.max()])
-#    plt.tick_params(axis=u'both',labelsize=14)
-#    print "maximum energy for axis has to be assigned smarter"
 
+def VisualizeSunTrackingAngles(SunTrackingData, rotation_axis):
+    
+    dx, dy = 1, 1
+    
+    # generate 2 2d grids for the x & y bounds
+    y, x = np.mgrid[slice(0, 24 + dy, dy),
+                    slice(0, 12 + dx, dx)]
+
+    z = np.empty((24,12))*np.nan
+    
+    if rotation_axis == 'x':
+        for i in range(len(SunTrackingData['HOY'])):
+            z[SunTrackingData['HoursInMonthTracking'][i],SunTrackingData['MonthTracking'][i]-1]= SunTrackingData['Xangles'][i]
+            z_min = 0
+            z_max = 90
+    elif rotation_axis == 'y':
+        for i in range(len(SunTrackingData['HOY'])):
+            z[SunTrackingData['HoursInMonthTracking'][i],SunTrackingData['MonthTracking'][i]-1]= SunTrackingData['Yangles'][i]   
+            z_min = -45
+            z_max = 45
+    else:
+        print 'axis not available'
+        
+    z_mask = np.isnan(z)
+    masked_array = np.ma.array(z, mask=z_mask)
+    cmap = plt.cm.cubehelix
+    cmap.set_bad('grey',1.)
+
+    
+    #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
+    plt.pcolormesh(x, y, masked_array, cmap=cmap, vmin=z_min, vmax=z_max)
+
+    # set the limits of the plot to the limits of the data
+    plt.axis([x.min(), x.max(), 3, 22])
+    plt.colorbar()
+    plt.tick_params(axis=u'both',labelsize=14)
 
 
 # function that shows histograms of angle combinations for one axis

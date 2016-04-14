@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 from auxFunctions import calculate_sum_for_index, create_evalList
 
-def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod):
+def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod, auxVar):
     
     # assign data:
     H_data = monthlyData['H']
@@ -55,7 +55,11 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
     
     # sum individual data
     E_HCL = H+C+L
-    E_tot = E_HCL+PV
+    
+    if auxVar['combineResults']:
+        E_tot = E_HCL+PV
+    else:
+        E_tot = E_HCL*np.nan
     
     # find indices
     Hind = np.argmin(H,axis=0)
@@ -63,18 +67,28 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
     Lind = np.argmin(L,axis=0)
     PVind = np.argmin(PV,axis=0)
     E_HCLind = np.argmin(E_HCL,axis=0)
-    E_totind = np.argmin(E_tot,axis=0)
-    ind_0_0 =  monthlyData['angles']['allAngles'][0].index((0,0))
-    ind_45_0 =  monthlyData['angles']['allAngles'][0].index((45,0))
-    ind_90_0 =  monthlyData['angles']['allAngles'][0].index((90,0))
+    
+    if auxVar['combineResults']:
+        E_totind = np.argmin(E_tot,axis=0)
+        ind_0_0 =  monthlyData['angles']['allAngles'][0].index((0,0))
+        ind_45_0 =  monthlyData['angles']['allAngles'][0].index((45,0))
+        ind_90_0 =  monthlyData['angles']['allAngles'][0].index((90,0))
+    else:
+        ind_0_0 =  monthlyData['divaAngles']['allAngles'][0].index((0,0))
+        ind_45_0 =  monthlyData['divaAngles']['allAngles'][0].index((45,0))
+        ind_90_0 =  monthlyData['divaAngles']['allAngles'][0].index((90,0))
     
     # find energy use of indices:
     
     H_opt = calculate_sum_for_index(H,Hind)
     H_HCL = calculate_sum_for_index(H,E_HCLind)
     H_C = calculate_sum_for_index(H,Cind)
-    H_PV = calculate_sum_for_index(H,PVind)
-    H_tot = calculate_sum_for_index(H,E_totind)
+    if auxVar['combineResults']:
+        H_PV = calculate_sum_for_index(H,PVind)
+        H_tot = calculate_sum_for_index(H,E_totind)
+    else:
+        H_PV = H_opt*np.nan
+        H_tot = H_opt*np.nan
     H_90 = calculate_sum_for_index(H,ind_90_0)
     H_45 = calculate_sum_for_index(H,ind_45_0)
     H_0 = calculate_sum_for_index(H,ind_0_0)
@@ -85,8 +99,12 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
     C_opt = calculate_sum_for_index(C,Cind)
     C_HCL = calculate_sum_for_index(C,E_HCLind)
     C_C = calculate_sum_for_index(C,Cind)
-    C_PV = calculate_sum_for_index(C,PVind)
-    C_tot = calculate_sum_for_index(C,E_totind)
+    if auxVar['combineResults']:
+        C_PV = calculate_sum_for_index(C,PVind)
+        C_tot = calculate_sum_for_index(C,E_totind)
+    else:
+        C_PV = C_opt*np.nan
+        C_tot = C_opt*np.nan
     C_90 = calculate_sum_for_index(C,ind_90_0)
     C_45 = calculate_sum_for_index(C,ind_45_0)
     C_0 = calculate_sum_for_index(C,ind_0_0)
@@ -98,7 +116,12 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
     L_HCL = calculate_sum_for_index(L,E_HCLind)
     L_C = calculate_sum_for_index(L,Cind)
     L_PV = calculate_sum_for_index(L,PVind)
-    L_tot = calculate_sum_for_index(L,E_totind)
+    if auxVar['combineResults']:
+        L_PV = calculate_sum_for_index(L,PVind)
+        L_tot = calculate_sum_for_index(L,E_totind)
+    else:
+        L_PV = L_opt*np.nan
+        L_tot = L_opt*np.nan
     L_90 = calculate_sum_for_index(L,ind_90_0)
     L_45 = calculate_sum_for_index(L,ind_45_0)
     L_0 = calculate_sum_for_index(L,ind_0_0)
@@ -106,24 +129,37 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
     TotalLbyPos=[L_opt, L_HCL, L_C, L_PV, L_tot, L_90, L_45, L_0]
     DiffL = TotalLbyPos - L_opt
 
-    
-    PV_opt = calculate_sum_for_index(PV,PVind)
-    PV_HCL = calculate_sum_for_index(PV,E_HCLind)
-    PV_C = calculate_sum_for_index(PV,Cind)
-    PV_PV = calculate_sum_for_index(PV,PVind)
-    PV_tot = calculate_sum_for_index(PV,E_totind)
-    PV_90 = calculate_sum_for_index(PV,ind_90_0)
-    PV_45 = calculate_sum_for_index(PV,ind_45_0)
-    PV_0 = calculate_sum_for_index(PV,ind_0_0)
-    
+    if auxVar['combineResults']:
+        PV_opt = calculate_sum_for_index(PV,PVind)
+        PV_HCL = calculate_sum_for_index(PV,E_HCLind)
+        PV_C = calculate_sum_for_index(PV,Cind)
+        PV_PV = calculate_sum_for_index(PV,PVind)
+        PV_tot = calculate_sum_for_index(PV,E_totind)
+        PV_90 = calculate_sum_for_index(PV,ind_90_0)
+        PV_45 = calculate_sum_for_index(PV,ind_45_0)
+        PV_0 = calculate_sum_for_index(PV,ind_0_0)
+    else:
+        PV_opt = calculate_sum_for_index(PV,PVind)
+        PV_PV = calculate_sum_for_index(PV,PVind)
+        PV_HCL = PV_opt*np.nan
+        PV_C =  PV_opt*np.nan
+        PV_tot = PV_opt*np.nan
+        PV_90 = PV_opt*np.nan
+        PV_45 = PV_opt*np.nan
+        PV_0 = PV_opt*np.nan
+        
     TotalPVbyPos=[PV_opt, PV_HCL, PV_C, PV_PV, PV_tot, PV_90, PV_45, PV_0]    
     DiffPV = TotalPVbyPos - PV_opt
 
     
     E_HCL_HCL = calculate_sum_for_index(E_HCL,E_HCLind)
     E_HCL_C = calculate_sum_for_index(E_HCL,Cind)
-    E_HCL_PV = calculate_sum_for_index(E_HCL,PVind)
-    E_HCL_tot = calculate_sum_for_index(E_HCL,E_totind)
+    if auxVar['combineResults']:
+        E_HCL_PV = calculate_sum_for_index(E_HCL,PVind)
+        E_HCL_tot = calculate_sum_for_index(E_HCL,E_totind)
+    else:
+        E_HCL_PV = E_HCL_HCL*np.nan
+        E_HCL_tot = E_HCL_HCL*np.nan
     E_HCL_90 = calculate_sum_for_index(E_HCL,ind_90_0)
     E_HCL_45 = calculate_sum_for_index(E_HCL,ind_45_0)
     E_HCL_0 = calculate_sum_for_index(E_HCL,ind_0_0)
@@ -131,115 +167,129 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
     TotalE_HCLbyPos=[E_HCL_HCL, E_HCL_HCL, E_HCL_C, E_HCL_PV, E_HCL_tot, E_HCL_90, E_HCL_45, E_HCL_0]
     DiffE_HCL = TotalE_HCLbyPos - E_HCL_HCL
     
+    if auxVar['combineResults']:
+        E_tot_HCL = calculate_sum_for_index(E_tot,E_HCLind)
+        E_tot_C = calculate_sum_for_index(E_tot,Cind)
+        E_tot_PV = calculate_sum_for_index(E_tot,PVind)
+        E_tot_tot = calculate_sum_for_index(E_tot,E_totind)
+        E_tot_90 = calculate_sum_for_index(E_tot,ind_90_0)
+        E_tot_45 = calculate_sum_for_index(E_tot,ind_45_0)
+        E_tot_0 = calculate_sum_for_index(E_tot,ind_0_0)
+        
+        TotalE_totbyPos=[E_tot_tot, E_tot_HCL, E_tot_C, E_tot_PV, E_tot_tot, E_tot_90, E_tot_45, E_tot_0]
+        DiffE_tot = TotalE_totbyPos- E_tot_tot
+    else:
+        E_tot_HCL = np.nan
+        E_tot_C = np.nan
+        E_tot_PV = np.nan
+        E_tot_tot = np.nan
+        E_tot_90 = np.nan
+        E_tot_45 = np.nan
+        E_tot_0 = np.nan
+        
+        TotalE_totbyPos=[E_tot_tot, E_tot_HCL, E_tot_C, E_tot_PV, E_tot_tot, E_tot_90, E_tot_45, E_tot_0]
+        DiffE_tot = [E_tot_tot, E_tot_HCL, E_tot_C, E_tot_PV, E_tot_tot, E_tot_90, E_tot_45, E_tot_0]
+
     
-    E_tot_HCL = calculate_sum_for_index(E_tot,E_HCLind)
-    E_tot_C = calculate_sum_for_index(E_tot,Cind)
-    E_tot_PV = calculate_sum_for_index(E_tot,PVind)
-    E_tot_tot = calculate_sum_for_index(E_tot,E_totind)
-    E_tot_90 = calculate_sum_for_index(E_tot,ind_90_0)
-    E_tot_45 = calculate_sum_for_index(E_tot,ind_45_0)
-    E_tot_0 = calculate_sum_for_index(E_tot,ind_0_0)
+    if createPlots:
+        # assign number of groups to be plotted:
+        n_groups = 8
+        
+        # create figure:
+        fig, ax = plt.subplots()
+        plt.subplot(2,1,1)
+        
+        index = np.arange(n_groups)
+        bar_width = 0.15
+        
+        opacity = 0.4
+        
+        plt.bar(index, TotalHbyPos, bar_width,
+                         alpha=opacity,
+                         color='r',
+                         label='H')
+        
+        plt.bar(index+ bar_width, TotalCbyPos, bar_width,
+                         alpha=opacity,
+                         color='b',
+                         label='C')
+                         
+        plt.bar(index+ bar_width*2, TotalLbyPos, bar_width,
+                         alpha=opacity,
+                         color='g',
+                         label='L')
+                         
+        plt.bar(index+ bar_width*3, TotalPVbyPos, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='PV')
+                         
+        plt.bar(index+ bar_width*4, TotalE_HCLbyPos, bar_width,
+                         alpha=opacity,
+                         color='m',
+                         label='E_HCL')
+        if auxVar['combineResults']:
+            plt.bar(index+ bar_width*5, TotalE_totbyPos, bar_width,
+                            alpha=opacity,
+                            color='k',
+                            label='E_tot')
+        
+        plt.xlabel('Combinations')
+        plt.ylabel('Energy [kWh]')
+        plt.title('Energy Dependency on Angle Combinations')
+        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
+        plt.legend(loc=0)
+        
+        plt.tight_layout()
+        
+        
+        plt.subplot(2,1,2)
+        
+        index = np.arange(n_groups)
+        bar_width = 0.15
+        
+        opacity = 0.4
+        
+        plt.bar(index, DiffH, bar_width,
+                         alpha=opacity,
+                         color='r',
+                         label='H')
+        
+        plt.bar(index+ bar_width, DiffC, bar_width,
+                         alpha=opacity,
+                         color='b',
+                         label='C')
+                         
+        plt.bar(index+ bar_width*2, DiffL, bar_width,
+                         alpha=opacity,
+                         color='g',
+                         label='L')
+                         
+        plt.bar(index+ bar_width*3, DiffPV, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='PV')
+                         
+        plt.bar(index+ bar_width*4, DiffE_HCL, bar_width,
+                         alpha=opacity,
+                         color='m',
+                         label='E_HCL')
     
-    TotalE_totbyPos=[E_tot_tot, E_tot_HCL, E_tot_C, E_tot_PV, E_tot_tot, E_tot_90, E_tot_45, E_tot_0]
-    DiffE_tot = TotalE_totbyPos- E_tot_tot
-    
-    # assign number of groups to be plotted:
-    n_groups = 8
-    
-    # create figure:
-    fig, ax = plt.subplots()
-    plt.subplot(2,1,1)
-    
-    index = np.arange(n_groups)
-    bar_width = 0.15
-    
-    opacity = 0.4
-    
-    plt.bar(index, TotalHbyPos, bar_width,
-                     alpha=opacity,
-                     color='r',
-                     label='H')
-    
-    plt.bar(index+ bar_width, TotalCbyPos, bar_width,
-                     alpha=opacity,
-                     color='b',
-                     label='C')
-                     
-    plt.bar(index+ bar_width*2, TotalLbyPos, bar_width,
-                     alpha=opacity,
-                     color='g',
-                     label='L')
-                     
-    plt.bar(index+ bar_width*3, TotalPVbyPos, bar_width,
-                     alpha=opacity,
-                     color='c',
-                     label='PV')
-                     
-    plt.bar(index+ bar_width*4, TotalE_HCLbyPos, bar_width,
-                     alpha=opacity,
-                     color='m',
-                     label='E_HCL')
-                     
-    plt.bar(index+ bar_width*5, TotalE_totbyPos, bar_width,
-                     alpha=opacity,
-                     color='k',
-                     label='E_tot')
-    
-    plt.xlabel('Combinations')
-    plt.ylabel('Energy [kWh]')
-    plt.title('Energy Dependency on Angle Combinations')
-    plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
-    plt.legend(loc=0)
-    
-    plt.tight_layout()
-    
-    
-    plt.subplot(2,1,2)
-    
-    index = np.arange(n_groups)
-    bar_width = 0.15
-    
-    opacity = 0.4
-    
-    plt.bar(index, DiffH, bar_width,
-                     alpha=opacity,
-                     color='r',
-                     label='H')
-    
-    plt.bar(index+ bar_width, DiffC, bar_width,
-                     alpha=opacity,
-                     color='b',
-                     label='C')
-                     
-    plt.bar(index+ bar_width*2, DiffL, bar_width,
-                     alpha=opacity,
-                     color='g',
-                     label='L')
-                     
-    plt.bar(index+ bar_width*3, DiffPV, bar_width,
-                     alpha=opacity,
-                     color='c',
-                     label='PV')
-                     
-    plt.bar(index+ bar_width*4, DiffE_HCL, bar_width,
-                     alpha=opacity,
-                     color='m',
-                     label='E_HCL')
-                     
-    plt.bar(index+ bar_width*5, DiffE_tot, bar_width,
-                     alpha=opacity,
-                     color='k',
-                     label='E_tot')
-                     
-                     
-    plt.xlabel('Combinations')
-    plt.ylabel('$\Delta$ Energy [kWh]')
-    plt.title('Energy Difference Dependency on Angle Combinations')
-    plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
-    plt.legend(loc=0)
-    
-    plt.tight_layout()
-    plt.show()
+        if auxVar['combineResults']:
+            plt.bar(index+ bar_width*5, DiffE_tot, bar_width,
+                             alpha=opacity,
+                             color='k',
+                             label='E_tot')
+                         
+                         
+        plt.xlabel('Combinations')
+        plt.ylabel('$\Delta$ Energy [kWh]')
+        plt.title('Energy Difference Dependency on Angle Combinations')
+        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
+        plt.legend(loc=0)
+        
+        plt.tight_layout()
+        plt.show()
         
     # save data to dictionaries
     energy_optHCL = {'H': H_HCL, 'C': C_HCL, 'L': L_HCL, 'E_HCL': E_HCL_HCL, 'E_tot': E_tot_HCL, 'PV': PV_HCL}

@@ -42,6 +42,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_radiation_path))['allAngles'][0])
     
+    # set numCombPerHour to 1 if it appears to be zero (this is the case for suntracking)
+    if numCombPerHour == 0:
+        numCombPerHour = 1
+    
    
     numASFit = numHours*numCombPerHour
     
@@ -287,8 +291,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
     
     PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month}
     np.save(save_results_path + '\PV_detailed_results.npy',PV_detailed_results)    
-    if create_plots_flag:
     
+    if create_plots_flag:
         
         fig1 = plt.figure()
         
@@ -349,5 +353,9 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
         plt.xlabel(('Iteration number'), fontsize = 12)
         plt.ylabel(('Module Efficiency (%)'), fontsize =  12)
         
-    print 'PV production succesfully calculated'
-    return PV_electricity_results, PV_detailed_results, fig1, fig2
+        print 'PV production succesfully calculated'
+        return PV_electricity_results, PV_detailed_results, fig1, fig2
+    
+    else:
+        print 'PV production succesfully calculated'
+        return PV_electricity_results, PV_detailed_results

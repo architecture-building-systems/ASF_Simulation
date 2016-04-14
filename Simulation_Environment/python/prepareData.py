@@ -45,7 +45,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     # fill in the evaluated hours with the data from PV_monthly_array:
     PV_monthly[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=PV_monthly_array
     
-
+    
     #  read radiation for all combinations and hours:
     R_monthly_list = PV_electricity_results['Ins_sum']
     
@@ -61,20 +61,109 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     
     # transpose array to match thermal and lighting results:
     R_monthly_array = R_monthly_array.transpose()            
-    
-    months = 12
-    TotalHoursPerDay = 24
-    TotalHours = (months*TotalHoursPerDay)
-    
+        
     # create zero array that includes 24 hours for every month:
     R_monthly = np.zeros((PV_electricity_results['numComb'],TotalHours))
     
     # fill in the evaluated hours with the data from R_monthly_array:
     R_monthly[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=R_monthly_array
     
+    
+    
+    #  read power for all combinations and hours:
+    PV_avg_list = PV_electricity_results['Pmpp_avg']
+    
+    # new empty array for pv data:
+    PV_avg_array = np.empty((len(PV_avg_list)))*np.nan
+    
+    PV_avg_array = PV_avg_list #W/m2
+
+    # resize data, so that it matches the number of combinations and the number of hours:
+    PV_avg_array.resize(PV_electricity_results['numHours'],PV_electricity_results['numComb'])
+    
+    # transpose array to match thermal and lighting results:
+    PV_avg_array = PV_avg_array.transpose()            
+        
+    # create zero array that includes 24 hours for every month:
+    PV_avg = np.zeros((PV_electricity_results['numComb'],TotalHours))
+    
+    # fill in the evaluated hours with the data from PV_avg_array:
+    PV_avg[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=PV_avg_array
+    
+    
+    #  read insolation for all combinations and hours:
+    Ins_avg_list = PV_electricity_results['Ins_avg']
+    
+    # new empty array for insolation data:
+    Ins_avg_array = np.empty((len(Ins_avg_list)))*np.nan
+    
+     # multiply the average insolation by the number of days per month and convert to kWh:
+    for i in range(len(Ins_avg_list)):
+        Ins_avg_array[i] = Ins_avg_list[i] #W/m2
+
+    # resize data, so that it matches the number of combinations and the number of hours:
+    Ins_avg_array.resize(PV_electricity_results['numHours'],PV_electricity_results['numComb'])
+    
+    # transpose array to match thermal and lighting results:
+    Ins_avg_array = Ins_avg_array.transpose()            
+        
+    # create zero array that includes 24 hours for every month:
+    Ins_avg = np.zeros((PV_electricity_results['numComb'],TotalHours))
+    
+    # fill in the evaluated hours with the data from Ins_avg_array:
+    Ins_avg[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=Ins_avg_array
+    
+    
+    #  read insolation for all combinations and hours:
+    Ins_theoretical_list = PV_electricity_results['theoreticalMaxRad']
+    
+    # new empty array for insolation data:
+    Ins_theoretical_array = np.empty((len(Ins_theoretical_list)))*np.nan
+    
+     # multiply the average insolation by the number of days per month and convert to kWh:
+    for i in range(len(Ins_theoretical_list)):
+        Ins_theoretical_array[i] = Ins_theoretical_list[i] #W/m2
+
+    # resize data, so that it matches the number of combinations and the number of hours:
+    Ins_theoretical_array.resize(PV_electricity_results['numHours'],PV_electricity_results['numComb'])
+    
+    # transpose array to match thermal and lighting results:
+    Ins_theoretical_array = Ins_theoretical_array.transpose()            
+        
+    # create zero array that includes 24 hours for every month:
+    Ins_theoretical = np.zeros((PV_electricity_results['numComb'],TotalHours))
+    
+    # fill in the evaluated hours with the data from Ins_theoretical_array:
+    Ins_theoretical[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=Ins_theoretical_array
+    
+    
+    #  read efficiencies for all combinations and hours:
+    eff_list = PV_electricity_results['eff_ap']
+    
+    # new empty array for efficiencies data:
+    eff_array = np.empty((len(eff_list)))*np.nan
+    
+     # multiply the average efficiencies by the number of days per month and convert to kWh:
+    for i in range(len(eff_list)):
+        eff_array[i] = eff_list[i] #W/m2
+
+    # resize data, so that it matches the number of combinations and the number of hours:
+    eff_array.resize(PV_electricity_results['numHours'],PV_electricity_results['numComb'])
+    
+    # transpose array to match thermal and lighting results:
+    eff_array = eff_array.transpose()            
+        
+    # create zero array that includes 24 hours for every month:
+    eff = np.zeros((PV_electricity_results['numComb'],TotalHours))
+    
+    # fill in the evaluated hours with the data from eff_array:
+    eff[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=eff_array
+    
+        
+    
     # calculate average efficiency at optimum angle combination
     PV_eff_opt = calculate_sum_for_index(PV_monthly, np.argmax(PV_monthly,axis=0))/calculate_sum_for_index(R_monthly, np.argmax(PV_monthly,axis=0))
-    return PV_monthly, R_monthly, PV_eff_opt
+    return PV_monthly, R_monthly, PV_eff_opt, Ins_avg, Ins_theoretical, PV_avg, eff
     
 def importDIVAresults(path):
     """
