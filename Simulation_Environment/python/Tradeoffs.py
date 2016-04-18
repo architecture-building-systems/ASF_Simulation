@@ -11,47 +11,37 @@ import matplotlib.pyplot as plt
 
 from auxFunctions import calculate_sum_for_index, create_evalList
 
-def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod, auxVar):
+#def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod, auxVar):
+def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
+    
     
     # assign data:
     H_data = monthlyData['H']
-    H_COP_data = monthlyData['efficiencies']['H_COP']
     C_data = monthlyData['C']
-    C_COP_data = monthlyData['efficiencies']['C_COP']
     L_data = monthlyData['L']
-    L_power_data = monthlyData['efficiencies']['L_Load']
     PV_data = monthlyData['PV']
-    PV_eff_data = monthlyData['efficiencies']['PV']
 
-
-    
-    # set changes if demanded:
-    if efficiencyChanges['changeEfficiency']:
-        H_COP_eval = efficiencyChanges['H_COP']
-        C_COP_eval = efficiencyChanges['C_COP']
-        L_power_eval = efficiencyChanges['L_Load']
-        PV_eff_eval = PV_eff_data*efficiencyChanges['PV']
+     # assign what efficiencies were used for evaluation:  
+    if monthlyData['changedEfficiency'] == True:
+        usedEfficiencies = monthlyData['efficiencyChanges']
     else:
-        H_COP_eval = H_COP_data
-        C_COP_eval = C_COP_data
-        L_power_eval = L_power_data
-        PV_eff_eval = PV_eff_data
-    
+        usedEfficiencies = monthlyData['efficiencies']
+
     # assign choose data (of evaluation period if demanded):
     if tradeoffPeriod['enabled']:
         print 'showing tradeoffs for month: ' + str(tradeoffPeriod['month']) + ', hours: ' +  str(tradeoffPeriod['startHour']) +'-' +  str(tradeoffPeriod['endHour']) 
         evalList = create_evalList('monthly', tradeoffPeriod['month'], tradeoffPeriod['startHour'], tradeoffPeriod['endHour'])
-        H = H_data[:,evalList]*H_COP_data/H_COP_eval
-        C = C_data[:,evalList]*C_COP_data/C_COP_eval
-        L = L_data[:,evalList]*L_power_eval/L_power_data
-        PV = PV_data[:,evalList]*PV_eff_eval/PV_eff_data
+        H = H_data[:,evalList]
+        C = C_data[:,evalList]
+        L = L_data[:,evalList]
+        PV = PV_data[:,evalList]
     else:
         print 'showing tradeoffs for the whole year'
         
-        H = H_data*H_COP_data/H_COP_eval
-        C = C_data*C_COP_data/C_COP_eval
-        L = L_data*L_power_eval/L_power_data
-        PV = PV_data*PV_eff_eval/PV_eff_data
+        H = H_data
+        C = C_data
+        L = L_data
+        PV = PV_data
     
     # sum individual data
     E_HCL = H+C+L
@@ -192,11 +182,13 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
 
     
     if createPlots:
+        
         # assign number of groups to be plotted:
         n_groups = 8
         
         # create figure:
-        fig, ax = plt.subplots()
+#        fig, ax = plt.subplots()
+        fig = plt.figure(figsize=(16, 8))
         plt.subplot(2,1,1)
         
         index = np.arange(n_groups)
@@ -207,22 +199,28 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
         plt.bar(index, TotalHbyPos, bar_width,
                          alpha=opacity,
                          color='r',
-                         label='H')
+                         label='H (COP=' + str(usedEfficiencies['H_COP']) + ')')
         
         plt.bar(index+ bar_width, TotalCbyPos, bar_width,
                          alpha=opacity,
                          color='b',
-                         label='C')
+                         label='C (COP=' + str(usedEfficiencies['C_COP']) + ')')
                          
         plt.bar(index+ bar_width*2, TotalLbyPos, bar_width,
                          alpha=opacity,
                          color='g',
-                         label='L')
+                         label='L (Load=' + str(usedEfficiencies['L_Load']) + ' W/m2)')
                          
-        plt.bar(index+ bar_width*3, TotalPVbyPos, bar_width,
+        if usedEfficiencies['PV'] == 1 or not monthlyData['changedEfficiency'] :
+            plt.bar(index+ bar_width*3, TotalPVbyPos, bar_width,
                          alpha=opacity,
                          color='c',
                          label='PV')
+        else:
+            plt.bar(index+ bar_width*3, TotalPVbyPos, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='PV (multiplied by ' + str(usedEfficiencies['PV']) + ')')           
                          
         plt.bar(index+ bar_width*4, TotalE_HCLbyPos, bar_width,
                          alpha=opacity,
@@ -241,6 +239,7 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
         plt.legend(loc=0)
         
         plt.tight_layout()
+        plt.grid()
         
         
         plt.subplot(2,1,2)
@@ -253,22 +252,29 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
         plt.bar(index, DiffH, bar_width,
                          alpha=opacity,
                          color='r',
-                         label='H')
+                         label='H (COP=' + str(usedEfficiencies['H_COP']) + ')')
         
         plt.bar(index+ bar_width, DiffC, bar_width,
                          alpha=opacity,
                          color='b',
-                         label='C')
+                         label='C (COP=' + str(usedEfficiencies['C_COP']) + ')')
                          
         plt.bar(index+ bar_width*2, DiffL, bar_width,
                          alpha=opacity,
                          color='g',
-                         label='L')
+                         label='L (Load=' + str(usedEfficiencies['L_Load']) + ' W/m2)')
                          
-        plt.bar(index+ bar_width*3, DiffPV, bar_width,
+                         
+        if usedEfficiencies['PV'] == 1 or not monthlyData['changedEfficiency'] :
+            plt.bar(index+ bar_width*3, DiffPV, bar_width,
                          alpha=opacity,
                          color='c',
                          label='PV')
+        else:
+            plt.bar(index+ bar_width*3, DiffPV, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='PV (multiplied by ' + str(usedEfficiencies['PV']) + ')')           
                          
         plt.bar(index+ bar_width*4, DiffE_HCL, bar_width,
                          alpha=opacity,
@@ -289,6 +295,7 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
         plt.legend(loc=0)
         
         plt.tight_layout()
+        plt.grid()
         plt.show()
         
     # save data to dictionaries
@@ -299,7 +306,7 @@ def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeri
     energy_45 = {'H': H_45, 'C': C_45, 'L': L_45, 'E_HCL': E_HCL_45, 'E_tot': E_tot_45, 'PV': PV_45}
     energy_0 = {'H': H_0, 'C': C_0, 'L': L_0, 'E_HCL': E_HCL_0, 'E_tot': E_tot_0, 'PV': PV_0}
     tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_optPV':energy_optPV, 'energy_opttot': energy_opttot, 'energy_90': energy_90, 'energy_45':energy_45, 'energy_0': energy_0,}
-    return tradeoff_results
+    return tradeoff_results, fig
     
 def compareTotalEnergy25comb(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod):
     
@@ -457,8 +464,8 @@ def compareTotalEnergy25comb(monthlyData, efficiencyChanges, createPlots, tradeo
     
     n_groups = 10
     
-    
-    fig, ax = plt.subplots()
+    fig = plt.figure(figsize=(16, 8))
+#    fig, ax = plt.subplots()
     p1 = plt.subplot(2,1,1)
     
     index = np.arange(n_groups)

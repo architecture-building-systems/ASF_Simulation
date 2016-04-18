@@ -255,6 +255,7 @@ monthlyData_comb['LBmask'] = createLBmask(monthlyData_comb['R'])
 
 
 fig = plt.figure()
+plt.suptitle('Radiation Optimization')
 plt.subplot(2,1,1)
 arg = ['max','R_avg', 'x', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
@@ -271,6 +272,7 @@ cbar.ax.set_yticklabels(monthlyData_comb['angles']['y_angles'])
 
 
 fig = plt.figure()
+plt.suptitle('PV Optimization')
 plt.subplot(2,1,1)
 arg = ['max','PV', 'x', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)

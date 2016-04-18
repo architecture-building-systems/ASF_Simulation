@@ -14,7 +14,8 @@ import numpy as np
 #from average_monthly import sum_monthly, average_monthly, daysPassedMonth
 ##from PostProcessThermal_functions import pcolorMonths, pcolorEnergyMonths
 #from try_nan_values import createMonthsNan
-from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcolorEnergyDays
+from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcolorEnergyDays, plotDataForIndices
+
 
 
 
@@ -43,16 +44,25 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
     plt.subplot(2,2,1)
     arg1 = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg1)
-    plt.title("Heating Demand")
+    if DIVA_results['efficienciesChanged']:
+        plt.title("Heating Demand COP=" + str(DIVA_results['efficiencyChanges']['H_COP']))
+    else:
+        plt.title("Heating Demand COP=" + str(DIVA_results['efficiencies']['H_COP']))
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,2,2)
     arg1 = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg1)
-    plt.title("Cooling Demand")
+    if DIVA_results['efficienciesChanged']:
+        plt.title("Cooling Demand COP=" + str(DIVA_results['efficiencyChanges']['C_COP']))
+    else:
+        plt.title("Cooling Demand COP=" + str(DIVA_results['efficiencies']['C_COP']))
     plt.subplot(2,2,3)
     arg1 = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg1)
-    plt.title("Lighting Demand")
+    if DIVA_results['efficienciesChanged']:
+        plt.title("Lighting Demand Load=" + str(DIVA_results['efficiencyChanges']['L_Load']) + " W/m2")
+    else:
+        plt.title("Lighting Demand Load=" + str(DIVA_results['efficiencies']['L_Load']) + " W/m2")
     plt.xlabel("Day of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,2,4)
@@ -105,6 +115,8 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
     plt.show()   
+    
+    return fig
 
 
 
@@ -124,6 +136,12 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
             raise ValueError('rotation_axis does not exist')
     else:
         rotation_axis = np.nan
+
+    # assign what efficiencies were used for evaluation:  
+    if monthlyData['changedEfficiency'] == True:
+        usedEfficiencies = monthlyData['efficiencyChanges']
+    else:
+        usedEfficiencies = monthlyData['efficiencies']
     
     #set max/min for energy plot:
     z_min = np.min(monthlyData['PV'])
@@ -134,20 +152,23 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     plt.subplot(2,3,1)
     arg1 = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Heating Demand")
+    plt.title("Heating Demand COP=" + str(usedEfficiencies['H_COP']))
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,2)
     arg1 = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Cooling Demand")
+    plt.title("Cooling Demand COP=" + str(usedEfficiencies['C_COP']))
     plt.subplot(2,3,3)
     arg1 = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Lighting Demand")
+    plt.title("Lighting Demand Load=" + str(usedEfficiencies['L_Load']) + " W/m2")
     plt.subplot(2,3,4)
     arg1 = ['min','PV', rotation_axis, 'LB', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("PV Supply")
+    if usedEfficiencies['PV'] == 1 or not monthlyData['changedEfficiency'] :
+        plt.title("PV Supply")
+    else:
+        plt.title("PV Supply (multiplied by factor " + str(usedEfficiencies['PV']) + ")")
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,5)
@@ -187,361 +208,91 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
     plt.show()   
-#if not (('figcounter' in locals()) or ('figcounter' in globals())):
-#    figcounter = 0
+    return fig
+
+def plotEnergyUsage(monthlyData, auxVar):
+    
+    # assign data:
+    H = monthlyData['H']
+    C = monthlyData['C']
+    L = monthlyData['L']
+    PV = monthlyData['PV']
+
+     # assign what efficiencies were used for evaluation:  
+    if monthlyData['changedEfficiency'] == True:
+        usedEfficiencies = monthlyData['efficiencyChanges']
+    else:
+        usedEfficiencies = monthlyData['efficiencies']
+    
+    # sum individual data
+    E_HCL = H+C+L
+    
+    if auxVar['combineResults']:
+        E_tot = E_HCL+PV
+    else:
+        E_tot = E_HCL*np.nan
+    
+    # find indices
+    Hind = np.argmin(H,axis=0)
+    Cind = np.argmin(C,axis=0)
+    Lind = np.argmin(L,axis=0)
+    PVind = np.argmin(PV,axis=0)
+    E_HCLind = np.argmin(E_HCL,axis=0)
+    
+    if auxVar['combineResults']:
+        E_totind = np.argmin(E_tot,axis=0)
+        ind_0_0 =  monthlyData['angles']['allAngles'][0].index((0,0))
+        ind_45_0 =  monthlyData['angles']['allAngles'][0].index((45,0))
+        ind_90_0 =  monthlyData['angles']['allAngles'][0].index((90,0))
+    else:
+        ind_0_0 =  monthlyData['divaAngles']['allAngles'][0].index((0,0))
+        ind_45_0 =  monthlyData['divaAngles']['allAngles'][0].index((45,0))
+        ind_90_0 =  monthlyData['divaAngles']['allAngles'][0].index((90,0))
+
+    indices = {'H':Hind, 'C':Cind, 'L':Lind, 'PV':PVind, 'E_HCL':E_HCLind, 'E_tot':E_totind, '0':ind_0_0, '45':ind_45_0, '90':ind_90_0}    
+    
+    figures = {}
+    
+    # create figures
+    figures['H'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['H'])
+    figures['C'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['C'])
+    figures['L'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['L'])
+    figures['PV'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['PV'])
+    figures['E_HCL'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['E_HCL'])
+    figures['E_tot'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['E_tot'])
+    
+    # add titles to figures
+    figures['H'].suptitle('Heating Demand (COP=' + str(usedEfficiencies['H_COP']) + ')')
+    figures['C'].suptitle('Cooling Demand (COP=' + str(usedEfficiencies['C_COP']) + ')')
+    figures['L'].suptitle('Lighting Demand (Load=' + str(usedEfficiencies['L_Load']) + ' W/m2)')
+    figures['PV'].suptitle('PV Generation')
+    figures['E_HCL'].suptitle('Thermal/Lighting Demand')
+    figures['E_tot'].suptitle('Total Demand')
+    
+    return figures
+#    figH = plt.figure(figsize=(16, 8))
 #    
-#
-# # Optimal x-angle combinations for every hour of the year
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 12))
-#plt.suptitle("Angle Distribution around x-axis", size=16)
-#p1 = plt.subplot(2,3,1)
-#pcolorMonths(H_month, 'x', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Heating Demand")
-#p1 = plt.subplot(2,3,2)
-#pcolorMonths(C_month, 'x', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Cooling Demand")
-#p1 = plt.subplot(2,3,3)
-#pcolorMonths(L_month, 'x', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Lighting Demand")
-#p1 = plt.subplot(2,3,4)
-#pcolorMonths(R_month, 'x', x_angle_location, y_angle_location, allAngles, sunMask, 'max')
-#plt.title("PV Electricity Production")
-#p1 = plt.subplot(2,3,5)
-#pcolorMonths(E_month, 'x', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Total Thermal/Lighting Demand")
-#p1 = plt.subplot(2,3,6)
-#pcolorMonths(E_month_withPV, 'x', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Net Demand with PV")
-#fig.subplots_adjust(right=0.8)
-#cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-#cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(x_angles)))
-#cbar.ax.set_yticklabels(x_angles)
-#plt.show()   
+#    plt.suptitle('Heating Demand (COP=' + str(usedEfficiencies['H_COP']) + ')')
 #    
+#    plt.subplot(2,1,1)
+#    plt.plot(monthlyData['H'][Hind, dummyRange], label = 'optimized for H')
+#    plt.plot(monthlyData['H'][Cind, dummyRange], label = 'optimized for C')
+#    plt.plot(monthlyData['H'][PVind, dummyRange], label = 'optimized for PV')
+#    plt.plot(monthlyData['H'][E_HCLind, dummyRange], label = 'optimized for HCL')
+#    plt.plot(monthlyData['H'][E_totind, dummyRange], label = 'optimized for E_tot')
+#    plt.ylabel('Energy [kWh]')
+#    plt.legend()
+#    plt.grid()
 #    
-# # Optimal y-angle combinations for every hour of the year
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 12))
-#plt.suptitle("Angle Distribution around y-axis", size=16)
-#p1 = plt.subplot(2,3,1)
-#pcolorMonths(H_month, 'y', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Heating Demand")
-#p1 = plt.subplot(2,3,2)
-#pcolorMonths(C_month, 'y', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Cooling Demand")
-#p1 = plt.subplot(2,3,3)
-#pcolorMonths(L_month, 'y', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Lighting Demand")
-#p1 = plt.subplot(2,3,4)
-#pcolorMonths(R_month, 'y', x_angle_location, y_angle_location, allAngles, sunMask, 'max')
-#plt.title("PV Electricity Production")
-#p1 = plt.subplot(2,3,5)
-#pcolorMonths(E_month, 'y', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Total Thermal/lighting Demand")
-#p1 = plt.subplot(2,3,6)
-#pcolorMonths(E_month_withPV, 'y', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Net Demand with PV")
-#fig.subplots_adjust(right=0.8)
-#cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-#cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(y_angles)))
-#cbar.ax.set_yticklabels(y_angles)
-#plt.show()   
-#
-# # Optimal x- and y-angle combinations for every hour of the year
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 12))
-#plt.suptitle("(a) optimal altitude and azimuth orientation", size=16)
-#p1 = plt.subplot(2,3,1)
-#pcolorMonths(H_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Heating Demand")
-#p1 = plt.subplot(2,3,2)
-#pcolorMonths(C_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Cooling Demand")
-#p1 = plt.subplot(2,3,3)
-#pcolorMonths(L_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Lighting Demand")
-#p1 = plt.subplot(2,3,4)
-#pcolorMonths(R_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask, 'max')
-#plt.title("PV Electricity Production")
-#p1 = plt.subplot(2,3,5)
-#pcolorMonths(E_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Total Thermal/lighting Demand")
-#p1 = plt.subplot(2,3,6)
-#pcolorMonths(E_month_withPV, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Net Demand with PV")
-#fig.subplots_adjust(right=0.8)
-#cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-#cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
-#cbar.ax.set_yticklabels(allAngles[0])
-#plt.show()   
-#
-#
-##
-### Optimal x-angle combinations for every hour of the year
-##figcounter+=1
-##fig = plt.figure(num = figcounter, figsize=(16, 12))
-##plt.suptitle("Angle Distribution around x-axis", size=16)
-##p1 = plt.subplot(2,2,1)
-##pcolorMonths(H_month, 'x', x_angle_location, y_angle_location, allAngles)
-##plt.title("Heating Demand")
-##p1 = plt.subplot(2,2,2)
-##pcolorMonths(C_month, 'x', x_angle_location, y_angle_location, allAngles)
-##plt.title("Cooling Demand")
-##p1 = plt.subplot(2,2,3)
-##pcolorMonths(L_month, 'x', x_angle_location, y_angle_location, allAngles)
-##plt.title("Lighting Demand")
-##p1 = plt.subplot(2,2,4)
-##pcolorMonths(E_month, 'x', x_angle_location, y_angle_location, allAngles)
-##plt.title("Total Energy Demand")
-##fig.subplots_adjust(right=0.8)
-##cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-##cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(x_angles)))
-##cbar.ax.set_yticklabels(x_angles)
-##plt.show()
-##
-### Optimal y-angle combinations for every hour of the year
-##figcounter+=1
-##fig = plt.figure(num = figcounter, figsize=(16, 12))
-##plt.suptitle("Angle Distribution around y-axis", size=16)
-##plt.subplot(2,2,1)
-##pcolorMonths(H_month, 'y', x_angle_location, y_angle_location, allAngles)
-##plt.title("Heating Demand")
-##plt.subplot(2,2,2)
-##pcolorMonths(C_month, 'y', x_angle_location, y_angle_location, allAngles)
-##plt.title("Cooling Demand")
-##plt.subplot(2,2,3)
-##pcolorMonths(L_month, 'y', x_angle_location, y_angle_location, allAngles)
-##plt.title("Lighting Demand")
-##plt.subplot(2,2,4)
-##pcolorMonths(E_month, 'y', x_angle_location, y_angle_location, allAngles)
-##plt.title("Total Energy Demand")
-##fig.subplots_adjust(right=0.8)
-##cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-##cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(y_angles)))
-##cbar.ax.set_yticklabels(y_angles)
-##plt.show()
-##
-##figcounter+=1
-##fig = plt.figure(num = figcounter, figsize=(16, 12))
-##plt.suptitle("Angle Distribution around x and y axis", size=16)
-##p1 = plt.subplot(2,2,1)
-##pcolorMonths(H_month, 'xy', x_angle_location, y_angle_location, allAngles)
-##plt.title("Heating Demand")
-##p1 = plt.subplot(2,2,2)
-##pcolorMonths(C_month, 'xy', x_angle_location, y_angle_location, allAngles)
-##plt.title("Cooling Demand")
-##p1 = plt.subplot(2,2,3)
-##pcolorMonths(L_month, 'xy', x_angle_location, y_angle_location, allAngles)
-##plt.title("Lighting Demand")
-##p1 = plt.subplot(2,2,4)
-##pcolorMonths(E_month, 'xy', x_angle_location, y_angle_location, allAngles)
-##plt.title("Total Energy Demand")
-##fig.subplots_adjust(right=0.8)
-##cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-##plt.title("(x-angle, y-angle)", fontsize=12, loc='left', verticalalignment = 'bottom')
-##cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
-##cbar.ax.set_yticklabels(allAngles[0])
-##plt.show()
-#
-### Energy Use at opmtimum angle combination for the hole year:
-##figcounter+=1
-##fig = plt.figure(num = figcounter, figsize=(16, 12))
-##plt.suptitle("Energy Use at optimum angle combination", size=16)
-##plt.subplot(2,2,1)
-##pcolorEnergyMonths(H_month)
-##plt.title("Heating Demand")
-##plt.subplot(2,2,2)
-##pcolorEnergyMonths(C_month)
-##plt.title("Cooling Demand")
-##plt.subplot(2,2,3)
-##pcolorEnergyMonths(L_month)
-##plt.title("Lighting Demand")
-##plt.subplot(2,2,4)
-##pcolorEnergyMonths(E_month)
-##plt.title("Total Energy Demand")
-##fig.subplots_adjust(right=0.8)
-##cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-##cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,int(E_month.max()))))
-##cbar.set_label('Power Use in kWh', rotation=270, labelpad=20)
-##plt.show()
-#
-## Energy Use at opmtimum angle combination for the hole year:
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 12))
-#plt.suptitle("Net Energy Use at optimum angle combination", size=16)
-#plt.subplot(2,3,1)
-#pcolorEnergyMonths(H_month,'min')
-#plt.title("Heating Demand")
-#plt.ylabel("Hour of the Day")
-#plt.subplot(2,3,2)
-#pcolorEnergyMonths(C_month,'min')
-#plt.title("Cooling Demand")
-#plt.subplot(2,3,3)
-#pcolorEnergyMonths(L_month,'min')
-#plt.title("Lighting Demand")
-#plt.subplot(2,3,4)
-#pcolorEnergyMonths(-PV_month,'min')
-#plt.title("PV Production")
-#plt.xlabel("Month of the Year")
-#plt.ylabel("Hour of the Day")
-#plt.subplot(2,3,5)
-#pcolorEnergyMonths(E_month,'min')
-#plt.title("Thermal/Lighting Demand")
-#plt.xlabel("Month of the Year")
-#plt.subplot(2,3,6)
-#pcolorEnergyMonths(E_month_withPV,'min')
-#plt.title("Net Energy Demand")
-#plt.xlabel("Month of the Year")
-#fig.subplots_adjust(right=0.8)
-#cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-##cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,int(E_month.max()))))
-##○cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,30)))
-#cbar = plt.colorbar(cax=cbar_ax)
-#cbar.set_label('Net Energy Use in kWh', rotation=270, labelpad=20)
-#plt.show()
-#
-## Energy Use at fixed angle combination for the hole year:
-#combination=12
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 12))
-#plt.suptitle("Energy Use at combination " + str(combination), size=16)
-#plt.subplot(2,3,1)
-#pcolorEnergyMonths(H_month,'min',combination)
-#plt.title("Heating Demand")
-#plt.subplot(2,3,2)
-#pcolorEnergyMonths(C_month,'min',combination)
-#plt.title("Cooling Demand")
-#plt.subplot(2,3,3)
-#pcolorEnergyMonths(L_month,'min',combination)
-#plt.title("Lighting Demand")
-#plt.subplot(2,3,4)
-#pcolorEnergyMonths(-PV_month,'max',combination)
-#plt.title("PV Production")
-#plt.subplot(2,3,5)
-#pcolorEnergyMonths(E_month,'min',combination)
-#plt.title("Thermal/Lighting Demand")
-#plt.subplot(2,3,6)
-#pcolorEnergyMonths(E_month_withPV,'min',combination)
-#plt.title("Net Energy Demand")
-#fig.subplots_adjust(right=0.8)
-#cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-##cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,int(E_month.max()))))
-#cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,30)))
-#cbar.set_label('Energy Use in kWh', rotation=270, labelpad=20)
-#plt.show()
-#
-## Energy Use at fixed angle combination for the hole year:
-#combination=0
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 12))
-#plt.suptitle("Energy Use at combination " + str(combination), size=16)
-#plt.subplot(2,3,1)
-#pcolorEnergyMonths(H_month,'min',combination)
-#plt.title("Heating Demand")
-#plt.subplot(2,3,2)
-#pcolorEnergyMonths(C_month,'min',combination)
-#plt.title("Cooling Demand")
-#plt.subplot(2,3,3)
-#pcolorEnergyMonths(L_month,'min',combination)
-#plt.title("Lighting Demand")
-#plt.subplot(2,3,4)
-#pcolorEnergyMonths(-PV_month,'max',combination)
-#plt.title("PV Production")
-#plt.subplot(2,3,5)
-#pcolorEnergyMonths(E_month,'min',combination)
-#plt.title("Thermal/Lighting Demand")
-#plt.subplot(2,3,6)
-#pcolorEnergyMonths(E_month_withPV,'min',combination)
-#plt.title("Net Energy Demand")
-#fig.subplots_adjust(right=0.8)
-#cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-##cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,int(E_month.max()))))
-#cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,30)))
-#cbar.set_label('Energy Use in kWh', rotation=270, labelpad=20)
-#plt.show()
-#
-##abstract figures:
-#
-##create strings for angle ticks:
-#AnglesString=[]
-#for i in range(len(allAngles[0])):
-#    AnglesString.append(str(allAngles[0][i][0])+'/'+str(allAngles[0][i][1]))
+#    plt.subplot(2,1,2)
+#    plt.plot(monthlyData['H'][Hind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for H')
+#    plt.plot(monthlyData['H'][Cind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for C')
+#    plt.plot(monthlyData['H'][PVind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for PV')
+#    plt.plot(monthlyData['H'][E_HCLind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for HCL')
+#    plt.plot(monthlyData['H'][Hind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for E_tot')
+#    plt.ylabel('Energy Difference [kWh]')
+#    plt.legend()
+#    plt.grid()
 #    
-#    
-# # Optimal x- and y-angle combinations for every hour of the year
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 8))
-#plt.suptitle("(a) Optimum Altitude and Azimuth Orientation", size=16)
-#p1 = plt.subplot(2,3,1)
-#pcolorMonths(H_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Heating Demand")
-#plt.ylabel("Hour of the Day",size=14)
-#p1 = plt.subplot(2,3,2)
-#pcolorMonths(C_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Cooling Demand")
-#p1 = plt.subplot(2,3,3)
-#pcolorMonths(L_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Lighting Demand")
-#p1 = plt.subplot(2,3,4)
-#pcolorMonths(R_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask, 'max')
-#plt.title("Irradiation on Panels")
-#plt.xlabel("Month of the Year",size=14)
-#plt.ylabel("Hour of the Day",size=14)
-#p1 = plt.subplot(2,3,5)
-#pcolorMonths(E_month, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Total Thermal/Lighting Demand")
-#plt.xlabel("Month of the Year",size=14)
-#p1 = plt.subplot(2,3,6)
-#pcolorMonths(E_month_withPV, 'xy', x_angle_location, y_angle_location, allAngles, sunMask)
-#plt.title("Net Demand including PV")
-#plt.xlabel("Month of the Year",size=14)
-#fig.subplots_adjust(right=0.8)
-##cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-#cbar_ax = fig.add_axes([0.85, 0.1, 0.05, 0.78])
-##cbart = plt.title("Altitude / Azimuth", fontsize=14, loc='left', verticalalignment = 'bottom')
-#cbart = plt.title("Altitude / Azimuth", fontsize=14)
-#cbart.set_position((1.1,1.02))
-#cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
-#cbar.ax.set_yticklabels(AnglesString)
-#cbar.ax.tick_params(labelsize=14)
-#plt.show()   
-#
-#
-## Energy Use at opmtimum angle combination for the hole year:
-#figcounter+=1
-#fig = plt.figure(num = figcounter, figsize=(16, 8))
-##plt.suptitle("(b) Net Energy Use at Optimum Orientation", size=16)
-#plt.subplot(2,3,1)
-#pcolorEnergyMonths(H_month,'min')
-#plt.title("Heating Demand")
-#plt.ylabel("Hour of the Day",size=14)
-#plt.subplot(2,3,2)
-#pcolorEnergyMonths(C_month,'min')
-#plt.title("Cooling Demand")
-#plt.subplot(2,3,3)
-#pcolorEnergyMonths(L_month,'min')
-#plt.title("Lighting Demand")
-#plt.subplot(2,3,4)
-#pcolorEnergyMonths(-PV_month,'min')
-#plt.title("PV Production")
-#plt.xlabel("Month of the Year",size=14)
-#plt.ylabel("Hour of the Day",size=14)
-#plt.subplot(2,3,5)
-#pcolorEnergyMonths(E_month,'min')
-#plt.title("Total Thermal/Lighting Demand")
-#plt.xlabel("Month of the Year",size=14)
-#plt.subplot(2,3,6)
-#pcolorEnergyMonths(E_month_withPV,'min')
-#plt.title("Net Demand including PV")
-#plt.xlabel("Month of the Year",size=14)
-#fig.subplots_adjust(right=0.8)
-#cbar_ax = fig.add_axes([0.85, 0.1, 0.05, 0.78])
-#cbart = plt.title("Net Energy [kWh]", fontsize=14)
-#cbart.set_position((1.1,1.02))
-##cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,int(E_month.max()))))
-##○cbar = plt.colorbar(cax=cbar_ax, ticks=np.asarray(range(0,30)))
-#cbar = plt.colorbar(cax=cbar_ax)
-#cbar.ax.tick_params(labelsize=14)
-##cbar.set_label('Net Energy Use in kWh', rotation=270, labelpad=20, size=14)
-#plt.show()
+#figures = plotEnergyUsage(monthlyData, tradeoffPeriod, auxVar)
+#figures['H'].suptitle('test')

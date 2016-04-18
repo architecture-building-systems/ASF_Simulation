@@ -54,22 +54,26 @@ pvSizeOption = 0
 # specify if  plots should be created (True or False):
 createPlots = True
 
-
 # only tradeoffs flag, set true if general data plots should not be evaluated:
 onlyTradeoffs = False
 
+# specify if detailed DIVA results should be shown (hourly values for the whole year):
+showDetailedDIVA = False
 
-# post processing tradeoff options: change efficiencies of heating(COP)/
+# post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
 # set changeEfficiency to True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':True, 'H_COP': 5, 'C_COP': 5, 'L_Load': 3, 'PV': 1}
+efficiencyChanges = {'changeEfficiency':False, 'H_COP': 1, 'C_COP': 1, 'L_Load': 3, 'PV': 1.1}
 
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
 # inclusive, so startHour=1 and endHour=24 corresponds to a time period from 
 # 0:00-24:00. month is defined in the classical sense, so month=1 corresponds to 
 # january.
-tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
+tradeoffPeriod = {'enabled':True, 'month':7, 'startHour':1, 'endHour':24}
+
+# options to specify what results should be saved:
+saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
     
 ######### -----END OF USER INTERACTION------ #############
     
@@ -126,7 +130,8 @@ if mainMode == 'post_processing':
     
     print "start post processing"
     
-    from prepareData import prepareMonthlyRadiatonData, importDIVAresults, readLayoutAndCombinations, CalcXYAnglesAndLocation, sum_monthly
+    from prepareData import prepareMonthlyRadiatonData, importDIVAresults, \
+        readLayoutAndCombinations, CalcXYAnglesAndLocation, sum_monthly, changeDIVAresults
     
     # create dictionary to save monthly data:
     monthlyData = {}
@@ -198,12 +203,27 @@ if mainMode == 'post_processing':
     monthlyData['R_theo'], monthlyData['PV_avg'], monthlyData['PV_eff'] \
                                         = prepareMonthlyRadiatonData(PV_electricity_results)
     
-    # make data negative to be consitent:    
+    # make pv data negative to be consistent with H,C and L:    
     monthlyData['PV'] = -monthlyData['PV']
     monthlyData['R'] = monthlyData['R']
     
+    # change PV data if demanded:
+    if efficiencyChanges['changeEfficiency']:
+        if not efficiencyChanges['PV']==1:
+            print 'multiplying PV electricity data by a factor of: ' + str(efficiencyChanges['PV'])
+        monthlyData['PV'] = monthlyData['PV'] * efficiencyChanges['PV']
+        monthlyData['changedEfficiency'] = True
+        monthlyData['efficiencyChanges'] = efficiencyChanges
+    else:
+        monthlyData['changedEfficiency'] = False
+        
+        
     # import DIVA results:
     DIVA_results = importDIVAresults(paths['diva'])    
+    
+    # change efficiencies of DIVA results if demanded:
+    if efficiencyChanges['changeEfficiency']:
+        DIVA_results = changeDIVAresults(DIVA_results, efficiencyChanges)
     
     # import DIVA LayoutAndCombinations and write to DIVA_results dict.:
     DIVA_results['LayoutAndCombinations'] = readLayoutAndCombinations(paths['diva'])
@@ -243,6 +263,10 @@ if mainMode == 'post_processing':
     #monthlyData['efficiencies']['L_load'] = DIVA_results['efficiencies'][] 
     monthlyData['efficiencies'].update(DIVA_results['efficiencies'])
     
+    # create figure handle dictionary:
+    if createPlots:
+        figureHandles = {}
+    
     if createPlots and not onlyTradeoffs:
         
         print "creating plots"
@@ -252,11 +276,12 @@ if mainMode == 'post_processing':
         from createFigures import createCarpetPlots, createDIVAcarpetPlots
         from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcolorEnergyDays
         
-        # plot detailed DIVA Results:
-        createDIVAcarpetPlots(pcolorDays, DIVA_results, 'xy')
-        createDIVAcarpetPlots(pcolorDays, DIVA_results, 'x')
-        createDIVAcarpetPlots(pcolorDays, DIVA_results, 'y')
-        createDIVAcarpetPlots(pcolorEnergyDays, DIVA_results)        
+        if showDetailedDIVA:
+            # plot detailed DIVA Results:
+            figureHandles['DIVAxy'] = createDIVAcarpetPlots(pcolorDays, DIVA_results, 'xy')
+            figureHandles['DIVAx'] = createDIVAcarpetPlots(pcolorDays, DIVA_results, 'x')
+            figureHandles['DIVAy'] = createDIVAcarpetPlots(pcolorDays, DIVA_results, 'y')
+            figureHandles['DIVAe'] = createDIVAcarpetPlots(pcolorEnergyDays, DIVA_results)        
         
         # create masks for plotting:
         monthlyData['DIVAmask'] = createDIVAmask(monthlyData['L'])
@@ -264,16 +289,17 @@ if mainMode == 'post_processing':
         
         if auxVar['combineResults']:
             # plot the optimum angles of the monthly data:
-            createCarpetPlots(pcolorMonths, monthlyData, 'xy')
-            createCarpetPlots(pcolorMonths, monthlyData, 'x')
-            createCarpetPlots(pcolorMonths, monthlyData, 'y')
+            figureHandles['CarpetXY'] = createCarpetPlots(pcolorMonths, monthlyData, 'xy')
+            figureHandles['CarpetX'] = createCarpetPlots(pcolorMonths, monthlyData, 'x')
+            figureHandles['CarpetY'] = createCarpetPlots(pcolorMonths, monthlyData, 'y')
         
             # plot the energy use at the corresponding optimum orientation:
-            createCarpetPlots(pcolorEnergyMonths, monthlyData)
+            figureHandles['CarpetE'] = createCarpetPlots(pcolorEnergyMonths, monthlyData)
     
     
     from auxFunctions import create_evalList
     from Tradeoffs import compareTotalEnergy
+    from createFigures import plotEnergyUsage
     
     if tradeoffPeriod['enabled']:
         tradeoffPeriod['evalList'] = create_evalList('monthly', tradeoffPeriod['month'], tradeoffPeriod['startHour'], tradeoffPeriod['endHour'])
@@ -281,14 +307,17 @@ if mainMode == 'post_processing':
         tradeoffPeriod['evalList'] = []
     
     # evaluate tradeoffs:
-    TradeoffResults = compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod, auxVar)
+    TradeoffResults, figureHandles['Tradeoffs'] = compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar)
     
+    # plot figures for each energy usage:    
+    figureHandles.update(plotEnergyUsage(monthlyData, auxVar))
+
     monthList = ['January','February','March','April','May','June','July','August','September','November','October','December']
     
     # create folder where results will be saved:
     os.makedirs(paths['results'] + '\\' + now )
     
-    if auxVar['combineResults']:
+    if auxVar['combineResults'] and saveResults['csvSummary']:
         # write csv file that summarizes results  
         with open(paths['results'] + '\\' + now + '\\summary.csv', 'w') as f:
             f.write('Simulation Results\n\n')
@@ -344,21 +373,36 @@ if mainMode == 'post_processing':
     
             f.close()
     
-    if auxVar['combineResults']:
-        # bundle all results into one dictionary
-        all_results = {'DIVA_results':DIVA_results, 'PV_detailed_results':PV_detailed_results, 
-                       'PV_electricity_results':PV_electricity_results, 'SunTrackingData':SunTrackingData, 
-                       'TradeoffResults':TradeoffResults, 'diva_folder':diva_folder, 'efficiencyChanges':efficiencyChanges,
-                       'geoLocation':geoLocation, 'lbSettings':lbSettings, 'monthlyData':monthlyData, 
-                       'radiation_folder':radiation_folder, 'tradeoffPeriod':tradeoffPeriod}
-    else:
-        # bundle all results into one dictionary
-        all_results = {'DIVA_results':DIVA_results, 'PV_detailed_results':PV_detailed_results, 
-                       'PV_electricity_results':PV_electricity_results, 'SunTrackingData':SunTrackingData, 
-                       'diva_folder':diva_folder, 'efficiencyChanges':efficiencyChanges,
-                       'geoLocation':geoLocation, 'lbSettings':lbSettings, 'monthlyData':monthlyData, 
-                       'radiation_folder':radiation_folder}
-    # save all results
-    np.save(paths['results'] + '\\' + now + '\\all_results.npy', all_results)
+    if saveResults['npyData']:
+        
+        if auxVar['combineResults']:
+            # bundle all results into one dictionary
+            all_results = {'DIVA_results':DIVA_results, 'PV_detailed_results':PV_detailed_results, 
+                           'PV_electricity_results':PV_electricity_results, 'SunTrackingData':SunTrackingData, 
+                           'TradeoffResults':TradeoffResults, 'diva_folder':diva_folder, 'efficiencyChanges':efficiencyChanges,
+                           'geoLocation':geoLocation, 'lbSettings':lbSettings, 'monthlyData':monthlyData, 
+                           'radiation_folder':radiation_folder, 'tradeoffPeriod':tradeoffPeriod}
+        else:
+            # bundle all results into one dictionary
+            all_results = {'DIVA_results':DIVA_results, 'PV_detailed_results':PV_detailed_results, 
+                           'PV_electricity_results':PV_electricity_results, 'SunTrackingData':SunTrackingData, 
+                           'diva_folder':diva_folder, 'efficiencyChanges':efficiencyChanges,
+                           'geoLocation':geoLocation, 'lbSettings':lbSettings, 'monthlyData':monthlyData, 
+                           'radiation_folder':radiation_folder}
+        # save all results
+        np.save(paths['results'] + '\\' + now + '\\all_results.npy', all_results)
+        
+        print 'saved numpy data'
+        
+    if saveResults['figures']:
+        
+        # create folder to save figures as png:
+        os.makedirs(paths['results'] + '\\' + now + '\\png' )
+        [figureHandles[i].savefig(paths['results'] + '\\' + now + '\\png\\' + i + '.png')  for i in figureHandles]
+        
+        # create folder to save figures as svg:
+        os.makedirs(paths['results'] + '\\' + now + '\\svg' )
+        [figureHandles[i].savefig(paths['results'] + '\\' + now + '\\svg\\' + i + '.svg')  for i in figureHandles]
+        
     
 print "simulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())

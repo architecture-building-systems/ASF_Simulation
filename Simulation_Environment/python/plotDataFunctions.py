@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+
 
 # function to show frequencies of x and y angle combinations
 def scatterResults(X, Xcolour,offset,x_angles,x_angle_location,y_angles,y_angle_location):
@@ -351,6 +353,60 @@ def VisualizeSunTrackingAngles(SunTrackingData, rotation_axis):
     plt.colorbar()
     plt.tick_params(axis=u'both',labelsize=14)
 
+def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
+    
+    energyType = arg[0]    
+    
+    dummyRange = np.asarray(range(len(indices[energyType])))
+    
+    fig = plt.figure(figsize=(16, 8))
+    
+#    plt.suptitle('Heating Demand (COP=' + str(usedEfficiencies['H_COP']) + ')')
+    if energyType == 'PV':
+        multiplier = -1
+    else:
+        multiplier = 1
+    
+    ax1 = plt.subplot(2,1,1)
+    plt.plot(multiplier*monthlyData[energyType][indices['H'], dummyRange], label = 'optimized for H', color='r')
+    plt.plot(multiplier*monthlyData[energyType][indices['C'], dummyRange], label = 'optimized for C', color='b')
+    plt.plot(multiplier*monthlyData[energyType][indices['L'], dummyRange], label = 'optimized for L', color='g')
+    plt.plot(multiplier*monthlyData[energyType][indices['PV'], dummyRange], label = 'optimized for PV', color='c')
+    plt.plot(multiplier*monthlyData[energyType][indices['E_HCL'], dummyRange], label = 'optimized for HCL', color='m')
+    plt.plot(multiplier*monthlyData[energyType][indices['E_tot'], dummyRange], label = 'optimized for E_tot', color='k')
+    plt.plot(multiplier*monthlyData[energyType][indices['45'], :], label = 'fixed at 45 deg', color='y')
+    plt.ylabel('Energy [kWh]')
+    plt.legend()
+    
+    majorLocator = MultipleLocator(24)
+    majorFormatter = FormatStrFormatter('%d')
+    minorLocator = MultipleLocator(4)
+    minorFormatter = FormatStrFormatter('%d')
+
+    ax1.xaxis.set_major_locator(majorLocator)
+    ax1.xaxis.set_major_formatter(majorFormatter)
+    ax1.xaxis.set_minor_locator(minorLocator)
+#    ax1.xaxis.set_minor_formatter(minorFormatter)
+    plt.grid(True, which='both')
+    
+    ax2 = plt.subplot(2,1,2, sharex=ax1)
+    plt.plot(multiplier*monthlyData[energyType][indices['H'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for H', color='r')
+    plt.plot(multiplier*monthlyData[energyType][indices['C'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for C', color='b')
+    plt.plot(multiplier*monthlyData[energyType][indices['L'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for L', color='g')
+    plt.plot(multiplier*monthlyData[energyType][indices['PV'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for PV', color='c')
+    plt.plot(multiplier*monthlyData[energyType][indices['E_HCL'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for HCL', color='m')
+    plt.plot(multiplier*monthlyData[energyType][indices['E_tot'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for E_tot', color='k')
+    plt.plot(multiplier*monthlyData[energyType][indices['45'],:]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'fixed at 45 deg', color='y')
+    plt.ylabel('Energy Difference [kWh]')
+    plt.legend()
+
+    ax2.xaxis.set_major_locator(majorLocator)
+    ax2.xaxis.set_major_formatter(majorFormatter)
+    ax2.xaxis.set_minor_locator(minorLocator)
+#    ax2.xaxis.set_minor_formatter(minorFormatter)
+    plt.grid(True, which='both')
+    
+    return fig
 
 # function that shows histograms of angle combinations for one axis
 def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_location,allAngles):

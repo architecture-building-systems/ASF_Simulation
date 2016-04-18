@@ -187,7 +187,7 @@ def importDIVAresults(path):
     E=C+H+L
     
     # write data to dictionary:
-    DIVA_results = {'H':H, 'C':C, 'L':L, 'E':E, 'efficiencies':efficiencies}
+    DIVA_results = {'H':H, 'C':C, 'L':L, 'E':E, 'efficiencies':efficiencies, 'efficienciesChanged':False}
     
     return DIVA_results
     
@@ -314,7 +314,29 @@ def average_monthly(X):
                     monthi+=1
     return X_average
   
+def changeDIVAresults(DIVA_results, efficiencyChanges):
+    """
+    function to change DIVA data according to efficiencyChanges
+    """
+    
+    if DIVA_results['efficienciesChanged']:
+        print 'efficiencies were already changed, they will not be changed again'
+        
+    elif not DIVA_results['efficienciesChanged']:
+        print 'changing DIVA efficiencies'
+        DIVA_results['H'] = DIVA_results['H']*DIVA_results['efficiencies']['H_COP']/efficiencyChanges['H_COP']
+        DIVA_results['C'] = DIVA_results['C']*DIVA_results['efficiencies']['C_COP']/efficiencyChanges['C_COP']
+        DIVA_results['L'] = DIVA_results['L']*efficiencyChanges['L_Load']/DIVA_results['efficiencies']['L_Load']
+        DIVA_results['E'] = DIVA_results['H'] + DIVA_results['C'] + DIVA_results['L']
+        DIVA_results['efficienciesChanged'] = True
+        DIVA_results['efficiencyChanges'] = efficiencyChanges
+        
+        return DIVA_results
 
+    else:
+        print 'warning: efficienciesChanged not defined in DIVA_results'
+        
+    
 # test functions:
 #asdf = sum_monthly(DIVA_results['C'])
 #asdf = CalcXYAnglesAndLocation(DIVA_results['LayoutAndCombinations'])
