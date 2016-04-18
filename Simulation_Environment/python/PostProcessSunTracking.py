@@ -11,9 +11,6 @@ import os, sys
 import numpy as np
 import json
 
-from prepareData import prepareMonthlyRadiatonData, readLayoutAndCombinations, CalcXYAnglesAndLocation
-from plotDataFunctions import VisualizeSunTrackingAngles, pcolorMonths
-from createMasks import createLBmask
 
 radiation_comb = 'Radiation_Kloten_49comb'
 radiation_tracking = 'Radiation_Kloten_tracking'
@@ -35,7 +32,7 @@ paths['gh'] = paths['main'] + '\\grasshopper'
 paths['results'] = paths['main'] + '\\results'
 
 # add python_path to system path, so that all files are available:
-sys.path.insert(0, paths['python'])
+sys.path.insert(0, paths['python'] + '\\aux_files')
 
 # define paths of data_folders:
 paths['lb_comb'] = os.path.join(( paths['data'] + "\grasshopper\LadyBug"), radiation_comb)
@@ -43,6 +40,12 @@ paths['electrical_comb'] = os.path.join(( paths['data'] + "\python\electrical_si
 paths['lb_tracking'] = os.path.join(( paths['data'] + "\grasshopper\LadyBug"), radiation_tracking)
 paths['electrical_tracking'] = os.path.join(( paths['data'] + "\python\electrical_simulation"), radiation_tracking)
 paths['geo'] = os.path.join(( paths['data'] + "\geographical_location"), geoLocation)
+
+
+#load functions used for evaluation:
+from prepareData import prepareMonthlyRadiatonData, readLayoutAndCombinations, CalcXYAnglesAndLocation
+from plotDataFunctions import VisualizeSunTrackingAngles, pcolorMonths
+from createMasks import createLBmask
 
 # load sunTrackingData used for the LadyBug simulation:
 with open(paths['geo'] + '\SunTrackingData.json', 'r') as fp:

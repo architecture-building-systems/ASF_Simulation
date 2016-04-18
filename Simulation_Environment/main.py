@@ -16,30 +16,36 @@ import warnings
 ######### -----USER INTERACTION------ #############
 
 # set mode of this main script ('initialize', 'post_processing')
+
 #mainMode = 'initialize' #'initialize'
 mainMode = 'post_processing' #'initialize'
 
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
 # new locations can be added with the grasshopper main script for any .epw weather data
+
 geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
 #geoLocation = 'SINGAPORE_SGP' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 
 
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
+
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_25comb'
-diva_folder = 'DIVA_Kloten_49comb'
+#diva_folder = 'DIVA_Kloten_49comb'
+diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Singapore_25comb'
 
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
 # This folder has the same name as the generated folder for the electrical 
 # results in data\python\electrical:
+
 #radiation_folder = 'Radiation_electrical_monthly_25comb'
 #radiation_folder = 'Radiation_Kloten_tracking'
-radiation_folder = 'Radiation_Kloten_49comb'
+#radiation_folder = 'Radiation_Kloten_49comb'
+radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
 
@@ -99,7 +105,7 @@ paths['gh'] = paths['main'] + '\\grasshopper'
 paths['results'] = paths['main'] + '\\results'
 
 # add python_path to system path, so that all files are available:
-sys.path.insert(0, paths['python'])
+sys.path.insert(0, paths['python'] + '\\aux_files')
 
 # define paths of data_folders:
 paths['diva'] = os.path.join(( paths['data'] + "\grasshopper\DIVA"), diva_folder)
@@ -117,11 +123,11 @@ if mainMode == 'initialize':
     # define path of geographical location:
     paths['geo'] = os.path.join(( paths['data'] + "\geographical_location"), geoLocation)
     # create sun data based on grasshopper file
-    execfile(paths['python'] + "\SunAngles_Tracking_and_temperature.py")
+    execfile(paths['python'] + "\\aux_files\\SunAngles_Tracking_and_temperature.py")
 
     # calculate and save lookup table if it does not yet exist:
     if not os.path.isfile(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup.npy'): 
-        execfile(paths['python'] + '\create_lookup_table.py')
+        execfile(paths['python'] + '\\aux_files\\create_lookup_table.py')
     else:
         print 'lookup table not created as it already exists'
     
