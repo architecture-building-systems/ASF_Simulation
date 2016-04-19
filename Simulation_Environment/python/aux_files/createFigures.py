@@ -14,7 +14,8 @@ import numpy as np
 #from average_monthly import sum_monthly, average_monthly, daysPassedMonth
 ##from PostProcessThermal_functions import pcolorMonths, pcolorEnergyMonths
 #from try_nan_values import createMonthsNan
-from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcolorEnergyDays, plotDataForIndices
+from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcolorEnergyDays,\
+                              plotDataForIndices, plotResultsComparison, plotEnergiesOpt
 
 
 
@@ -260,6 +261,7 @@ def plotEnergyUsage(monthlyData, auxVar):
     figures['PV'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['PV'])
     figures['E_HCL'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['E_HCL'])
     figures['E_tot'] = plotDataForIndices(monthlyData,indices, usedEfficiencies, ['E_tot'])
+    figures['compare'] =  plotEnergiesOpt(monthlyData, indices['E_tot'])
     
     # add titles to figures
     figures['H'].suptitle('Heating Demand (COP=' + str(usedEfficiencies['H_COP']) + ')')
@@ -270,29 +272,74 @@ def plotEnergyUsage(monthlyData, auxVar):
     figures['E_tot'].suptitle('Total Demand')
     
     return figures
-#    figH = plt.figure(figsize=(16, 8))
-#    
-#    plt.suptitle('Heating Demand (COP=' + str(usedEfficiencies['H_COP']) + ')')
-#    
-#    plt.subplot(2,1,1)
-#    plt.plot(monthlyData['H'][Hind, dummyRange], label = 'optimized for H')
-#    plt.plot(monthlyData['H'][Cind, dummyRange], label = 'optimized for C')
-#    plt.plot(monthlyData['H'][PVind, dummyRange], label = 'optimized for PV')
-#    plt.plot(monthlyData['H'][E_HCLind, dummyRange], label = 'optimized for HCL')
-#    plt.plot(monthlyData['H'][E_totind, dummyRange], label = 'optimized for E_tot')
-#    plt.ylabel('Energy [kWh]')
-#    plt.legend()
-#    plt.grid()
-#    
-#    plt.subplot(2,1,2)
-#    plt.plot(monthlyData['H'][Hind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for H')
-#    plt.plot(monthlyData['H'][Cind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for C')
-#    plt.plot(monthlyData['H'][PVind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for PV')
-#    plt.plot(monthlyData['H'][E_HCLind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for HCL')
-#    plt.plot(monthlyData['H'][Hind, dummyRange]-monthlyData['H'][Hind, dummyRange], label = 'optimized for E_tot')
-#    plt.ylabel('Energy Difference [kWh]')
-#    plt.legend()
-#    plt.grid()
-#    
-#figures = plotEnergyUsage(monthlyData, tradeoffPeriod, auxVar)
-#figures['H'].suptitle('test')
+
+def compareResultsFigure(monthlyData1, monthlyData2):
+    
+    ############ data 1    
+    
+    # assign data:
+    H1 = monthlyData1['H']
+    C1 = monthlyData1['C']
+    L1 = monthlyData1['L']
+    PV1 = monthlyData1['PV']
+
+     # assign what efficiencies were used for evaluation:  
+    if monthlyData1['changedEfficiency'] == True:
+        usedEfficiencies1 = monthlyData1['efficiencyChanges']
+    else:
+        usedEfficiencies1 = monthlyData1['efficiencies']
+    
+    # sum individual data
+    E_HCL1 = H1+C1+L1
+    E_tot1 = E_HCL1+PV1
+    
+    # find indices
+    E_totind1 = np.argmin(E_tot1,axis=0)
+    
+    
+    
+    ################## data 2
+    
+     # assign data:
+    H2 = monthlyData2['H']
+    C2 = monthlyData2['C']
+    L2 = monthlyData2['L']
+    PV2 = monthlyData2['PV']
+
+     # assign what efficiencies were used for evaluation:  
+#    if monthlyData2['changedEfficiency'] == True:
+#        usedEfficiencies2 = monthlyData2['efficiencyChanges']
+#    else:
+#        usedEfficiencies2 = monthlyData2['efficiencies']
+        
+    # sum individual data
+    E_HCL2 = H2+C2+L2
+    E_tot2 = E_HCL2+PV2
+    
+    # find indices
+    E_totind2 = np.argmin(E_tot2,axis=0)
+
+    indices = {'E_tot1':E_totind1, 'E_tot2':E_totind2 }    
+    
+#    if usedEfficiencies1 == usedEfficiencies2:
+#        usedEfficiencies = usedEfficiencies1
+    
+    figures = {}
+    
+    # create figures
+    figures['H'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['H'])
+    figures['C'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['C'])
+    figures['L'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['L'])
+    figures['PV'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['PV'])
+    figures['E_HCL'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['E_HCL'])
+    figures['E_tot'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['E_tot'])
+    
+    # add titles to figures
+    figures['H'].suptitle('Heating Demand')
+    figures['C'].suptitle('Cooling Demand')
+    figures['L'].suptitle('Lighting Demand')
+    figures['PV'].suptitle('PV Generation')
+    figures['E_HCL'].suptitle('Thermal/Lighting Demand')
+    figures['E_tot'].suptitle('Total Demand')
+    
+    return figures
