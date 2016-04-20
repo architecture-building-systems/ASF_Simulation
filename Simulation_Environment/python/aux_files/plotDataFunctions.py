@@ -12,8 +12,11 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 
-# function to show frequencies of x and y angle combinations
+
 def scatterResults(X, Xcolour,offset,x_angles,x_angle_location,y_angles,y_angle_location):
+    """
+    function to show frequencies of x and y angle combinations
+    """
     #ind=np.argpartition(X, 4, axis=0)[:4]
     ind=np.argmin(X,axis=0)
     xind = []
@@ -33,8 +36,10 @@ def scatterResults(X, Xcolour,offset,x_angles,x_angle_location,y_angles,y_angle_
     plt.grid(b=True, which='major')
     
     
-# function that shows optimal angle combinations for every hour of the year for one axis
 def pcolorDays(DIVA_results, arg):
+    """
+    function that shows optimal angle combinations for every hour of the year for one axis
+    """
     
     # use maximum or minimum value:
     max_min = arg[0]
@@ -317,6 +322,9 @@ def pcolorEnergyDays(DIVA_results, arg):
     
 
 def VisualizeSunTrackingAngles(SunTrackingData, rotation_axis):
+    """
+    function that generates a carpet plot of the sun tracking angles
+    """
     
     dx, dy = 1, 1
     
@@ -353,7 +361,12 @@ def VisualizeSunTrackingAngles(SunTrackingData, rotation_axis):
     plt.colorbar()
     plt.tick_params(axis=u'both',labelsize=14)
 
+
 def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
+    """
+    function that plots the energy specified by arg for different optimization
+    strategies and fixed at 45 deg
+    """
     
     energyType = arg[0]    
     
@@ -374,6 +387,7 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     plt.plot(multiplier*monthlyData[energyType][indices['PV'], dummyRange], label = 'optimized for PV', color='c')
     plt.plot(multiplier*monthlyData[energyType][indices['E_HCL'], dummyRange], label = 'optimized for HCL', color='m')
     plt.plot(multiplier*monthlyData[energyType][indices['E_tot'], dummyRange], label = 'optimized for E_tot', color='k')
+    plt.plot(multiplier*monthlyData[energyType][indices['PVC'], dummyRange], label = 'optimized for PV and C', color='b', alpha = 0.5)
     plt.plot(multiplier*monthlyData[energyType][indices['45'], :], label = 'fixed at 45 deg', color='y')
     plt.ylabel('Energy [kWh]')
     plt.legend()
@@ -396,6 +410,7 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     plt.plot(multiplier*monthlyData[energyType][indices['PV'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for PV', color='c')
     plt.plot(multiplier*monthlyData[energyType][indices['E_HCL'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for HCL', color='m')
     plt.plot(multiplier*monthlyData[energyType][indices['E_tot'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for E_tot', color='k')
+    plt.plot(multiplier*monthlyData[energyType][indices['PVC'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for PV and C', color='b', alpha = 0.5)
     plt.plot(multiplier*monthlyData[energyType][indices['45'],:]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'fixed at 45 deg', color='y')
     plt.ylabel('Energy Difference [kWh]')
     plt.legend()
@@ -409,6 +424,9 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     return fig
     
 def plotResultsComparison(monthlyData1, monthlyData2, indices, arg):
+    """
+    function that plots the energy according to arg for two different monthlyData sources
+    """
     
     energyType = arg[0]    
     
@@ -457,6 +475,10 @@ def plotResultsComparison(monthlyData1, monthlyData2, indices, arg):
     return fig
 
 def plotEnergiesOpt(monthlyData, optIdx):
+    """
+    function that plots the energies of the monthlyData for the optimum index 
+    given by optIdx
+    """
     
     
     dummyRange = np.asarray(range(len(optIdx)))
@@ -504,9 +526,20 @@ def plotEnergiesOpt(monthlyData, optIdx):
 #    
     return fig
     
+def create3Dplot(monthlyData):
     
-# function that shows histograms of angle combinations for one axis
+    from matplotlib import cm
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    x,y = np.shape(monthlyData['E_tot'][:,168:192])
+    X,Y = np.meshgrid(range(x),range(y))
+    ax.plot_surface(X,Y,monthlyData['E_tot'][:,168:192].transpose(), cmap = cm.cubehelix,rstride=1, cstride=1)
+
 def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_location,allAngles):
+    """
+    function that shows histograms of angle combinations for one axis
+    """
     axis_ind =[]
     ind=np.argmin(X,axis=0)
     if rotation_axis == 'x':

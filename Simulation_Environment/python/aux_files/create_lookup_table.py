@@ -4,7 +4,7 @@ Created on Fri Mar 11 12:07:31 2016
 
 Calculate IV-curves Lookup-Table for ASF electricity production
 
-@authors: Johannes Hofer, Jeremias Schmidli
+@authors: Johannes Hofer, translated and adapted by Jeremias Schmidli
 """
 import numpy as np
 import time
@@ -73,7 +73,7 @@ def diode_equation_eval(fitparams=None, x=None, modparams=None, ins=None, temp=N
     return y
 
 
-# tryout different parameters
+# parameters
 modparams = ([2.68, 42, 25 + 273.15, 1.3e-03, 1.05])# [Isc,Ncs,Tc_ref,muIsc,egap] modparams = [2.68, 42, 25+273.15, 1.3e-03, 1.05*1.6*10^-19];
 fitparam = ([0.8, 380, 1.435, 7.66e-7])# [Rs, Rp_ref, gamma, IoRef]
 

@@ -9,8 +9,11 @@ auxiliary functions that may be used in different contexts
 
 import numpy as np
 
-# define function to make items unique in a list (represent every angle combination)
+
 def unique(items):
+    """
+    function to make items unique in a list (represent every angle combination)
+    """
     found = set([])
     keep = []
 
@@ -21,8 +24,11 @@ def unique(items):
 
     return keep
     
-# function that sums up the days of the previous month:
+
 def calcDaysPassedMonth():
+    """
+    function that sums up the days of the previous month
+    """
     daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
     #hoursPerMonth = daysPerMonth*24
     daysPassedMonth = []
@@ -34,7 +40,12 @@ def calcDaysPassedMonth():
             
     return daysPassedMonth, daysPerMonth
     
+    
 def calculate_sum_for_index(X,Xind):
+    """
+    function that calculates the sum of a two dimensional array X for a specific
+    index or index-list
+    """
     Xsum = []
     
     if not np.shape(Xind)==():

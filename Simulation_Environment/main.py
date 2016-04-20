@@ -16,7 +16,7 @@ import warnings
 
 ######### -----USER INTERACTION------ #############
 
-# set mode of this main script ('initialize', 'post_processing')
+# set mode of this main script ('initialize', 'post_processing'):
 
 #mainMode = 'initialize' #'initialize'
 mainMode = 'post_processing' #'initialize'
@@ -72,13 +72,13 @@ showDetailedDIVA = True
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
 # set changeEfficiency to True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':False, 'H_COP': 1, 'C_COP': 1, 'L_Load': 3, 'PV': 1}
+efficiencyChanges = {'changeEfficiency':True, 'H_COP': 1, 'C_COP': 1, 'L_Load': 3, 'PV': 1}
 
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
 # inclusive, so startHour=1 and endHour=24 corresponds to a time period from 
 # 0:00-24:00. month is defined in the classical sense, so month=1 corresponds to 
-# january.
+# january. Currently, only one month at a time can be selected.
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:

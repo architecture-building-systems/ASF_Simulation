@@ -8,8 +8,12 @@ functions needed to average hourly DIVA data of a whole year for to monthly hour
 """
 import numpy as np
 
-# function that sums up the days of the previous month:
+
 def daysPassedMonth():
+    """
+    function that returns a list with all the number of days per month and 
+    a list with the cumulative number of days passed at the end of the month
+    """
     daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
     #hoursPerMonth = daysPerMonth*24
     daysPassedMonth = []
@@ -21,9 +25,13 @@ def daysPassedMonth():
             
     return daysPassedMonth, daysPerMonth
 
-# function that adds data for every month
+
 def sum_monthly(X, daysPassedMonth):
-   
+   """
+   function that adds data for every month so that each month is represented by 
+   a cumulative day with hourly values, where each hour represents the sum of the 
+   corresponding hours during that month
+   """
     NumberCombinations = np.shape(X)[0]
     X_sum=np.zeros((NumberCombinations, 24*12))
     for combination in range(NumberCombinations):
@@ -38,8 +46,12 @@ def sum_monthly(X, daysPassedMonth):
     return X_sum
 #            testmonth.append(monthi)
     
-# function that averages data for every month:
 def average_monthly(X, daysPassedMonth, daysPerMonth):
+   """
+   function that averages data for every month so that each month is represented by 
+   an average day with hourly values, where each hour represents the average of the 
+   corresponding hours during that month
+   """
    
     NumberCombinations = np.shape(X)[0]
     X_average=np.zeros((NumberCombinations, 24*12))

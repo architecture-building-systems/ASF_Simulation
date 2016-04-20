@@ -4,7 +4,7 @@ Created on Fri Apr 01 10:57:20 2016
 
 Create Figures Functions
 
-@author: Assistenz
+@author: Jeremias
 """
 
 #import numpy as np
@@ -21,7 +21,10 @@ from plotDataFunctions import pcolorMonths, pcolorEnergyMonths, pcolorDays, pcol
 
 
 def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
-     # Optimal x- and y-angle combinations for every hour of the year
+    """
+    Function that creates carpet plots with optimal x- and y-angle combinations
+    for every hour of the year
+    """
     
     if not len(arg) == 0:
         rotation_axis = arg[0]
@@ -123,7 +126,10 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
 
 
 def createCarpetPlots(plotFunction, monthlyData, *arg):
-     # Optimal x- and y-angle combinations for every hour of the year
+    """
+    Function that creates carpet plots of the optimal x- and y-angle combinations
+    for monthly data
+    """
     
     if not len(arg) == 0:
         rotation_axis = arg[0]
@@ -212,6 +218,9 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     return fig
 
 def plotEnergyUsage(monthlyData, auxVar):
+    """
+    Function that plots the energy usage for the monthly data
+    """
     
     # assign data:
     H = monthlyData['H']
@@ -239,6 +248,7 @@ def plotEnergyUsage(monthlyData, auxVar):
     Lind = np.argmin(L,axis=0)
     PVind = np.argmin(PV,axis=0)
     E_HCLind = np.argmin(E_HCL,axis=0)
+    PVCind = np.argmin(C+PV,axis=0)
     
     if auxVar['combineResults']:
         E_totind = np.argmin(E_tot,axis=0)
@@ -250,7 +260,7 @@ def plotEnergyUsage(monthlyData, auxVar):
         ind_45_0 =  monthlyData['divaAngles']['allAngles'][0].index((45,0))
         ind_90_0 =  monthlyData['divaAngles']['allAngles'][0].index((90,0))
 
-    indices = {'H':Hind, 'C':Cind, 'L':Lind, 'PV':PVind, 'E_HCL':E_HCLind, 'E_tot':E_totind, '0':ind_0_0, '45':ind_45_0, '90':ind_90_0}    
+    indices = {'H':Hind, 'C':Cind, 'L':Lind, 'PV':PVind, 'E_HCL':E_HCLind, 'E_tot':E_totind, 'PVC':PVCind, '0':ind_0_0, '45':ind_45_0, '90':ind_90_0}    
     
     figures = {}
     
@@ -274,6 +284,9 @@ def plotEnergyUsage(monthlyData, auxVar):
     return figures
 
 def compareResultsFigure(monthlyData1, monthlyData2):
+    """ 
+    function that plots the energy of two different monthlyData files
+    """
     
     ############ data 1    
     

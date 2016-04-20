@@ -4,16 +4,19 @@ Created on Wed Feb 10 12:11:49 2016
 
 Tradeoff Funtions
 
-@author: Assistenz
+@author: Jeremias
 """
 import numpy as np
 import matplotlib.pyplot as plt
 
 from auxFunctions import calculate_sum_for_index, create_evalList
 
-#def compareTotalEnergy(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod, auxVar):
+
 def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
-    
+    """
+    function that calculates and plots the total energy for monthlyData during 
+    a certain time period given in tradeoffPeriod
+    """
     
     # assign data:
     H_data = monthlyData['H']
@@ -306,6 +309,8 @@ def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
     energy_45 = {'H': H_45, 'C': C_45, 'L': L_45, 'E_HCL': E_HCL_45, 'E_tot': E_tot_45, 'PV': PV_45}
     energy_0 = {'H': H_0, 'C': C_0, 'L': L_0, 'E_HCL': E_HCL_0, 'E_tot': E_tot_0, 'PV': PV_0}
     tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_optPV':energy_optPV, 'energy_opttot': energy_opttot, 'energy_90': energy_90, 'energy_45':energy_45, 'energy_0': energy_0,}
+
+    # return the results:    
     return tradeoff_results, fig
     
 def compareTotalEnergy25comb(monthlyData, efficiencyChanges, createPlots, tradeoffPeriod):

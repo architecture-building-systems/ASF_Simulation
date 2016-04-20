@@ -150,6 +150,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
         warnings.warn("Warning: the Iteration Starts at a number other than 0, some data will be ignored, check the variable startIt")
         
     tic = time.time()
+    
     # loop through simulation data files:
     for SimulationNumber in range(startIt,numASFit):
     
