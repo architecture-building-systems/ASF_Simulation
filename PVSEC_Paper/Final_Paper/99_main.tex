@@ -1,0 +1,120 @@
+\documentclass[preprint,11pt,5p]{elsarticle} %review, or preprint
+
+\usepackage{amssymb}
+\usepackage{graphics}
+\usepackage{float}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage{lscape}
+
+%Flowcharts
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+
+%Stop footnote from skipping to next page
+\interfootnotelinepenalty=10000
+
+%Some code to display the units after the equation 
+\usepackage{mathtools}
+\makeatletter
+\providecommand\add@text{}
+\newcommand\tagaddtext[1]{%
+  \gdef\add@text{#1\gdef\add@text{}}}% 
+\renewcommand\tagform@[1]{%
+  \maketag@@@{\llap{\add@text\quad}(\ignorespaces#1\unskip\@@italiccorr)}%
+}
+\makeatother
+
+
+
+\graphicspath{{./Images/}}
+
+\journal{PVSEC Conference}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Energy Performance of PV modules as Adaptive Building Shading Systems} 
+
+\author[ita]{P. Jayathissa\corref{cor2}}
+    \ead{jayathissa@arch.ethz.ch}
+\address[ita]{Architecture and Building Systems, Institute of Technology in Architecture, Department of Architecture, ETH Zurich, Switzerland} 
+% For whatever reason the affiliation needs to be defined after the authors. Otherwise the numbering gets messed up.
+
+\author[ita]{J. Schmidli}
+    \ead{schmidje@student.ethz.ch}
+
+\author[ita]{J. Hofer}
+    \ead{hofer@arch.ethz.ch}
+
+
+\author[ita]{A. Schlueter \corref{cor1} }
+    \ead{schlueter@arch.ethz.ch}
+
+
+\cortext[cor2]{Corresponding author}
+
+
+\begin{abstract}
+Shading systems improve building energy performance by controlling solar gains and natural lighting. Integrating photovoltaics opens new opportunities for building integrated photovoltaics by combining the benefits of adaptive shading with facade integrated solar tracking. Furthermore, it reduces the building energy demand and simultaneously generates electricity on-site. This paper presents a methodology for simulating the photovoltaic electricity production of a dynamic facade mounted PV system in combination with the energy consumption of a building through shading.
+The simulation is conducted within the parametric Rhino / Grasshopper environment using a high resolution radiation analysis for the calculation of PV electricity generation. Building energy analysis is conducted through DIVA / EnergyPlus. From this simulation we can determine the optimum hourly position and orientation of the PV panels, not only for optimal energy harvest, but also for the overall balance of the room.
+
+\end{abstract}
+
+\begin{keyword}
+Dynamic Photovoltaics \sep Multi Functional Envelope \sep BIPV \sep Adaptive Shading
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}
+\label{ch:introduction}
+\input{1_introduction}
+
+\section{Methodology}
+\label{ch:method}
+\input{2_methodology}
+
+\section{Results}
+\label{ch:results}
+\input{3_results}
+
+
+% \section{Discussion}
+% \label{ch:discussion}
+% \input{5_discussion}
+
+\section{Discussion and Conclusion}
+\label{ch:conclusion}
+\input{6_conclusion}
+
+% \section{Acknowledgments}
+% \label{ch:acknowledgments}
+% \input{7_acknowledgments}
+
+% \section{Appendix}
+% \label{ch:appendix}
+% \input{8_appendix}
+
+%% appendix sections are then done as normal sections
+%% \appendix
+%% \section{}
+%% \label{}
+
+%% bibitems, please use
+%\clearpage %to prevent figures from coming before the bib
+  \bibliographystyle{elsarticle-num} 
+  \bibliography{references}
+
+\end{document}
+\endinput
