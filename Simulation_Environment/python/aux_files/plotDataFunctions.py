@@ -526,15 +526,81 @@ def plotEnergiesOpt(monthlyData, optIdx):
 #    
     return fig
     
-def create3Dplot(monthlyData):
-    
+def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=2 ):
+    from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
     
+    plotRange = range(24*(startMonth-1),24*endMonth)
+#    plotRange = range(288)
+
+    if option=='value':
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        x,y = np.shape(monthlyData[typeE][:,plotRange])
+        X,Y = np.meshgrid(range(x),range(y))
+        ax.plot_surface(X,Y,monthlyData[typeE][:,plotRange].transpose(), cmap = cm.cubehelix,rstride=1, cstride=1)
+        plt.title('energy value' + typeE)
+#    
+    if option=='normalized':
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        x,y = np.shape(monthlyData[typeE][:,plotRange])
+        X,Y = np.meshgrid(range(x),range(y))
+        ax.plot_surface(X,Y,monthlyData[typeE][:,plotRange].transpose()/np.array(np.mean(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.cubehelix,rstride=1, cstride=1)
+        plt.title('normalized energy by mean' + typeE)
+        
+    if option=='difference':
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        x,y = np.shape(monthlyData[typeE][:,plotRange])
+        X,Y = np.meshgrid(range(x),range(y))
+        ax.plot_surface(X,Y,monthlyData[typeE][:,plotRange].transpose()-np.array(np.mean(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.cubehelix,rstride=1, cstride=1)
+        plt.title('energy difference to mean' + typeE)
+create3Dplot(monthlyData, 'E_tot', 'value')
+create3Dplot(monthlyData, 'E_tot', 'normalized')
+create3Dplot(monthlyData, 'E_tot', 'difference')
+create3Dplot(monthlyData, 'PV', 'difference')
+create3Dplot(monthlyData, 'H', 'difference')
+create3Dplot(monthlyData, 'C', 'difference')
+create3Dplot(monthlyData, 'L', 'difference')
+create3Dplot(monthlyData, 'C', 'value')
+
+
+
+
+def plotTotEfixedY(monthlyData):
+    """
+    function to plot monthlyData for x-angle tracking
+    """
+    
+    #assign x-angles (must be equally distributed between 0 and 90 deg)
+    Xangles = np.array(range(len(monthlyData['angles']['x_angles'])))*90./(len(monthlyData['angles']['x_angles'])-1)
+    
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    x,y = np.shape(monthlyData['E_tot'][:,168:192])
-    X,Y = np.meshgrid(range(x),range(y))
-    ax.plot_surface(X,Y,monthlyData['E_tot'][:,168:192].transpose(), cmap = cm.cubehelix,rstride=1, cstride=1)
+    ax1=plt.subplot(2,1,1)
+    plt.plot(Xangles, np.sum(monthlyData['H'], axis=1)/np.mean( np.sum(monthlyData['H'], axis=1)), label='H', color='r')
+    plt.plot(Xangles, np.sum(monthlyData['C'], axis=1)/np.mean( np.sum(monthlyData['C'], axis=1)), label='C', color='b')
+    plt.plot(Xangles, np.sum(monthlyData['L'], axis=1)/np.mean( np.sum(monthlyData['L'], axis=1)), label='L', color='g')
+    plt.plot(Xangles, np.sum(monthlyData['PV'], axis=1)/np.mean( np.sum(monthlyData['PV'], axis=1)), label='PV', color='c')
+    plt.plot(Xangles, np.sum(monthlyData['E_HCL'], axis=1)/np.mean( np.sum(monthlyData['E_HCL'], axis=1)), label='E_HCL', color='m')
+    plt.plot(Xangles, np.sum(monthlyData['E_tot'], axis=1)/np.mean( np.sum(monthlyData['E_tot'], axis=1)), label='E_tot', color='k')
+    plt.legend()
+    
+    plt.subplot(2,1,2, sharex=ax1)
+    plt.plot(Xangles, np.sum(monthlyData['H'], axis=1), label='H', color='r')
+    plt.plot(Xangles, np.sum(monthlyData['C'], axis=1), label='C', color='b')
+    plt.plot(Xangles, np.sum(monthlyData['L'], axis=1), label='L', color='g')
+    plt.plot(Xangles, np.sum(monthlyData['PV'], axis=1), label='PV', color='c')
+    plt.plot(Xangles, np.sum(monthlyData['E_HCL'], axis=1), label='E_HCL', color='m')
+    plt.plot(Xangles, np.sum(monthlyData['E_tot'], axis=1), label='E_tot', color='k')
+    plt.legend()
+    
+    return fig
+    
+    
+#tryout:
+
+#plotTotEfixedY(monthlyData)
 
 def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_location,allAngles):
     """

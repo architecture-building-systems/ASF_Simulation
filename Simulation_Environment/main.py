@@ -33,10 +33,10 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-diva_folder = 'DIVA_Kloten_25comb'
+#diva_folder = 'DIVA_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_49comb'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
-#diva_folder = 'DIVA_Kloten_5x_1y'
+diva_folder = 'DIVA_Kloten_19x_1y'
 #diva_folder = 'DIVA_Singapore_25comb'
 
 
@@ -44,11 +44,11 @@ diva_folder = 'DIVA_Kloten_25comb'
 # This folder has the same name as the generated folder for the electrical 
 # results in data\python\electrical:
 
-radiation_folder = 'Radiation_electrical_monthly_25comb'
+#radiation_folder = 'Radiation_electrical_monthly_25comb'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
-#radiation_folder = 'Radiation_Kloten_5x_1y'
+radiation_folder = 'Radiation_Kloten_19x_1y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
 
@@ -72,7 +72,7 @@ showDetailedDIVA = True
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
 # set changeEfficiency to True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':True, 'H_COP': 1, 'C_COP': 1, 'L_Load': 3, 'PV': 1}
+efficiencyChanges = {'changeEfficiency':False, 'H_COP': 7, 'C_COP': 7, 'L_Load': 3, 'PV': 1}
 
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
@@ -82,7 +82,7 @@ efficiencyChanges = {'changeEfficiency':True, 'H_COP': 1, 'C_COP': 1, 'L_Load': 
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:
-saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
+saveResults = {'csvSummary':True, 'figures':False, 'npyData':False}
     
 ######### -----END OF USER INTERACTION------ #############
     

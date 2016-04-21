@@ -27,11 +27,11 @@ def daysPassedMonth():
 
 
 def sum_monthly(X, daysPassedMonth):
-   """
-   function that adds data for every month so that each month is represented by 
-   a cumulative day with hourly values, where each hour represents the sum of the 
-   corresponding hours during that month
-   """
+    """
+    function that adds data for every month so that each month is represented by 
+    a cumulative day with hourly values, where each hour represents the sum of the 
+    corresponding hours during that month
+    """
     NumberCombinations = np.shape(X)[0]
     X_sum=np.zeros((NumberCombinations, 24*12))
     for combination in range(NumberCombinations):
@@ -47,11 +47,11 @@ def sum_monthly(X, daysPassedMonth):
 #            testmonth.append(monthi)
     
 def average_monthly(X, daysPassedMonth, daysPerMonth):
-   """
-   function that averages data for every month so that each month is represented by 
-   an average day with hourly values, where each hour represents the average of the 
-   corresponding hours during that month
-   """
+    """
+    function that averages data for every month so that each month is represented by 
+    an average day with hourly values, where each hour represents the average of the 
+    corresponding hours during that month
+    """
    
     NumberCombinations = np.shape(X)[0]
     X_average=np.zeros((NumberCombinations, 24*12))
