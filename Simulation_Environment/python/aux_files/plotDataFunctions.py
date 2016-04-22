@@ -98,7 +98,8 @@ def pcolorDays(DIVA_results, arg):
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
+#    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
+    plt.pcolor(x, y, z, cmap='PRGn', vmin=z_min, vmax=z_max)
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 
     #plt.title('pcolor')
@@ -181,6 +182,7 @@ def pcolorMonths(monthlyData, arg):
     
     # define colormap:
     cmap = plt.cm.cubehelix
+    cmap = plt.cm.PRGn
     
     # define what happens to bad data (i.e. data outside the mask):
     cmap.set_bad('grey',1.)
@@ -388,7 +390,8 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     plt.plot(multiplier*monthlyData[energyType][indices['E_HCL'], dummyRange], label = 'optimized for HCL', color='m')
     plt.plot(multiplier*monthlyData[energyType][indices['E_tot'], dummyRange], label = 'optimized for E_tot', color='k')
     plt.plot(multiplier*monthlyData[energyType][indices['PVC'], dummyRange], label = 'optimized for PV and C', color='b', alpha = 0.5)
-    plt.plot(multiplier*monthlyData[energyType][indices['45'], :], label = 'fixed at 45 deg', color='y')
+    if not indices['45']==None:
+        plt.plot(multiplier*monthlyData[energyType][indices['45'], :], label = 'fixed at 45 deg', color='y')
     plt.ylabel('Energy [kWh]')
     plt.legend()
     
@@ -411,7 +414,8 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     plt.plot(multiplier*monthlyData[energyType][indices['E_HCL'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for HCL', color='m')
     plt.plot(multiplier*monthlyData[energyType][indices['E_tot'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for E_tot', color='k')
     plt.plot(multiplier*monthlyData[energyType][indices['PVC'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for PV and C', color='b', alpha = 0.5)
-    plt.plot(multiplier*monthlyData[energyType][indices['45'],:]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'fixed at 45 deg', color='y')
+    if not indices['45']==None:
+        plt.plot(multiplier*monthlyData[energyType][indices['45'],:]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'fixed at 45 deg', color='y')
     plt.ylabel('Energy Difference [kWh]')
     plt.legend()
 
@@ -526,7 +530,7 @@ def plotEnergiesOpt(monthlyData, optIdx):
 #    
     return fig
     
-def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=2 ):
+def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=12 ):
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
     
@@ -556,15 +560,62 @@ def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=2 ):
         X,Y = np.meshgrid(range(x),range(y))
         ax.plot_surface(X,Y,monthlyData[typeE][:,plotRange].transpose()-np.array(np.mean(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.cubehelix,rstride=1, cstride=1)
         plt.title('energy difference to mean' + typeE)
-create3Dplot(monthlyData, 'E_tot', 'value')
-create3Dplot(monthlyData, 'E_tot', 'normalized')
-create3Dplot(monthlyData, 'E_tot', 'difference')
-create3Dplot(monthlyData, 'PV', 'difference')
-create3Dplot(monthlyData, 'H', 'difference')
-create3Dplot(monthlyData, 'C', 'difference')
-create3Dplot(monthlyData, 'L', 'difference')
-create3Dplot(monthlyData, 'C', 'value')
+    
+    if option=='diffMin':
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        x,y = np.shape(monthlyData[typeE][:,plotRange])
+        X,Y = np.meshgrid(range(x),range(y))
+        ax.plot_surface(X,Y,-monthlyData[typeE][:,plotRange].transpose()+np.array(np.max(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.jet,rstride=1, cstride=1)
+        plt.title('energy difference to maximum' + typeE)
 
+    if option=='diffMinCarpet':
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        x,y = np.shape(monthlyData[typeE][:,plotRange])
+        X,Y = np.meshgrid(range(x),range(y))
+        plt.pcolor(X,Y,-monthlyData[typeE][:,plotRange].transpose()+np.array(np.max(monthlyData[typeE], axis=0))[plotRange, None], cmap = 'jet')
+        plt.title('energy difference to maximum' + typeE)
+        plt.axis([X.min(), X.max(), Y.min(), Y.max()])
+        fig.subplots_adjust(right=0.8)
+        cbar_ax = fig.add_axes([0.85, 0.1, 0.05, 0.78])
+        cbar = plt.colorbar(cax=cbar_ax)
+        
+def plotMaxMinDiff(monthlyData):
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    
+    indices = ['H','C','L','PV','E_tot']
+    
+    for i in indices:
+        ax.plot(np.array(np.max(monthlyData[i], axis=0)-np.array(np.min(monthlyData[i], axis=0))), label = i, alpha = 0.5)
+    plt.legend()
+    
+    plt.title('maximum difference by combination')
+
+#plotMaxMinDiff(monthlyData)
+
+#create3Dplot(monthlyData, 'E_tot', 'value')
+#create3Dplot(monthlyData, 'E_tot', 'normalized')
+#create3Dplot(monthlyData, 'E_tot', 'difference')#create3Dplot(monthlyData, 'E_tot', 'diffMin')
+#create3Dplot(monthlyData, 'PV', 'diffMin')
+#create3Dplot(monthlyData, 'H', 'diffMin')
+#create3Dplot(monthlyData, 'C', 'diffMin')
+#create3Dplot(monthlyData, 'L', 'diffMin')
+#create3Dplot(monthlyData, 'C', 'value')
+#create3Dplot(monthlyData, 'E_tot', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'PV', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'H', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'C', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'L', 'diffMinCarpet')
+#
+
+#create3Dplot(monthlyData, 'PV', 'difference')
+#create3Dplot(monthlyData, 'H', 'difference')
+#create3Dplot(monthlyData, 'C', 'difference')
+#create3Dplot(monthlyData, 'L', 'difference')
+#create3Dplot(monthlyData, 'C', 'value')
 
 
 
@@ -602,6 +653,38 @@ def plotTotEfixedY(monthlyData):
 
 #plotTotEfixedY(monthlyData)
 
+
+
+def plotTotEfixedX(monthlyData):
+    """
+    function to plot monthlyData for x-angle tracking
+    """
+    
+    #assign x-angles (must be equally distributed between 0 and 90 deg)
+    Xangles = (np.array(range(len(monthlyData['angles']['y_angles'])))-10)*90./(len(monthlyData['angles']['y_angles'])-1)
+    
+    fig = plt.figure()
+    ax1=plt.subplot(2,1,1)
+    plt.plot(Xangles, np.sum(monthlyData['H'], axis=1)/np.mean( np.sum(monthlyData['H'], axis=1)), label='H', color='r')
+    plt.plot(Xangles, np.sum(monthlyData['C'], axis=1)/np.mean( np.sum(monthlyData['C'], axis=1)), label='C', color='b')
+    plt.plot(Xangles, np.sum(monthlyData['L'], axis=1)/np.mean( np.sum(monthlyData['L'], axis=1)), label='L', color='g')
+    plt.plot(Xangles, np.sum(monthlyData['PV'], axis=1)/np.mean( np.sum(monthlyData['PV'], axis=1)), label='PV', color='c')
+    plt.plot(Xangles, np.sum(monthlyData['E_HCL'], axis=1)/np.mean( np.sum(monthlyData['E_HCL'], axis=1)), label='E_HCL', color='m')
+    plt.plot(Xangles, np.sum(monthlyData['E_tot'], axis=1)/np.mean( np.sum(monthlyData['E_tot'], axis=1)), label='E_tot', color='k')
+    plt.legend()
+    
+    plt.subplot(2,1,2, sharex=ax1)
+    plt.plot(Xangles, np.sum(monthlyData['H'], axis=1), label='H', color='r')
+    plt.plot(Xangles, np.sum(monthlyData['C'], axis=1), label='C', color='b')
+    plt.plot(Xangles, np.sum(monthlyData['L'], axis=1), label='L', color='g')
+    plt.plot(Xangles, np.sum(monthlyData['PV'], axis=1), label='PV', color='c')
+    plt.plot(Xangles, np.sum(monthlyData['E_HCL'], axis=1), label='E_HCL', color='m')
+    plt.plot(Xangles, np.sum(monthlyData['E_tot'], axis=1), label='E_tot', color='k')
+    plt.legend()
+    
+    return fig
+    
+
 def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_location,allAngles):
     """
     function that shows histograms of angle combinations for one axis
@@ -637,3 +720,53 @@ def AngleHistogram(X,rotation_axis,x_angles,x_angle_location,y_angles,y_angle_lo
     
     locs, labels = plt.xticks()
     plt.setp(labels, rotation=90)
+    
+    
+def plotAngleSavings(monthlyData, xy = None):
+    """
+    Function that is showing the cumulative benefit of each angle, when it is at 
+    the optimum position.
+    """
+    
+    energies = ['H','C','L','PV','E_tot']
+    
+    fig = plt.figure()
+    for energy in energies:
+        minInd = np.argmin(monthlyData[energy], axis=0)
+        minMax = np.max(monthlyData[energy], axis=0)-np.min(monthlyData[energy], axis=0)
+    
+        angleSavings = np.zeros([len(monthlyData['angles']['allAngles'][0]),1])
+        angleFrequency = np.zeros([len(monthlyData['angles']['allAngles'][0]),1])
+        
+        for i in range(len(minInd)):
+            angleSavings[minInd[i]] += minMax[i]
+            angleFrequency[minInd[i]] += 1
+            
+        ax1=plt.subplot(2,1,1)
+        if xy == None:
+            ax1.plot(np.array(range(len(angleSavings))), angleSavings, label=energy)
+            
+        elif xy == 'x':
+            ax1.plot(np.array(range(len(angleSavings)))*5, angleSavings, label=energy)
+            
+        elif xy=='y':
+            ax1.plot(np.array(range(len(angleSavings)))*5-45, angleSavings, label=energy)
+            
+        ax2 = plt.subplot(2,1,2)
+        if xy == None:
+            ax2.plot(np.array(range(len(angleFrequency))), angleFrequency, label=energy)
+            
+        elif xy == 'x':
+            ax2.plot(np.array(range(len(angleFrequency)))*5, angleFrequency, label=energy)
+            
+        elif xy=='y':
+            ax2.plot(np.array(range(len(angleFrequency)))*5-45, angleFrequency, label=energy)
+            
+        
+    ax1.legend()
+    ax1.grid()
+    ax1.set_ylabel('Energy Savings Potential [kWh]')
+    ax2.legend()
+    ax2.set_ylabel('Frequency [-]')
+    ax2.set_xlabel('angle [deg]')    
+    ax2.grid()

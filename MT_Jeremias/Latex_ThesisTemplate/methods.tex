@@ -5,11 +5,11 @@
 
 	\section{Thermal and Lighting Analysis}
 
-		The building energy simulation is conducted using EnergyPlus \cite{energyplus} through the DIVA \cite{DIVA} interface. The geometric solar facade is interpreted in EnergyPlus as an external shading system.  
+		The building energy simulation is conducted using EnergyPlus \cite{energyplus} through the DIVA \cite{DIVA} interface. In EnergyPlus, the geometric solar facade is interpreted as an external shading system. Simulations are performed for a whole year at fixed angle positions, outputing hourly values of energy use for heating, cooling and lighting. Optimum positions can then be found by comparing the energy deman during every hour for all combinations. 
 
 	\section{Radiation and PV Analysis}
 
-		A solar radiance simulation is run in parallel using Ladybug \cite{roudsari2014ladybug},  which uses Radiance \cite{ward1994radiance} to determine the incident insolation on the solar facade. The approach enables us to calculate solar irradiance on the modules with high spatial resolution including the effect of module mutual shading as seen in Figure \ref{fig:radiation}.  The results are coupled to an electrical circuit simulation of thin-film PV modules with sub-cell level representation \cite{hofer2015PVSEC}.
+		A solar radiance simulation is run in parallel using Ladybug \cite{roudsari2014ladybug},  which uses Radiance \cite{ward1994radiance} to determine the incident insolation on the solar facade. The approach enables to calculate solar irradiance on the modules with high spatial resolution including the effect of module mutual shading as seen in Figure \ref{fig:radiation}. The radiation is analysed for cumulative monthly hours for the whole year. The results are afterwards coupled to an electrical circuit simulation of thin-film PV modules with sub-cell level representation \cite{hofer2015PVSEC}. It is important to note that 
 
 		\begin{figure}[H]
 		\begin{center}

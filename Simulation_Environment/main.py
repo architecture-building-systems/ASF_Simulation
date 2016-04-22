@@ -36,7 +36,8 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #diva_folder = 'DIVA_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_49comb'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
-diva_folder = 'DIVA_Kloten_19x_1y'
+#diva_folder = 'DIVA_Kloten_1x_19y'
+diva_folder = 'DIVA_Kloten_19x_1y_1Infilt'
 #diva_folder = 'DIVA_Singapore_25comb'
 
 
@@ -48,6 +49,7 @@ diva_folder = 'DIVA_Kloten_19x_1y'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
+#radiation_folder = 'Radiation_Kloten_1x_19y'
 radiation_folder = 'Radiation_Kloten_19x_1y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
@@ -342,6 +344,8 @@ if mainMode == 'post_processing':
             f.write(str(int(PV_electricity_results['LayoutAndCombinations']['NoClusters'])) + '\n\n')
             f.write('Panel Size [mm]\n')
             f.write(str(int(PV_electricity_results['LayoutAndCombinations']['panelSize'])) + '\n\n')
+            f.write('Aperture Size [mm]\n')
+            f.write(str(int(lbSettings['aperturesize'])) + '\n\n')
             f.write('Panel Spacing [mm] (shortest midpoint to midpoint distance)\n')
             f.write(str(int(PV_electricity_results['LayoutAndCombinations']['panelSpacing'])) + '\n\n')
             f.write('Number of Panels\n')

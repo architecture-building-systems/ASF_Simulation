@@ -53,8 +53,10 @@ def calculate_sum_for_index(X,Xind):
             Xsum.append(X[Xind[i]][i])
             sumX = np.sum(Xsum)
     else:
-        sumX = np.sum(X[Xind])
-        
+        if not Xind==None:
+            sumX = np.sum(X[Xind])
+        else:
+            sumX = np.nan
     return sumX
     
 def create_evalList(dataType, month, startHour, endHour):

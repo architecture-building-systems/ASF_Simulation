@@ -63,9 +63,14 @@ def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
     
     if auxVar['combineResults']:
         E_totind = np.argmin(E_tot,axis=0)
-        ind_0_0 =  monthlyData['angles']['allAngles'][0].index((0,0))
-        ind_45_0 =  monthlyData['angles']['allAngles'][0].index((45,0))
-        ind_90_0 =  monthlyData['angles']['allAngles'][0].index((90,0))
+        if len(monthlyData['angles']['x_angles']) > 1:
+            ind_0_0 =  monthlyData['angles']['allAngles'][0].index((0,0))
+            ind_45_0 =  monthlyData['angles']['allAngles'][0].index((45,0))
+            ind_90_0 =  monthlyData['angles']['allAngles'][0].index((90,0))
+        else:
+            ind_0_0 =  None
+            ind_45_0 =  None
+            ind_90_0 =  None
     else:
         ind_0_0 =  monthlyData['divaAngles']['allAngles'][0].index((0,0))
         ind_45_0 =  monthlyData['divaAngles']['allAngles'][0].index((45,0))
