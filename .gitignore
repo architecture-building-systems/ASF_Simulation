@@ -124,3 +124,13 @@ sympy-plots-for-*.tex/
 # WinEdt
 *.bak
 *.sav
+
+# data files:
+*.png
+*.svg
+*.csv
+*.json
+*.npy
+
+# various
+*.pyc
