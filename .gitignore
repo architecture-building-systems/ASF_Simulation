@@ -134,3 +134,5 @@ sympy-plots-for-*.tex/
 
 # various
 *.pyc
+*.DS_Store
+
