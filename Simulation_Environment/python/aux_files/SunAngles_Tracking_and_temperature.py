@@ -18,7 +18,7 @@ from calculateHOY import calcHOY
 location_path = paths['geo']
 
 #import temperature:
-Temperature=np.genfromtxt(location_path + '\Temperature.csv',delimiter=',', skiprows = 2)
+Temperature=np.genfromtxt(location_path + '\Temperature.csv',delimiter=',', skip_header = 2)
 
 #average temperature for every month:
 Temperature = Temperature[np.newaxis, :]
@@ -26,7 +26,7 @@ daysPassedMonth, daysPerMonth = daysPassedMonth()
 Temp_month = average_monthly(Temperature, daysPassedMonth, daysPerMonth)
 
 #import sun angle data:
-SunAngles=np.genfromtxt(location_path + '\SunPosition.csv',delimiter=',', skiprows = 1)
+SunAngles=np.genfromtxt(location_path + '\SunPosition.csv',delimiter=',', skip_header = 1)
 
 #create np.array with asf angles
 asfSunTracking = np.empty(np.shape(SunAngles))

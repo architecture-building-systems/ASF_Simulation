@@ -7,7 +7,7 @@ Calculate Electrical Power of ASF
 Authors: Johannes Hofer, Jeremias Schmidli
 
 """
-def asf_electricity_production(createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None, geo_path = None):
+def asf_electricity_production(createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None, geo_path = None, flipOrientation = False):
     import json
     import numpy as np
     import time
@@ -174,7 +174,11 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
             
             # create a grid with all radiation points (nparcellxnparcell)
             irr_mod_mat_rnd = np.round(irr_mod_sel * 1000)   
-            irr_mod_mat_rnd.resize(nparcell, nparcell)        
+            irr_mod_mat_rnd.resize(nparcell, nparcell)     
+            
+            # flip orientation of PV cells on panels if requested
+            if flipOrientation:
+                irr_mod_mat_rnd = irr_mod_mat_rnd.transpose()
             
             # delete 2 times number of columns and rows specified in varPVsize 
             if varPVsize > 0:

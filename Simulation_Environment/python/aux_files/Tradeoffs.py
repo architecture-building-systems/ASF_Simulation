@@ -306,6 +306,9 @@ def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
         plt.grid()
         plt.show()
         
+    else:
+        fig = None
+        
     # save data to dictionaries
     energy_optHCL = {'H': H_HCL, 'C': C_HCL, 'L': L_HCL, 'E_HCL': E_HCL_HCL, 'E_tot': E_tot_HCL, 'PV': PV_HCL}
     energy_optPV = {'H': H_PV, 'C': C_PV, 'L': L_PV, 'E_HCL': E_HCL_PV, 'E_tot': E_tot_PV, 'PV': PV_PV}

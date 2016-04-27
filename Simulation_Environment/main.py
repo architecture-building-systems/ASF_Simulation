@@ -36,8 +36,9 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #diva_folder = 'DIVA_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_49comb'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
+diva_folder = 'DIVA_Kloten_5x_1y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
-diva_folder = 'DIVA_Kloten_19x_1y_1Infilt'
+#diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
 #diva_folder = 'DIVA_Singapore_25comb'
 
 
@@ -49,8 +50,9 @@ diva_folder = 'DIVA_Kloten_19x_1y_1Infilt'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
+radiation_folder = 'Radiation_Kloten_5x_1y'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
-radiation_folder = 'Radiation_Kloten_19x_1y'
+#radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
 
@@ -61,15 +63,18 @@ radiation_folder = 'Radiation_Kloten_19x_1y'
 # etc.:
 pvSizeOption = 0
 
+# set option to flip orientation of PV cells on the panels:
+pvFlipOrientation = False
+
 
 # specify if  plots should be created (True or False):
-createPlots = True
+createPlots = False
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
 onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = True
+showDetailedDIVA = False
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
@@ -84,6 +89,7 @@ efficiencyChanges = {'changeEfficiency':False, 'H_COP': 7, 'C_COP': 7, 'L_Load':
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:
+saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
 saveResults = {'csvSummary':True, 'figures':False, 'npyData':False}
     
 ######### -----END OF USER INTERACTION------ #############
@@ -118,6 +124,7 @@ sys.path.insert(0, paths['python'] + '\\aux_files')
 paths['diva'] = os.path.join(( paths['data'] + "\grasshopper\DIVA"), diva_folder)
 paths['lb'] = os.path.join(( paths['data'] + "\grasshopper\LadyBug"), radiation_folder)
 paths['electrical'] = os.path.join(( paths['data'] + "\python\electrical_simulation"), radiation_folder)
+
 
 print "paths defined"
 
@@ -177,11 +184,20 @@ if mainMode == 'post_processing':
     
     # find the number of combinations analysed by ladybug:
     lbSettings['numCombLB'] = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(paths['lb']))['allAngles'][0])
+    
+    # define path of pv results folder for specified settings:
+    if not pvFlipOrientation:
+        paths['PV'] = paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize'])
+    elif pvFlipOrientation:
+        paths['PV'] = paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '_oppositeOrientation'
+    else:
+        print 'setting for pvFlipOrientation is wrong'
+
 
     # check if pv results already exist, if not, create them, else load them
-    if not os.path.isfile(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '\PV_electricity_results.npy'): 
-        if not os.path.isdir(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize'])):
-            os.makedirs(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']))
+    if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'): 
+        if not os.path.isdir(paths['PV']):
+            os.makedirs(paths['PV'])
         from asf_electricity_production import asf_electricity_production
         print 'calculating PV electricity production'     
         
@@ -191,21 +207,23 @@ if mainMode == 'post_processing':
                                        lb_radiation_path=paths['lb'], 
                                        panelsize=lbSettings['panelsize'], 
                                        pvSizeOption=pvSizeOption, 
-                                       save_results_path = paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']),
+                                       save_results_path = paths['PV'],
                                        lookup_table_path = paths['data'] + '\python\electrical_simulation',
-                                       geo_path=paths['geo'])
+                                       geo_path=paths['geo'],
+                                       flipOrientation = pvFlipOrientation)
         else:
             PV_electricity_results, PV_detailed_results= \
             asf_electricity_production(createPlots=createPlots, 
                                        lb_radiation_path=paths['lb'], 
                                        panelsize=lbSettings['panelsize'], 
                                        pvSizeOption=pvSizeOption, 
-                                       save_results_path = paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']),
+                                       save_results_path = paths['PV'],
                                        lookup_table_path = paths['data'] + '\python\electrical_simulation',
-                                       geo_path=paths['geo'])
+                                       geo_path=paths['geo'],
+                                       flipOrientation = pvFlipOrientation)
     else: 
-        PV_electricity_results = np.load(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '\PV_electricity_results.npy').item()
-        PV_detailed_results = np.load(paths['electrical'] + '\\aperturesize_' + str(lbSettings['aperturesize']) + '\PV_detailed_results.npy').item()
+        PV_electricity_results = np.load(paths['PV'] + '\PV_electricity_results.npy').item()
+        PV_detailed_results = np.load(paths['PV'] + '\PV_detailed_results.npy').item()
         print 'PV_electricity_results loaded from folder'
         
     print "preparing data"

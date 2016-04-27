@@ -153,7 +153,7 @@ shading = 1-monthlyData_comb['R_avg'][R_max_ind, range(len(R_max_ind))]/monthlyD
 where_are_NaNs = np.isnan(shading)
 shading[where_are_NaNs] = 0
 
-plt.figure()
+fig = plt.figure(figsize=(16, 12))
 plt.suptitle('Radiation Analysis for average days')
 #calculate_sum_for_index(monthly,Hind)
 plt.subplot(3,1,1)
@@ -171,12 +171,14 @@ plt.plot(shading*100)
 plt.ylabel('Shading [%]')
 plt.xlabel('hours')
 
+#fig.tight_layout()
+
 
 Radiation_difference_perc = (1-(monthlyData_tracking['R_avg']/monthlyData_comb['R_avg'][R_max_ind, R_range]).transpose())*100
 where_are_NaNs = np.isnan(Radiation_difference_perc)
 Radiation_difference_perc[where_are_NaNs] = 0
 # figure to compare sun-tracking radiation to optimized radiation:
-plt.figure()
+fig = plt.figure(figsize=(16, 12))
 
 plt.subplot(3,1,1)
 plt.plot(monthlyData_comb['R_avg'][R_max_ind, R_range], label = 'Radiation optimized')
@@ -197,13 +199,15 @@ plt.plot(Radiation_difference_perc)
 plt.title('Comparison of Radiation with sun tracking to optimized solution')
 plt.ylabel('Average Radiation Difference [%]')
 
+#fig.tight_layout()
+
 
 
 PV_difference_perc = (1-(monthlyData_tracking['PV_avg']/monthlyData_comb['PV_avg'][PV_max_ind, PV_range]).transpose())*100
 where_are_NaNs = np.isnan(PV_difference_perc)
 PV_difference_perc[where_are_NaNs] = 0
 # figure to compare sun-tracking pv production to optimized pv production:
-plt.figure()
+fig = plt.figure(figsize=(16, 12))
 
 plt.subplot(3,1,1)
 plt.plot(monthlyData_comb['PV_avg'][PV_max_ind, PV_range], label='optimized')
@@ -223,7 +227,41 @@ plt.title('Comparison of PV with sun tracking to optimized solution')
 plt.ylabel('Average PV Difference [%]')
 
 
-fig =plt.figure()
+
+############# for thesis:
+fig = plt.figure(figsize=(16, 12))
+
+plt.subplot(3,1,1)
+plt.plot(monthlyData_comb['R_avg'][PV_max_ind, range(len(R_max_ind))], label='optimized for PV')
+plt.plot(monthlyData_tracking['R_avg'].transpose(), label = 'sun tracking')
+plt.plot(monthlyData_comb['R_theo'][R_max_ind, range(len(R_max_ind))], label = 'without shading')
+plt.ylabel('Radiation [W/m2]')
+plt.title ('Average Radiation on Panels')
+plt.legend()
+
+plt.subplot(3,1,2)
+plt.plot(monthlyData_comb['PV_avg'][PV_max_ind, PV_range], label='optimized')
+plt.plot(monthlyData_tracking['PV_avg'].transpose(), label = 'sun tracking' )
+plt.title('Comparison of PV with sun tracking to optimized solution')
+plt.ylabel('Average PV Energy Production [W/m2]')
+plt.legend()
+
+
+plt.subplot(3,1,3)
+plt.title('PV Efficiencies')
+plt.plot(monthlyData_comb['PV_eff'][PV_max_ind, PV_range], label = 'PV efficiency optimized')
+plt.plot(monthlyData_tracking['PV_eff'].transpose(), label = 'PV efficiency tracking')
+plt.ylabel('Efficiency [%]')
+plt.legend()
+plt.grid()
+
+
+#fig.tight_layout()
+
+
+
+
+fig =plt.figure(figsize=(16, 12))
 plt.suptitle('Comparison of PV efficiencies with sun tracking to optimized solution')
 
 plt.subplot(2,1,1)
@@ -234,13 +272,15 @@ plt.ylabel('Efficiency [%]')
 plt.legend()
 plt.grid()
 
+fig.tight_layout()
+
 plt.subplot(2,1,2)
 plt.plot((monthlyData_comb['PV_eff'][PV_max_ind, PV_range]-monthlyData_tracking['PV_eff']).transpose())
 plt.ylabel('Efficiency Difference [%]')
 plt.grid()
 
     
-fig = plt.figure()
+fig = plt.figure(figsize=(16, 12))
 plt.suptitle('Sun Tracking Angles')
 plt.subplot(2,1,1)
 VisualizeSunTrackingAngles(SunTrackingData, 'x')
@@ -256,8 +296,10 @@ PV_electricity_results_comb['LayoutAndCombinations'] = readLayoutAndCombinations
 monthlyData_comb['angles'] = CalcXYAnglesAndLocation(PV_electricity_results_comb['LayoutAndCombinations'])
 monthlyData_comb['LBmask'] = createLBmask(monthlyData_comb['R'])
 
+fig.tight_layout()
 
-fig = plt.figure()
+
+fig = plt.figure(figsize=(16, 12))
 plt.suptitle('Radiation Optimization')
 plt.subplot(2,1,1)
 arg = ['max','R_avg', 'x', 'LB', 0, 0]
@@ -273,8 +315,10 @@ plt.title('Azimuth Angles')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['y_angles'])))
 cbar.ax.set_yticklabels(monthlyData_comb['angles']['y_angles'])
 
+fig.tight_layout()
 
-fig = plt.figure()
+
+fig = plt.figure(figsize=(16, 12))
 plt.suptitle('PV Optimization')
 plt.subplot(2,1,1)
 arg = ['max','PV', 'x', 'LB', 0, 0]
@@ -289,3 +333,5 @@ pcolorMonths(monthlyData_comb, arg)
 plt.title('Azimuth Angles')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['y_angles'])))
 cbar.ax.set_yticklabels(monthlyData_comb['angles']['y_angles'])
+
+fig.tight_layout()

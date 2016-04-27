@@ -181,8 +181,9 @@ def pcolorMonths(monthlyData, arg):
     masked_array = np.ma.array(z, mask=sunMask)
     
     # define colormap:
-    cmap = plt.cm.cubehelix
-    cmap = plt.cm.PRGn
+    #cmap = plt.cm.cubehelix
+    #cmap = plt.cm.PRGn
+    cmap = plt.cm.RdBu
     
     # define what happens to bad data (i.e. data outside the mask):
     cmap.set_bad('grey',1.)
@@ -352,6 +353,7 @@ def VisualizeSunTrackingAngles(SunTrackingData, rotation_axis):
     z_mask = np.isnan(z)
     masked_array = np.ma.array(z, mask=z_mask)
     cmap = plt.cm.cubehelix
+    cmap = plt.cm.RdBu
     cmap.set_bad('grey',1.)
 
     

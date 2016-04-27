@@ -80,7 +80,7 @@ for i in range(numberOfHours):
             plt.plot(xindex,np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][5], color=cmap(i/float(numberOfHours)), label='hour'+str(5+i), marker = 'D')
         else:
             plt.plot(xindex,np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][5], color=cmap(i/float(numberOfHours)), marker = 'D')
-plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9', '12.47'))
+plt.xticks(xindex,('400', '200', '100', '50', '25', '12.5'))
 plt.ylabel('normalized radiation [-]',fontsize=14)#, verticalalignment = 'top', horizontalalignment = 'left')
 ax = plt.gca()
 ax.yaxis.set_label_coords(-0.1, 0.5)
@@ -93,7 +93,7 @@ for i in range(numberOfHours):
             plt.plot(xindex,np.array(gridConvergenceRad[i][j]), color=cmap(i/float(numberOfHours)), label='hour'+str(5+i), marker = 'D')
         else:
             plt.plot(xindex,np.array(gridConvergenceRad[i][j]), color=cmap(i/float(numberOfHours)), marker = 'D')
-plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9', '12.47'))
+plt.xticks(xindex,('400', '200', '100', '50', '25', '12.5'))
 plt.ylabel('total radiation [kWh/h]',fontsize=14)#, verticalalignment = 'bottom', horizontalalignment = 'left')
 ax = plt.gca()
 ax.yaxis.set_label_coords(-0.1, 0.5)
@@ -114,7 +114,7 @@ for i in range(numberOfHours):
         else:
             plt.plot(xindex,np.array(gridConvergenceRad[i][j])/gridConvergenceRad[i][j][5], color=cmap(j/float(numberOfComb)), marker = 'D')
 
-plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9', '12.47'))
+plt.xticks(xindex,('400', '200', '100', '50', '25', '12.5'))
 plt.ylabel('normalized radiation [-]',fontsize=14)#, verticalalignment = 'top', horizontalalignment = 'left')
 plt.legend(loc=2, bbox_to_anchor=(1.02, 1),fontsize = 14)    
 ax = plt.gca()
@@ -143,7 +143,7 @@ for i in range(numberOfHours):
             #plt.plot(xindex,np.abs(np.array(gridConvergenceRad[i][j])-gridConvergenceRad[i][j][5])/gridConvergenceRad[i][j][5], color=cmap(j/float(numberOfComb)), marker = 'D')
 plt.plot(xindex, sumDiff/counter, linewidth = 4)
 plt.xlabel('grid size [mm]',fontsize=14)
-plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9', '12.47'))
+plt.xticks(xindex,('400', '200', '100', '50', '25', '12.5'))
 plt.ylabel('average deviation [-]',fontsize=14)#, verticalalignment = 'top', horizontalalignment = 'left')
 plt.legend(loc=2, bbox_to_anchor=(1.02, 1),fontsize = 14)    
 ax = plt.gca()
@@ -157,7 +157,7 @@ plt.subplot(1,2,2)
 #data = [np.random.normal(0, std, 1000) for std in range(1, 6)]
 data = gridConvergenceBox
 box = plt.boxplot(data, notch=True, patch_artist=True)
-plt.xticks(xindex,('400', '199', '99.5', '49.8', '24.9', '12.47'),size = 14)
+plt.xticks(xindex,('400', '200', '100', '50', '25', '12.5'),size = 14)
 plt.yticks(size=14)
 plt.ylabel('normalized radiation [-]', fontsize = 14)
 plt.xlabel('grid size [mm]', fontsize = 14)

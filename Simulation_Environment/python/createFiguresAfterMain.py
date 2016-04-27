@@ -18,21 +18,21 @@ from plotDataFunctions import create3Dplot, plotTotEfixedY, plotTotEfixedX, plot
 #create3Dplot(monthlyData, 'C', 'difference')
 #create3Dplot(monthlyData, 'L', 'difference')
 #create3Dplot(monthlyData, 'C', 'value')
-create3Dplot(monthlyData, 'E_tot', 'diffMin')
-create3Dplot(monthlyData, 'PV', 'diffMin')
-create3Dplot(monthlyData, 'H', 'diffMin')
-create3Dplot(monthlyData, 'C', 'diffMin')
-create3Dplot(monthlyData, 'L', 'diffMin')
-create3Dplot(monthlyData, 'C', 'value')
-create3Dplot(monthlyData, 'E_tot', 'diffMinCarpet')
-create3Dplot(monthlyData, 'PV', 'diffMinCarpet')
-create3Dplot(monthlyData, 'H', 'diffMinCarpet')
-create3Dplot(monthlyData, 'C', 'diffMinCarpet')
-create3Dplot(monthlyData, 'L', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'E_tot', 'diffMin')
+#create3Dplot(monthlyData, 'PV', 'diffMin')
+#create3Dplot(monthlyData, 'H', 'diffMin')
+#create3Dplot(monthlyData, 'C', 'diffMin')
+#create3Dplot(monthlyData, 'L', 'diffMin')
+#create3Dplot(monthlyData, 'C', 'value')
+#create3Dplot(monthlyData, 'E_tot', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'PV', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'H', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'C', 'diffMinCarpet')
+#create3Dplot(monthlyData, 'L', 'diffMinCarpet')
 #
 ##
 #
-plotTotEfixedY(monthlyData)
+plotTotEfixedX(monthlyData)
 #
 #
 #
@@ -65,4 +65,4 @@ plotAngleSavings(results1['monthlyData'], xy = 'x')
 
 plotAngleSavings(results2['monthlyData'], xy = 'y')
 
-plotAngleSavings(monthlyData, xy = 'x')
+plotAngleSavings(monthlyData, xy = 'y')
