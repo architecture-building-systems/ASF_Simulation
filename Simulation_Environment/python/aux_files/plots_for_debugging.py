@@ -51,3 +51,33 @@ plt.plot(shading)
 #    plt.subplot(2,12,i+13)
 #    plt.plot(1-monthlyData['R_avg'][R_max_ind[i*24:i*24+24], R_range[i*24:i*24+24]]/monthlyData['R_theo'][R_max_ind[i*24:i*24+24], R_range[i*24:i*24+24]])
 #    
+
+
+fig = plt.figure()
+for i in range(50):
+    # generate 2 2d grids for the x & y bounds
+    dx, dy = 1, 1
+    y, x = np.mgrid[slice(0, 16 + dy, dy),
+                    slice(0, 16 + dx, dx)]
+                    
+    # assign values used for colormap:
+    z=[]
+    for ii in range(16):
+        z.append([])
+        for jj in range(16):
+            z[ii].append(asdf[i][16*ii+jj])
+    z = np.asarray(z)
+    plt.subplot(5,10,i+1)
+    plt.pcolor(x, y, z, cmap='RdYlBu_r', vmin=14.6, vmax=22.2)   
+    plt.colorbar()
+
+
+fig = plt.figure()
+ # generate 2 2d grids for the x & y bounds
+dx, dy = 1, 1
+y, x = np.mgrid[slice(0, 16 + dy, dy),
+                slice(0, 16 + dx, dx)]
+                
+z = irr_mod_mat_rnd
+plt.pcolor(x, y, z, cmap='RdYlBu_r', vmin=23, vmax=34)   
+plt.colorbar()

@@ -36,7 +36,7 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #diva_folder = 'DIVA_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_49comb'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
-diva_folder = 'DIVA_Kloten_5x_1y'
+diva_folder = 'DIVA_Kloten_7x_13y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
 #diva_folder = 'DIVA_Singapore_25comb'
@@ -50,7 +50,7 @@ diva_folder = 'DIVA_Kloten_5x_1y'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
-radiation_folder = 'Radiation_Kloten_5x_1y'
+radiation_folder = 'Radiation_Kloten_7x_13y'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
@@ -63,15 +63,17 @@ radiation_folder = 'Radiation_Kloten_5x_1y'
 # etc.:
 pvSizeOption = 0
 
-# set option to flip orientation of PV cells on the panels:
+# set option to flip orientation of PV cells on the panels. False means the cells 
+# are parallel to the edge from the left to the upper corner, True means the cells 
+# are parallel to the edge from the upper to the right corner:
 pvFlipOrientation = False
 
 
 # specify if  plots should be created (True or False):
-createPlots = False
+createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = False
+onlyTradeoffs = True
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
 showDetailedDIVA = False
@@ -90,7 +92,7 @@ tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:
 saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-saveResults = {'csvSummary':True, 'figures':False, 'npyData':False}
+#saveResults = {'csvSummary':True, 'figures':False, 'npyData':False}
     
 ######### -----END OF USER INTERACTION------ #############
     
@@ -295,8 +297,7 @@ if mainMode == 'post_processing':
     monthlyData['efficiencies'].update(DIVA_results['efficiencies'])
     
     # create figure handle dictionary:
-    if createPlots:
-        figureHandles = {}
+    figureHandles = {}
     
     if createPlots and not onlyTradeoffs:
         
@@ -340,8 +341,9 @@ if mainMode == 'post_processing':
     # evaluate tradeoffs:
     TradeoffResults, figureHandles['Tradeoffs'] = compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar)
     
-    # plot figures for each energy usage:    
-    figureHandles.update(plotEnergyUsage(monthlyData, auxVar))
+    if createPlots:
+        # plot figures for each energy usage:    
+        figureHandles.update(plotEnergyUsage(monthlyData, auxVar))
 
     monthList = ['January','February','March','April','May','June','July','August','September','November','October','December']
     
@@ -427,7 +429,7 @@ if mainMode == 'post_processing':
         
         print 'saved numpy data'
         
-    if saveResults['figures']:
+    if saveResults['figures'] and createPlots:
         
         # create folder to save figures as png:
         os.makedirs(paths['results'] + '\\' + now + '\\png' )
