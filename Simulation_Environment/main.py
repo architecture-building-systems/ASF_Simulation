@@ -18,8 +18,8 @@ import warnings
 
 # set mode of this main script ('initialize', 'post_processing'):
 
-#mainMode = 'initialize' #'initialize'
-mainMode = 'post_processing' #'initialize'
+mainMode = 'initialize' #'initialize'
+#mainMode = 'post_processing' #'initialize'
 
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
@@ -146,6 +146,8 @@ if mainMode == 'initialize':
 
     # calculate and save lookup table if it does not yet exist:
     if not os.path.isfile(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup.npy'): 
+        if not os.path.isdir(paths['data'] + '\python\electrical_simulation'):
+            os.makedirs(paths['data'] + '\python\electrical_simulation')
         execfile(paths['python'] + '\\aux_files\\create_lookup_table.py')
     else:
         print 'lookup table not created as it already exists'

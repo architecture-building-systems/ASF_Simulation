@@ -100,7 +100,7 @@ for i in range(301):#i=1:301
     print 'time passed: ' + str(toc/60.0) + ' min'
     print 'percentage done: ' + str(i/301.*100) + '%'
     
-np.save(data_path + '\python\electrical_simulation\curr_model_submod_lookup',curr_model_submod_lookup)
+np.save(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup',curr_model_submod_lookup)
 
 print 'lookup table succesfuly created and saved'
 
