@@ -33,10 +33,11 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-#diva_folder = 'DIVA_Kloten_25comb'
+diva_folder = 'DIVA_Kloten_25comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_25comb_SE'
 #diva_folder = 'DIVA_Kloten_49comb'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
-diva_folder = 'DIVA_Kloten_7x_13y'
+#diva_folder = 'DIVA_Kloten_7x_13y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
 #diva_folder = 'DIVA_Singapore_25comb'
@@ -46,11 +47,13 @@ diva_folder = 'DIVA_Kloten_7x_13y'
 # This folder has the same name as the generated folder for the electrical 
 # results in data\python\electrical:
 
-#radiation_folder = 'Radiation_electrical_monthly_25comb'
+#radiation_folder = 'Radiation_Kloten_25comb'
+radiation_folder = 'Radiation_Kloten_25comb_largeContext'
+#radiation_folder = 'Radiation_Kloten_25comb_SE'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
-radiation_folder = 'Radiation_Kloten_7x_13y'
+#radiation_folder = 'Radiation_Kloten_7x_13y'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
@@ -73,10 +76,10 @@ pvFlipOrientation = False
 createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = True
+onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = False
+showDetailedDIVA = True
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)

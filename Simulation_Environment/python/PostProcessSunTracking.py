@@ -300,37 +300,32 @@ fig.tight_layout()
 
 
 fig = plt.figure(figsize=(16, 12))
-plt.suptitle('Radiation Optimization')
-plt.subplot(2,1,1)
+
+plt.subplot(2,2,1)
 arg = ['max','R_avg', 'x', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
-plt.title('Altitude Angles')
+plt.title('Altitude Angles optimized for Radiation')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['x_angles'])))
 cbar.ax.set_yticklabels(monthlyData_comb['angles']['x_angles'])
 
-plt.subplot(2,1,2)
+plt.subplot(2,2,3)
 arg = ['max','R_avg', 'y', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
-plt.title('Azimuth Angles')
+plt.title('Azimuth Angles optimized for Radiation')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['y_angles'])))
 cbar.ax.set_yticklabels(monthlyData_comb['angles']['y_angles'])
 
-fig.tight_layout()
-
-
-fig = plt.figure(figsize=(16, 12))
-plt.suptitle('PV Optimization')
-plt.subplot(2,1,1)
+plt.subplot(2,2,2)
 arg = ['max','PV', 'x', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
-plt.title('Altitude Angles')
+plt.title('Altitude Angles optimized for PV')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['x_angles'])))
 cbar.ax.set_yticklabels(monthlyData_comb['angles']['x_angles'])
 
-plt.subplot(2,1,2)
+plt.subplot(2,2,4)
 arg = ['max','PV', 'y', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
-plt.title('Azimuth Angles')
+plt.title('Azimuth Angles optimized for PV')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['y_angles'])))
 cbar.ax.set_yticklabels(monthlyData_comb['angles']['y_angles'])
 
