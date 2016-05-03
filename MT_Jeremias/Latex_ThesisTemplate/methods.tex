@@ -16,7 +16,7 @@
       		\label{e:temp}
 		\end{equation}
 
-		where $T_{cell}$ is the temperature of each grid point on the module, $T_{air}$ is the ambient temperature, $T_{cell}^0$ is the temperature of the cell at reference insolation $S^0=800\frac{W}{m^2}$ and reference air temperature $T_{air}^0=20\degree C$, and $S_{cell}$ is the insolation of each gridpoint in $\frac{W}{m^2}$. The value of $T_{cell}^0$ was estimated using a thermal image of the solar facade and typical values given in \cite{Ross_Smokler_1986}. 
+		where $T_{cell}$ is the temperature of each grid point on the module, $T_{air}$ is the ambient temperature, $T_{cell}^0$ is the temperature of the cell at reference insolation $S^0=800\frac{W}{m^2}$ and reference air temperature $T_{air}^0=20\degree C$, and $S_{cell}$ is the insolation of each gridpoint in $\frac{W}{m^2}$. The value of $T_{cell}^0$ was estimated using a thermal images of the solar facade and typical values given in \cite{Ross_Smokler_1986}. 
 
 		\begin{figure}[H]
 		\begin{center}
@@ -25,6 +25,8 @@
 			\label{fig:radiation}
 		\end{center}
 		\end{figure}
+
+		The electrical model of the PV cells builds up on the methodology presented in \cite{hofer2015PVSEC} which is using the standard equivalent circuit model to calculate sub-cell I-V curves with a single diode, one series and one shunt resistance \cite{mermoud2010}. 
 
 	\section{Combined Evaluation}
 		To combine the results of the building energy and the pv analysis, the building energy results were cumulatively combined to correspond to the pv analyis format. With this, the net energy useage of the room including the PV electricity production of the ASF can be given for monthly hours as described in equation \ref{e:minimize}. 
