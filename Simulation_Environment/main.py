@@ -18,7 +18,7 @@ import warnings
 
 # set mode of this main script ('initialize', 'post_processing'):
 
-mainMode = 'initialize' #'initialize'
+mainMode = 'post_processing' #'initialize'
 #mainMode = 'post_processing' #'initialize'
 
 # specify the location used for the analysis - this name must be the same as a
@@ -34,7 +34,7 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
 diva_folder = 'DIVA_Kloten_25comb_1Infilt'
-#diva_folder = 'DIVA_Kloten_25comb_SE'
+#diva_folder = 'DIVA_Kloten_25comb_SW'
 #diva_folder = 'DIVA_Kloten_49comb'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_7x_13y'
@@ -49,7 +49,7 @@ diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 
 #radiation_folder = 'Radiation_Kloten_25comb'
 radiation_folder = 'Radiation_Kloten_25comb_largeContext'
-#radiation_folder = 'Radiation_Kloten_25comb_SE'
+#radiation_folder = 'Radiation_Kloten_25comb_SW'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
