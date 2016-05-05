@@ -432,6 +432,9 @@ if mainMode == 'post_processing':
         # save all results
         np.save(paths['results'] + '\\' + now + '\\all_results.npy', all_results)
         
+        # save energy results
+        np.save(paths['results'] + '\\' + now + '\\energy_results.npy', TradeoffResults)
+        
         print 'saved numpy data'
         
     if saveResults['figures'] and createPlots:
