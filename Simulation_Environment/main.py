@@ -410,7 +410,7 @@ if mainMode == 'post_processing':
                 f.write('Average PV Efficiency [%]\n')
                 f.write(str(np.round(monthlyData['efficiencies']['PV']*100, decimals = 1)) + '\n\n')
             
-            f.write('PV Elongation:\n')            
+            f.write('PV Elongation\n')            
             if pvFlipOrientation:
                 f.write('parallel to upper right edge\n\n')
             else:
