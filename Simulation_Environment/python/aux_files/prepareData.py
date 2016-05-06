@@ -182,7 +182,11 @@ def importDIVAresults(path):
     with open(path + '\efficiencies.json', 'r') as fp:
         efficiencies = json.load(fp)
         fp.close()
-    
+        
+    if np.shape(C)[0]==8760:
+        C = np.expand_dims(C, axis=0)
+        H = np.expand_dims(H, axis=0)
+        L = np.expand_dims(L, axis=0)
     # Calculate the total Energy Consumption
     E=C+H+L
     

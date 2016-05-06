@@ -15,6 +15,8 @@ CompareResults = False
 OrientationStudy = False
 EnergySavingsPotential = True
 
+roomSize = 30.0
+
 # assign results folders to compare:
 resultsFolder1 = 'Kloten_2clust_5x_1y'
 
@@ -73,6 +75,46 @@ efficiencyFolders['PV15'] = 'Kloten_25comb_PV1.5'
 efficiencyFolders['PV20'] = 'Kloten_25comb_PV2'
 efficiencyFolders['PV25'] = 'Kloten_25comb_PV2.5'
 
+efficiencyFoldersNoShade = {}
+
+efficiencyFoldersNoShade['CCOP1'] = 'Kloten_noShade_CCOP1'
+efficiencyFoldersNoShade['CCOP2'] = 'Kloten_noShade_CCOP2'
+efficiencyFoldersNoShade['CCOP3'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['CCOP4'] = 'Kloten_noShade_CCOP4'
+efficiencyFoldersNoShade['CCOP5'] = 'Kloten_noShade_CCOP5'
+efficiencyFoldersNoShade['CCOP6'] = 'Kloten_noShade_CCOP6'
+efficiencyFoldersNoShade['CCOP7'] = 'Kloten_noShade_CCOP7'
+efficiencyFoldersNoShade['CCOP8'] = 'Kloten_noShade_CCOP8'
+efficiencyFoldersNoShade['CCOP9'] = 'Kloten_noShade_CCOP9'
+efficiencyFoldersNoShade['CCOP10'] = 'Kloten_noShade_CCOP10'
+
+efficiencyFoldersNoShade['HCOP1'] = 'Kloten_noShade_HCOP1'
+efficiencyFoldersNoShade['HCOP2'] = 'Kloten_noShade_HCOP2'
+efficiencyFoldersNoShade['HCOP3'] = 'Kloten_noShade_HCOP3'
+efficiencyFoldersNoShade['HCOP4'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['HCOP5'] = 'Kloten_noShade_HCOP5'
+efficiencyFoldersNoShade['HCOP6'] = 'Kloten_noShade_HCOP6'
+efficiencyFoldersNoShade['HCOP7'] = 'Kloten_noShade_HCOP7'
+efficiencyFoldersNoShade['HCOP8'] = 'Kloten_noShade_HCOP8'
+efficiencyFoldersNoShade['HCOP9'] = 'Kloten_noShade_HCOP9'
+efficiencyFoldersNoShade['HCOP10'] = 'Kloten_noShade_HCOP10'
+
+efficiencyFoldersNoShade['L3'] = 'Kloten_noShade_L3'
+efficiencyFoldersNoShade['L6'] = 'Kloten_noShade_L6'
+efficiencyFoldersNoShade['L9'] = 'Kloten_noShade_L9'
+efficiencyFoldersNoShade['L11.74'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['L15'] = 'Kloten_noShade_L15'
+
+efficiencyFoldersNoShade['PV08'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV09'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV10'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV11'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV12'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV13'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV15'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV20'] = 'Kloten_noShade_basecase'
+efficiencyFoldersNoShade['PV25'] = 'Kloten_noShade_basecase'
+
 # set folders with combination results 
 combinationFolders = {}
 
@@ -81,6 +123,24 @@ combinationFolders['19x'] = 'Kloten_19x_1y_1Infilt'
 combinationFolders['19y'] = 'Kloten_1x_19y_1Infilt'
 combinationFolders['91'] = 'Kloten_7x_13y_1Infilt'
 combinationFolders['49'] = 'Kloten_49comb_1Infilt'
+
+# set infiltration folders:
+
+infiltrationFolders = {}
+
+infiltrationFolders['0.5'] = 'Kloten_25comb_0.5Infilt'
+infiltrationFolders['0.75'] = 'Kloten_25comb_0.75Infilt'
+infiltrationFolders['1'] = 'Kloten_25comb_1Infilt'
+infiltrationFolders['1.25'] = 'Kloten_25comb_1.25Infilt'
+infiltrationFolders['1.5'] = 'Kloten_25comb_1.5Infilt'
+
+infiltrationFoldersNoShade = {}
+
+infiltrationFoldersNoShade['0.5'] = 'Kloten_noShade_0.5Infilt'
+infiltrationFoldersNoShade['0.75'] = 'Kloten_noShade_0.75Infilt'
+infiltrationFoldersNoShade['1'] = 'Kloten_noShade_1Infilt'
+infiltrationFoldersNoShade['1.25'] = 'Kloten_noShade_1.25Infilt'
+infiltrationFoldersNoShade['1.5'] = 'Kloten_noShade_1.5Infilt'
 
 
 # paths dict:
@@ -180,7 +240,13 @@ if EnergySavingsPotential:
         print key, item
         results[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']
         
+    noShadeResults = {}
+    for key, item in efficiencyFoldersNoShade.iteritems():
+        noShadeResults[key] =  np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']
         
+        
+        
+    ############ Heating Plots ####################
 
     # number of bars
     N = 10
@@ -202,17 +268,17 @@ if EnergySavingsPotential:
     
     fig = plt.figure()
     
-    ax = plt.subplot(1,6,1)
+    ax1 = plt.subplot(2,7,1)
     
-    rects1 = ax.bar(ind, E, width, color='red', alpha = 0.3) 
+    rects1 = ax1.bar(ind, E/roomSize, width, color='red', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
-    ax.set_ylabel('Energy Savings [kWh]')
-    ax.set_title('Sensitivity on Heating COP')
+    ax1.set_ylabel('Energy Savings per room area compared to facade at 45 deg [kWh/m2]')
+    ax1.set_title('Sensitivity on Heating COP')
     
-    ax.set_xticks(ind+0.25)
-    ax.set_xticklabels(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']  )
-    ax.set_xlabel('Heating COP [-]')
+    ax1.set_xticks(ind+0.25)
+    ax1.set_xticklabels(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']  )
+    ax1.set_xlabel('Heating COP [-]')
     plt.axhline(y=0, linewidth=1, color = 'k')
     plt.grid( axis = u'y')
     
@@ -221,7 +287,50 @@ if EnergySavingsPotential:
     
     
     
-    plt.subplot(1,6,2)
+    
+    # number of bars
+    N = 10
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+    for i in ['HCOP1', 'HCOP2', 'HCOP3', 'HCOP4', 'HCOP5', 'HCOP6', 'HCOP7', 'HCOP8', 'HCOP9', 'HCOP10']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + noShadeResults[i]['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
+    
+    
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+        
+    ax2 = plt.subplot(2,7,8)
+    
+    rects1 = ax2.bar(ind, E/roomSize, width, color='red', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+    ax2.set_ylabel('Energy Savings per room area compared to no facade [kWh/m2]')
+    ax2.set_title('Sensitivity on Heating COP')
+    
+    ax2.set_xticks(ind+0.25)
+    ax2.set_xticklabels(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']  )
+    ax2.set_xlabel('Heating COP [-]')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    plt.legend()
+    
+    
+    
+    
+    
+    
+    
+    ############ Cooling Plots ####################
+
+    
     # number of bars
     N = 10
     
@@ -240,9 +349,9 @@ if EnergySavingsPotential:
     ind = np.arange(N)-0.25  # the x locations for the groups
     width = 0.5       # the width of the bars
     
-    ax = plt.subplot(1,6,2, sharey=ax)
+    ax = plt.subplot(2,7,2, sharey=ax1)
     
-    rects1 = ax.bar(ind, E, width, color='blue', alpha = 0.3) 
+    rects1 = ax.bar(ind, E/roomSize, width, color='blue', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
     ax.set_title('Sensitivity on Cooling COP')
@@ -257,9 +366,47 @@ if EnergySavingsPotential:
 
 
 
+    # number of bars
+    N = 10
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+    for i in ['CCOP1', 'CCOP2', 'CCOP3', 'CCOP4', 'CCOP5', 'CCOP6', 'CCOP7', 'CCOP8', 'CCOP9', 'CCOP10']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + noShadeResults[i]['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
     
     
-    plt.subplot(1,6,3)
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,7,9, sharey=ax2)
+    
+    rects1 = ax.bar(ind, E/roomSize, width, color='blue', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+    ax.set_title('Sensitivity on Cooling COP')
+    
+    ax.set_xticks(ind+0.25)
+    ax.set_xticklabels( ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] )
+    ax.set_xlabel('Cooling COP [-]')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    plt.legend()
+    
+    
+    
+    
+    
+    
+    ############ Lighting Plots ####################
+
+    
     # number of bars
     N = 5
     
@@ -280,9 +427,45 @@ if EnergySavingsPotential:
     ind = np.arange(N)-0.25  # the x locations for the groups
     width = 0.5       # the width of the bars
     
-    ax = plt.subplot(1,6,3, sharey=ax)
+    ax = plt.subplot(2,7,3, sharey=ax1)
     
-    rects1 = ax.bar(ind, E, width, color='green', alpha = 0.3) 
+    rects1 = ax.bar(ind, E/roomSize, width, color='green', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+    ax.set_title('Sensitivity on Lighting Load')
+    
+    ax.set_xticks(ind+0.25)
+    ax.set_xticklabels(['3', '6', '9', '11.74', '15'] )
+    ax.set_xlabel('Lighting Load [W/m2]')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    plt.legend()
+    
+    
+    # number of bars
+    N = 5
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+#    for i in ['L5', 'L10', 'L15', 'L20']:
+
+    for i in ['L3', 'L6', 'L9', 'L11.74', 'L15']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + noShadeResults[i]['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
+    
+    
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,7,10, sharey=ax2)
+    
+    rects1 = ax.bar(ind, E/roomSize, width, color='green', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
     ax.set_title('Sensitivity on Lighting Load')
@@ -299,7 +482,8 @@ if EnergySavingsPotential:
     
     
     
-    plt.subplot(1,6,4)
+    ############ PV Plots ####################
+    
     # number of bars
     N = 9
     
@@ -318,9 +502,9 @@ if EnergySavingsPotential:
     ind = np.arange(N)-0.25  # the x locations for the groups
     width = 0.5       # the width of the bars
     
-    ax = plt.subplot(1,6,4, sharey=ax)
+    ax = plt.subplot(2,7,4, sharey=ax1)
     
-    rects1 = ax.bar(ind, E, width, color='cyan', alpha = 0.3) 
+    rects1 = ax.bar(ind, E/roomSize, width, color='cyan', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
     ax.set_title('Sensitivity on Average PV Efficiency')
@@ -332,8 +516,48 @@ if EnergySavingsPotential:
     plt.grid( axis = u'y')
     
     plt.legend()
+
+
+
+
+    # number of bars
+    N = 9
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+    for i in ['PV08', 'PV09', 'PV10', 'PV11', 'PV12', 'PV13', 'PV15', 'PV20', 'PV25']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + noShadeResults[i]['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
     
     
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,7,11, sharey=ax2)
+    
+    rects1 = ax.bar(ind, E/roomSize, width, color='cyan', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+    ax.set_title('Sensitivity on Average PV Efficiency')
+    
+    ax.set_xticks(ind+0.25)
+    ax.set_xticklabels( ['8', '9', '10', '11', '12', '13', '15', '20', '25'] )
+    ax.set_xlabel('PV Efficiency [%]')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    plt.legend()    
+    
+    
+    
+    
+    
+    ########################### Orientation Plots ###############################
     for key, item in OrientationFolders.iteritems():
         print key, item
         results[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']
@@ -356,9 +580,9 @@ if EnergySavingsPotential:
     ind = np.arange(N)-0.25  # the x locations for the groups
     width = 0.5       # the width of the bars
     
-    ax = plt.subplot(1,6,5, sharey=ax)
+    ax = plt.subplot(2,7,5, sharey=ax1)
     
-    rects1 = ax.bar(ind, E, width, color='black', alpha = 0.3) 
+    rects1 = ax.bar(ind, E/roomSize, width, color='black', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
 
@@ -372,6 +596,10 @@ if EnergySavingsPotential:
     
     plt.legend() 
     
+    
+    
+    
+    ################ Combinations Plots #########################
     
     for key, item in combinationFolders.iteritems():
         print key, item
@@ -395,21 +623,141 @@ if EnergySavingsPotential:
     ind = np.arange(N)-0.25  # the x locations for the groups
     width = 0.5       # the width of the bars
     
-    ax = plt.subplot(1,6,6, sharey=ax)
+    ax = plt.subplot(2,7,6, sharey=ax1)
     
-    rects1 = ax.bar(ind, E, width, color='orange', alpha = 0.3) 
+    rects1 = ax.bar(ind, E/roomSize, width, color='orange', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
 
-    ax.set_title('Sensitivity on Building Orientation')
+    ax.set_title('Sensitivity on Simulation Combination')
     
     ax.set_xticks(ind+0.25)
-    ax.set_xticklabels( ['19 azim', '19 alt', '5 azim / 5 alt', '7 azim / 7 alt', '13 azim / 13 alt'], rotation='vertical' )
-    ax.set_xlabel('Building Orientation')
+    ax.set_xticklabels( ['19/0', '0/19', '5/5', '7/7', '13/7'], rotation='vertical' )
+    ax.set_xlabel('azimuth/altitude')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    
+    
+    
+    plt.legend()
+    
+     # number of bars
+    N = 5
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+    for i in  ['19x', '19y', '25', '49', '91']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + noShadeResults['CCOP3']['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
+    
+    
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,7,13, sharey=ax2)
+    
+    rects1 = ax.bar(ind, E/roomSize, width, color='orange', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+
+    ax.set_title('Sensitivity on Simulation Combination')
+    
+    ax.set_xticks(ind+0.25)
+    ax.set_xticklabels( ['19/0', '0/19', '5/5', '7/7', '13/7'], rotation='vertical' )
+    ax.set_xlabel('azimuth/altitude')
     plt.axhline(y=0, linewidth=1, color = 'k')
     plt.grid( axis = u'y')
     
     plt.legend()
         
+        
+        
+        
+        
+    ####################### Infiltration Plots ##########################
+
+
+    resultsInfilt = {}
+    for key, item in infiltrationFolders.iteritems():
+        resultsInfilt[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']
+        
+    noShadeResultsInfilt = {}
+    for key, item in infiltrationFoldersNoShade.iteritems():
+        noShadeResultsInfilt[key] =  np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']    
+    
+    # number of bars
+    N = 5
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+
+    for i in ['0.5', '0.75', '1', '1.25', '1.5']:
+
+        E.append(-resultsInfilt[i]['energy_opttot']['E_tot'] + resultsInfilt[i]['energy_45']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
+    
+    
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,7,7, sharey=ax1)
+    
+    rects1 = ax.bar(ind, E/roomSize, width, color='indigo', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+    ax.set_title('Sensitivity on Lighting Load')
+    
+    ax.set_xticks(ind+0.25)
+    ax.set_xticklabels( ['0.5', '0.75', '1', '1.25', '1.5'] )
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    plt.legend()
+    
+    
+    # number of bars
+    N = 5
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+#    for i in ['L5', 'L10', 'L15', 'L20']:
+
+    for i in  ['0.5', '0.75', '1', '1.25', '1.5']:
+
+        E.append(-resultsInfilt[i]['energy_opttot']['E_tot'] + noShadeResultsInfilt[i]['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
+    
+    
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,7,14, sharey=ax2)
+    
+    rects1 = ax.bar(ind, E/roomSize, width, color='indigo', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+    ax.set_title('Sensitivity on Lighting Load')
+    
+    ax.set_xticks(ind+0.25)
+    ax.set_xticklabels( ['0.5', '0.75', '1', '1.25', '1.5'] )
+    ax.set_xlabel('Infiltration Rate [1/h]')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    plt.legend()
     
     plt.show()
