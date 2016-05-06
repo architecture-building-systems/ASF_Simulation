@@ -69,17 +69,17 @@ pvSizeOption = 0
 # set option to flip orientation of PV cells on the panels. False means the cells 
 # are parallel to the edge from the left to the upper corner, True means the cells 
 # are parallel to the edge from the upper to the right corner:
-pvFlipOrientation = False
+pvFlipOrientation = True
 
 
 # specify if  plots should be created (True or False):
-createPlots = True
+createPlots = False
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
 onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = True
+showDetailedDIVA = False
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
@@ -94,8 +94,8 @@ efficiencyChanges = {'changeEfficiency':False, 'H_COP': 7, 'C_COP': 7, 'L_Load':
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:
-saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-#saveResults = {'csvSummary':True, 'figures':False, 'npyData':False}
+#saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
+saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
     
 ######### -----END OF USER INTERACTION------ #############
     
@@ -346,6 +346,13 @@ if mainMode == 'post_processing':
     # evaluate tradeoffs:
     TradeoffResults, figureHandles['Tradeoffs'] = compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar)
     
+    
+    print 'Heating Energy Demand:' + str(TradeoffResults['energy_opttot']['H'])
+    print 'Cooling Energy Demand:' + str(TradeoffResults['energy_opttot']['C'])
+    print 'Lighting Energy Demand:' + str(TradeoffResults['energy_opttot']['L'])
+    print 'PV Energy Production:' + str(TradeoffResults['energy_opttot']['PV'])
+    print 'Total Energy Demand:' + str(TradeoffResults['energy_opttot']['E_tot'])
+    
     if createPlots:
         # plot figures for each energy usage:    
         figureHandles.update(plotEnergyUsage(monthlyData, auxVar))
@@ -402,6 +409,12 @@ if mainMode == 'post_processing':
                 f.write(str(monthlyData['efficiencies']['L_Load']) + '\n\n')
                 f.write('Average PV Efficiency [%]\n')
                 f.write(str(np.round(monthlyData['efficiencies']['PV']*100, decimals = 1)) + '\n\n')
+            
+            f.write('PV Elongation:\n')            
+            if pvFlipOrientation:
+                f.write('parallel to upper right edge\n\n')
+            else:
+                f.write('parallel to upper left edge\n\n')
             
             f.write('Net Energy Demand [kWh]\n')
             f.write(';optimized;fixed at 90 deg;fixed at 45 deg;fixed at 0 deg\n')

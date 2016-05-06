@@ -9,9 +9,11 @@ Compare Results script
 
 import numpy as np
 import sys, os
+import matplotlib.pyplot as plt
 
 CompareResults = False
-OrientationStudy = True
+OrientationStudy = False
+EnergySavingsPotential = True
 
 # assign results folders to compare:
 resultsFolder1 = 'Kloten_2clust_5x_1y'
@@ -25,8 +27,11 @@ OrientationFolders = {}
 OrientationFolders['W'] = 'Kloten_25comb_SW'
 OrientationFolders['SW'] = 'Kloten_25comb_SW'
 OrientationFolders['S'] = 'Kloten_25comb_largeContext'
-OrientationFolders['SE'] = 'Kloten_25comb_SE'
-OrientationFolders['E'] = 'Kloten_25comb_SE'
+OrientationFolders['SE'] = 'Kloten_25comb_SE_flipped'
+OrientationFolders['E'] = 'Kloten_25comb_SE_flipped'
+
+
+
 
 # paths dict:
 paths = {}
@@ -59,15 +64,17 @@ if OrientationStudy:
         print key, item
         results[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']['energy_opttot']
         
-    
+    # number of bars
     N = 5
     
+    # empty list for results
     H = []
     C = []
     L = []
     PV = []
     E = []
 
+    # fill result lists
     for i in ['W', 'SW', 'S', 'SE', 'E']:
         
         H.append(results[i]['H'])
@@ -76,11 +83,13 @@ if OrientationStudy:
         PV.append(results[i]['PV'])
         E.append(results[i]['E_tot'])
         
+    # convert them to numpy arrays
     H = np.array(H)
     C = np.array(C)
     L = np.array(L)
     PV = np.array(PV)
     E = np.array(E)
+    
     
     ind = np.arange(N) + .15 # the x locations for the groups
     width = 0.35       # the width of the bars
@@ -94,7 +103,7 @@ if OrientationStudy:
     #TotE = (140, 90, 78, 65, 50)
     
     
-    xtra_space = 0.05
+    xtra_space = 0.0
     rects2 = ax.bar(ind + width + xtra_space , E, width, color='black', alpha = 0.3, label = 'total') 
     
     
@@ -107,7 +116,7 @@ if OrientationStudy:
     ax.set_xticklabels( ('W', 'SW', 'S', 'SE', 'E') )
     ax.set_xlabel('Building Orientation')
     plt.axhline(y=0, linewidth=1, color = 'k')
-    plt.grid()
+    plt.grid( axis = u'y')
     
     plt.legend()
     
