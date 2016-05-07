@@ -1,5 +1,6 @@
 %!TEX root = thesis.tex
 \chapter{Methodology}
+\label{c:methodology}
 
 	This chapter describes the methodology used to find the optimum configurations of the ASF. To study the electricity generation and building energy consumption, a 3D geometry of the room and solar facade is built using the Rhinoceros software \cite{Rhino}, and its parametric modelling plugin Grasshopper \cite{grasshopper}. The aquired data is then post-processed in Python \cite{python} to extract the configurations that minimise building energy consumption and maximise PV electricity production.
 
@@ -16,7 +17,7 @@
       		\label{e:temp}
 		\end{equation}
 
-		where $T_{cell}$ is the temperature of each grid point on the module, $T_{air}$ is the ambient temperature, $T_{cell}^0$ is the temperature of the cell at reference insolation $S^0=800\frac{W}{m^2}$ and reference air temperature $T_{air}^0=20\degree C$, and $S_{cell}$ is the insolation of each gridpoint in $\frac{W}{m^2}$. The value of $T_{cell}^0$ was estimated using a thermal images of the solar facade and typical values given in \cite{Ross_Smokler_1986}. 
+		where $T_{cell}$ is the temperature of each grid point on the module, $T_{air}$ is the ambient temperature, $T_{cell}^0$ is the temperature of the cell at reference insolation $S^0=800\frac{W}{m^2}$ and reference air temperature $T_{air}^0=20\degree C$, and $S_{cell}$ is the insolation of each gridpoint in $\frac{W}{m^2}$. The value of $T_{cell}^0$ was estimated using thermal images of the solar facade and typical values given in \cite{Ross_Smokler_1986}. 
 
 		\begin{figure}[H]
 		\begin{center}
@@ -45,7 +46,7 @@
 	\section{Case Study}
 		%The case study is done for a room and facade representing the prototype of the ASF at the house of natural resources (HONR) \cite{honr}.  The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis, the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open) position in steps of 22.5$^{\circ}$. In the vertical axis, it can move from 45$^{\circ}$ to -45$^{\circ}$ in 22.5$^{\circ}$ steps. Existing ASF systems \cite{nagy2015frontiers} have independently actuated panels and a continuous range of actuation, however for simplicity, we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system.
 
-		The case study is done for a room and facade representing the prototype of the ASF at the house of natural resources (HONR) \cite{nagy2015frontiers}.  The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis, the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open) position, whereas in the vertical axis, they can move from 45$^{\circ}$ to -45$^{\circ}$. %Existing ASF systems \cite{nagy2015frontiers} have independently actuated panels and a continuous range of actuation, however for simplicity, we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system. 
+		The case study is done for a room and facade representing the prototype of the ASF at the house of natural resources (HONR) \cite{nagy2015frontiers}.  The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis, the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open), whereas in the vertical axis, they can move from 45$^{\circ}$ to -45$^{\circ}$. %Existing ASF systems \cite{nagy2015frontiers} have independently actuated panels and a continuous range of actuation, however for simplicity, we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system. 
 
 		The office environment is heated with a heatpump with an average COP of 4 and cooled with an average COP of 3. When required, the electric lighting consumption is 11.7 $W/m^2$. 
 

@@ -17,20 +17,20 @@
 
 	PV electricity production of shading devices has been evaluated for fixed angles in \cite{freitas2015maximizing}, where different BIPV facade geometries are analysed, finding horizontal louvers to perform best. In \cite{hofer2015PVSEC} a in-depth analysis of dynamic shading modules was evaluated for various design parameters with solar tracking. 
 
-	This thesis expands on the work in \cite{jayathissa2015abs} and \cite{hofer2015PVSEC} by analysing dynamic PV shading systems, while also taking into account mutual shading amongst modules and its effect on PV electricity generation. The approach allows us to reduce efficiency degradation due to partial shading of PV modules \cite{hofer2015PVSEC}.
+	This thesis expands on the work in \cite{jayathissa2015abs} and \cite{hofer2015PVSEC} by analysing dynamic PV shading systems, while also taking into account mutual shading amongst modules and its effect on PV electricity generation. With this approach it is possible to reduce efficiency degradation due to partial shading of PV modules \cite{hofer2015PVSEC}.
 
 	The work presented in this thesis is applied in the context of the Adaptive Solar Facade (ASF) project \cite{nagy2015frontiers}. The ASF is a lightweight PV shading system composed of CIGS panels, that can be easily installed on any surface of new or existing buildings. This thesis will present a methodology of simulating an ASF while simultaneously calculating the energy demand of the office space behind the facade.
 
 
 \section{Problem Statement}\
 	%What is the problem that you are trying to solve?
-	The optimization problem has to be solved for pv modules as adaptive building shading systems:\\
+	The following optimization problem has to be solved for PV modules as adaptive building shading systems:\\
 	\begin{equation}
 			minimize(C+H+L-PV)
 	      	\label{e:minimize}
 	\end{equation}
 
-	Furthermore, different parameters must be evaluated to assess the effects of building orientation, possibilities and limits of current simulation tools, as well as various control strategy approaches.
+	Where $C$ is the electricity needed for cooling, $H$ is the electricty used for heating, $L$ is the lighting power demand and $PV$ represents the electricity production. Furthermore, different parameters must be evaluated to assess the effects of building orientation, possibilities and limits of current simulation tools, as well as various control strategy approaches.
 
 
 
@@ -40,13 +40,13 @@
 	Based on the problem statement, the objectives are to
 
 	\begin{itemize}
-		\item Develop a framework for modelling an adaptive solar facade
-		\item Find the best configurations to minimize the building energy demand
+		\item Develop a simulation framework for PV modules as adaptive solar shading systems
+		\item Find the best configurations to minimize the net building energy demand
 		\item Assess effects of the building orientation
 		\item Suggest factors that must be taken into account to find the optimum control strategy
 	\end{itemize}
 
 
 \section{Thesis Outline}\
-	%Breakdown of your thesis (Not always necessary)
+	Chapter \ref{c:methodology} introduces the methodology used within this thesis and describes the approaches taken for building simulation, radiation and PV analysis as well as the combination of the two seperate simulations. In chapter \ref{ch:results}, the results for the building simulation and the electricity production are presented and different influences are shown. Chapter \ref{ch:discussion} then discusses the results and the influences they have on decision making for both further research and design optimization. The work is summarized and concludes in chapter \ref{ch:conclusion} and an outlook for further research is given in chapter \ref{ch:outlook}. 
 
