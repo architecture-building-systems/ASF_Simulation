@@ -8,8 +8,8 @@ run main.py first or load data from results.
 @author: Jeremias
 """
 
-from plotDataFunctions import create3Dplot, plotTotEfixedY, plotTotEfixedX, plotAngleSavings
-
+from plotDataFunctions import create3Dplot, plotTotEfixedY, plotTotEfixedX, plotAngleSavings, plotMaxMinDiff
+#
 #create3Dplot(monthlyData, 'E_tot', 'value')
 #create3Dplot(monthlyData, 'E_tot', 'normalized')
 #create3Dplot(monthlyData, 'E_tot', 'difference')
@@ -29,14 +29,14 @@ from plotDataFunctions import create3Dplot, plotTotEfixedY, plotTotEfixedX, plot
 #create3Dplot(monthlyData, 'H', 'diffMinCarpet')
 #create3Dplot(monthlyData, 'C', 'diffMinCarpet')
 #create3Dplot(monthlyData, 'L', 'diffMinCarpet')
-#
+##
 ##
 #
-plotTotEfixedX(monthlyData)
+#plotTotEfixedX(monthlyData)
 #
 #
 #
-#plotMaxMinDiff(monthlyData)
+plotMaxMinDiff(monthlyData)
 
 
 # load data:

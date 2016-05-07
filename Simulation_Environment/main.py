@@ -34,9 +34,9 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_25comb_0.5Infilt'
-diva_folder = 'DIVA_Kloten_25comb_E'
+diva_folder = 'DIVA_Kloten_25comb_W'
 #diva_folder = 'DIVA_Kloten_49comb_1Infilt'
-#diva_folder = 'DIVA_Kloten_noShade_1.5Infilt'
+#diva_folder = 'DIVA_Kloten_noShade_E'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_7x_13y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
@@ -50,7 +50,7 @@ diva_folder = 'DIVA_Kloten_25comb_E'
 
 #radiation_folder = 'Radiation_Kloten_25comb'
 #radiation_folder = 'Radiation_Kloten_25comb_largeContext'
-radiation_folder = 'Radiation_Kloten_25comb_E'
+radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Dummy_NoShade'
@@ -96,8 +96,8 @@ efficiencyChanges = {'changeEfficiency':False, 'H_COP': 4, 'C_COP': 3, 'L_Load':
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:
+#saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
 saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-#saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
     
 ######### -----END OF USER INTERACTION------ ############
     

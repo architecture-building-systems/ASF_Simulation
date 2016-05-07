@@ -12,7 +12,7 @@ import sys, os
 import matplotlib.pyplot as plt
 
 CompareResults = False
-OrientationStudy = False
+OrientationStudy = True
 EnergySavingsPotential = True
 
 roomSize = 30.0
@@ -25,11 +25,19 @@ resultsFolder2 = 'Kloten_25comb'
 # set folders with orientation results 
 OrientationFolders = {}
 
-OrientationFolders['W'] = 'Kloten_25comb_SW'
+OrientationFolders['W'] = 'Kloten_25comb_W'
 OrientationFolders['SW'] = 'Kloten_25comb_SW'
 OrientationFolders['S'] = 'Kloten_25comb_largeContext'
 OrientationFolders['SE'] = 'Kloten_25comb_SE_flipped'
-OrientationFolders['E'] = 'Kloten_25comb_SE_flipped'
+OrientationFolders['E'] = 'Kloten_25comb_E_flipped'
+
+OrientationFoldersNoShade = {}
+
+OrientationFoldersNoShade['W'] = 'Kloten_noShade_W'
+OrientationFoldersNoShade['SW'] = 'Kloten_noShade_SW'
+OrientationFoldersNoShade['S'] = 'Kloten_noShade_basecase'
+OrientationFoldersNoShade['SE'] = 'Kloten_noShade_SE'
+OrientationFoldersNoShade['E'] = 'Kloten_noShade_E'
 
 # set folders with efficiency results
 efficiencyFolders = {}
@@ -599,6 +607,47 @@ if EnergySavingsPotential:
     
     
     
+    for key, item in OrientationFoldersNoShade.iteritems():
+        print key, item
+        noShadeResults[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']
+        
+     # number of bars
+    N = 5
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+    for i in  ['W', 'SW', 'S', 'SE', 'E']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + noShadeResults[i]['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
+    
+    
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,7,12, sharey=ax2)
+    
+    rects1 = ax.bar(ind, E/roomSize, width, color='black', alpha = 0.3) 
+
+    # add some text for labels, title and axes ticks
+
+    ax.set_title('Sensitivity on Building Orientation')
+    
+    ax.set_xticks(ind+0.25)
+    ax.set_xticklabels( ['W', 'SW', 'S', 'SE', 'E'] , rotation='vertical' )
+    ax.set_xlabel('Building Orientation')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    plt.legend() 
+    
+    
+    
+    
     ################ Combinations Plots #########################
     
     for key, item in combinationFolders.iteritems():
@@ -715,7 +764,7 @@ if EnergySavingsPotential:
     rects1 = ax.bar(ind, E/roomSize, width, color='indigo', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
-    ax.set_title('Sensitivity on Lighting Load')
+    ax.set_title('Sensitivity on Infiltration Rate')
     
     ax.set_xticks(ind+0.25)
     ax.set_xticklabels( ['0.5', '0.75', '1', '1.25', '1.5'] )
@@ -750,7 +799,7 @@ if EnergySavingsPotential:
     rects1 = ax.bar(ind, E/roomSize, width, color='indigo', alpha = 0.3) 
 
     # add some text for labels, title and axes ticks
-    ax.set_title('Sensitivity on Lighting Load')
+    ax.set_title('Sensitivity on Infiltration Rate')
     
     ax.set_xticks(ind+0.25)
     ax.set_xticklabels( ['0.5', '0.75', '1', '1.25', '1.5'] )
