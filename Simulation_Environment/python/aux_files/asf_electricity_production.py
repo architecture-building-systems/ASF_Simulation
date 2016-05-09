@@ -16,6 +16,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
     from scipy import interpolate
     from average_monthly import daysPassedMonth
     from prepareData import readLayoutAndCombinations, CalcXYAnglesAndLocation
+    from auxFunctions import flatten
     
     create_plots_flag = createPlots
     Simulation_Data_Folder = lb_radiation_path
@@ -119,7 +120,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
     days_passed_month, days_per_month =  daysPassedMonth()
     
     # number of panels in evaluated ASF:
-    panelnum = 50
+    panelnum = len(flatten(readLayoutAndCombinations(lb_radiation_path)['ASFarray']))/2
     
     # preallocate data for speed:
     Pmod_mpp = np.empty((numASFit, panelnum))*np.nan

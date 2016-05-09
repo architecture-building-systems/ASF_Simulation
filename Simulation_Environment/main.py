@@ -33,9 +33,9 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-diva_folder = 'DIVA_Kloten_25comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_25comb_W'
-#diva_folder = 'DIVA_Kloten_49comb_1Infilt'
+diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_7x_13y'
@@ -49,10 +49,10 @@ diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 # results in data\python\electrical:
 
 #radiation_folder = 'Radiation_Kloten_25comb'
-radiation_folder = 'Radiation_Kloten_25comb_largeContext'
+#radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
-#radiation_folder = 'Radiation_Kloten_49comb'
+radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Dummy_NoShade'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
 #radiation_folder = 'Radiation_Kloten_7x_13y'
@@ -60,6 +60,8 @@ radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
+#radiation_folder = 'Radiation_5panels_25comb'
+
 
 
 # set option to change the size of the PV area for the electrical simulation, 
@@ -71,7 +73,7 @@ pvSizeOption = 0
 # set option to flip orientation of PV cells on the panels. False means the cells 
 # are parallel to the edge from the left to the upper corner, True means the cells 
 # are parallel to the edge from the upper to the right corner:
-pvFlipOrientation = True
+pvFlipOrientation = False
 
 
 # specify if  plots should be created (True or False):
@@ -81,12 +83,12 @@ createPlots = True
 onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = False
+showDetailedDIVA = True
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
 # set changeEfficiency to True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':False, 'H_COP': 4, 'C_COP': 3, 'L_Load': 11.74, 'PV': 0}
+efficiencyChanges = {'changeEfficiency':False, 'H_COP': 4, 'C_COP': 3, 'L_Load': 11.74, 'PV': 1}
 
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
@@ -97,7 +99,7 @@ tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:
 #saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
+saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
 
 
 #setting to only evaluate certain configurations available in the total monthly
@@ -114,8 +116,10 @@ changeMonthlyData = {'enabled':False, 'rows':[2,7,12,17,22]}
 #changeMonthlyData = {'enabled':True, 'rows':[12]}
 
 
-    
-    
+#setting to change PV data to match more simple geometry, monthlyData['PV'] will
+#simply be multiplied by that factor, make sure it is reasonable, and be aware of
+#the loss in acuracy:
+changePV = {'enabled':False, 'Factor':781.37/142.10}
     
 ######### -----END OF USER INTERACTION------ ############
     
@@ -277,6 +281,9 @@ if mainMode == 'post_processing':
     else:
         monthlyData['changedEfficiency'] = False
         
+    if changePV['enabled']:
+        monthlyData['PV']  = monthlyData['PV']*changePV['Factor']
+        
         
     # import DIVA results:
     DIVA_results = importDIVAresults(paths['diva'])    
@@ -309,6 +316,10 @@ if mainMode == 'post_processing':
         
         # set variable that prevents combined analysis of DIVA and LB:
         auxVar['combineResults'] = False
+        
+        if changePV['enabled']:
+            auxVar['combineResults'] = True
+            monthlyData['angles'] = monthlyData['lbAngles']
         
     # sum up data for every month:
     monthlyData['H'] = sum_monthly(DIVA_results['H'])
@@ -378,7 +389,7 @@ if mainMode == 'post_processing':
     print 'PV Energy Production:' + str(TradeoffResults['energy_opttot']['PV'])
     print 'Total Energy Demand:' + str(TradeoffResults['energy_opttot']['E_tot'])
     
-    if createPlots:
+    if createPlots and auxVar['combineResults']:
         # plot figures for each energy usage:    
         figureHandles.update(plotEnergyUsage(monthlyData, auxVar))
 

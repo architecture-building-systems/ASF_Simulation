@@ -115,9 +115,18 @@ def changeMonthlyDataFunction(monthlyData, DataRows):
     for i in range(len(DataRows)):
         newMonthlyData['angles']['x_angle_location'][i]=newMonthlyData['angles']['x_angles'].index(newMonthlyData['angles']['x_angles_full'][i])
         newMonthlyData['angles']['y_angle_location'][i]=newMonthlyData['angles']['y_angles'].index(newMonthlyData['angles']['y_angles_full'][i])
-    
-        
-    
-        
         
     return newMonthlyData
+    
+def flatten(seq,container=None):
+    """
+    function that flattens nested list
+    """
+    if container is None:
+        container = []
+    for s in seq:
+        if hasattr(s,'__iter__'):
+            flatten(s,container)
+        else:
+            container.append(s)
+    return container

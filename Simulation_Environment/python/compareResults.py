@@ -139,7 +139,7 @@ combinationFolders['25'] = 'Kloten_25comb_1Infilt'
 combinationFolders['19x'] = 'Kloten_19x_1y_1Infilt'
 combinationFolders['19y'] = 'Kloten_1x_19y_1Infilt'
 combinationFolders['91'] = 'Kloten_7x_13y_1Infilt'
-combinationFolders['49'] = 'Kloten_49comb_1Infilt'
+combinationFolders['49'] = 'Kloten_49comb'
 
 # set infiltration folders:
 
