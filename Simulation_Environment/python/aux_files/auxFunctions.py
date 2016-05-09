@@ -74,3 +74,50 @@ def create_evalList(dataType, month, startHour, endHour):
         raise ValueError("dataType: "+str(dataType)+" not (yet) implemented")
         
     return evalList
+    
+def changeMonthlyDataFunction(monthlyData, DataRows):
+    """
+    function to only select certain rows from monthlyData
+    """
+    newMonthlyData = {}
+    for i in ['C','E_HCL','E_tot', 'H', 'L', 'R', 'PV', 'PV_avg', 'PV_eff', 'R_avg', 'R_theo']:
+
+        newMonthlyData[i] = monthlyData[i][DataRows]
+        
+    for i in ['changedEfficiency','efficiencies']:
+        
+        newMonthlyData[i] = monthlyData[i]
+    
+    newMonthlyData['angles'] = {}
+    
+    for i in ['x_angle_location', 'x_angles_full', 'y_angle_location', 'y_angles_full']:
+        
+        newMonthlyData['angles'][i] = []
+        
+        for ii in DataRows:
+            newMonthlyData['angles'][i].append(monthlyData['angles'][i][ii])
+        
+#     # find x angle location
+#    x_angle_location=[]
+#    for i in range(len(x_angles_full)):
+#        x_angle_location.append(0)
+#        x_angle_location[i]=x_angles.index(x_angles_full[i])
+        
+    
+            
+    newMonthlyData['angles']['allAngles']=[[]]
+    for i in DataRows:
+        newMonthlyData['angles']['allAngles'][0].append(monthlyData['angles']['allAngles'][0][i])
+        
+    newMonthlyData['angles']['x_angles'] = unique(newMonthlyData['angles']['x_angles_full'])
+    newMonthlyData['angles']['y_angles'] = unique(newMonthlyData['angles']['y_angles_full'])
+    
+    for i in range(len(DataRows)):
+        newMonthlyData['angles']['x_angle_location'][i]=newMonthlyData['angles']['x_angles'].index(newMonthlyData['angles']['x_angles_full'][i])
+        newMonthlyData['angles']['y_angle_location'][i]=newMonthlyData['angles']['y_angles'].index(newMonthlyData['angles']['y_angles_full'][i])
+    
+        
+    
+        
+        
+    return newMonthlyData

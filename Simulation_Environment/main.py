@@ -33,8 +33,8 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-#diva_folder = 'DIVA_Kloten_25comb_0.5Infilt'
-diva_folder = 'DIVA_Kloten_25comb_W'
+diva_folder = 'DIVA_Kloten_25comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_25comb_W'
 #diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
@@ -49,8 +49,8 @@ diva_folder = 'DIVA_Kloten_25comb_W'
 # results in data\python\electrical:
 
 #radiation_folder = 'Radiation_Kloten_25comb'
-#radiation_folder = 'Radiation_Kloten_25comb_largeContext'
-radiation_folder = 'Radiation_Kloten_25comb_W'
+radiation_folder = 'Radiation_Kloten_25comb_largeContext'
+#radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Dummy_NoShade'
@@ -71,7 +71,7 @@ pvSizeOption = 0
 # set option to flip orientation of PV cells on the panels. False means the cells 
 # are parallel to the edge from the left to the upper corner, True means the cells 
 # are parallel to the edge from the upper to the right corner:
-pvFlipOrientation = False
+pvFlipOrientation = True
 
 
 # specify if  plots should be created (True or False):
@@ -81,7 +81,7 @@ createPlots = True
 onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = True
+showDetailedDIVA = False
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
@@ -97,7 +97,25 @@ tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 # options to specify what results should be saved:
 #saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
+saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
+
+
+#setting to only evaluate certain configurations available in the total monthly
+#data set, use this setting with care, as it is not fully tested yet and you 
+#must be sure that you know what combinations you are extracting. The 'rows' list
+#corresponds to the rows in the monthlyData structure (starting with 0). The setting
+#does not yet have any effect on the DIVA data, so only combined evaluation will be affected.
+#especially the results csv file will still show all angles, even though only some
+#are evaluated.
+changeMonthlyData = {'enabled':False, 'rows':[2,7,12,17,22]}
+#changeMonthlyData = {'enabled':True, 'rows':[5,6,7,8,9]}
+#changeMonthlyData = {'enabled':True, 'rows':[10,11,12,13,14]}
+#changeMonthlyData = {'enabled':True, 'rows':[0,2,4,10,12,14,20,22,24]}
+#changeMonthlyData = {'enabled':True, 'rows':[12]}
+
+
+    
+    
     
 ######### -----END OF USER INTERACTION------ ############
     
@@ -161,6 +179,8 @@ if mainMode == 'post_processing':
     
     from prepareData import prepareMonthlyRadiatonData, importDIVAresults, \
         readLayoutAndCombinations, CalcXYAnglesAndLocation, sum_monthly, changeDIVAresults
+        
+    from auxFunctions import changeMonthlyDataFunction
     
     # create dictionary to save monthly data:
     monthlyData = {}
@@ -303,6 +323,9 @@ if mainMode == 'post_processing':
     #monthlyData['efficiencies']['L_load'] = DIVA_results['efficiencies'][] 
     monthlyData['efficiencies'].update(DIVA_results['efficiencies'])
     
+    if changeMonthlyData['enabled']:
+        monthlyData = changeMonthlyDataFunction(monthlyData,changeMonthlyData['rows'])
+        
     # create figure handle dictionary:
     figureHandles = {}
     
