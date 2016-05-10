@@ -13,9 +13,9 @@ from calculate_angles_function import create_ASF_angles
 from auxFunctions import unique, calcDaysPassedMonth, calculate_sum_for_index
 
 
-def prepareMonthlyRadiatonData(PV_electricity_results):
+def prepareMonthlyRadiatonData(PV_electricity_results, simulationOption):
     """
-    input: dictionary with PV_electricity_results \n
+    input: dictionary with PV_electricity_results, simulationOption dictionary\n
     output: monthly radiation data for post-processing
     """
 
@@ -35,7 +35,28 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     # transpose array to match thermal and lighting results:
     PV_monthly_array = PV_monthly_array.transpose()
     
-    months = 12
+    if simulationOption['timePeriod'] == '4months':
+        months = 4
+        hour_in_month = []
+        month = []
+        for i in range(len(PV_electricity_results['month'])):
+            if PV_electricity_results['month'][i]==3:
+                month.append(1)
+                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
+            elif PV_electricity_results['month'][i]==6:
+                month.append(2)
+                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
+            elif PV_electricity_results['month'][i]==9:
+                month.append(3)
+                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
+            elif PV_electricity_results['month'][i]==12: 
+                month.append(4)
+                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
+    else:
+        months = 12
+        month = PV_electricity_results['month']
+        hour_in_month = PV_electricity_results['hour_in_month']
+        
     TotalHoursPerDay = 24
     TotalHours = (months*TotalHoursPerDay)
     
@@ -43,7 +64,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     PV_monthly = np.zeros((PV_electricity_results['numComb'],TotalHours))
     
     # fill in the evaluated hours with the data from PV_monthly_array:
-    PV_monthly[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=PV_monthly_array
+    PV_monthly[:,((np.array(month)-1)*24+np.array(hour_in_month)).astype(int)]=PV_monthly_array
     
     
     #  read radiation for all combinations and hours:
@@ -54,7 +75,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     
      # multiply the average radiation by the number of days per month and convert to kWh:
     for i in range(len(R_monthly_list)):
-        R_monthly_array[i] = R_monthly_list[i]/1000.*PV_electricity_results['days_per_month'][PV_electricity_results['month'][i/PV_electricity_results['numComb']]-1] #kWh
+        R_monthly_array[i] = R_monthly_list[i]/1000.*PV_electricity_results['days_per_month'][month[i/PV_electricity_results['numComb']]-1] #kWh
 
     # resize data, so that it matches the number of combinations and the number of hours:
     R_monthly_array.resize(PV_electricity_results['numHours'],PV_electricity_results['numComb'])
@@ -66,7 +87,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     R_monthly = np.zeros((PV_electricity_results['numComb'],TotalHours))
     
     # fill in the evaluated hours with the data from R_monthly_array:
-    R_monthly[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=R_monthly_array
+    R_monthly[:,((np.array(month)-1)*24+np.array(hour_in_month)).astype(int)]=R_monthly_array
     
     
     
@@ -88,7 +109,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     PV_avg = np.zeros((PV_electricity_results['numComb'],TotalHours))
     
     # fill in the evaluated hours with the data from PV_avg_array:
-    PV_avg[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=PV_avg_array
+    PV_avg[:,((np.array(month)-1)*24+np.array(hour_in_month)).astype(int)]=PV_avg_array
     
     
     #  read insolation for all combinations and hours:
@@ -111,7 +132,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     Ins_avg = np.zeros((PV_electricity_results['numComb'],TotalHours))
     
     # fill in the evaluated hours with the data from Ins_avg_array:
-    Ins_avg[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=Ins_avg_array
+    Ins_avg[:,((np.array(month)-1)*24+np.array(hour_in_month)).astype(int)]=Ins_avg_array
     
     
     #  read insolation for all combinations and hours:
@@ -134,7 +155,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     Ins_theoretical = np.zeros((PV_electricity_results['numComb'],TotalHours))
     
     # fill in the evaluated hours with the data from Ins_theoretical_array:
-    Ins_theoretical[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=Ins_theoretical_array
+    Ins_theoretical[:,((np.array(month)-1)*24+np.array(hour_in_month)).astype(int)]=Ins_theoretical_array
     
     
     #  read efficiencies for all combinations and hours:
@@ -157,7 +178,7 @@ def prepareMonthlyRadiatonData(PV_electricity_results):
     eff = np.zeros((PV_electricity_results['numComb'],TotalHours))
     
     # fill in the evaluated hours with the data from eff_array:
-    eff[:,((np.array(PV_electricity_results['month'])-1)*24+np.array(PV_electricity_results['hour_in_month'])).astype(int)]=eff_array
+    eff[:,((np.array(month)-1)*24+np.array(hour_in_month)).astype(int)]=eff_array
     
         
     
@@ -178,6 +199,14 @@ def importDIVAresults(path):
     C=np.genfromtxt(path + '\cooling.csv',delimiter=',')
     H=np.genfromtxt(path + '\heating.csv',delimiter=',')
     L=np.genfromtxt(path + '\lighting.csv',delimiter=',')
+    
+    for i in range(1,100):
+        try:
+            C = np.concatenate((C, np.genfromtxt(path + '\cooling' + str(i) + '.csv',delimiter=',')), axis=0)
+            H = np.concatenate((H, np.genfromtxt(path + '\heating' + str(i) + '.csv',delimiter=',')), axis=0)
+            L = np.concatenate((L, np.genfromtxt(path + '\lighting' + str(i) + '.csv',delimiter=',')), axis=0)
+        except:
+            pass
     
     with open(path + '\efficiencies.json', 'r') as fp:
         efficiencies = json.load(fp)
@@ -273,14 +302,15 @@ def CalcXYAnglesAndLocation(LayoutAndCombinations):
     return SimulationAngles
     
 
-def sum_monthly(X):
+def sum_monthly(X, options=None):
     """
     function that adds data for every month
-    input: numpy array with yearly data
+    input: numpy array with yearly data, options to only look at certain months
     output: numpy array with summed up monthly data
     """    
     # get days per month and added up days per month:
     daysPassedMonth, daysPerMonth = calcDaysPassedMonth()
+    
 
     NumberCombinations = np.shape(X)[0]
     X_sum=np.zeros((NumberCombinations, 24*12))
@@ -293,6 +323,12 @@ def sum_monthly(X):
                 X_sum[combination][monthi*24+hour]+=X[combination][day*24+hour]
                 if day == daysPassedMonth[monthi]:
                     monthi+=1
+                    
+    
+    if options['timePeriod'] == '4months':
+        indices = np.hstack((range(48,72),range(120,144),range(192,216),range(264,288)))
+        X_sum = X_sum[:,indices]
+
     return X_sum
 #            testmonth.append(monthi)
     

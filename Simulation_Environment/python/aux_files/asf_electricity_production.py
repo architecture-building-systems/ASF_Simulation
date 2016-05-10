@@ -7,7 +7,7 @@ Calculate Electrical Power of ASF
 Authors: Johannes Hofer, Jeremias Schmidli
 
 """
-def asf_electricity_production(createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None, geo_path = None, flipOrientation = False):
+def asf_electricity_production(createPlots=False, lb_radiation_path=None, panelsize = 400, pvSizeOption=0, save_results_path = None, lookup_table_path = None, geo_path = None, flipOrientation = False, simulationOption = None):
     import json
     import numpy as np
     import time
@@ -37,8 +37,15 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None, panels
         SunTrackingData = json.load(fp)
         fp.close()
         
-     # find the number of hours analysed by ladybug:
-    numHours = np.shape(SunTrackingData['HOY'])[0]
+    # find the number of hours analysed by ladybug:
+    if simulationOption['timePeriod'] == '4months':
+        MonthTracking = SunTrackingData['MonthTracking']
+        numHours = 0
+        for i in range(len(MonthTracking)):
+            if MonthTracking[i]==3 or MonthTracking[i]==6 or MonthTracking[i]==9 or MonthTracking[i]==12: 
+                numHours += 1
+    else:
+        numHours = np.shape(SunTrackingData['HOY'])[0]
     
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_radiation_path))['allAngles'][0])

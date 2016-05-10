@@ -35,13 +35,15 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_25comb_W'
-diva_folder = 'DIVA_Kloten_49comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_7x_13y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
 #diva_folder = 'DIVA_Singapore_25comb'
+diva_folder = 'DIVA_Kloten_3clust_5x_1y'
+
 
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
@@ -52,7 +54,7 @@ diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
-radiation_folder = 'Radiation_Kloten_49comb'
+#radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Dummy_NoShade'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
 #radiation_folder = 'Radiation_Kloten_7x_13y'
@@ -61,6 +63,7 @@ radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
 #radiation_folder = 'Radiation_5panels_25comb'
+radiation_folder = 'Radiation_5panels_3clust_5x'
 
 
 
@@ -80,7 +83,7 @@ pvFlipOrientation = False
 createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = False
+onlyTradeoffs = True
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
 showDetailedDIVA = True
@@ -115,11 +118,15 @@ changeMonthlyData = {'enabled':False, 'rows':[2,7,12,17,22]}
 #changeMonthlyData = {'enabled':True, 'rows':[0,2,4,10,12,14,20,22,24]}
 #changeMonthlyData = {'enabled':True, 'rows':[12]}
 
+#option used for simulations, for example if radiation analysis was only done for 
+#4 months ('4months')
+simulationOption = {'timePeriod' : '4months'}
+
 
 #setting to change PV data to match more simple geometry, monthlyData['PV'] will
 #simply be multiplied by that factor, make sure it is reasonable, and be aware of
 #the loss in acuracy:
-changePV = {'enabled':False, 'Factor':781.37/142.10}
+changePV = {'enabled':True, 'Factor':781.37/142.10}
     
 ######### -----END OF USER INTERACTION------ ############
     
@@ -243,7 +250,8 @@ if mainMode == 'post_processing':
                                        save_results_path = paths['PV'],
                                        lookup_table_path = paths['data'] + '\python\electrical_simulation',
                                        geo_path=paths['geo'],
-                                       flipOrientation = pvFlipOrientation)
+                                       flipOrientation = pvFlipOrientation,
+                                       simulationOption = simulationOption)
         else:
             PV_electricity_results, PV_detailed_results= \
             asf_electricity_production(createPlots=createPlots, 
@@ -253,7 +261,8 @@ if mainMode == 'post_processing':
                                        save_results_path = paths['PV'],
                                        lookup_table_path = paths['data'] + '\python\electrical_simulation',
                                        geo_path=paths['geo'],
-                                       flipOrientation = pvFlipOrientation)
+                                       flipOrientation = pvFlipOrientation,
+                                       simulationOption = simulationOption)
     else: 
         PV_electricity_results = np.load(paths['PV'] + '\PV_electricity_results.npy').item()
         PV_detailed_results = np.load(paths['PV'] + '\PV_detailed_results.npy').item()
@@ -265,7 +274,7 @@ if mainMode == 'post_processing':
     monthlyData['efficiencies'] = {}
     monthlyData['PV'], monthlyData['R'], monthlyData['efficiencies']['PV'],  monthlyData['R_avg'],\
     monthlyData['R_theo'], monthlyData['PV_avg'], monthlyData['PV_eff'] \
-                                        = prepareMonthlyRadiatonData(PV_electricity_results)
+                                        = prepareMonthlyRadiatonData(PV_electricity_results, simulationOption)
     
     # make pv data negative to be consistent with H,C and L:    
     monthlyData['PV'] = -monthlyData['PV']
@@ -322,10 +331,10 @@ if mainMode == 'post_processing':
             monthlyData['angles'] = monthlyData['lbAngles']
         
     # sum up data for every month:
-    monthlyData['H'] = sum_monthly(DIVA_results['H'])
-    monthlyData['C'] = sum_monthly(DIVA_results['C'])
-    monthlyData['L'] = sum_monthly(DIVA_results['L'])
-    monthlyData['E_HCL'] = sum_monthly(DIVA_results['E'])
+    monthlyData['H'] = sum_monthly(DIVA_results['H'], options = simulationOption)
+    monthlyData['C'] = sum_monthly(DIVA_results['C'], options = simulationOption)
+    monthlyData['L'] = sum_monthly(DIVA_results['L'], options = simulationOption)
+    monthlyData['E_HCL'] = sum_monthly(DIVA_results['E'], options = simulationOption)
     
     if auxVar['combineResults']:
         monthlyData['E_tot'] = monthlyData['E_HCL'] + monthlyData['PV']
