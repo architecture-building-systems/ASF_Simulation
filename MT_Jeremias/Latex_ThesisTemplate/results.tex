@@ -71,7 +71,7 @@ Optimum angles and their corresponding electricity use were found for the buildi
 
 \section{Combined Evaluation}
 
-	By combining results for building energy simulations and PV electricity production, the overall optimum configurations can be found. Figure \ref{fig:carpetplot} details carpet-plots of the facade optimised to maximise PV generation, and minimise heating, cooling and lighting demands independently. Similarly to the building energy carpet plots in section \ref{s:buildingResults} , it can be see that open configurations (light coloured) are chosen to minimise the building heating demands during the winter months and early mornings of spring and autumn. Likewise, closed configurations (dark colours) are the preferred solutions to minimise the cooling demand during the summer months. For lighting control, open positions are the optimum at all times, while the optimum altitude angles is almost exclusively at $90^{\circ}$, the azimuth angles are at $-45^{\circ}$ in the morning and at $45^{\circ}$  in the afternoon. The PV optimisation tends to choose angles that are not that extreme, corresponding to the minimization of longitudinal shading as described in section \ref{ss:compareSunTracking}. When the four optimisation cases are combined to achieve the configurations for total energy minimisation, it can be seen that there is a conflict in the summer evenings between minimising lighting and cooling demands. Likewise, we also see a conflict between heating and PV production during the winter months. The overall energy optimization including PV electricity production shows a strong tendency to follow the optimal PV production pattern. This, however changes if the building system becomes more inefficient. Less efficient heating for example, would result in configurations optimised for heating overpowering those of PV electricity generation.
+	By combining results for building energy simulations and PV electricity production, the overall optimum configurations can be found. Figures \ref{fig:monthly_altitude} and \ref{fig:monthly_azimuth} detail carpet-plots of the facade optimised to maximise PV generation, and minimise heating, cooling and lighting demands independently. Similarly to the building energy carpet plots in section \ref{s:buildingResults} , it can be see that open configurations (light coloured) are chosen to minimise the building heating demands during the winter months and early mornings of spring and autumn. Likewise, closed configurations (dark colours) are the preferred solutions to minimise the cooling demand during the summer months. For lighting control, open positions are the optimum at all times, while the optimum altitude angles is almost exclusively at $90^{\circ}$, the azimuth angles are at $-45^{\circ}$ in the morning and at $45^{\circ}$  in the afternoon. The PV optimisation tends to choose angles that are not that extreme, corresponding to the minimization of longitudinal shading as described in section \ref{ss:compareSunTracking}. When the four optimisation cases are combined to achieve the configurations for total energy minimisation, it can be seen that there is a conflict in the summer evenings between minimising lighting and cooling demands. Likewise, we also see a conflict between heating and PV production during the winter months. The overall energy optimization including PV electricity production shows a strong tendency to follow the optimal PV production pattern. This, however changes if the building system becomes more inefficient. Less efficient heating for example, would result in configurations optimised for heating overpowering those of PV electricity generation.
 
 
 
@@ -80,7 +80,7 @@ Optimum angles and their corresponding electricity use were found for the buildi
 		\begin{center}
 		\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{monthly_altitude}
 		\caption{Carpet plots detailing the optimal altitude configuration to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise irradiance on PV panels. Each configuration is represented by an angle of orientation around the x-axis (Altitude) and y-axis (Azimuth) as seen in the legend. Figure (e) details the combinations for optimum building thermal management without PV production. (f) also includes the PV production}
-		\label{fig:carpetplot}
+		\label{fig:monthly_altitude}
 		\end{center}
 	\end{figure*}
 
@@ -88,7 +88,7 @@ Optimum angles and their corresponding electricity use were found for the buildi
 		\begin{center}
 		\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{monthly_azimuth}
 		\caption{Carpet plots detailing the optimal azimuth configuration to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise irradiance on PV panels. Each configuration is represented by an angle of orientation around the x-axis (Altitude) and y-axis (Azimuth) as seen in the legend. Figure (e) details the combinations for optimum building thermal management without PV production. (f) also includes the PV production}
-		\label{fig:carpetplot}
+		\label{fig:monthly_azimuth}
 		\end{center}
 	\end{figure*}
 
@@ -101,10 +101,20 @@ Optimum angles and their corresponding electricity use were found for the buildi
 	\end{figure*}
 
 
-
-
-
 	Figure \ref{fig:carpetplot_energy} shows the net energy use at these optimum angles. It is interesting to see how the combination of electricity generation and adaptive shading can compensate for the entire energy use during sunlit hours.
+
+	\subsection{Influence of Actuation}
+		In order to evaluate the influence of the actuation, three dimensional plots can be used to display all possible configurations and their corresponding energy benefit. In figure \ref{fig:3d}, the energy benefits of the altitude actuation can be seen for the months of March, June and September. Each plot displays one cumulative day in hourly resolution. The x-axis represents the hour of the day, the y-axis represents the altitude angles, and the z-axis represents the energy benefit of the actuation, i.e. the difference in energy usage between the evaluated angle and the angle that yields the worst overall energy usage for each hour. It can be seen that the energy benefit is by far the largest around noon. Furthermore, positions that are rather closed tend to have the highest influence for the said mid-day hours. Open positions normally yield the worst benefits, except for some early morning or evening hours, where heating and lighting become important. This overall behaviour corresponds well to the results depicted in figure \ref{fig:monthly_altitude}, and shows why the angles that yield the optimum total energy, generally match the angles that optimize cooling and PV electricity production. A further interesting observation that can be made from this figure is the non continuous curves for midday hours, at an altitude angle of around $30^{\circ}$, the energy benefit reduces over proportionally. This is caused by the PV electricity production, larger angles will increase longitudinal shading and therefore over proportionally reduce the energy yield. 
+
+		\begin{figure*}
+			\begin{center}
+			\includegraphics[width=\textwidth, trim= 3cm 0cm 3cm 0cm,clip]{3d}
+			\caption{Energy benefits of the altitude actuation for the months of March, June and September. Each plot displays one cumulative day in hourly resolution. The x-axis represents the hour of the day, the y-axis represents the altitude angles, and the z-axis represents the energy benefit of the actuation, i.e. the difference in energy usage between the evaluated angle and the angle that yields the worst overall energy usage for each hour.}
+			\label{fig:3d}
+			\end{center}
+		\end{figure*}
+
+
 
 	\subsection{Orientation Analysis}
 
@@ -129,3 +139,6 @@ Optimum angles and their corresponding electricity use were found for the buildi
 		\label{fig:sensitivity}
 		\end{center}
 		\end{figure*}
+
+	\subsection{Potential of Individual Actuation}
+		Individual actuation of the panels is one of the key advantages of the ASF that have to be closely evaluated. In order to quantize the potential of individual actuation, evaluations were performed by splitting the ASF into clusters. Due to computational limitations, especially on the radiation part, a simplified geometry was used for the evaluation, using only 10 panels in 4 rows, rather than the 50 panels of the reference case. Furthermore only the months of March, June, September and December were evaluated. 
