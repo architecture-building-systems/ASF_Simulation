@@ -14,7 +14,7 @@ import time
 import warnings
 
 
-######### -----USER INTERACTION------ #############
+######### -----GENERAL USER INTERACTION------ #############
 
 # set mode of this main script ('initialize', 'post_processing'):
 
@@ -33,7 +33,7 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-#diva_folder = 'DIVA_Kloten_25comb_1Infilt'
+diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_25comb_W'
 #diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
@@ -42,7 +42,7 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #diva_folder = 'DIVA_Kloten_1x_19y'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
 #diva_folder = 'DIVA_Singapore_25comb'
-diva_folder = 'DIVA_Kloten_3clust_5x_1y'
+#diva_folder = 'DIVA_Kloten_3clust_5x_1y'
 
 
 
@@ -51,7 +51,7 @@ diva_folder = 'DIVA_Kloten_3clust_5x_1y'
 # results in data\python\electrical:
 
 #radiation_folder = 'Radiation_Kloten_25comb'
-#radiation_folder = 'Radiation_Kloten_25comb_largeContext'
+radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
 #radiation_folder = 'Radiation_Kloten_49comb'
@@ -62,8 +62,11 @@ diva_folder = 'DIVA_Kloten_3clust_5x_1y'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
-#radiation_folder = 'Radiation_5panels_25comb'
-radiation_folder = 'Radiation_5panels_3clust_5x'
+#radiation_folder = 'Radiation_8panels_25comb_4months'
+#radiation_folder = 'Radiation_8panels_3clust_5x'
+#radiation_folder = 'Radiation_10panels_25comb'
+radiation_folder = 'Radiation_10panels_2clust_25comb'
+
 
 
 
@@ -76,7 +79,7 @@ pvSizeOption = 0
 # set option to flip orientation of PV cells on the panels. False means the cells 
 # are parallel to the edge from the left to the upper corner, True means the cells 
 # are parallel to the edge from the upper to the right corner:
-pvFlipOrientation = False
+pvFlipOrientation = True
 
 
 # specify if  plots should be created (True or False):
@@ -100,10 +103,15 @@ efficiencyChanges = {'changeEfficiency':False, 'H_COP': 4, 'C_COP': 3, 'L_Load':
 # january. Currently, only one month at a time can be selected.
 tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
+
 # options to specify what results should be saved:
 #saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
+saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
 
+
+
+
+################## ADVANCED USER INTERACTION #############################
 
 #setting to only evaluate certain configurations available in the total monthly
 #data set, use this setting with care, as it is not fully tested yet and you 
@@ -118,15 +126,22 @@ changeMonthlyData = {'enabled':False, 'rows':[2,7,12,17,22]}
 #changeMonthlyData = {'enabled':True, 'rows':[0,2,4,10,12,14,20,22,24]}
 #changeMonthlyData = {'enabled':True, 'rows':[12]}
 
+
+
 #option used for simulations, for example if radiation analysis was only done for 
-#4 months ('4months')
+#4 months ('4months'), not yet working for in all cases, set 'timePeriod' to None
+#for regular simulations
 simulationOption = {'timePeriod' : '4months'}
+#simulationOption = {'timePeriod' : None}
+
 
 
 #setting to change PV data to match more simple geometry, monthlyData['PV'] will
 #simply be multiplied by that factor, make sure it is reasonable, and be aware of
 #the loss in acuracy:
-changePV = {'enabled':True, 'Factor':781.37/142.10}
+#changePV = {'enabled':False, 'Factor':781.37/142.10} #for 8 panels / full year
+changePV = {'enabled':True, 'Factor':265.50/60.04} #for 10 panels / 4 months
+
     
 ######### -----END OF USER INTERACTION------ ############
     

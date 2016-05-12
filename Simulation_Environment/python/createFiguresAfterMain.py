@@ -65,4 +65,6 @@ plotAngleSavings(results1['monthlyData'], xy = 'x')
 
 plotAngleSavings(results2['monthlyData'], xy = 'y')
 
-plotAngleSavings(monthlyData, xy = 'y')
+plotAngleSavings(monthlyData, xy = None)
+
+create3Dplot(results1['monthlyData'], 'E_tot', 'diffMin', endMonth = 4)

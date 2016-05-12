@@ -532,7 +532,7 @@ def plotEnergiesOpt(monthlyData, optIdx):
 #    
     return fig
     
-def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=12 ):
+def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=12, fig=None, ax=None ):
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
     
@@ -564,12 +564,14 @@ def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=12 ):
         plt.title('energy difference to mean' + typeE)
     
     if option=='diffMin':
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
+#        ax = fig.add_subplot(111, projection='3d')
         x,y = np.shape(monthlyData[typeE][:,plotRange])
         X,Y = np.meshgrid(range(x),range(y))
         ax.plot_surface(X,Y,-monthlyData[typeE][:,plotRange].transpose()+np.array(np.max(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.jet,rstride=1, cstride=1)
-        plt.title('energy difference to maximum' + typeE)
+#        plt.title('energy difference to maximum' + typeE)
+        plt.xlabel('combination')
+        plt.ylabel('hour')
+        ax.set_zlabel('Energy [kWh')
 
     if option=='diffMinCarpet':
         fig = plt.figure()
@@ -582,6 +584,16 @@ def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=12 ):
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.1, 0.05, 0.78])
         cbar = plt.colorbar(cax=cbar_ax)
+        
+    if option=='diffMinAltitude':
+#        ax = fig.add_subplot(111, projection='3d')
+        x,y = np.shape(monthlyData[typeE][:,plotRange])
+        X,Y = np.meshgrid(range(x),range(y))
+        ax.plot_surface(X*5,Y,-monthlyData[typeE][:,plotRange].transpose()+np.array(np.max(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.jet,rstride=1, cstride=1)
+#        plt.title('energy difference to maximum' + typeE)
+        plt.xlabel('Altitude [deg]')
+        plt.ylabel('Hour')
+        ax.set_zlabel('Energy [kWh]')
         
 def plotMaxMinDiff(monthlyData):
     

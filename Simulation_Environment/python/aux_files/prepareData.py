@@ -35,7 +35,8 @@ def prepareMonthlyRadiatonData(PV_electricity_results, simulationOption):
     # transpose array to match thermal and lighting results:
     PV_monthly_array = PV_monthly_array.transpose()
     
-    if simulationOption['timePeriod'] == '4months':
+    
+    if simulationOption['timePeriod'] == '4months' and PV_electricity_results['numHours']<140:
         months = 4
         hour_in_month = []
         month = []
@@ -180,10 +181,20 @@ def prepareMonthlyRadiatonData(PV_electricity_results, simulationOption):
     # fill in the evaluated hours with the data from eff_array:
     eff[:,((np.array(month)-1)*24+np.array(hour_in_month)).astype(int)]=eff_array
     
-        
-    
     # calculate average efficiency at optimum angle combination
     PV_eff_opt = calculate_sum_for_index(PV_monthly, np.argmax(PV_monthly,axis=0))/calculate_sum_for_index(R_monthly, np.argmax(PV_monthly,axis=0))
+    
+    # select only the four months if requested:
+    if simulationOption['timePeriod'] == '4months' and PV_electricity_results['numHours']>96:
+        indices4m = np.hstack((range(48,72),range(120,144),range(192,216),range(264,288)))
+        PV_monthly = PV_monthly[:,indices4m]
+        R_monthly = R_monthly[:,indices4m]
+#        PV_eff_opt = PV_eff_opt[:,indices4m]
+        Ins_avg = Ins_avg[:,indices4m]
+        Ins_theoretical = Ins_theoretical[:,indices4m]
+        PV_avg = PV_avg[:,indices4m]
+        eff = eff[:,indices4m]
+        
     return PV_monthly, R_monthly, PV_eff_opt, Ins_avg, Ins_theoretical, PV_avg, eff
     
 def importDIVAresults(path):
