@@ -4,13 +4,20 @@
 	
 
 
-	This chapter describes the methodology used to find the optimum configurations of the ASF. An evaluation of the tools that were selected and how they are combined to create a modelling framework is given, and details of the simulation methodology are described.
+	This chapter describes the methodology used to find the optimum configurations of the ASF. In general terms, the optimum configuration must correspond to the following optimization problem that has to be solved for PV modules as adaptive building shading systems:\\
+	\begin{equation}
+			minimize(C+H+L-PV)
+	      	\label{e:minimize}
+	\end{equation}
+
+	Where $C$ is the electricity needed for cooling, $H$ is the electricty used for heating, $L$ is the lighting power demand and $PV$ represents the electricity production. \\
+	An evaluation of the tools that were selected and how they are combined to create a modelling framework is given, and details of the simulation methodology are described.
 
 	\section{Simulation Tool Selection}
 
 		%In order to create an efficient simulation framework, various tools needed to be asessed. The general problem can be split up into
 
-		To study the electricity generation and building energy consumption, a 3D geometry of the room and solar facade is built using the Rhinoceros software \cite{Rhino}, and its parametric modelling plugin Grasshopper \cite{grasshopper}. Rhinoceros is a state of the art computer-aided design (CAD) software, which can be used to generate complex geometries, such as the ASF. Combined with Grasshopper, which provides a visual programming language with a wide range of add-ons, it is particularly suited for simulations that are evaluating geometric structures. The simulation part can then be split up into three parts, namely \emph{building energy simulations}, \emph{radiation simulations} and \emph{photovoltaic simulations}. In the following the corresponding tools are described. 
+		To study the electricity generation and building energy consumption, a 3D geometry of the room and solar facade is built using the Rhinoceros software \cite{Rhino}, and its parametric modelling plugin Grasshopper \cite{grasshopper}. Rhinoceros is a state of the art computer-aided design (CAD) software, which can be used to generate complex geometries, such as the ASF. Combined with Grasshopper, which provides a visual programming language with a wide range of add-ons, it is particularly suited for simulations that are evaluating geometric structures. The simulation part can then be split up into three parts, namely \emph{building energy simulations}, \emph{radiation simulations} and \emph{photovoltaic simulations}, which will be described in the following subsections. While Grasshopper is well suited for the simulation part, it is not very suited for post-processing the data. The post-processing was therefore done in python, a programming language with powerful scientific packages, a simple syntax, extended documentation, and a very active community.  % In the following the corresponding tools are described. 
 
 		%The aquired data is then post-processed in Python \cite{python} to extract the configurations that minimise building energy consumption and maximise PV electricity production.
 
@@ -18,11 +25,12 @@
 		\subsection{Building Energy Simulation}
 
 			 %The building energy simulation is conducted using EnergyPlus \cite{energyplus} through the DIVA \cite{DIVA} interface.
-			There are various building energy analysis engines, such as EnergyPlus \cite{energyplus} or TRNSYS \cite{trnsys}. As EnergyPlus is open source, widely used, and well documented, it was chosen as the building simulation engine for all simulations within this thesis. There are various ways of connecting to EnergyPlus. Within this thesis, mainly DIVA \cite{DIVA} and Honeybee\cite{roudsari2014ladybug} were evaluated. While Honeybee provides a large range of settings and adaptability, DIVA is kept very basic. However, the EnergyPlus analysis with honeybee is running significantly slower than with DIVA. Therefore, and for its simplicity, DIVA was chosen to connect Grasshopper with EnergyPlus. In EnergyPlus, the geometric solar facade is interpreted as an external shading system. Simulations are performed for a whole year at fixed angle positions, outputing hourly values of energy use for heating, cooling and lighting. Optimum positions can then be found by comparing the electricity deman during every hour for all combinations. 
+			There are various building energy analysis engines, such as EnergyPlus \cite{energyplus} or TRNSYS \cite{trnsys}. As EnergyPlus is open source, widely used, and well documented, it was chosen as the building simulation engine for all simulations within this thesis. There are various ways of connecting to EnergyPlus. Within this work, mainly DIVA \cite{DIVA} and Honeybee\cite{roudsari2014ladybug} were evaluated. While Honeybee provides a large range of settings and adaptability, DIVA is kept very basic. However, the EnergyPlus analysis with honeybee is running significantly slower than with DIVA. Therefore, and for its simplicity, DIVA was chosen to connect Grasshopper with EnergyPlus. In EnergyPlus, the geometric solar facade is interpreted as an external shading system. Simulations are performed for a whole year at fixed angle positions, outputting hourly values of energy use for heating, cooling and lighting. Optimum positions can then be found by comparing the electricity demand during every hour for all combinations. 
 
 		\subsection{Radiation Simulation} 
 
-			A solar radiance simulation is run using Ladybug \cite{roudsari2014ladybug}, which is another grasshopper plugin and is developed by the same people as Honeybee. It includes various components to process weather data and calculate radiation on surfaces based on an automatically generated or a predefined mesh. Ladybug uses Radiance \cite{ward1994radiance} to determine the incident insolation on the solar facade. This approach enables the calculation of solar irradiance on the modules with high spatial resolution including the effect of module mutual shading as seen in Figure \ref{fig:radiation}. The radiation is analysed for cumulative monthly hours for the whole year. 
+			A solar radiance simulation is run using Ladybug \cite{roudsari2014ladybug}, which is another grasshopper plugin by the same developers as Honeybee. It includes various components to process weather data and calculate radiation on surfaces based on an automatically generated or a predefined mesh. Ladybug uses Radiance \cite{ward1994radiance} to determine the incident insolation on the solar facade. This approach enables the calculation of solar irradiance on the modules with high spatial resolution including the effect of module mutual shading as seen in Figure \ref{fig:radiation}. The radiation is analysed for cumulative monthly hours for the whole year. 
+
 			\begin{figure}[H]
 			\begin{center}
 				\includegraphics[width=8cm, trim= 0cm 0cm 0cm 0cm,clip]{radiationanalysis.png}
@@ -30,6 +38,18 @@
 				\label{fig:radiation}
 			\end{center}
 			\end{figure}
+
+			\subsubsection{Grid Convergence}
+
+				With a larger grid-size, radiation results are less accurate. In order to account for this effect, a grid convergence study was conducted. Figure \ref{f:gridConvergence} shows the grid size dependency of the total radiation on the ASF. The colours in the first two plots on the upper left represent the hours of the day. One can see in the second plot - where the radiation is normalized by a division with the radiation for a grid-size of 12.5\,mm - that the results are significantly more accurate for morning and evening hours. This is caused by increased self-shading at midday hours. The colours in the third plot on the left show the dependency on different combinations. No clear pattern could be found here. Finally, the average deviation is depicted in the fourth plot on the left and a box-plot with all deviations is shown on the right. It can be seen that a smaller grid-size leads to larger deviations. While for a grid-size of 400\,mm the average deviation is over 10\%, the deviation goes down to below 1\% for a grid size of 25\,mm. 25\,mm was therefore taken as the grid-size of all simulations, as it gives accurate results, while still being computationally feasible. 
+
+				\begin{figure*}
+					\begin{center}
+					\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{gridConvergence.pdf}
+					\caption{Grid convergence evaluation}
+					\label{f:gridConvergence}
+					\end{center}
+				\end{figure*}
 
 		\subsection{Photovoltaic Simulation}
 			%The  results are afterwards coupled to an electrical circuit simulation of thin-film PV modules with sub-cell level representation \cite{hofer2015PVSEC}. 
@@ -43,31 +63,36 @@
 			where $T_{cell}$ is the temperature of each grid point on the module, $T_{air}$ is the ambient temperature, $T_{cell}^0$ is the temperature of the cell at reference insolation $S^0=800\frac{W}{m^2}$ and reference air temperature $T_{air}^0=20\degree C$, and $S_{cell}$ is the insolation of each gridpoint in $\frac{W}{m^2}$. The value of $T_{cell}^0$ was estimated using thermal images of the solar facade and typical values given in \cite{Ross_Smokler_1986}. 
 
 
-	\section{Combined Evaluation}
-		To combine the results of the building energy and the pv analysis, the building energy results were cumulatively combined to correspond to the pv analyis format. With this, the net energy useage of the room including the PV electricity production of the ASF can be given for monthly hours as described in equation \ref{e:minimize}. 
 
 	\section{Simulation Framework}
 	\label{s:simulationFramework}
+		In order to combine the single simulations, an evaluation framework was built with the use of grasshopper and Python. In the following, details on how the combination was done and on the resulting parametric simulation model are given.
 
-		In general the approach needs to solve the following optimization problem:
+		\subsection{Combined Evaluation}
 
-		The following optimization problem has to be solved for PV modules as adaptive building shading systems:\\
-		\begin{equation}
-				minimize(C+H+L-PV)
-		      	\label{e:minimize}
-		\end{equation}
+			%As the Building energy simulations are achieved by using DIVA, wheras a radiation analysis is done with LadyBug, both within Grasshopper for Rhino. The results are then fed into a python script, which calculates the electricity production based on the radiation results and the surrounding temperature and post processes the information to calculate energy demand and optimum configurations. A corresponding workflow can be seen in Figure \ref{fig:workflow}.
 
-		Where $C$ is the electricity needed for cooling, $H$ is the electricty used for heating, $L$ is the lighting power demand and $PV$ represents the electricity production. Furthermore, different parameters must be evaluated to assess the effects of building orientation, possibilities and limits of current simulation tools, as well as various control strategy approaches.
+			As the building energy and the radiation simulations are done within Grasshopper, whereas the PV simulation is done within Python, a framework is necessary to easily combine the simulations. For this end, a folder structure was created to manage the files that are written both within grasshopper and python. There are two main files for the combined evaluation, one Grasshopper and one Python file. In the grasshopper file, all the parameters can be set and the simulations can be started. After the building energy and the radiaion simulations are finished, the corresponding results are read by python, where the PV electricity production is calculated and the results are combined to find the optimal configurations as well as the corresponding energy.  A corresponding workflow can be seen in Figure \ref{fig:workflow}. 
 
-		Building energy simulations are achieved by using DIVA, wheras a radiation analysis is done with LadyBug, both within Grasshopper for Rhino. The results are then fed into a python script, which calculates the electricity production based on the radiation results and the surrounding temperature and post processes the information to calculate energy demand and optimum configurations. A corresponding workflow can be seen in Figure \ref{fig:workflow}. 
+			\begin{figure}[ht] %h can be omitted for better page layout
+				\begin{center}
+				\includegraphics[width=0.75\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{workflow_vertical}
+				\caption{Work flow of the simulation framework}
+				\label{fig:workflow}
+				\end{center} 
+			\end{figure}
 
-		\begin{figure}[ht] %h can be omitted for better page layout
-		\begin{center}
-			\includegraphics[width=0.75\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{workflow_vertical}
-			\caption{Work flow of the simulation framework}
-			\label{fig:workflow}
-		\end{center} 
-		\end{figure}
+			To combine the results of the building energy and the pv analysis, the building energy results were cumulatively combined to correspond to the pv analyis format. With this, the net energy useage of the room including the PV electricity production of the ASF can be given for monthly hours as described in equation \ref{e:minimize}. 
+
+		\subsection{Parametric Model}
+
+			\begin{figure}[ht] %h can be omitted for better page layout
+				\begin{center}
+				\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{parametricModel2}
+				\caption{Visualization of the parametric simulation model}
+				\label{fig:parametricModel}
+				\end{center} 
+			\end{figure}
 
 	\section{Case Study}
 		%The case study is done for a room and facade representing the prototype of the ASF at the house of natural resources (HONR) \cite{honr}.  The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis, the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open) position in steps of 22.5$^{\circ}$. In the vertical axis, it can move from 45$^{\circ}$ to -45$^{\circ}$ in 22.5$^{\circ}$ steps. Existing ASF systems \cite{nagy2015frontiers} have independently actuated panels and a continuous range of actuation, however for simplicity, we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system.

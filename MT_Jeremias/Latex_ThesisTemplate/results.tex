@@ -41,17 +41,17 @@ Optimum angles and their corresponding electricity use were found for the buildi
 	
 	To evaluate the performance of the radiation simulation, a grid-convergence study was performed and the optimum grid size for further simulations was found. The radiation results could then be used to calculate the PV electricity production, enabling the finding of optimum angles to maximize PV electricity production. The corresponding energy output was finally compared to a control strategy using solar tracking.
 
-	\subsection{Grid Convergence}
+	%\subsection{Grid Convergence}
 
-		With a larger grid-size, results are less accurate. In order to study this effect, a grid convergence study was conducted. Figure \ref{f:gridConvergence} shows the grid size dependency of the total radiation on the asf. The colors in the first two plots on the upper left represent the hours of the day. One can see in the second plot - where the radiation is normalized by a division with the radiation for a grid-size of 12.5\,mm - that the results are significantly more accurate for morning and evening hours. This is caused by increased self-shading at midday hours. The colours in the third plot on the left show the dependency on different combinations. No clear pattern could be found here. Finally the average deviation is depicted in the fourth plot on the left and a box-plot with all deviations is shown on the right. It can be seen that a smaller grid-size leads to larger deviations. While for a grid-size of 400\,mm the average deviation is over 10\%, the deviation goes down to below 1\% for a grid size of 25\,mm. 25\,mm was therefore taken as the grid-size of all simulations, as it gives accurate results, while still being computationally feasible. 
+		%With a larger grid-size, results are less accurate. In order to study this effect, a grid convergence study was conducted. Figure \ref{f:gridConvergence} shows the grid size dependency of the total radiation on the asf. The colors in the first two plots on the upper left represent the hours of the day. One can see in the second plot - where the radiation is normalized by a division with the radiation for a grid-size of 12.5\,mm - that the results are significantly more accurate for morning and evening hours. This is caused by increased self-shading at midday hours. The colours in the third plot on the left show the dependency on different combinations. No clear pattern could be found here. Finally the average deviation is depicted in the fourth plot on the left and a box-plot with all deviations is shown on the right. It can be seen that a smaller grid-size leads to larger deviations. While for a grid-size of 400\,mm the average deviation is over 10\%, the deviation goes down to below 1\% for a grid size of 25\,mm. 25\,mm was therefore taken as the grid-size of all simulations, as it gives accurate results, while still being computationally feasible. 
 
-		\begin{figure*}
-			\begin{center}
-			\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{gridConvergence.pdf}
-			\caption{Grid convergence evaluation}
-			\label{f:gridConvergence}
-			\end{center}
-		\end{figure*}
+		%\begin{figure*}
+		%	\begin{center}
+		%	\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{gridConvergence.pdf}
+		%	\caption{Grid convergence evaluation}
+		%	\label{f:gridConvergence}
+		%	\end{center}
+		%\end{figure*}
 
 	\subsection{Comparison of Sun Tracking to Optimized Solution}
 	\label{ss:compareSunTracking}
