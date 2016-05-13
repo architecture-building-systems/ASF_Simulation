@@ -43,7 +43,8 @@ diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
 #diva_folder = 'DIVA_Singapore_25comb'
 #diva_folder = 'DIVA_Kloten_3clust_5x_1y'
-
+diva_folder = 'DIVA_Kloten_2clust_25comb'
+#
 
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 

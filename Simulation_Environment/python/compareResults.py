@@ -13,8 +13,9 @@ import matplotlib.pyplot as plt
 
 CompareResults = False
 OrientationStudy = True
-EnergySavingsPotential = True
+EnergySavingsPotential = False
 combinationStudy = True
+ClusterStudy = True
 
 roomSize = 30.0
 
@@ -22,6 +23,9 @@ roomSize = 30.0
 resultsFolder1 = 'Kloten_2clust_5x_1y'
 
 resultsFolder2 = 'Kloten_25comb'
+
+
+
 
 # set folders with orientation results 
 OrientationFolders = {}
@@ -158,6 +162,13 @@ infiltrationFoldersNoShade['0.75'] = 'Kloten_noShade_0.75Infilt'
 infiltrationFoldersNoShade['1'] = 'Kloten_noShade_1Infilt'
 infiltrationFoldersNoShade['1.25'] = 'Kloten_noShade_1.25Infilt'
 infiltrationFoldersNoShade['1.5'] = 'Kloten_noShade_1.5Infilt'
+
+
+#set folders with cluster analysis
+clusterFolders ={}
+
+clusterFolders['1clust'] = 'Kloten_4months_10panels_25comb'
+clusterFolders['2clust'] = 'Kloten_2clust_25comb_4months'
 
 
 # paths dict:
@@ -895,3 +906,11 @@ if EnergySavingsPotential:
         plt.show()
         
 
+if ClusterStudy:
+
+    # load results
+    results1 = np.load(paths['results'] + '\\' + clusterFolders['1clust'] + '\\all_results.npy').item()
+    results2 = np.load(paths['results'] + '\\' + clusterFolders['2clust'] + '\\all_results.npy').item()
+    
+    # plot data 
+    figures = compareResultsFigure(results1['monthlyData'], results2['monthlyData'])
