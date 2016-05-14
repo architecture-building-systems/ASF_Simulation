@@ -18,22 +18,22 @@ import warnings
 
 # set mode of this main script ('initialize', 'post_processing'):
 
+#mainMode = 'initialize' #'initialize'
 mainMode = 'post_processing' #'initialize'
-#mainMode = 'post_processing' #'initialize'
 
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
 # new locations can be added with the grasshopper main script for any .epw weather data
 
-geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
-#geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
-#geoLocation = 'SINGAPORE_SGP' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
+#geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
+geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
+#geoLocation = 'HELSINKI_FIN' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 
 
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-diva_folder = 'DIVA_Kloten_25comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_25comb_W'
 #diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
@@ -41,9 +41,9 @@ diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_7x_13y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
-#diva_folder = 'DIVA_Singapore_25comb'
+#diva_folder = 'DIVA_Madrid_25comb'
 #diva_folder = 'DIVA_Kloten_3clust_5x_1y'
-diva_folder = 'DIVA_Kloten_2clust_25comb'
+#diva_folder = 'DIVA_Kloten_2clust_25comb'
 #
 
 
@@ -52,10 +52,10 @@ diva_folder = 'DIVA_Kloten_2clust_25comb'
 # results in data\python\electrical:
 
 #radiation_folder = 'Radiation_Kloten_25comb'
-radiation_folder = 'Radiation_Kloten_25comb_largeContext'
+#radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
-#radiation_folder = 'Radiation_Kloten_49comb'
+radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Dummy_NoShade'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
 #radiation_folder = 'Radiation_Kloten_7x_13y'
@@ -66,7 +66,9 @@ radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_8panels_25comb_4months'
 #radiation_folder = 'Radiation_8panels_3clust_5x'
 #radiation_folder = 'Radiation_10panels_25comb'
-radiation_folder = 'Radiation_10panels_2clust_25comb'
+#radiation_folder = 'Radiation_10panels_2clust_25comb'
+#radiation_folder = 'Radiation_Madrid_25comb'
+
 
 
 
@@ -80,17 +82,17 @@ pvSizeOption = 0
 # set option to flip orientation of PV cells on the panels. False means the cells 
 # are parallel to the edge from the left to the upper corner, True means the cells 
 # are parallel to the edge from the upper to the right corner:
-pvFlipOrientation = True
+pvFlipOrientation = False
 
 
 # specify if  plots should be created (True or False):
 createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = True
+onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = True
+showDetailedDIVA = False
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
@@ -132,8 +134,8 @@ changeMonthlyData = {'enabled':False, 'rows':[2,7,12,17,22]}
 #option used for simulations, for example if radiation analysis was only done for 
 #4 months ('4months'), not yet working for in all cases, set 'timePeriod' to None
 #for regular simulations
-simulationOption = {'timePeriod' : '4months'}
-#simulationOption = {'timePeriod' : None}
+#simulationOption = {'timePeriod' : '4months'}
+simulationOption = {'timePeriod' : None}
 
 
 
@@ -141,7 +143,7 @@ simulationOption = {'timePeriod' : '4months'}
 #simply be multiplied by that factor, make sure it is reasonable, and be aware of
 #the loss in acuracy:
 #changePV = {'enabled':False, 'Factor':781.37/142.10} #for 8 panels / full year
-changePV = {'enabled':True, 'Factor':265.50/60.04} #for 10 panels / 4 months
+changePV = {'enabled':False, 'Factor':265.50/60.04} #for 10 panels / 4 months
 
     
 ######### -----END OF USER INTERACTION------ ############

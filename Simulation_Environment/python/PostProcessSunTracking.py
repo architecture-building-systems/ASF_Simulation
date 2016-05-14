@@ -128,11 +128,11 @@ monthlyData_tracking['efficiencies'] = {}
 
 monthlyData_comb['PV'], monthlyData_comb['R'], monthlyData_comb['efficiencies']['PV'], \
     monthlyData_comb['R_avg'], monthlyData_comb['R_theo'], monthlyData_comb['PV_avg'], monthlyData_comb['PV_eff'] \
-    = prepareMonthlyRadiatonData(PV_electricity_results_comb)
+    = prepareMonthlyRadiatonData(PV_electricity_results_comb, {'timePeriod':None})
 
 monthlyData_tracking['PV'], monthlyData_tracking['R'], monthlyData_tracking['efficiencies']['PV'], \
     monthlyData_tracking['R_avg'], monthlyData_tracking['R_theo'], monthlyData_tracking['PV_avg'], monthlyData_tracking['PV_eff'] \
-                                        = prepareMonthlyRadiatonData(PV_electricity_results_tracking)
+                                        = prepareMonthlyRadiatonData(PV_electricity_results_tracking, {'timePeriod':None})
                                         
                                         
                                         
@@ -231,29 +231,63 @@ plt.ylabel('Average PV Difference [%]')
 ############# for thesis:
 fig = plt.figure(figsize=(16, 12))
 
-plt.subplot(3,1,1)
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+
+majorLocator = MultipleLocator(24)
+majorFormatter = FormatStrFormatter('%d')
+minorLocator = MultipleLocator(4)
+minorFormatter = FormatStrFormatter('%d')
+
+#    ax1.xaxis.set_minor_formatter(minorFormatter)
+plt.grid(True, which='both')
+
+ax = plt.subplot(3,1,1)
 plt.plot(monthlyData_comb['R_avg'][PV_max_ind, range(len(R_max_ind))], label='optimized for PV')
 plt.plot(monthlyData_tracking['R_avg'].transpose(), label = 'sun tracking')
 plt.plot(monthlyData_comb['R_theo'][R_max_ind, range(len(R_max_ind))], label = 'without shading')
-plt.ylabel('Radiation [W/m2]')
+plt.ylabel('Radiation [W/m2]', fontsize = 14)
 plt.title ('Average Radiation on Panels')
 plt.legend()
+plt.grid()
+ax.tick_params(labelsize=14)
 
-plt.subplot(3,1,2)
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+ax.xaxis.set_minor_locator(minorLocator)
+plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
+ax = plt.subplot(3,1,2)
 plt.plot(monthlyData_comb['PV_avg'][PV_max_ind, PV_range], label='optimized')
 plt.plot(monthlyData_tracking['PV_avg'].transpose(), label = 'sun tracking' )
-plt.title('Comparison of PV with sun tracking to optimized solution')
-plt.ylabel('Average PV Energy Production [W/m2]')
+plt.title('Comparison of PV Electricity Production with sun tracking to optimized solution')
+plt.ylabel('PV Production [W/m2]', fontsize = 14)
 plt.legend()
+plt.grid()
+ax.tick_params(labelsize=14)
 
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+ax.xaxis.set_minor_locator(minorLocator)
+plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 
-plt.subplot(3,1,3)
+ax = plt.subplot(3,1,3)
 plt.title('PV Efficiencies')
 plt.plot(monthlyData_comb['PV_eff'][PV_max_ind, PV_range], label = 'PV efficiency optimized')
 plt.plot(monthlyData_tracking['PV_eff'].transpose(), label = 'PV efficiency tracking')
-plt.ylabel('Efficiency [%]')
+plt.ylabel('Efficiency [%]', fontsize = 14)
+plt.ylim(0,16)
 plt.legend()
 plt.grid()
+
+ax.tick_params(labelsize=14)
+
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+ax.xaxis.set_minor_locator(minorLocator)
+
+plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
+plt.xlabel('Month', fontsize = 14)
 
 
 #fig.tight_layout()

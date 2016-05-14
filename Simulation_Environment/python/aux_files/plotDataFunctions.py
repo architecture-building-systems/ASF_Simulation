@@ -181,9 +181,11 @@ def pcolorMonths(monthlyData, arg):
     masked_array = np.ma.array(z, mask=sunMask)
     
     # define colormap:
-    #cmap = plt.cm.cubehelix
+#    cmap = plt.cm.cubehelix
     #cmap = plt.cm.PRGn
-    cmap = plt.cm.RdBu
+#    cmap = plt.cm.RdBu$
+    cmap = plt.cm.CMRmap
+    cmap = plt.cm.gnuplot
     
     # define what happens to bad data (i.e. data outside the mask):
     cmap.set_bad('grey',1.)
@@ -237,12 +239,24 @@ def pcolorEnergyMonths(monthlyData, arg):
     # define the location of the middle number (where 0 is):
     z_middle = float(abs(z_min)) / (z_max-z_min) 
     
-    # create custom color dictionary:
+#    # create custom color dictionary:
+#    cdict1 = {'red':   ((0.0, 0.0, 0.0),
+#                       (z_middle, 0.0, 0.1),
+#                       (1.0, 1.0, 1.0)),
+#    
+#             'green': ((0.0, 0.0, 0.0),
+#                       (z_middle, 0.0, 0.0),
+#                       (1.0, 0.0, 0.0)),
+#    
+#             'blue': ((0.0, 0.0, 1.0),
+#                       (z_middle, 0.1, 0.0),
+#                       (1.0, 0.0, 0.0))
+#            }    # create custom color dictionary:
     cdict1 = {'red':   ((0.0, 0.0, 0.0),
                        (z_middle, 0.0, 0.1),
                        (1.0, 1.0, 1.0)),
     
-             'green': ((0.0, 0.0, 0.0),
+             'white': ((0.0, 0.0, 0.0),
                        (z_middle, 0.0, 0.0),
                        (1.0, 0.0, 0.0)),
     
@@ -250,12 +264,18 @@ def pcolorEnergyMonths(monthlyData, arg):
                        (z_middle, 0.1, 0.0),
                        (1.0, 0.0, 0.0))
             }
+            
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'),
+                                                    (z_middle, 'white'),
+                                                    (1, 'firebrick')]
+                                        )
     
     # create colormap:
-    blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)   
+    blue_red1 = LinearSegmentedColormap('mycmap', cdict1)   
    
    # plot data:
-    plt.pcolor(x, y, z, cmap=blue_red1, vmin=z_min, vmax=z_max)   
+#    plt.pcolor(x, y, z, cmap=blue_red1, vmin=z_min, vmax=z_max)   
+    plt.pcolor(x, y, z, cmap=cmap, vmin=z_min, vmax=z_max)   
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     plt.tick_params(axis=u'both',labelsize=14)
 

@@ -136,7 +136,7 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
         if arg[0] == 'xy':
             angles = monthlyData['angles']['allAngles'][0]   
         elif arg[0] == 'x':
-            angles = monthlyData['angles']['x_angles']    
+            angles = monthlyData['angles']['x_angles'] 
         elif arg[0] == 'y':
             angles = monthlyData['angles']['y_angles']    
         else:
