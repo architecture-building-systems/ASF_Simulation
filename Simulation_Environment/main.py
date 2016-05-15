@@ -28,6 +28,7 @@ mainMode = 'post_processing' #'initialize'
 #geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
 #geoLocation = 'HELSINKI_FIN' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
+#geoLocation = 'CAIRO_EGY' # 'Zuerich-Kloten', 'MADRID_ESP'
 
 
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
@@ -41,10 +42,13 @@ geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
 #diva_folder = 'DIVA_Kloten_7x_13y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
-#diva_folder = 'DIVA_Madrid_25comb'
+diva_folder = 'DIVA_Madrid_25comb'
+#diva_folder = 'DIVA_Helsinki_25comb'
 #diva_folder = 'DIVA_Kloten_3clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_2clust_25comb'
-#
+diva_folder = 'DIVA_Madrid_noShade'
+diva_folder = 'Simulation_Madrid_25comb'
+
 
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
@@ -55,8 +59,8 @@ geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
 #radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
-radiation_folder = 'Radiation_Kloten_49comb'
-#radiation_folder = 'Radiation_Dummy_NoShade'
+#radiation_folder = 'Radiation_Kloten_49comb'
+radiation_folder = 'Radiation_Dummy_NoShade'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
 #radiation_folder = 'Radiation_Kloten_7x_13y'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
@@ -67,7 +71,8 @@ radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_8panels_3clust_5x'
 #radiation_folder = 'Radiation_10panels_25comb'
 #radiation_folder = 'Radiation_10panels_2clust_25comb'
-#radiation_folder = 'Radiation_Madrid_25comb'
+radiation_folder = 'Radiation_Madrid_25comb'
+#radiation_folder = 'Radiation_Helsinki_25comb'
 
 
 
@@ -86,18 +91,18 @@ pvFlipOrientation = False
 
 
 # specify if  plots should be created (True or False):
-createPlots = True
+createPlots = False
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
 onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = False
+showDetailedDIVA = True
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
 # set changeEfficiency to True if data should be changed, set False if simulation efficiencies should be used:
-efficiencyChanges = {'changeEfficiency':False, 'H_COP': 4, 'C_COP': 3, 'L_Load': 11.74, 'PV': 1}
+efficiencyChanges = {'changeEfficiency':False, 'H_COP': 4, 'C_COP': 3, 'L_Load': 11.74, 'PV': 0}
 
 
 # define tradeoff period and if it should be enabled, startHour and endHour are
