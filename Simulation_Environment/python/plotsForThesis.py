@@ -154,7 +154,7 @@ results49 =  np.load(paths['results'] + '\\' + results49comb + '\\all_results.np
 #
 #plotAngleSavings(monthlyData, xy = None)
 
-if True:
+if False:
     fig = plt.figure(figsize=(16, 5))
     ax = fig.add_subplot(131, projection='3d')
     create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 3, endMonth = 3, fig=fig, ax=ax)

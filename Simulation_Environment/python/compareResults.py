@@ -10,14 +10,16 @@ Compare Results script
 import numpy as np
 import sys, os
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+
 
 CompareResults = False
 OrientationStudy = False
 LocationStudy = False
-BuildingParameterStudy = True
+BuildingParameterStudy = False
 EnergySavingsPotential = False
 combinationStudy = False
-ClusterStudy = False
+ClusterStudy = True
 
 roomSize = 30.0
 
@@ -53,7 +55,7 @@ LocationFolders = {}
 LocationFolders['Helsinki'] = 'Helsinki_25comb'
 LocationFolders['Zurich'] = 'Kloten_25comb_largeContext'
 LocationFolders['Madrid'] = 'Madrid_25comb'
-LocationFolders['Cairo'] = 'Madrid_25comb'
+LocationFolders['Cairo'] = 'Cairo_25comb'
 
 
 LocationFoldersNoShade = {}
@@ -61,7 +63,7 @@ LocationFoldersNoShade = {}
 LocationFoldersNoShade['Helsinki'] = 'Helsinki_noShade'
 LocationFoldersNoShade['Zurich'] = 'Kloten_noShade_basecase'
 LocationFoldersNoShade['Madrid'] = 'Madrid_noShade'
-LocationFoldersNoShade['Cairo'] = 'Madrid_noShade'
+LocationFoldersNoShade['Cairo'] = 'Cairo_noShade'
 
 # set folders with efficiency results
 efficiencyFolders = {}
@@ -186,8 +188,10 @@ infiltrationFoldersNoShade['1.5'] = 'Kloten_noShade_1.5Infilt'
 #set folders with cluster analysis
 clusterFolders ={}
 
-clusterFolders['1clust'] = 'Kloten_4months_10panels_25comb'
+clusterFolders['2clust_base'] = 'Kloten_4months_10panels_25comb'
 clusterFolders['2clust'] = 'Kloten_2clust_25comb_4months'
+clusterFolders['3clust_base'] = 'Kloten_4months_8panels_5x_1y'
+clusterFolders['3clust'] = 'Kloten_4months_8panels_3clust_5x_1y'
 
 
 # paths dict:
@@ -518,10 +522,13 @@ if LocationStudy:
     
     ax = plt.subplot(3,1,2)
     
+    #assign bottom array:
+    bottom1 = np.array([H[0],H[1],0,0])/roomSize
+    
     rects1 = ax.bar(ind, H/roomSize, width, color='r', alpha = 0.3, label = 'heating') 
-    rects2 = ax.bar(ind, C/roomSize, width, color='b', alpha = 0.3, label = 'cooling', bottom=H/roomSize) 
-    rects3 = ax.bar(ind, L/roomSize, width, color='g', alpha = 0.3, label = 'lighting', bottom = H/roomSize + C/roomSize)
-    rects4 = ax.bar(ind, PV/roomSize, width, color='cyan', alpha = 0.3, label = 'PV', bottom = H/roomSize + C/roomSize + L/roomSize) 
+    rects2 = ax.bar(ind, C/roomSize, width, color='b', alpha = 0.3, label = 'cooling', bottom=bottom1 ) 
+    rects3 = ax.bar(ind, L/roomSize, width, color='g', alpha = 0.3, label = 'lighting', bottom = bottom1 + C/roomSize)
+    rects4 = ax.bar(ind, PV/roomSize, width, color='cyan', alpha = 0.3, label = 'PV', bottom = bottom1 + C/roomSize + L/roomSize) 
     
     #TotE = (140, 90, 78, 65, 50)
     
@@ -1693,12 +1700,356 @@ if combinationStudy:
     
     plt.show()
     
-
 if ClusterStudy:
-
-    # load results
-    results1 = np.load(paths['results'] + '\\' + clusterFolders['1clust'] + '\\all_results.npy').item()
-    results2 = np.load(paths['results'] + '\\' + clusterFolders['2clust'] + '\\all_results.npy').item()
     
-    # plot data 
-    figures = compareResultsFigure(results1['monthlyData'], results2['monthlyData'])
+    clusterResults = {}
+    
+    # load results
+    for key, item in clusterFolders.iteritems():
+        print key, item
+        clusterResults[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()#['TradeoffResults']['energy_opttot']
+    
+#    
+#    results1 = np.load(paths['results'] + '\\' + clusterFolders['1clust'] + '\\all_results.npy').item()
+#    results2 = np.load(paths['results'] + '\\' + clusterFolders['2clust'] + '\\all_results.npy').item()
+#    
+     #plot data 
+#    figures= {}
+#    figures['2clust'] = compareResultsFigure(clusterResults['2clust_base']['monthlyData'], clusterResults['2clust']['monthlyData'], evaluate='E_tot')
+#    plt.xticks(range(0,288,24),('Mar', 'Jun', 'Sep', 'Dec'))    
+#    figures['3clust'] = compareResultsFigure(clusterResults['3clust_base']['monthlyData'], clusterResults['3clust']['monthlyData'], evaluate='E_tot')
+#    plt.xticks(range(0,288,24),('Mar', 'Jun', 'Sep', 'Dec'))
+    
+#        
+#    majorLocator = MultipleLocator(24)
+#    majorFormatter = FormatStrFormatter('%d')
+#    minorLocator = MultipleLocator(12)
+#    minorFormatter = FormatStrFormatter('%d')
+    
+    ##    ax1.xaxis.set_minor_formatter(minorFormatter)
+    #plt.grid(True, which='both')
+    #
+    #ax = plt.subplot(3,1,1)
+    #plt.plot(monthlyData_comb['R_avg'][PV_max_ind, range(len(R_max_ind))], label='optimized for PV')
+    #plt.plot(monthlyData_tracking['R_avg'].transpose(), label = 'sun tracking')
+    #plt.plot(monthlyData_comb['R_theo'][R_max_ind, range(len(R_max_ind))], label = 'without shading')
+    #plt.ylabel('Radiation [W/m2]', fontsize = 14)
+    #plt.title ('Average Radiation on Panels')
+    #plt.legend()
+    #plt.grid()
+    #ax.tick_params(labelsize=14)
+    
+#    ax = figures['2clust']['E_tot'].add_subplot(2,1,1)
+#    ax.xaxis.set_major_locator(majorLocator)
+#    ax.xaxis.set_major_formatter(majorFormatter)
+#    ax.xaxis.set_minor_locator(minorLocator)
+#    plt.xticks(range(0,288,24),('Mar', 'Jun', 'Sep', 'Dec'))
+#    
+#    ax = figures['2clust']['E_tot'].add_subplot(2,1,2)
+#    ax.xaxis.set_major_locator(majorLocator)
+#    ax.xaxis.set_major_formatter(majorFormatter)
+#    ax.xaxis.set_minor_locator(minorLocator)
+#    plt.xticks(range(0,288,24),('Mar', 'Jun', 'Sep', 'Dec'))
+#    
+#    ax = figures['3clust']['E_tot'].add_subplot(2,1,1)
+#    ax.xaxis.set_major_locator(majorLocator)
+#    ax.xaxis.set_major_formatter(majorFormatter)
+#    ax.xaxis.set_minor_locator(minorLocator)
+#    plt.xticks(range(0,288,24),('Mar', 'Jun', 'Sep', 'Dec'))
+#    
+#    ax = figures['3clust']['E_tot'].add_subplot(2,1,2)
+#    ax.xaxis.set_major_locator(majorLocator)
+#    ax.xaxis.set_major_formatter(majorFormatter)
+#    ax.xaxis.set_minor_locator(minorLocator)
+#    plt.xticks(range(0,288,24),('Mar', 'Jun', 'Sep', 'Dec'))
+    
+    
+           ############ data 1    
+    
+    # assign data:
+    H1 = clusterResults['2clust_base']['monthlyData']['H']
+    C1 = clusterResults['2clust_base']['monthlyData']['C']
+    L1 = clusterResults['2clust_base']['monthlyData']['L']
+    PV1 = clusterResults['2clust_base']['monthlyData']['PV']
+
+     # assign what efficiencies were used for evaluation:  
+    if clusterResults['2clust_base']['monthlyData']['changedEfficiency'] == True:
+        usedEfficiencies1 = clusterResults['2clust_base']['monthlyData']['efficiencyChanges']
+    else:
+        usedEfficiencies1 = clusterResults['2clust_base']['monthlyData']['efficiencies']
+    
+    # sum individual data
+    E_HCL1 = H1+C1+L1
+    E_tot11 = E_HCL1+PV1
+    
+    # select only june:
+    E_tot1 = E_tot11[:,range(24,48)]
+    
+    # find indices
+    E_totind1 = np.argmin(E_tot1,axis=0)
+    
+    
+    
+    ################## data 2
+    
+     # assign data:
+    H2 = clusterResults['2clust']['monthlyData']['H']
+    C2 = clusterResults['2clust']['monthlyData']['C']
+    L2 = clusterResults['2clust']['monthlyData']['L']
+    PV2 = clusterResults['2clust']['monthlyData']['PV']
+
+     # assign what efficiencies were used for evaluation:  
+#    if clusterResults['2clust']['monthlyData']['changedEfficiency'] == True:
+#        usedEfficiencies2 = clusterResults['2clust']['monthlyData']['efficiencyChanges']
+#    else:
+#        usedEfficiencies2 = clusterResults['2clust']['monthlyData']['efficiencies']
+        
+    # sum individual data
+    E_HCL2 = H2+C2+L2
+    E_tot22 = E_HCL2+PV2
+    
+    # select only june:
+    E_tot2 = E_tot22[:,range(24,48)]
+        
+    
+    # find indices
+    E_totind2 = np.argmin(E_tot2,axis=0)
+
+    indices = {'E_tot1':E_totind1, 'E_tot2':E_totind2 }    
+    
+    
+    ################ data 3
+    
+     # assign data:
+    H3 = clusterResults['3clust_base']['monthlyData']['H']
+    C3 = clusterResults['3clust_base']['monthlyData']['C']
+    L3 = clusterResults['3clust_base']['monthlyData']['L']
+    PV3 = clusterResults['3clust_base']['monthlyData']['PV']
+
+     # assign what efficiencies were used for evaluation:  
+    if clusterResults['3clust_base']['monthlyData']['changedEfficiency'] == True:
+        usedEfficiencies3 = clusterResults['2clust_base']['monthlyData']['efficiencyChanges']
+    else:
+        usedEfficiencies3 = clusterResults['2clust_base']['monthlyData']['efficiencies']
+    
+    # sum individual data
+    E_HCL3 = H3+C3+L3
+    E_tot33 = E_HCL3+PV3
+    
+    # select only june:
+    E_tot3 = E_tot33[:,range(24,48)]
+    
+    # find indices
+    E_totind3 = np.argmin(E_tot3,axis=0)
+    
+    
+    indices['E_tot3']=E_totind3
+
+    ################## data 4
+    
+     # assign data:
+    H4 = clusterResults['3clust']['monthlyData']['H']
+    C4 = clusterResults['3clust']['monthlyData']['C']
+    L4 = clusterResults['3clust']['monthlyData']['L']
+    PV4 = clusterResults['3clust']['monthlyData']['PV']
+
+     # assign what efficiencies were used for evaluation:  
+#    if clusterResults['2clust']['monthlyData']['changedEfficiency'] == True:
+#        usedEfficiencies2 = clusterResults['2clust']['monthlyData']['efficiencyChanges']
+#    else:
+#        usedEfficiencies2 = clusterResults['2clust']['monthlyData']['efficiencies']
+        
+    # sum individual data
+    E_HCL4 = H4+C4+L4
+    E_tot44 = E_HCL4+PV4
+    
+    # select only june:
+    E_tot4 = E_tot44[:,range(24,48)]
+        
+    
+    # find indices
+    E_totind4 = np.argmin(E_tot4,axis=0)
+
+    indices['E_tot4']=E_totind4
+#    if usedEfficiencies1 == usedEfficiencies2:
+#        usedEfficiencies = usedEfficiencies1
+    
+
+#    plotResultsComparison(clusterResults['2clust_base']['monthlyData'], clusterResults['2clust']['monthlyData'], indices, [evaluate])
+        #figures[evaluate].suptitle(evaluate)
+
+    
+    
+        
+    energyType = 'E_tot'
+    
+    dummyRange = np.asarray(range(24,48))
+    
+    fig = plt.figure(figsize=(16, 8))
+    
+#    plt.suptitle('Heating Demand (COP=' + str(usedEfficiencies['H_COP']) + ')')
+    if energyType == 'PV':
+        multiplier = -1
+    else:
+        multiplier = 1
+    
+    ax1 = plt.subplot(3,2,1)
+    
+    plt.plot(multiplier*clusterResults['2clust_base']['monthlyData'][energyType][indices['E_tot1'], dummyRange]/(roomSize*30*0.001), label = '1 Cluster', color='b')
+    plt.plot(multiplier*clusterResults['2clust']['monthlyData'][energyType][indices['E_tot2'], dummyRange]/(roomSize*30*0.001), label = '2 Clusters', color='g')
+    
+    plt.ylabel('Average Power Use \n' +r' $\mathregular{\left[\frac{W}{m^2}\right]}$', fontsize=14)
+    plt.title('2 Cluster Comparison', fontsize=14)
+    plt.legend(loc=4)
+    plt.tick_params(labelsize=14)
+    
+    majorLocator = MultipleLocator(6)
+    majorFormatter = FormatStrFormatter('%d')
+    minorLocator = MultipleLocator(2)
+    minorFormatter = FormatStrFormatter('%d')
+#
+#    ax1.xaxis.set_major_locator(majorLocator)
+#    ax1.xaxis.set_major_formatter(majorFormatter)
+#    ax1.xaxis.set_minor_locator(minorLocator)
+#    ax1.xaxis.set_minor_formatter(minorFormatter)
+    plt.grid(True, which='both')
+    
+    ax2 = plt.subplot(3,2,3, sharex=ax1)
+    
+    plt.plot(multiplier*clusterResults['2clust_base']['monthlyData'][energyType][indices['E_tot1'], dummyRange]-multiplier*clusterResults['2clust']['monthlyData'][energyType][indices['E_tot2'], dummyRange], label = '1-2', color='b')
+
+    plt.ylabel('Power Difference \n' +r'$\mathregular{\left[\frac{W}{m^2}\right]}$', fontsize=14)
+    plt.xlabel('Hour of the Day', fontsize=14)
+    #plt.legend()
+
+    ax2.xaxis.set_major_locator(majorLocator)
+    ax2.xaxis.set_major_formatter(majorFormatter)
+    ax2.xaxis.set_minor_locator(minorLocator)
+    ax2.tick_params(labelsize=14)
+#    ax2.xaxis.set_minor_formatter(minorFormatter)
+    plt.grid(True, which='both')
+    
+    
+    ax3 = plt.subplot(3,2,2,  sharey=ax1)
+    
+    plt.plot(multiplier*clusterResults['3clust_base']['monthlyData'][energyType][indices['E_tot3'], dummyRange]/(roomSize*30*0.001), label = '1 Cluster', color='b')
+    plt.plot(multiplier*clusterResults['3clust']['monthlyData'][energyType][indices['E_tot4'], dummyRange]/(roomSize*30*0.001), label = '3 Clusters', color='g')
+    
+#    plt.ylabel('Average Power Use \n' +r' $\mathregular{\left[\frac{W}{m^2}\right]}$', fontsize=14)
+    plt.title('3 Cluster Comparison', fontsize=14)
+    plt.legend(loc=4)
+    plt.tick_params(labelsize=14)
+    
+    majorLocator = MultipleLocator(6)
+    majorFormatter = FormatStrFormatter('%d')
+    minorLocator = MultipleLocator(2)
+    minorFormatter = FormatStrFormatter('%d')
+#
+#    ax1.xaxis.set_major_locator(majorLocator)
+#    ax1.xaxis.set_major_formatter(majorFormatter)
+#    ax1.xaxis.set_minor_locator(minorLocator)
+#    ax1.xaxis.set_minor_formatter(minorFormatter)
+    plt.grid(True, which='both')
+    
+    ax4 = plt.subplot(3,2,4, sharex=ax3, sharey=ax2)
+    
+    plt.plot(multiplier*clusterResults['3clust_base']['monthlyData'][energyType][indices['E_tot3'], dummyRange]-multiplier*clusterResults['3clust']['monthlyData'][energyType][indices['E_tot4'], dummyRange], label = '1-2', color='b')
+
+#    plt.ylabel('Power Difference \n' +r'$\mathregular{\left[\frac{W}{m^2}\right]}$', fontsize=14)
+    plt.xlabel('Hour of the Day', fontsize=14)
+    #plt.legend()
+
+    ax4.xaxis.set_major_locator(majorLocator)
+    ax4.xaxis.set_major_formatter(majorFormatter)
+    ax4.xaxis.set_minor_locator(minorLocator)
+    ax4.tick_params(labelsize=14)
+#    ax2.xaxis.set_minor_formatter(minorFormatter)
+    plt.grid(True, which='both')
+    
+    
+    
+    ######### bar plots
+    
+    # number of bars
+    N = 5
+    
+    # empty list for results
+    H = []
+    C = []
+    L = []
+    PV = []
+    E = []
+
+    # fill result lists
+    for i in ['2clust_base','2clust','3clust_base','3clust']:
+        
+        H.append(clusterResults[i]['TradeoffResults']['energy_opttot']['H'])
+        C.append(clusterResults[i]['TradeoffResults']['energy_opttot']['C'])
+        L.append(clusterResults[i]['TradeoffResults']['energy_opttot']['L'])
+        PV.append(clusterResults[i]['TradeoffResults']['energy_opttot']['PV'])
+        E.append(clusterResults[i]['TradeoffResults']['energy_opttot']['E_tot'])
+        
+    # convert them to numpy arrays
+    H = np.array(H)/4./roomSize*1000
+    C = np.array(C)/4./roomSize*1000
+    L = np.array(L)/4./roomSize*1000
+    PV = np.array(PV)/4./roomSize*1000
+    E = np.array(E)/4./roomSize*1000
+    
+        
+    EnergySavings2clust = []
+    EnergySavings3clust = []
+
+    for i in [H,C,L,PV,E]:
+        EnergySavings2clust.append(i[0]-i[1])
+        EnergySavings3clust.append(i[2]-i[3])
+        
+    clusterColors = ['r','b','g','cyan','black']
+        
+        
+    ind = np.arange(N) #+ .15 # the x locations for the groups
+    width = 0.7       # the width of the bars
+    
+    ax = plt.subplot(3,2,5)
+        
+
+    rects1 = ax.bar(ind, EnergySavings2clust, width, color=clusterColors, alpha = 0.3 ) 
+    
+    
+    # add some text for labels, title and axes ticks
+    ax.set_ylabel('Energy Savings\n'+r'$\mathregular{\left[\frac{Wh}{m^2month}\right]}$', fontsize=14)
+#    ax.set_title('Energy Dependency on Building Orientation')
+    
+#    ax.set_xticks(ind+width+xtra_space)
+#    ax.set_xticklabels( ['1 Cluster','2 Clusters'] , fontsize=14)    
+    ax.set_xticks(ind + width/2.)
+    ax.set_xticklabels( ['H','C','L','PV','E'] , fontsize=14)
+    ax.tick_params(labelsize=14)
+#    ax.set_yticklabels([-10,'',0,'',15,'',20,'',30],fontsize=14)
+#    ax.set_xlabel('Building Orientation')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    ax = plt.subplot(3,2,6, sharey=ax)
+        
+        
+    rects1 = ax.bar(ind, EnergySavings3clust, width, color=clusterColors, alpha = 0.3 ) 
+    
+    
+    # add some text for labels, title and axes ticks
+#    ax.set_ylabel('Energy Savings\n'+r'$\mathregular{\left[\frac{Wh}{m^2month}\right]}$', fontsize=14)
+#    ax.set_title('Energy Dependency on Building Orientation')
+    
+#    ax.set_xticks(ind+width+xtra_space)
+#    ax.set_xticklabels( ['1 Cluster','2 Clusters'] , fontsize=14)    
+    ax.set_xticks(ind + width/2.)
+    ax.set_xticklabels( ['H','C','L','PV','E'] , fontsize=14)
+    ax.tick_params(labelsize=14)
+#    ax.set_yticklabels([-10,'',0,'',15,'',20,'',30],fontsize=14)
+#    ax.set_xlabel('Building Orientation')
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    
+    #ax.legend(loc='lower center', bbox_to_anchor=(0.5, -.35),
+     #     ncol=5, fancybox=True, shadow=False)
+    plt.show()

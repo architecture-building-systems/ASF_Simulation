@@ -288,7 +288,7 @@ def plotEnergyUsage(monthlyData, auxVar):
     
     return figures
 
-def compareResultsFigure(monthlyData1, monthlyData2):
+def compareResultsFigure(monthlyData1, monthlyData2, evaluate = 'all'):
     """ 
     function that plots the energy of two different monthlyData files
     """
@@ -344,20 +344,24 @@ def compareResultsFigure(monthlyData1, monthlyData2):
     
     figures = {}
     
-    # create figures
-    figures['H'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['H'])
-    figures['C'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['C'])
-    figures['L'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['L'])
-    figures['PV'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['PV'])
-    figures['E_HCL'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['E_HCL'])
-    figures['E_tot'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['E_tot'])
+    if evaluate == 'all':
+        # create figures
+        figures['H'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['H'])
+        figures['C'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['C'])
+        figures['L'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['L'])
+        figures['PV'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['PV'])
+        figures['E_HCL'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['E_HCL'])
+        figures['E_tot'] = plotResultsComparison(monthlyData1, monthlyData2, indices, ['E_tot'])
+        
+        # add titles to figures
+        figures['H'].suptitle('Heating Demand')
+        figures['C'].suptitle('Cooling Demand')
+        figures['L'].suptitle('Lighting Demand')
+        figures['PV'].suptitle('PV Generation')
+        figures['E_HCL'].suptitle('Thermal/Lighting Demand')
+        figures['E_tot'].suptitle('Total Demand')
     
-    # add titles to figures
-    figures['H'].suptitle('Heating Demand')
-    figures['C'].suptitle('Cooling Demand')
-    figures['L'].suptitle('Lighting Demand')
-    figures['PV'].suptitle('PV Generation')
-    figures['E_HCL'].suptitle('Thermal/Lighting Demand')
-    figures['E_tot'].suptitle('Total Demand')
-    
+    else: 
+        figures[evaluate] = plotResultsComparison(monthlyData1, monthlyData2, indices, [evaluate])
+        #figures[evaluate].suptitle(evaluate)
     return figures

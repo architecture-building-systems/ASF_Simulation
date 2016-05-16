@@ -476,7 +476,7 @@ def plotResultsComparison(monthlyData1, monthlyData2, indices, arg):
     
     majorLocator = MultipleLocator(24)
     majorFormatter = FormatStrFormatter('%d')
-    minorLocator = MultipleLocator(4)
+    minorLocator = MultipleLocator(24)
     minorFormatter = FormatStrFormatter('%d')
 
     ax1.xaxis.set_major_locator(majorLocator)
