@@ -9,6 +9,7 @@ Compare Results script
 
 import numpy as np
 import sys, os
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
@@ -18,8 +19,8 @@ OrientationStudy = False
 LocationStudy = False
 BuildingParameterStudy = False
 EnergySavingsPotential = False
-combinationStudy = False
-ClusterStudy = True
+combinationStudy = True
+ClusterStudy = False
 
 roomSize = 30.0
 
@@ -163,7 +164,7 @@ combinationFolders['19x'] = 'Kloten_19x_1y_1Infilt'
 combinationFolders['25'] = 'Kloten_25comb_1Infilt'
 combinationFolders['19x'] = 'Kloten_19x_1y_1Infilt'
 combinationFolders['19y'] = 'Kloten_1x_19y_1Infilt'
-combinationFolders['91'] = 'Kloten_7x_13y_1Infilt'
+#combinationFolders['91'] = 'Kloten_7x_13y_1Infilt'
 combinationFolders['49'] = 'Kloten_49comb'
 
 # set infiltration folders:
@@ -1642,63 +1643,202 @@ if combinationStudy:
         print key, item
         combinationResults[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']['energy_opttot']
     
+    noShadeResult = np.load(paths['results'] + '\\' + 'Kloten_noShade_basecase' + '\\all_results.npy').item()['TradeoffResults']
     # number of bars
-    N = 12
+#    N = 11
+#    
+#    # empty list for results
+#    H = []
+#    C = []
+#    L = []
+#    PV = []
+#    E = []
+#
+#    # fill result lists
+#    for i in ['22.5degx','2x','3x','9','5x','5y22.5','5y45','19x', '19y', '25', '49']:
+#        
+#        H.append(combinationResults[i]['H'])
+#        C.append(combinationResults[i]['C'])
+#        L.append(combinationResults[i]['L'])
+#        PV.append(combinationResults[i]['PV'])
+#        E.append(combinationResults[i]['E_tot'])
+#        
+#    # convert them to numpy arrays
+#    H = np.array(H)
+#    C = np.array(C)
+#    L = np.array(L)
+#    PV = np.array(PV)
+#    E = np.array(E)
+#    
+#    
+#    ind = np.arange(N) + .15 # the x locations for the groups
+#    width = 0.35       # the width of the bars
+#    
+#    fig = plt.figure(figsize=(16,12))
+#    ax = plt.subplot(3,1,1)
+#    rects1 = ax.bar(ind, H, width, color='r', alpha = 0.3, label = 'heating') 
+#    rects2 = ax.bar(ind, C, width, color='b', alpha = 0.3, label = 'cooling', bottom = H) 
+#    rects3 = ax.bar(ind, L, width, color='g', alpha = 0.3, label = 'lighting', bottom = H+C)
+#    rects4 = ax.bar(ind, PV, width, color='cyan', alpha = 0.3, label = 'PV') 
+#    
+#    #TotE = (140, 90, 78, 65, 50)
+#    
+#    
+#    xtra_space = 0.0
+#    rects2 = ax.bar(ind + width + xtra_space , E, width, color='black', alpha = 0.3, label = 'total') 
+#    
+#    
+#    
+#    # add some text for labels, title and axes ticks
+#    ax.set_ylabel('Energy [kWh]')
+#    ax.set_title('Energy Dependency on Building Orientation')
+#    
+#    ax.set_xticks(ind+width+xtra_space)
+#    ax.set_xticklabels( ['22.5degx','2x','3x','9','5x','5y22.5','5y45','19x', '19y', '25', '49'] )
+#    ax.set_xlabel('Building Orientation')
+#    plt.axhline(y=0, linewidth=1, color = 'k')
+#    plt.grid( axis = u'y')
+#    
+#    plt.legend()
+#    
+#    plt.show()
+    
+    results = {}
+     
+    for key, item in combinationFolders.iteritems():
+        print key, item
+        results[key] = np.load(paths['results'] + '\\' + item + '\\all_results.npy').item()['TradeoffResults']
+        
+     # number of bars
+#    N = 5
+    N = 11
+    
+    labels = ['$\mathregular{2}$ Altitude Angles \nAzimuth  = $\mathregular{0^\circ}$\n',
+              'Altitude =$\mathregular{22.5^\circ}$ \nAzimuth  = $\mathregular{0^\circ}$\n',
+              '$\mathregular{3}$ Altitude Angles \nAzimuth  = $\mathregular{0^\circ}$\n',
+              '$\mathregular{3}$ Altitude Angles \n$\mathregular{3}$ Azimuth Angles \n',
+              'Altitude =$\mathregular{45^\circ}$ \n$\mathregular{3}$ Azimuth Angles \n',
+              '$\mathregular{5}$ Altitude Angles \nAzimuth  = $\mathregular{0^\circ}$\n',
+              'Altitude =$\mathregular{22.5^\circ}$ \n$\mathregular{5}$ Azimuth Angles \n',
+              '$\mathregular{19}$ Altitude Angles \nAzimuth  = $\mathregular{0^\circ}$\n',
+              '$\mathregular{5}$ Altitude Angles \n$\mathregular{5}$ Azimuth Angles \n',
+              'Altitude =$\mathregular{20^\circ}$ \n$\mathregular{19}$ Azimuth Angles \n',
+              '$\mathregular{7}$ Altitude Angles \n$\mathregular{7}$ Azimuth Angles \n']
+              #'3x','9','5y45','5x','5y22.5','19x', '25', '19y', '49']    
+    
+    barColors=[]
+#    cmap = mpl.cm.cubehelix
+    cmap = mpl.cm.ocean_r
+#    cmap = mpl.cm.brg
+#    cmap = mpl.cm.afmhot
+    for i in range(N):
+        
+        barColors.append(cmap((i+1)/float(N)))
+    
     
     # empty list for results
-    H = []
-    C = []
-    L = []
-    PV = []
     E = []
 
     # fill result lists
-    for i in ['22.5degx','2x','3x','9','5x','5y22.5','5y45','19x', '19y', '25', '49', '91']:
+    for i in  ['2x','22.5degx','3x','9','5y45','5x','5y22.5','19x', '25', '19y', '49']:# ['19x', '19y', '25', '49', '91']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + results['25']['energy_45']['E_tot'])
         
-        H.append(combinationResults[i]['H'])
-        C.append(combinationResults[i]['C'])
-        L.append(combinationResults[i]['L'])
-        PV.append(combinationResults[i]['PV'])
-        E.append(combinationResults[i]['E_tot'])
-        
-    # convert them to numpy arrays
-    H = np.array(H)
-    C = np.array(C)
-    L = np.array(L)
-    PV = np.array(PV)
+    # convert to numpy array
     E = np.array(E)
     
     
-    ind = np.arange(N) + .15 # the x locations for the groups
-    width = 0.35       # the width of the bars
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.7       # the width of the bars
     
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(ind, H, width, color='r', alpha = 0.3, label = 'heating') 
-    rects2 = ax.bar(ind, C, width, color='b', alpha = 0.3, label = 'cooling', bottom = H) 
-    rects3 = ax.bar(ind, L, width, color='g', alpha = 0.3, label = 'lighting', bottom = H+C)
-    rects4 = ax.bar(ind, PV, width, color='cyan', alpha = 0.3, label = 'PV') 
+    fig = plt.figure(figsize=(16,11))
+
+    ax = plt.subplot(2,1,1)
     
-    #TotE = (140, 90, 78, 65, 50)
-    
-    
-    xtra_space = 0.0
-    rects2 = ax.bar(ind + width + xtra_space , E, width, color='black', alpha = 0.3, label = 'total') 
-    
-    
-    
+#    rects1 = ax.bar(ind, E/roomSize, width, color='orange', alpha = 0.3) 
+#     rects1 = ax.bar(ind, E/roomSize, width, color=barColors, label=labels, alpha = 0.7) 
+
+    for i in range(N):
+        rects1 = ax.bar(1+i, E[i]/roomSize, width, color=barColors[i], label=labels[i], alpha = 0.7, align='center') 
+
     # add some text for labels, title and axes ticks
-    ax.set_ylabel('Energy [kWh]')
-    ax.set_title('Energy Dependency on Building Orientation')
+
+    ax.set_title('Sensitivity on Simulation Combination')
     
-    ax.set_xticks(ind+width+xtra_space)
-    ax.set_xticklabels( ['22.5degx','2x','3x','9','5x','5y22.5','5y45','19x', '19y', '25', '49', '91'] )
-    ax.set_xlabel('Building Orientation')
+    ax.set_ylabel('Energy Savings per room area \ncompared to facade at 45 deg \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
+
+    
+    ax.set_xticks(ind+1.25)
+    ax.tick_params(labelsize=14)
+
+#    ax.set_xticklabels( ['19/0', '0/19', '5/5', '7/7', '13/7'], rotation='vertical' )
+#    ax.set_xticklabels(  ['2x','22.5degx','3x','9','5y45','5x','5y22.5','19x', '25', '19y', '49'], rotation='vertical' )
+
+#    ax.set_xlabel('azimuth/altitude')
+#    ax.set_xlabel('Combination')
     plt.axhline(y=0, linewidth=1, color = 'k')
     plt.grid( axis = u'y')
     
-    plt.legend()
+    # Shrink current axis by 20%
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
     
-    plt.show()
+    # Put a legend to the right of the current axis
+    ax.legend(loc='upper left', bbox_to_anchor=(1, 1.05))
+    
+    
+#    plt.legend()
+    
+     # number of bars
+#    N = 5
+    N = 11
+    
+    # empty list for results
+    E = []
+
+    # fill result lists
+    for i in   ['2x','22.5degx','3x','9','5y45','5x','5y22.5','19x', '25', '19y', '49']:#['19x', '19y', '25', '49', '91']:
+
+        E.append(-results[i]['energy_opttot']['E_tot'] + noShadeResult['energy_opttot']['E_tot'])
+        
+    # convert to numpy array
+    E = np.array(E)
+    
+    
+    ind = np.arange(N)-0.25  # the x locations for the groups
+    width = 0.5       # the width of the bars
+    
+    ax = plt.subplot(2,1,2)
+    
+#    rects1 = ax.bar(ind, E/roomSize, width, color=barColors, alpha = 0.7) 
+    
+    for i in range(N):
+        rects1 = ax.bar(1+i, E[i]/roomSize, width, color=barColors[i], label=labels[i], alpha = 0.7, align='center') 
+
+    # add some text for labels, title and axes ticks
+
+#    ax.set_title('Sensitivity on Simulation Combination')
+    ax.set_xticks(ind+1.25)
+#    ax.set_xticks(ind+0.25)
+#    ax.set_xticklabels( ['19/0', '0/19', '5/5', '7/7', '13/7'], rotation='vertical' )
+#    ax.set_xticklabels(  ['2x','22.5degx','3x','9','5y45','5x','5y22.5','19x', '25', '19y', '49'], rotation='vertical' )
+#    ax.set_xlabel('azimuth/altitude')
+    ax.set_ylabel('Energy Savings per room area \ncompared to no facade \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
+    ax.set_xlabel('Combination', fontsize=14)
+    plt.axhline(y=0, linewidth=1, color = 'k')
+    plt.grid( axis = u'y')
+    ax.tick_params(labelsize=14)
+
+    
+    
+    # Shrink current axis by 20%
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    
+    # Put a legend to the right of the current axis
+#    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+#    plt.legend()
+        
     
 if ClusterStudy:
     
@@ -2053,3 +2193,7 @@ if ClusterStudy:
     #ax.legend(loc='lower center', bbox_to_anchor=(0.5, -.35),
      #     ncol=5, fancybox=True, shadow=False)
     plt.show()
+    
+    
+   
+        
