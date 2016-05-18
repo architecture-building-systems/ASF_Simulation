@@ -186,6 +186,7 @@ def pcolorMonths(monthlyData, arg):
 #    cmap = plt.cm.RdBu$
     cmap = plt.cm.CMRmap
     cmap = plt.cm.gnuplot
+    cmap = plt.cm.afmhot
     
     # define what happens to bad data (i.e. data outside the mask):
     cmap.set_bad('grey',1.)

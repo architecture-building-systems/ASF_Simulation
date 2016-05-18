@@ -22,7 +22,7 @@ EnergySavingsPotential = False
 combinationStudy = True
 ClusterStudy = False
 
-roomSize = 30.0
+roomSize = 34.3
 
 # assign results folders to compare:
 resultsFolder1 = 'Kloten_2clust_5x_1y'

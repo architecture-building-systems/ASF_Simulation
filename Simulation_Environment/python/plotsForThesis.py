@@ -14,6 +14,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from plotDataFunctions import create3Dplot, pcolorMonths, pcolorEnergyMonths, plotTotEfixedY, plotTotEfixedX, plotAngleSavings, plotMaxMinDiff
 from createFigures import compareResultsFigure
+from Tradeoffs import compareTotalEnergyForThesis
 
 #
 
@@ -25,6 +26,7 @@ resultsFolder2 = 'Kloten_1x_19y'
 
 results49comb = 'Kloten_49comb'
 
+roomSize = 34.3
 
 
 
@@ -177,3 +179,5 @@ if False:
 ## plot the energy use at the corresponding optimum orientation:
 #fig3 = createCarpetPlots(pcolorEnergyMonths, results49['monthlyData'])
 #    
+
+compareTotalEnergyForThesis(results49['monthlyData'], True, {'enabled':False}, {'combineResults':True}, roomSize)

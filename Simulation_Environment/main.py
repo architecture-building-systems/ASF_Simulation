@@ -25,24 +25,24 @@ mainMode = 'post_processing' #'initialize'
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
 # new locations can be added with the grasshopper main script for any .epw weather data
 
-#geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
+geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #geoLocation = 'MADRID_ESP' # 'Zuerich-Kloten', 'MADRID_ESP'
 #geoLocation = 'HELSINKI_FIN' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
-geoLocation = 'CAIRO_EGY' # 'Zuerich-Kloten', 'MADRID_ESP'
+#geoLocation = 'CAIRO_EGY' # 'Zuerich-Kloten', 'MADRID_ESP'
 
 
 # set folder name of DIVA simulation data (in data\grasshopper\DIVA):
 
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
-diva_folder = 'DIVA_Kloten_25comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_25comb_W'
-#diva_folder = 'DIVA_Kloten_49comb_1Infilt'
+diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_7x_13y'
 #diva_folder = 'DIVA_Kloten_1x_19y'
 #diva_folder = 'DIVA_Kloten_1x_19y_1Infilt'
-diva_folder = 'DIVA_Cairo_25comb'
+#diva_folder = 'DIVA_Cairo_25comb'
 #diva_folder = 'DIVA_Helsinki_25comb'
 #diva_folder = 'DIVA_Kloten_3clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_2clust_25comb'
@@ -59,7 +59,7 @@ diva_folder = 'DIVA_Cairo_25comb'
 #radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
-#radiation_folder = 'Radiation_Kloten_49comb'
+radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Dummy_NoShade'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
 #radiation_folder = 'Radiation_Kloten_7x_13y'
@@ -67,11 +67,11 @@ diva_folder = 'DIVA_Cairo_25comb'
 #radiation_folder = 'Radiation_Kloten_1x_19y'
 #radiation_folder = 'Radiation_electrical_monthly_25comb_Madrid'
 #radiation_folder = 'Radiation_Singapore_25comb'
-radiation_folder = 'Radiation_8panels_25comb_4months'
+#radiation_folder = 'Radiation_8panels_25comb_4months'
 #radiation_folder = 'Radiation_8panels_3clust_5x'
 #radiation_folder = 'Radiation_10panels_25comb'
 #radiation_folder = 'Radiation_10panels_2clust_25comb'
-radiation_folder = 'Radiation_Cairo_25comb'
+#radiation_folder = 'Radiation_Cairo_25comb'
 #radiation_folder = 'Radiation_Helsinki_25comb'
 
 
@@ -94,10 +94,10 @@ pvFlipOrientation = False
 createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = False
+onlyTradeoffs = True
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = True
+showDetailedDIVA = False
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)
@@ -113,8 +113,10 @@ tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 
 # options to specify what results should be saved:
-saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-#saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
+#saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
+saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
+saveResults = {'csvSummary':False, 'figures':False, 'npyData':False}
+
 
 
 
@@ -421,7 +423,7 @@ if mainMode == 'post_processing':
     print 'PV Energy Production:' + str(TradeoffResults['energy_opttot']['PV'])
     print 'Total Energy Demand:' + str(TradeoffResults['energy_opttot']['E_tot'])
     
-    if createPlots and auxVar['combineResults']:
+    if createPlots and auxVar['combineResults'] and not onlyTradeoffs:
         # plot figures for each energy usage:    
         figureHandles.update(plotEnergyUsage(monthlyData, auxVar))
 

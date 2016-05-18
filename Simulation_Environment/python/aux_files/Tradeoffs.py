@@ -200,11 +200,11 @@ def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
         
         # create figure:
 #        fig, ax = plt.subplots()
-        fig = plt.figure(figsize=(16, 8))
-        plt.subplot(2,1,1)
+        fig = plt.figure(figsize=(20, 16))
+        ax = plt.subplot(2,1,1)
         
         index = np.arange(n_groups)
-        bar_width = 0.15
+        bar_width = 0.13
         
         opacity = 0.4
         
@@ -244,20 +244,32 @@ def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
                             color='k',
                             label='E_tot')
         
-        plt.xlabel('Combinations')
-        plt.ylabel('Energy [kWh]')
-        plt.title('Energy Dependency on Angle Combinations')
-        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
-        plt.legend(loc=0)
+#        plt.xlabel('Combinations')
+        plt.ylabel('Energy [kWh]', fontsize=14)
+        plt.title('Total Energy Dependency on Control Strategy')
+#        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
+        plt.xticks(index + bar_width*3, ('individually\noptimized', 'optimized for\nbuilding demand',
+                                         'optimized for\ncooling', 'optimized for\nPV',
+                                         'overall\noptimization', 'fixed at\n90 deg', 'fixed at\n45 deg', 
+                                         'fixed at\n0 deg'), fontsize=14)
+#        plt.legend(loc=0)
+        # Shrink current axis by 20%
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
         
-        plt.tight_layout()
+        # Put a legend to the right of the current axis
+        ax.legend(loc='upper left', bbox_to_anchor=(1, 1.05))
+        
+        ax.tick_params(labelsize=14)
+        
+#        plt.tight_layout()
         plt.grid()
         
         
-        plt.subplot(2,1,2)
+        ax = plt.subplot(2,1,2)
         
         index = np.arange(n_groups)
-        bar_width = 0.15
+        bar_width = 0.13
         
         opacity = 0.4
         
@@ -300,13 +312,25 @@ def compareTotalEnergy(monthlyData, createPlots, tradeoffPeriod, auxVar):
                              label='E_tot')
                          
                          
-        plt.xlabel('Combinations')
-        plt.ylabel('$\Delta$ Energy [kWh]')
-        plt.title('Energy Difference Dependency on Angle Combinations')
-        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
-        plt.legend(loc=0)
+#        plt.xlabel('Combinations')
+        plt.ylabel('$\Delta$ Energy [kWh]', fontsize =14)
+        plt.title('Total Energy Difference to Individually Optimized Control Strategy')
+#        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
+        plt.xticks(index + bar_width*3, ('individually\noptimized', 'optimized for\nbuilding demand',
+                                         'optimized for\ncooling', 'optimized for\nPV',
+                                         'overall\noptimization', 'fixed at\n90 deg', 'fixed at\n45 deg', 
+                                         'fixed at\n0 deg'), fontsize=14)
+#        plt.legend(loc=0)
+        # Shrink current axis by 20%
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
         
-        plt.tight_layout()
+        # Put a legend to the right of the current axis
+        ax.legend(loc='upper left', bbox_to_anchor=(1, 1.05))
+        
+        ax.tick_params(labelsize=14)
+        
+#        plt.tight_layout()
         plt.grid()
         plt.show()
         
@@ -583,6 +607,347 @@ def compareTotalEnergy25comb(monthlyData, efficiencyChanges, createPlots, tradeo
     energy_opttot = {'H_tot': H_tot, 'C_tot': C_tot, 'L_tot': L_tot, 'E_HCL_tot': E_HCL_tot, 'E_tot_tot': E_tot_tot, 'PV_tot': PV_tot}
     tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_optPV':energy_optPV, 'energy_opttot': energy_opttot}
     return tradeoff_results
+
+from auxFunctions import calculate_sum_for_index, create_evalList
+
+
+def compareTotalEnergyForThesis(monthlyData, createPlots, tradeoffPeriod, auxVar, roomsize):
+    """
+    function that calculates and plots the total energy for monthlyData during 
+    a certain time period given in tradeoffPeriod
+    """
+    
+    # assign data:
+    H_data = monthlyData['H']
+    C_data = monthlyData['C']
+    L_data = monthlyData['L']
+    PV_data = monthlyData['PV']
+
+     # assign what efficiencies were used for evaluation:  
+    if monthlyData['changedEfficiency'] == True:
+        usedEfficiencies = monthlyData['efficiencyChanges']
+    else:
+        usedEfficiencies = monthlyData['efficiencies']
+
+    # assign choose data (of evaluation period if demanded):
+    if tradeoffPeriod['enabled']:
+        print 'showing tradeoffs for month: ' + str(tradeoffPeriod['month']) + ', hours: ' +  str(tradeoffPeriod['startHour']) +'-' +  str(tradeoffPeriod['endHour']) 
+        evalList = create_evalList('monthly', tradeoffPeriod['month'], tradeoffPeriod['startHour'], tradeoffPeriod['endHour'])
+        H = H_data[:,evalList]
+        C = C_data[:,evalList]
+        L = L_data[:,evalList]
+        PV = PV_data[:,evalList]
+    else:
+        print 'showing tradeoffs for the whole year'
+        
+        H = H_data
+        C = C_data
+        L = L_data
+        PV = PV_data
+    
+    # sum individual data
+    E_HCL = H+C+L
+    
+    if auxVar['combineResults']:
+        E_tot = E_HCL+PV
+    else:
+        E_tot = E_HCL*np.nan
+    
+    # find indices
+    Hind = np.argmin(H,axis=0)
+    Cind = np.argmin(C,axis=0)
+    Lind = np.argmin(L,axis=0)
+    PVind = np.argmin(PV,axis=0)
+    E_HCLind = np.argmin(E_HCL,axis=0)
+    
+    if auxVar['combineResults']:
+        E_totind = np.argmin(E_tot,axis=0)
+        try:
+            ind_0_0 =  monthlyData['angles']['allAngles'][0].index((0,0))
+        except:
+            ind_0_0 =  None
+        try:
+            ind_45_0 =  monthlyData['angles']['allAngles'][0].index((45,0))
+        except:
+            ind_45_0 =  None
+        try:
+            ind_90_0 =  monthlyData['angles']['allAngles'][0].index((90,0))
+        except:
+            ind_90_0 =  None
+    else:
+        ind_0_0 =  monthlyData['divaAngles']['allAngles'][0].index((0,0))
+        ind_45_0 =  monthlyData['divaAngles']['allAngles'][0].index((45,0))
+        ind_90_0 =  monthlyData['divaAngles']['allAngles'][0].index((90,0))
+    
+    # find energy use of indices:
+    
+    H_opt = calculate_sum_for_index(H,Hind)
+    H_HCL = calculate_sum_for_index(H,E_HCLind)
+    H_C = calculate_sum_for_index(H,Cind)
+    if auxVar['combineResults']:
+        H_PV = calculate_sum_for_index(H,PVind)
+        H_tot = calculate_sum_for_index(H,E_totind)
+    else:
+        H_PV = H_opt*np.nan
+        H_tot = H_opt*np.nan
+    H_90 = calculate_sum_for_index(H,ind_90_0)
+    H_45 = calculate_sum_for_index(H,ind_45_0)
+    H_0 = calculate_sum_for_index(H,ind_0_0)
+    
+    TotalHbyPos=[H_opt, H_HCL, H_C, H_PV, H_tot, H_90, H_45, H_0]
+    DiffH = TotalHbyPos-H_opt
+    
+    C_opt = calculate_sum_for_index(C,Cind)
+    C_HCL = calculate_sum_for_index(C,E_HCLind)
+    C_C = calculate_sum_for_index(C,Cind)
+    if auxVar['combineResults']:
+        C_PV = calculate_sum_for_index(C,PVind)
+        C_tot = calculate_sum_for_index(C,E_totind)
+    else:
+        C_PV = C_opt*np.nan
+        C_tot = C_opt*np.nan
+    C_90 = calculate_sum_for_index(C,ind_90_0)
+    C_45 = calculate_sum_for_index(C,ind_45_0)
+    C_0 = calculate_sum_for_index(C,ind_0_0)
+    
+    TotalCbyPos=[C_opt, C_HCL, C_C, C_PV, C_tot, C_90, C_45, C_0]
+    DiffC = TotalCbyPos - C_opt
+    
+    L_opt = calculate_sum_for_index(L,Lind)
+    L_HCL = calculate_sum_for_index(L,E_HCLind)
+    L_C = calculate_sum_for_index(L,Cind)
+    L_PV = calculate_sum_for_index(L,PVind)
+    if auxVar['combineResults']:
+        L_PV = calculate_sum_for_index(L,PVind)
+        L_tot = calculate_sum_for_index(L,E_totind)
+    else:
+        L_PV = L_opt*np.nan
+        L_tot = L_opt*np.nan
+    L_90 = calculate_sum_for_index(L,ind_90_0)
+    L_45 = calculate_sum_for_index(L,ind_45_0)
+    L_0 = calculate_sum_for_index(L,ind_0_0)
+    
+    TotalLbyPos=[L_opt, L_HCL, L_C, L_PV, L_tot, L_90, L_45, L_0]
+    DiffL = TotalLbyPos - L_opt
+
+    if auxVar['combineResults']:
+        PV_opt = calculate_sum_for_index(PV,PVind)
+        PV_HCL = calculate_sum_for_index(PV,E_HCLind)
+        PV_C = calculate_sum_for_index(PV,Cind)
+        PV_PV = calculate_sum_for_index(PV,PVind)
+        PV_tot = calculate_sum_for_index(PV,E_totind)
+        PV_90 = calculate_sum_for_index(PV,ind_90_0)
+        PV_45 = calculate_sum_for_index(PV,ind_45_0)
+        PV_0 = calculate_sum_for_index(PV,ind_0_0)
+    else:
+        PV_opt = calculate_sum_for_index(PV,PVind)
+        PV_PV = calculate_sum_for_index(PV,PVind)
+        PV_HCL = PV_opt*np.nan
+        PV_C =  PV_opt*np.nan
+        PV_tot = PV_opt*np.nan
+        PV_90 = PV_opt*np.nan
+        PV_45 = PV_opt*np.nan
+        PV_0 = PV_opt*np.nan
+        
+    TotalPVbyPos=[PV_opt, PV_HCL, PV_C, PV_PV, PV_tot, PV_90, PV_45, PV_0]    
+    DiffPV = TotalPVbyPos - PV_opt
+
+    
+    E_HCL_HCL = calculate_sum_for_index(E_HCL,E_HCLind)
+    E_HCL_C = calculate_sum_for_index(E_HCL,Cind)
+    if auxVar['combineResults']:
+        E_HCL_PV = calculate_sum_for_index(E_HCL,PVind)
+        E_HCL_tot = calculate_sum_for_index(E_HCL,E_totind)
+    else:
+        E_HCL_PV = E_HCL_HCL*np.nan
+        E_HCL_tot = E_HCL_HCL*np.nan
+    E_HCL_90 = calculate_sum_for_index(E_HCL,ind_90_0)
+    E_HCL_45 = calculate_sum_for_index(E_HCL,ind_45_0)
+    E_HCL_0 = calculate_sum_for_index(E_HCL,ind_0_0)
+    
+    TotalE_HCLbyPos=[E_HCL_HCL, E_HCL_HCL, E_HCL_C, E_HCL_PV, E_HCL_tot, E_HCL_90, E_HCL_45, E_HCL_0]
+    DiffE_HCL = TotalE_HCLbyPos - E_HCL_HCL
+    
+    if auxVar['combineResults']:
+        E_tot_HCL = calculate_sum_for_index(E_tot,E_HCLind)
+        E_tot_C = calculate_sum_for_index(E_tot,Cind)
+        E_tot_PV = calculate_sum_for_index(E_tot,PVind)
+        E_tot_tot = calculate_sum_for_index(E_tot,E_totind)
+        E_tot_90 = calculate_sum_for_index(E_tot,ind_90_0)
+        E_tot_45 = calculate_sum_for_index(E_tot,ind_45_0)
+        E_tot_0 = calculate_sum_for_index(E_tot,ind_0_0)
+        
+        TotalE_totbyPos=[E_tot_tot, E_tot_HCL, E_tot_C, E_tot_PV, E_tot_tot, E_tot_90, E_tot_45, E_tot_0]
+        DiffE_tot = TotalE_totbyPos- E_tot_tot
+    else:
+        E_tot_HCL = np.nan
+        E_tot_C = np.nan
+        E_tot_PV = np.nan
+        E_tot_tot = np.nan
+        E_tot_90 = np.nan
+        E_tot_45 = np.nan
+        E_tot_0 = np.nan
+        
+        TotalE_totbyPos=[E_tot_tot, E_tot_HCL, E_tot_C, E_tot_PV, E_tot_tot, E_tot_90, E_tot_45, E_tot_0]
+        DiffE_tot = [E_tot_tot, E_tot_HCL, E_tot_C, E_tot_PV, E_tot_tot, E_tot_90, E_tot_45, E_tot_0]
+
+    
+    if createPlots:
+        
+        # assign number of groups to be plotted:
+        n_groups = 8
+        
+        # create figure:
+#        fig, ax = plt.subplots()
+        fig = plt.figure(figsize=(16, 7))
+        ax = plt.subplot(2,1,1)
+        
+        index = np.arange(n_groups)
+        bar_width = 0.13
+        
+        opacity = 0.4
+        
+        plt.bar(index, np.array(TotalHbyPos)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='r',
+                         label='\nHeating\n')
+        
+        plt.bar(index+ bar_width, np.array(TotalCbyPos)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='b',
+                         label='\nCooling\n')
+                         
+        plt.bar(index+ bar_width*2, np.array(TotalLbyPos)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='g',
+                         label='\nLighting\n')
+                         
+        if usedEfficiencies['PV'] == 1 or not monthlyData['changedEfficiency'] :
+            plt.bar(index+ bar_width*3, np.array(TotalPVbyPos)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='\nPV\n')
+        else:
+            plt.bar(index+ bar_width*3, np.array(TotalPVbyPos)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='PV (multiplied by ' + str(usedEfficiencies['PV']) + ')')           
+                         
+        plt.bar(index+ bar_width*4, np.array(TotalE_HCLbyPos)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='m',
+                         label='\nBuilding Energy\n')
+        if auxVar['combineResults']:
+            plt.bar(index+ bar_width*5, np.array(TotalE_totbyPos)/roomsize, bar_width,
+                            alpha=opacity,
+                            color='k',
+                            label='\nNet Energy\n')
+        
+#        plt.xlabel('Combinations')
+        plt.ylabel('Energy Demand per Room Area\n' +r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize=14)
+        plt.title('Total Energy Dependency on Control Strategy')
+#        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
+        plt.xticks(index + bar_width*3, ('individually\noptimized', 'optimized for\nbuilding demand',
+                                         'optimized for\ncooling', 'optimized for\nPV',
+                                         'overall\noptimization', 'fixed at\n90 deg', 'fixed at\n45 deg', 
+                                         'fixed at\n0 deg'), fontsize=14)
+#        plt.legend(loc=0)
+        # Shrink current axis by 20%
+#        box = ax.get_position()
+#        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+#        
+        # Put a legend to the right of the current axis
+#        ax.legend(loc='upper left', bbox_to_anchor=(1, 1.05))
+        
+        ax.tick_params(labelsize=14)
+        
+#        plt.tight_layout()
+        plt.grid()
+        
+        
+        ax = plt.subplot(2,1,2)
+        
+        index = np.arange(n_groups)
+        bar_width = 0.13
+        
+        opacity = 0.4
+        
+        plt.bar(index, np.array(DiffH)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='r',
+                         label='Heating')
+        
+        plt.bar(index+ bar_width, np.array(DiffC)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='b',
+                         label='Cooling')
+                         
+        plt.bar(index+ bar_width*2, np.array(DiffL)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='g',
+                         label='Lighting')
+                         
+                         
+        if usedEfficiencies['PV'] == 1 or not monthlyData['changedEfficiency'] :
+            plt.bar(index+ bar_width*3, np.array(DiffPV)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='PV')
+        else:
+            plt.bar(index+ bar_width*3, np.array(DiffPV)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='c',
+                         label='PV (multiplied by ' + str(usedEfficiencies['PV']) + ')')           
+                         
+        plt.bar(index+ bar_width*4, np.array(DiffE_HCL)/roomsize, bar_width,
+                         alpha=opacity,
+                         color='m',
+                         label='Building Energy')
+    
+        if auxVar['combineResults']:
+            plt.bar(index+ bar_width*5,np.array(DiffE_tot)/roomsize, bar_width,
+                             alpha=opacity,
+                             color='k',
+                             label='Net Energy')
+                         
+                         
+#        plt.xlabel('Combinations')
+        plt.ylabel('Energy Difference per Room Area\n' +r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize =14)
+        plt.title('Total Energy Difference to Individually Optimized Control Strategy')
+#        plt.xticks(index + bar_width*3, ('opt', 'optE_HCL', 'optE_C', 'optE_PV', 'optE_tot', '90 deg', '45 deg', '0 deg'))
+        plt.xticks(index + bar_width*3, ('individually\noptimized', 'optimized for\nbuilding demand',
+                                         'optimized for\ncooling', 'optimized for\nPV',
+                                         'overall\noptimization', 'fixed at\n90 deg', 'fixed at\n45 deg', 
+                                         'fixed at\n0 deg'), fontsize=14)
+#        plt.legend(loc=0)
+        # Shrink current axis by 20%
+#        box = ax.get_position()
+#        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+        ax.legend(loc='lower center', bbox_to_anchor=(0.5, -.35),
+          ncol=6, fancybox=True, shadow=False)
+        # Put a legend to the right of the current axis
+#        ax.legend(loc='upper left', bbox_to_anchor=(1, 1.05))
+        
+        ax.tick_params(labelsize=14)
+        
+        plt.tight_layout()
+        plt.grid()
+        plt.show()
+        
+    else:
+        fig = None
+        
+    # save data to dictionaries
+    energy_optHCL = {'H': H_HCL, 'C': C_HCL, 'L': L_HCL, 'E_HCL': E_HCL_HCL, 'E_tot': E_tot_HCL, 'PV': PV_HCL}
+    energy_optPV = {'H': H_PV, 'C': C_PV, 'L': L_PV, 'E_HCL': E_HCL_PV, 'E_tot': E_tot_PV, 'PV': PV_PV}
+    energy_opttot = {'H': H_tot, 'C': C_tot, 'L': L_tot, 'E_HCL': E_HCL_tot, 'E_tot': E_tot_tot, 'PV': PV_tot}
+    energy_90 = {'H': H_90, 'C': C_90, 'L': L_90, 'E_HCL': E_HCL_90, 'E_tot': E_tot_90, 'PV': PV_90}
+    energy_45 = {'H': H_45, 'C': C_45, 'L': L_45, 'E_HCL': E_HCL_45, 'E_tot': E_tot_45, 'PV': PV_45}
+    energy_0 = {'H': H_0, 'C': C_0, 'L': L_0, 'E_HCL': E_HCL_0, 'E_tot': E_tot_0, 'PV': PV_0}
+    tradeoff_results = {'energy_optHCL': energy_optHCL, 'energy_optPV':energy_optPV, 'energy_opttot': energy_opttot, 'energy_90': energy_90, 'energy_45':energy_45, 'energy_0': energy_0,}
+
+    # return the results:    
+    return tradeoff_results, fig
 
 #dataType='monthly'
 #month=7
