@@ -116,11 +116,13 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
             cbart = plt.title("Azimuth Angle [deg]", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
+        cbar.solids.set_rasterized(True) 
         cbar.ax.set_yticklabels(angles)
     elif plotFunction == pcolorEnergyMonths:
         plt.suptitle("Energy Demand at Optimum Orientation", size=16)
         cbar = plt.colorbar(cax=cbar_ax)
         cbart = plt.title("Net Energy [kWh]", fontsize=14)
+        cbar.solids.set_rasterized(True) 
         cbart.set_position((1.1,1.02))
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
         #cbar.ax.set_yticklabels(AnglesString)
@@ -177,7 +179,7 @@ if False:
 #fig2 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'y')
 #
 ## plot the energy use at the corresponding optimum orientation:
-#fig3 = createCarpetPlots(pcolorEnergyMonths, results49['monthlyData'])
+fig3 = createCarpetPlots(pcolorEnergyMonths, results49['monthlyData'])
 #    
 
-compareTotalEnergyForThesis(results49['monthlyData'], True, {'enabled':False}, {'combineResults':True}, roomSize)
+#compareTotalEnergyForThesis(results49['monthlyData'], True, {'enabled':False}, {'combineResults':True}, roomSize)

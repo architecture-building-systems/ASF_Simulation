@@ -206,9 +206,11 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
         cbar.ax.set_yticklabels(angles)
+        cbar.solids.set_rasterized(True) 
     elif plotFunction == pcolorEnergyMonths:
         plt.suptitle("Energy Demand at Optimum Orientation", size=16)
         cbar = plt.colorbar(cax=cbar_ax)
+        cbar.solids.set_rasterized(True) 
         cbart = plt.title("Net Energy [kWh]", fontsize=14)
         cbart.set_position((1.1,1.02))
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))

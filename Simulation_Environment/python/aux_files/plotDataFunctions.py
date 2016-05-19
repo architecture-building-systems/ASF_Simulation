@@ -192,7 +192,7 @@ def pcolorMonths(monthlyData, arg):
     cmap.set_bad('grey',1.)
     
     # create the carpet plot:
-    plt.pcolormesh(x, y, masked_array, cmap=cmap, vmin=z_min, vmax=z_max)
+    plt.pcolormesh(x, y, masked_array, cmap=cmap, vmin=z_min, vmax=z_max, rasterized=True)
 
     # set the limits of the plot to the limits of the data
     plt.axis([x.min(), x.max(), 3, 22])
@@ -276,7 +276,7 @@ def pcolorEnergyMonths(monthlyData, arg):
    
    # plot data:
 #    plt.pcolor(x, y, z, cmap=blue_red1, vmin=z_min, vmax=z_max)   
-    plt.pcolor(x, y, z, cmap=cmap, vmin=z_min, vmax=z_max)   
+    plt.pcolor(x, y, z, cmap=cmap, vmin=z_min, vmax=z_max, rasterized=True)   
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     plt.tick_params(axis=u'both',labelsize=14)
 

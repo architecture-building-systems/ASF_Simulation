@@ -17,9 +17,9 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 CompareResults = False
 OrientationStudy = False
 LocationStudy = False
-BuildingParameterStudy = False
+BuildingParameterStudy = True
 EnergySavingsPotential = False
-combinationStudy = True
+combinationStudy = False
 ClusterStudy = False
 
 roomSize = 34.3
@@ -399,7 +399,7 @@ if OrientationStudy:
 
     # add some text for labels, title and axes ticks
 
-    ax.set_title('Energy Difference in Comparison to no Facade')
+    ax.set_title('Energy Difference in Comparison to No Shading System')
     ax.set_ylabel(r'Energy Savings $\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
 #    ax.set_ylabel(r'Energy   $\mathregular{(\frac{1}{s})}$', fontsize = 14)
     ax.set_xticks(ind+width+xtra_space)
@@ -604,7 +604,7 @@ if LocationStudy:
 
     # add some text for labels, title and axes ticks
 
-    ax.set_title('Energy Difference in Comparison to no Facade')
+    ax.set_title('Energy Difference in Comparison to No Shading System')
     ax.set_ylabel(r'Energy Savings $\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
 #    ax.set_ylabel(r'Energy   $\mathregular{(\frac{1}{s})}$', fontsize = 14)
     ax.set_xticks(ind+width+xtra_space)
@@ -677,18 +677,19 @@ if BuildingParameterStudy:
     ind = np.arange(N)-0.25  # the x locations for the groups
     width = 0.5       # the width of the bars
     
-    fig = plt.figure(figsize=(16, 12))
+    fig = plt.figure(figsize=(16, 8))
     
     ax1 = plt.subplot(2,4,1)
     
     rects1 = ax1.bar(ind, E/roomSize, width, color=barcolors, alpha = 0.7) 
 
     # add some text for labels, title and axes ticks
-    ax1.set_ylabel('Energy Savings per room area \ncompared to facade at 45 deg \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
+    ax1.set_ylabel('Energy Savings per Room Area \nCompared to Facade at 45 deg \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
     ax1.set_title('Sensitivity on Heating COP')
     
     ax1.set_xticks(ind+0.25)
     ax1.set_xticklabels(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']  )
+    ax1.set_ylim(bottom=0)
 #    ax1.set_xlabel('Heating COP [-]')
     ax1.tick_params(labelsize=14)
     plt.axhline(y=0, linewidth=1, color = 'k')
@@ -731,13 +732,14 @@ if BuildingParameterStudy:
     rects1 = ax2.bar(ind, E/roomSize, width, color=barcolors, alpha = 0.7) 
 
     # add some text for labels, title and axes ticks
-    ax2.set_ylabel('Energy Savings per room area \ncomparedto no facade \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14 )
+    ax2.set_ylabel('Energy Savings per Room Area \nCompared to No Shading System \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14 )
 #    ax2.set_title('Sensitivity on Heating COP')
     
     ax2.set_xticks(ind+0.25)
     ax2.set_xticklabels(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']  )
     ax2.set_xlabel('Heating COP [-]', fontsize=14)
     ax2.tick_params(labelsize=14)
+    ax2.set_ylim(bottom=0)
     plt.axhline(y=0, linewidth=1, color = 'k')
     plt.grid( axis = u'y')
     
@@ -986,6 +988,7 @@ if BuildingParameterStudy:
     ax.set_xticks(ind+0.25)
     ax.set_xticklabels( ['0.5', '0.75', '1', '1.25', '1.5'] )
     ax.tick_params(labelsize=14)
+    ax.set_ylim(bottom=0)
     plt.axhline(y=0, linewidth=1, color = 'k')
     plt.grid( axis = u'y')
     
@@ -1031,6 +1034,7 @@ if BuildingParameterStudy:
     ax.set_xticklabels( ['0.5', '0.75', '1', '1.25', '1.5'] )
     ax.set_xlabel('Infiltration Rate [1/h]', fontsize=14)
     ax.tick_params(labelsize=14)
+    ax.set_ylim(bottom=0)
     plt.axhline(y=0, linewidth=1, color = 'k')
     plt.grid( axis = u'y')
     
