@@ -259,7 +259,7 @@ plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Au
 ax = plt.subplot(3,1,2)
 plt.plot(monthlyData_comb['PV_avg'][PV_max_ind, PV_range], label='optimized')
 plt.plot(monthlyData_tracking['PV_avg'].transpose(), label = 'sun tracking' )
-plt.title('Comparison of PV Electricity Production with sun tracking to optimized solution')
+plt.title('Comparison of PV Electricity Production with Sun Tracking to Optimized Solution')
 plt.ylabel('PV Production [W/m2]', fontsize = 14)
 plt.legend()
 plt.grid()
