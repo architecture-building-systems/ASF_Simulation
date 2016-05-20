@@ -6,14 +6,11 @@
 
 %\section{Combined Evaluation}
 
-By combining results for building energy simulations and PV electricity production, the overall optimum configurations can be found. Figures \ref{fig:monthly_altitude} and \ref{fig:monthly_azimuth} detail carpet-plots of the facade optimised to maximise PV generation, and minimise heating, cooling and lighting demands independently. It can be see that open configurations (light coloured) are chosen to minimise the building heating demands during the winter months and early mornings of spring and autumn. Likewise, closed configurations (dark colours) are the preferred solutions to minimise the cooling demand during the summer months. For lighting control, open positions are the optimum at all times, while the optimum altitude angles is almost exclusively at $90^{\circ}$, the azimuth angles are at $-45^{\circ}$ in the morning and at $45^{\circ}$  in the afternoon. The PV optimisation tends to choose angles that are not that extreme, corresponding to the minimization of longitudinal shading as described in section \ref{ss:compareSunTracking}. When the four optimisation cases are combined to achieve the configurations for total energy minimisation, it can be seen that there is a conflict in the summer evenings between minimising lighting and cooling demands. Likewise, we also see a conflict between heating and PV production during the winter months. The overall energy optimization including PV electricity production shows a strong tendency to follow the optimal PV production pattern. This, however changes if the building system becomes more inefficient. Less efficient heating for example, would result in configurations optimised for heating overpowering those of PV electricity generation.
-
-
-
+By combining results for building energy simulations and PV electricity production, the overall optimum configurations can be found. Figures \ref{fig:monthly_altitude} and \ref{fig:monthly_azimuth} detail carpet-plots of the facade optimised to maximise PV generation, and minimise heating, cooling and lighting demands independently. The simulation was done for a total of 49 angle combinations with seven different states for the altitude and the azimuth angles, while the altitude angles are shown in figure \ref{fig:monthly_altitude}, the coresponding azimuth angles of the same optimization are shown in figure \ref{fig:monthly_azimuth}.
 
 \begin{figure*}
 	\begin{center}
-	\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{monthly_altitude}
+	\includegraphics[width=0.9\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{monthly_altitude}
 	\caption{Carpet plots detailing the optimal altitude configuration to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise irradiance on PV panels. Each configuration is represented by an angle of orientation around the x-axis (Altitude) and y-axis (Azimuth) as seen in the legend. Figure (e) details the combinations for optimum building thermal management without PV production. (f) also includes the PV production}
 	\label{fig:monthly_altitude}
 	\end{center}
@@ -21,11 +18,20 @@ By combining results for building energy simulations and PV electricity producti
 
 \begin{figure*}
 	\begin{center}
-	\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{monthly_azimuth}
+	\includegraphics[width=0.9\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{monthly_azimuth}
 	\caption{Carpet plots detailing the optimal azimuth configuration to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise irradiance on PV panels. Each configuration is represented by an angle of orientation around the x-axis (Altitude) and y-axis (Azimuth) as seen in the legend. Figure (e) details the combinations for optimum building thermal management without PV production. (f) also includes the PV production}
 	\label{fig:monthly_azimuth}
 	\end{center}
 \end{figure*}
+
+In the altitude angle visualization it can be see that open configurations (light coloured) are chosen to minimise the building heating demands during the winter months and early mornings of spring and autumn as well as the lighting demand over the whole year. Likewise, closed configurations (dark colours) are the preferred solutions to minimise the cooling demand during the summer months. The PV optimisation tends to choose angles that are not that extreme, corresponding to the minimization of longitudinal shading as described in section \ref{ss:compareSunTracking}. 
+
+Similar patterns can be seen for the azimuth variations. For lighting control, the azimuth angles are at $-45^{\circ}$ in the morning and at $45^{\circ}$ in the afternoon. When the four optimisation cases are combined to achieve the configurations for total energy minimisation, it can be seen that there is a conflict in the summer evenings between minimising lighting and cooling demands. Likewise, we also see a conflict between heating and PV production during the winter months. The overall energy optimization including PV electricity production shows a strong tendency to follow the optimal PV production pattern. This, however changes if the building system becomes more inefficient. Less efficient heating for example, would result in configurations optimised for heating overpowering those of PV electricity generation.
+
+
+
+
+
 
 
 	Figure \ref{fig:carpetplot_energy} shows the net energy use at these optimum angles. It is interesting to see how the combination of electricity generation and adaptive shading can compensate for the entire energy use during sunlit hours.
@@ -92,11 +98,11 @@ By combining results for building energy simulations and PV electricity producti
 	Evaluations of the facade for different building orientations were done with the basecase of 5 azimuth and 5 altitude angles. Non surprisingly, the south facing facade produces the most electricity and has therefore the lowest net energy as can be seen in figure \ref{fig:buildingOrientation}. It was found that the PV apertures should be oriented parallel to the upper left edge for facades that are west or south-west oriented, whereas they should be oriented parallel to the upper right edge for east or south-east oriented facades. This is caused by the shading patterns, longitudinal shading needs to be prevented as described in section \ref{ss:compareSunTracking}. An east facing facade uses less heating compared to a west facing facade, as heating is most important during morning hours. For similar reasoning the east facing facade needs more cooling energy than the west facing facade, because the room heats up in the morning. Interestingly, PV production is higher for the west facing facade than for the east facing facade. The cause for this is probably because of conflicts in optimizing cooling and PV electricity production at the same time, as cooling is more dominant for the east facing facade. 
 
 	\begin{figure*}
-	\begin{center}
-	\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{orientation}
-	\caption{Energy demand in dependence of building orientation. South facing facades perform best.}
-	\label{fig:buildingOrientation}
-	\end{center}
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{orientation}
+		\caption{Energy demand in dependence of building orientation. South facing facades perform best.}
+		\label{fig:buildingOrientation}
+		\end{center}
 	\end{figure*}
 
 \section{Sensitivity Analysis}
@@ -104,12 +110,20 @@ By combining results for building energy simulations and PV electricity producti
 	A sensitivity analysis was done for heating COP, cooling COP, lighting load, average PV efficiency, building orientation, infiltration rate and combination variations for the time period of one year. The results are shown in figure \ref{fig:sensitivity}. The top row shows the energy savings per square meter of room area compared to a fixed solare facade at an angle of 45\degree, whereas the bottom row shows the energy savings compared to a building without any PV modules or shading devices. 
 
 	\begin{figure*}
-	\begin{center}
-	\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{buildingSensitivity}
-	\caption{Sensitivity analysis of energy savings during one year. From left to right, sensitivities on heating COP, cooling COP, lighting load, average PV efficiency, building orientation, combination variations and infiltration rate. Top row shows the energy savings compared to a fixed solar facade at a 45\degree altitude angle, the bottom row shows the energy savings compared to a room without shading or PV modules.}
-	\label{fig:sensitivity}
-	\end{center}
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{buildingSensitivity}
+		\caption{Sensitivity analysis of energy savings during one year. From left to right, sensitivities on heating COP, cooling COP, lighting load, average PV efficiency, building orientation, combination variations and infiltration rate. Top row shows the energy savings compared to a fixed solar facade at a 45\degree altitude angle, the bottom row shows the energy savings compared to a room without shading or PV modules.}
+		\label{fig:sensitivity}
+		\end{center}
 	\end{figure*}
 
 \section{Potential of Individual Actuation}
-	Individual actuation of the panels is one of the key advantages of the ASF that have to be closely evaluated. In order to quantize the potential of individual actuation, evaluations were performed by splitting the ASF into clusters. Due to computational limitations, especially on the radiation part, simplified geometries were used for the radiation evaluation, using only ten panels in four rows with two clusters and eight panels in three rows with three clusters, rather than the 50 panels of the reference case with one cluster. Furthermore only the months of March, June, September and December were evaluated. The two cluster evaluation was done for the reference case with five azimuth and five altitude angles. The evaluations with three clusters was done only for altitude variations, with 5 angles in each cluster. The simulations showed promising results, in the two cluster case, the total energy demand could be reduced by one percent, whereas for three clusters, the total energy demand was reduced by 5 percent. 
+	Individual actuation of the panels is one of the key advantages of the ASF that have to be closely evaluated. In order to quantize the potential of individual actuation, evaluations were performed by splitting the ASF into clusters. Due to computational limitations, especially on the radiation part, simplified geometries were used for the radiation evaluation, using only ten panels in four rows with two clusters and eight panels in three rows with three clusters, rather than the 50 panels of the reference case with one cluster. Furthermore only the months of March, June, September and December were evaluated. The two cluster evaluation was done for the reference case with five azimuth and five altitude angles. The evaluations with three clusters was done only for altitude variations, with 5 angles in each cluster. The simulations showed promising results, in the two cluster case, the total energy demand could be reduced by one percent, whereas for three clusters, the total energy demand was reduced by 2.3 percent. 
+
+	\begin{figure*}
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{cluster}
+		\caption{Cluster analysis of the ASF}
+		\label{fig:sensitivity}
+		\end{center}
+	\end{figure*}
