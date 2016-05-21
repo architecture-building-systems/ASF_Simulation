@@ -70,21 +70,21 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     plt.subplot(2,3,1)
     arg1 = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Heating Demand")
+    plt.title("(a) Heating Demand")
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,2)
     arg1 = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Cooling Demand")
+    plt.title("(b) Cooling Demand")
     plt.subplot(2,3,3)
     arg1 = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Lighting Demand")
+    plt.title("(c) Lighting Demand")
     plt.subplot(2,3,4)
     arg1 = ['min','PV', rotation_axis, 'LB', z_min, z_max]
     plotFunction(monthlyData, arg1)
     if usedEfficiencies['PV'] == 1 or not monthlyData['changedEfficiency'] :
-        plt.title("PV Supply")
+        plt.title("(d) PV Supply")
     else:
         plt.title("PV Supply (multiplied by factor " + str(usedEfficiencies['PV']) + ")")
     plt.xlabel("Month of the Year",size=14)
@@ -92,12 +92,12 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     plt.subplot(2,3,5)
     arg1 = ['min','E_HCL', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Total Thermal/Lighting Demand")
+    plt.title("(e) Total Thermal/Lighting Demand")
     plt.xlabel("Month of the Year",size=14)
     plt.subplot(2,3,6)
     arg1 = ['min','E_tot', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(monthlyData, arg1)
-    plt.title("Net Demand including PV")
+    plt.title("(f) Net Demand Including PV")
     plt.xlabel("Month of the Year",size=14)
     fig.subplots_adjust(right=0.8)
     #cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
@@ -106,20 +106,20 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     
     if plotFunction == pcolorMonths:
         if arg[0] == 'xy':
-            plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+#            plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
             cbart = plt.title("Altitude / Azimuth", fontsize=14)
         elif arg[0] == 'x':
-            plt.suptitle("Optimum Altitude Orientation", size=16)
+#            plt.suptitle("Optimum Altitude Orientation", size=16)
             cbart = plt.title("Altitude Angle [deg]", fontsize=14)
         elif arg[0] == 'y':
-            plt.suptitle("Optimum Azimuth Orientation", size=16)
+#            plt.suptitle("Optimum Azimuth Orientation", size=16)
             cbart = plt.title("Azimuth Angle [deg]", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
         cbar.solids.set_rasterized(True) 
         cbar.ax.set_yticklabels(angles)
     elif plotFunction == pcolorEnergyMonths:
-        plt.suptitle("Energy Demand at Optimum Orientation", size=16)
+#        plt.suptitle("Energy Demand at Optimum Orientation", size=16)
         cbar = plt.colorbar(cax=cbar_ax)
         cbart = plt.title("Net Energy [kWh]", fontsize=14)
         cbar.solids.set_rasterized(True) 
@@ -175,8 +175,8 @@ if False:
 
 # # plot the optimum angles of the monthly data:
 ##createCarpetPlots(pcolorMonths, results49['monthlyData'], 'xy')
-#fig1 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'x')
-#fig2 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'y')
+fig1 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'x')
+fig2 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'y')
 #
 ## plot the energy use at the corresponding optimum orientation:
 fig3 = createCarpetPlots(pcolorEnergyMonths, results49['monthlyData'])
