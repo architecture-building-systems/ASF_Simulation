@@ -12,7 +12,7 @@ from plotDataFunctions import create3Dplot, plotTotEfixedY, plotTotEfixedX, plot
 #
 #create3Dplot(monthlyData, 'E_tot', 'value')
 #create3Dplot(monthlyData, 'E_tot', 'normalized')
-#create3Dplot(monthlyData, 'E_tot', 'difference')
+create3Dplot(monthlyData, 'E_tot', 'difference')
 #create3Dplot(monthlyData, 'PV', 'difference')
 #create3Dplot(monthlyData, 'H', 'difference')
 #create3Dplot(monthlyData, 'C', 'difference')

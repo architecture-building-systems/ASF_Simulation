@@ -158,7 +158,7 @@ results49 =  np.load(paths['results'] + '\\' + results49comb + '\\all_results.np
 #
 #plotAngleSavings(monthlyData, xy = None)
 
-if False:
+if True:
     fig = plt.figure(figsize=(16, 5))
     ax = fig.add_subplot(131, projection='3d')
     create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 3, endMonth = 3, fig=fig, ax=ax)
@@ -170,16 +170,16 @@ if False:
     create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 9, endMonth = 9, fig=fig, ax=ax)
     plt.title('September')
 #ax = fig.add_subplot(224, projection='3d')
-#create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 12, endMonth = 12, fig=fig, ax=ax)
+create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 12, endMonth = 12, fig=fig, ax=ax)
 #plt.title('December')
 
 # # plot the optimum angles of the monthly data:
-##createCarpetPlots(pcolorMonths, results49['monthlyData'], 'xy')
-fig1 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'x')
-fig2 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'y')
+createCarpetPlots(pcolorMonths, results49['monthlyData'], 'xy')
+#fig1 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'x')
+#fig2 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'y')
 #
 ## plot the energy use at the corresponding optimum orientation:
-fig3 = createCarpetPlots(pcolorEnergyMonths, results49['monthlyData'])
+#fig3 = createCarpetPlots(pcolorEnergyMonths, results49['monthlyData'])
 #    
 
-#compareTotalEnergyForThesis(results49['monthlyData'], True, {'enabled':False}, {'combineResults':True}, roomSize)
+compareTotalEnergyForThesis(results49['monthlyData'], True, {'enabled':False}, {'combineResults':True}, roomSize)
