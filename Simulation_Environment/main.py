@@ -94,7 +94,7 @@ pvFlipOrientation = False
 createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
-onlyTradeoffs = True
+onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
 showDetailedDIVA = False
@@ -113,9 +113,9 @@ tradeoffPeriod = {'enabled':False, 'month':7, 'startHour':1, 'endHour':24}
 
 
 # options to specify what results should be saved:
-#saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
-saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
-saveResults = {'csvSummary':False, 'figures':False, 'npyData':False}
+saveResults = {'csvSummary':True, 'figures':True, 'npyData':True}
+#saveResults = {'csvSummary':True, 'figures':False, 'npyData':True}
+#saveResults = {'csvSummary':False, 'figures':False, 'npyData':False}
 
 
 

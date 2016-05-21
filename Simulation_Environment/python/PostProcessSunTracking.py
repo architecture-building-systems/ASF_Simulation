@@ -4,6 +4,8 @@ Created on Tue Apr 12 14:25:32 2016
 
 SunTracking evaluation
 
+first the electrical simulation must be done by running main.py
+
 @author: Jeremias
 """
 
@@ -11,7 +13,7 @@ import os, sys
 import numpy as np
 import json
 
-
+# set folders that will be used for comparison. 
 radiation_comb = 'Radiation_Kloten_49comb'
 radiation_tracking = 'Radiation_Kloten_tracking'
 
