@@ -15,9 +15,9 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 
 CompareResults = False
-OrientationStudy = False
-LocationStudy = False
-BuildingParameterStudy = True
+OrientationStudy = True
+LocationStudy = True
+BuildingParameterStudy = False
 EnergySavingsPotential = False
 combinationStudy = False
 ClusterStudy = False
@@ -273,7 +273,7 @@ if OrientationStudy:
     
     # add some text for labels, title and axes ticks
     ax.set_ylabel(r'Energy Demand$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
-    ax.set_title('Energy Demand Dependency on Building Orientation')
+    ax.set_title('(a) Energy Demand Dependency on Building Orientation')
     
     ax.set_xticks(ind+width+xtra_space)
     ax.set_xticklabels( ('W', 'SW', 'S', 'SE', 'E'), fontsize = 14 )
@@ -334,7 +334,7 @@ if OrientationStudy:
 
     # add some text for labels, title and axes ticks
 
-    ax.set_title('Energy Difference in Comparison to Fixed Facade at 45 deg Altitude')
+    ax.set_title('(b) Energy Difference in Comparison to Fixed Facade at 45 deg Altitude')
     ax.set_ylabel(r'Energy Savings $\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
     ax.set_xticks(ind+width+xtra_space)
     ax.tick_params(labelsize=14)
@@ -399,7 +399,7 @@ if OrientationStudy:
 
     # add some text for labels, title and axes ticks
 
-    ax.set_title('Energy Difference in Comparison to No Shading System')
+    ax.set_title('(c) Energy Difference in Comparison to No Shading System')
     ax.set_ylabel(r'Energy Savings $\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
 #    ax.set_ylabel(r'Energy   $\mathregular{(\frac{1}{s})}$', fontsize = 14)
     ax.set_xticks(ind+width+xtra_space)
@@ -474,7 +474,7 @@ if LocationStudy:
     
     
     # add some text for labels, title and axes ticks
-    ax.set_ylabel(r'Energy Demand$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
+    ax.set_ylabel(r'(a) Energy Demand$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
     ax.set_title('Energy Demand Dependency on Building Location')
     
     ax.set_xticks(ind+width+xtra_space)
@@ -539,7 +539,7 @@ if LocationStudy:
 
     # add some text for labels, title and axes ticks
 
-    ax.set_title('Energy Difference in Comparison to Fixed Facade at 45 deg Altitude')
+    ax.set_title('(b) Energy Difference in Comparison to Fixed Facade at 45 deg Altitude')
     ax.set_ylabel(r'Energy Savings $\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
     ax.set_xticks(ind+width+xtra_space)
     ax.tick_params(labelsize=14)
@@ -604,7 +604,7 @@ if LocationStudy:
 
     # add some text for labels, title and axes ticks
 
-    ax.set_title('Energy Difference in Comparison to No Shading System')
+    ax.set_title('(c) Energy Difference in Comparison to No Shading System')
     ax.set_ylabel(r'Energy Savings $\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
 #    ax.set_ylabel(r'Energy   $\mathregular{(\frac{1}{s})}$', fontsize = 14)
     ax.set_xticks(ind+width+xtra_space)

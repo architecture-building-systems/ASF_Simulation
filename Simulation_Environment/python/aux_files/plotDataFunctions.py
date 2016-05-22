@@ -610,7 +610,7 @@ def create3Dplot(monthlyData, typeE, option, startMonth=1, endMonth=12, fig=None
 #        ax = fig.add_subplot(111, projection='3d')
         x,y = np.shape(monthlyData[typeE][:,plotRange])
         X,Y = np.meshgrid(range(x),range(y))
-        ax.plot_surface(X*5,Y,-monthlyData[typeE][:,plotRange].transpose()+np.array(np.max(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.jet,rstride=1, cstride=1)
+        ax.plot_surface(X*5,Y,-monthlyData[typeE][:,plotRange].transpose()+np.array(np.max(monthlyData[typeE], axis=0))[plotRange, None], cmap = cm.jet,rstride=1, cstride=1, rasterized=True)
 #        plt.title('energy difference to maximum' + typeE)
         plt.xlabel('Altitude [deg]')
         plt.ylabel('Hour')
