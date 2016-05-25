@@ -474,8 +474,8 @@ if LocationStudy:
     
     
     # add some text for labels, title and axes ticks
-    ax.set_ylabel(r'(a) Energy Demand$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
-    ax.set_title('Energy Demand Dependency on Building Location')
+    ax.set_ylabel(r'Energy Demand$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
+    ax.set_title('(a) Energy Demand Dependency on Building Location')
     
     ax.set_xticks(ind+width+xtra_space)
     ax.set_xticklabels( ('Helsinki',  'Zurich', 'Madrid', 'Cairo' ), fontsize = 14 )

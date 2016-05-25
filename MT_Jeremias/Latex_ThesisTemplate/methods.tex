@@ -4,10 +4,10 @@
 	
 
 
-	This chapter describes the methodology used to find the optimum configurations of the ASF. In general terms, the optimum configuration must correspond to the following optimization problem that has to be solved for PV modules as adaptive building shading systems:\\
+	This chapter describes the methodology used to find the optimum configurations of the ASF. In general terms, the optimum configuration must correspond to the following optimisation problem that has to be solved for PV modules as adaptive building shading systems:\\
 	\begin{equation}
-			minimize(C+H+L-PV)
-	      	\label{e:minimize}
+			minimise(C+H+L-PV)
+	      	\label{e:minimise}
 	\end{equation}
 
 	Where $C$ is the electricity needed for cooling, $H$ is the electricty used for heating, $L$ is the lighting power demand and $PV$ represents the electricity production. \\
@@ -74,8 +74,8 @@
 
 			%As the Building energy simulations are achieved by using DIVA, wheras a radiation analysis is done with LadyBug, both within Grasshopper for Rhino. The results are then fed into a python script, which calculates the electricity production based on the radiation results and the surrounding temperature and post processes the information to calculate energy demand and optimum configurations. A corresponding workflow can be seen in Figure \ref{fig:workflow}.
 
-			As the building energy and the radiation simulations are done within Grasshopper, whereas the PV simulation is done within Python, a framework is necessary to easily combine the simulations. For this end, a folder structure was created to manage the files that are written both within Grasshopper and Python. There are two main files for the combined evaluation, one Grasshopper and one Python file. In the Grasshopper file, all the parameters can be set and the simulations can be started. After the building energy and the radiation simulations are finished, the corresponding results are read by Python, where the PV electricity production is calculated and the results are combined. The combination of the building energy analysis with the PV electricity results is done by cumulatively combining the building energy results to correspond to the PV analysis format. With this, the net energy usage of the room including the PV electricity production of the ASF can be given for monthly hours as described in equation \ref{e:minimize}. An overview of the corresponding work-flow can be seen in Figure \ref{fig:workflow}. 
-			% to find the optimal configurations as well as the corresponding energy. To combine the results of the building energy and the pv analysis, the building energy results were cumulatively combined to correspond to the pv analyis format. With this, the net energy useage of the room including the PV electricity production of the ASF can be given for monthly hours as described in equation \ref{e:minimize}. The an overview of the workflow can be seen in Figure \ref{fig:workflow}. 
+			As the building energy and the radiation simulations are done within Grasshopper, whereas the PV simulation is done within Python, a framework is necessary to easily combine the simulations. For this end, a folder structure was created to manage the files that are written both within Grasshopper and Python. There are two main files for the combined evaluation, one Grasshopper and one Python file. In the Grasshopper file, all the parameters can be set and the simulations can be started. After the building energy and the radiation simulations are finished, the corresponding results are read by Python, where the PV electricity production is calculated and the results are combined. The combination of the building energy analysis with the PV electricity results is done by cumulatively combining the building energy results to correspond to the PV analysis format. With this, the net energy usage of the room including the PV electricity production of the ASF can be given for monthly hours as described in equation \ref{e:minimise}. An overview of the corresponding work-flow can be seen in Figure \ref{fig:workflow}. 
+			% to find the optimal configurations as well as the corresponding energy. To combine the results of the building energy and the pv analysis, the building energy results were cumulatively combined to correspond to the pv analyis format. With this, the net energy useage of the room including the PV electricity production of the ASF can be given for monthly hours as described in equation \ref{e:minimise}. The an overview of the workflow can be seen in Figure \ref{fig:workflow}. 
 
 			\begin{figure}[ht] %h can be omitted for better page layout
 				\begin{center}
