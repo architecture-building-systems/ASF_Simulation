@@ -19,7 +19,7 @@ OrientationStudy = True
 LocationStudy = True
 BuildingParameterStudy = False
 EnergySavingsPotential = False
-combinationStudy = False
+combinationStudy = True
 ClusterStudy = False
 
 roomSize = 34.3
@@ -1769,7 +1769,7 @@ if combinationStudy:
 
     ax.set_title('Sensitivity on Simulation Combination')
     
-    ax.set_ylabel('Energy Savings per room area \ncompared to facade at 45 deg \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
+    ax.set_ylabel('Energy Savings per Room Area \nCompared to Facade at 45 deg \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
 
     
     ax.set_xticks(ind+1.25)
@@ -1827,7 +1827,7 @@ if combinationStudy:
 #    ax.set_xticklabels( ['19/0', '0/19', '5/5', '7/7', '13/7'], rotation='vertical' )
 #    ax.set_xticklabels(  ['2x','22.5degx','3x','9','5y45','5x','5y22.5','19x', '25', '19y', '49'], rotation='vertical' )
 #    ax.set_xlabel('azimuth/altitude')
-    ax.set_ylabel('Energy Savings per room area \ncompared to no facade \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
+    ax.set_ylabel('Energy Savings per Room Area \nCompared to No Shading System \n' + r'$\mathregular{\left[\frac{kWh}{m^2year}\right]}$', fontsize = 14)
     ax.set_xlabel('Combination', fontsize=14)
     plt.axhline(y=0, linewidth=1, color = 'k')
     plt.grid( axis = u'y')
