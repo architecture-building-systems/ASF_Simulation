@@ -12,7 +12,7 @@ import numpy as np
 import sys, os
 from mpl_toolkits.mplot3d import Axes3D
 
-from plotDataFunctions import create3Dplot, pcolorMonths, pcolorEnergyMonths, plotTotEfixedY, plotTotEfixedX, plotAngleSavings, plotMaxMinDiff
+from plotDataFunctions import create3Dplot, pcolorMonths, pcolorEnergyMonths, pcolorEnergyMonthsRoomSize, plotTotEfixedY, plotTotEfixedX, plotAngleSavings, plotMaxMinDiff
 from createFigures import compareResultsFigure
 from Tradeoffs import compareTotalEnergyForThesis
 
@@ -30,7 +30,7 @@ roomSize = 34.3
 
 
 
-def createCarpetPlots(plotFunction, monthlyData, *arg):
+def createCarpetPlots(plotFunction, monthlyData, roomsize=1, *arg):
     """
     Function that creates carpet plots of the optimal x- and y-angle combinations
     for monthly data
@@ -62,27 +62,27 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
         usedEfficiencies = monthlyData['efficiencies']
     
     #set max/min for energy plot:
-    z_min = np.min(monthlyData['PV'])
-    z_max = np.max(np.min(monthlyData['E_HCL'], axis=0))
+    z_min = np.min(monthlyData['PV'])/roomsize
+    z_max = np.max(np.min(monthlyData['E_HCL'], axis=0))/roomsize
     
     fig = plt.figure(figsize=(16, 8))
 #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
     plt.subplot(2,3,1)
     arg1 = ['min','H', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg1)
+    plotFunction(monthlyData, arg1, roomsize=roomsize)
     plt.title("(a) Heating Demand")
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,2)
     arg1 = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg1)
+    plotFunction(monthlyData, arg1, roomsize=roomsize)
     plt.title("(b) Cooling Demand")
     plt.subplot(2,3,3)
     arg1 = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg1)
+    plotFunction(monthlyData, arg1, roomsize=roomsize)
     plt.title("(c) Lighting Demand")
     plt.subplot(2,3,4)
     arg1 = ['min','PV', rotation_axis, 'LB', z_min, z_max]
-    plotFunction(monthlyData, arg1)
+    plotFunction(monthlyData, arg1, roomsize=roomsize)
     if usedEfficiencies['PV'] == 1 or not monthlyData['changedEfficiency'] :
         plt.title("(d) PV Supply")
     else:
@@ -91,12 +91,12 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,3,5)
     arg1 = ['min','E_HCL', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg1)
+    plotFunction(monthlyData, arg1, roomsize=roomsize)
     plt.title("(e) Total Thermal/Lighting Demand")
     plt.xlabel("Month of the Year",size=14)
     plt.subplot(2,3,6)
     arg1 = ['min','E_tot', rotation_axis, 'DIVA', z_min, z_max]
-    plotFunction(monthlyData, arg1)
+    plotFunction(monthlyData, arg1, roomsize=roomsize)
     plt.title("(f) Net Demand Including PV")
     plt.xlabel("Month of the Year",size=14)
     fig.subplots_adjust(right=0.8)
@@ -118,10 +118,10 @@ def createCarpetPlots(plotFunction, monthlyData, *arg):
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
         cbar.solids.set_rasterized(True) 
         cbar.ax.set_yticklabels(angles)
-    elif plotFunction == pcolorEnergyMonths:
+    elif plotFunction == pcolorEnergyMonthsRoomSize:
 #        plt.suptitle("Energy Demand at Optimum Orientation", size=16)
         cbar = plt.colorbar(cax=cbar_ax)
-        cbart = plt.title("Net Energy [kWh]", fontsize=14)
+        cbart = plt.title(r"Net Energy $\mathregular{\left[\frac{kWh}{m^2}\right]}$", fontsize=14)
         cbar.solids.set_rasterized(True) 
         cbart.set_position((1.1,1.02))
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
@@ -158,7 +158,7 @@ results49 =  np.load(paths['results'] + '\\' + results49comb + '\\all_results.np
 #
 #plotAngleSavings(monthlyData, xy = None)
 
-if True:
+if False:
     fig = plt.figure(figsize=(16, 5))
     ax = fig.add_subplot(131, projection='3d')
     create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 3, endMonth = 3, fig=fig, ax=ax)
@@ -169,17 +169,17 @@ if True:
     ax = fig.add_subplot(133, projection='3d')
     create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 9, endMonth = 9, fig=fig, ax=ax)
     plt.title('(c) September')
-#ax = fig.add_subplot(224, projection='3d')
-create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 12, endMonth = 12, fig=fig, ax=ax)
-#plt.title('December')
+    #ax = fig.add_subplot(224, projection='3d')
+    create3Dplot(results1['monthlyData'], 'E_tot', 'diffMinAltitude', startMonth = 12, endMonth = 12, fig=fig, ax=ax)
+    #plt.title('December')
 
 # # plot the optimum angles of the monthly data:
-createCarpetPlots(pcolorMonths, results49['monthlyData'], 'xy')
+#createCarpetPlots(pcolorMonths, results49['monthlyData'], 'xy')
 #fig1 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'x')
 #fig2 = createCarpetPlots(pcolorMonths, results49['monthlyData'], 'y')
 #
 ## plot the energy use at the corresponding optimum orientation:
-#fig3 = createCarpetPlots(pcolorEnergyMonths, results49['monthlyData'])
+fig3 = createCarpetPlots(pcolorEnergyMonthsRoomSize, results49['monthlyData'], roomsize = roomSize)
 #    
 
-compareTotalEnergyForThesis(results49['monthlyData'], True, {'enabled':False}, {'combineResults':True}, roomSize)
+#compareTotalEnergyForThesis(results49['monthlyData'], True, {'enabled':False}, {'combineResults':True}, roomSize)

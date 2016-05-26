@@ -98,8 +98,8 @@ def pcolorDays(DIVA_results, arg):
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-#    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
-    plt.pcolor(x, y, z, cmap='PRGn', vmin=z_min, vmax=z_max)
+    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
+#    plt.pcolor(x, y, z, cmap='PRGn', vmin=z_min, vmax=z_max)
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 
     #plt.title('pcolor')
@@ -209,6 +209,93 @@ def pcolorEnergyMonths(monthlyData, arg):
             
     # define what data should be plotted:
     X = monthlyData[arg[1]]
+
+    # define maximum and minimum values of data, used for plotting:
+    z_min = arg[4]
+    z_max = arg[5]    
+    
+    # find indices:
+    if max_min == 'min':
+        ind=np.argmin(X,axis=0)
+    elif max_min == 'max':
+        ind=np.argmax(X,axis=0)
+    else:
+        raise ValueError("maxMin must be either 'max' or 'min'")
+ 
+    # generate 2 2d grids for the x & y bounds
+    dx, dy = 1, 1
+    y, x = np.mgrid[slice(0, 24 + dy, dy),
+                    slice(0, 12 + dx, dx)]
+                    
+    # assign values used for colormap:
+    z=[]
+    for i in range(24):
+        z.append([])
+        for j in range(12):
+            z[i].append(X[ind[24*j + i]][24*j + i])
+    z = np.asarray(z)
+    
+    # create custum colormap:
+    
+    # define the location of the middle number (where 0 is):
+    z_middle = float(abs(z_min)) / (z_max-z_min) 
+    
+#    # create custom color dictionary:
+#    cdict1 = {'red':   ((0.0, 0.0, 0.0),
+#                       (z_middle, 0.0, 0.1),
+#                       (1.0, 1.0, 1.0)),
+#    
+#             'green': ((0.0, 0.0, 0.0),
+#                       (z_middle, 0.0, 0.0),
+#                       (1.0, 0.0, 0.0)),
+#    
+#             'blue': ((0.0, 0.0, 1.0),
+#                       (z_middle, 0.1, 0.0),
+#                       (1.0, 0.0, 0.0))
+#            }    # create custom color dictionary:
+    cdict1 = {'red':   ((0.0, 0.0, 0.0),
+                       (z_middle, 0.0, 0.1),
+                       (1.0, 1.0, 1.0)),
+    
+             'white': ((0.0, 0.0, 0.0),
+                       (z_middle, 0.0, 0.0),
+                       (1.0, 0.0, 0.0)),
+    
+             'blue': ((0.0, 0.0, 1.0),
+                       (z_middle, 0.1, 0.0),
+                       (1.0, 0.0, 0.0))
+            }
+            
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'),
+                                                    (z_middle, 'white'),
+                                                    (1, 'firebrick')]
+                                        )
+    
+    # create colormap:
+    blue_red1 = LinearSegmentedColormap('mycmap', cdict1)   
+   
+   # plot data:
+#    plt.pcolor(x, y, z, cmap=blue_red1, vmin=z_min, vmax=z_max)   
+    plt.pcolor(x, y, z, cmap=cmap, vmin=z_min, vmax=z_max, rasterized=True)   
+    plt.axis([x.min(), x.max(), y.min(), y.max()])
+    plt.tick_params(axis=u'both',labelsize=14)
+    
+def pcolorEnergyMonthsRoomSize(monthlyData, arg, roomsize=1.0):
+    """
+    Same as pcolorEnergyMonths, but with additional input that plots the energy
+    per room size.
+    
+    used for thesis
+    
+    create carpet plot for the energy from monthly data \n
+    inputs: monthlyData dictionary, arg (['min'/'max', 'X']) \n
+    output: carpetplot
+    """
+    # use maximum or minimum value:
+    max_min = arg[0]
+            
+    # define what data should be plotted:
+    X = monthlyData[arg[1]]/roomsize
 
     # define maximum and minimum values of data, used for plotting:
     z_min = arg[4]
@@ -416,7 +503,16 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     if not indices['45']==None:
         plt.plot(multiplier*monthlyData[energyType][indices['45'], :], label = 'fixed at 45 deg', color='y')
     plt.ylabel('Energy [kWh]')
-    plt.legend()
+    plt.xlim(0,288)
+
+#    plt.legend()
+    
+    # Shrink current axis by 20%
+    box = ax1.get_position()
+    ax1.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    
+    # Put a legend to the right of the current axis
+    ax1.legend(loc='upper left', bbox_to_anchor=(1, 1.05))
     
     majorLocator = MultipleLocator(24)
     majorFormatter = FormatStrFormatter('%d')
@@ -427,7 +523,10 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     ax1.xaxis.set_major_formatter(majorFormatter)
     ax1.xaxis.set_minor_locator(minorLocator)
 #    ax1.xaxis.set_minor_formatter(minorFormatter)
-    plt.grid(True, which='both')
+    plt.grid(True, which=u'major')
+    
+    plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
     
     ax2 = plt.subplot(2,1,2, sharex=ax1)
     plt.plot(multiplier*monthlyData[energyType][indices['H'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for H', color='r')
@@ -440,13 +539,19 @@ def plotDataForIndices(monthlyData, indices, usedEfficiencies, arg):
     if not indices['45']==None:
         plt.plot(multiplier*monthlyData[energyType][indices['45'],:]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'fixed at 45 deg', color='y')
     plt.ylabel('Energy Difference [kWh]')
-    plt.legend()
-
+#    plt.legend()
+    plt.xlim(0,288)
     ax2.xaxis.set_major_locator(majorLocator)
     ax2.xaxis.set_major_formatter(majorFormatter)
     ax2.xaxis.set_minor_locator(minorLocator)
 #    ax2.xaxis.set_minor_formatter(minorFormatter)
-    plt.grid(True, which='both')
+    plt.grid(True, which=u'major')
+    
+    box = ax2.get_position()
+    ax2.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    
+    plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
     
     return fig
     
@@ -521,7 +626,9 @@ def plotEnergiesOpt(monthlyData, optIdx):
     plt.plot(monthlyData['E_HCL'][optIdx, dummyRange], label = 'HCL', color='m')
     plt.plot(monthlyData['E_tot'][optIdx, dummyRange], label = 'E_tot', color='k')
     plt.ylabel('Energy [kWh]')
-    plt.legend()
+    plt.xlim(0,288)
+
+#    plt.legend()
     
     majorLocator = MultipleLocator(24)
     majorFormatter = FormatStrFormatter('%d')
@@ -532,8 +639,17 @@ def plotEnergiesOpt(monthlyData, optIdx):
     ax1.xaxis.set_major_formatter(majorFormatter)
     ax1.xaxis.set_minor_locator(minorLocator)
 #    ax1.xaxis.set_minor_formatter(minorFormatter)
-    plt.grid(True, which='both')
+    plt.grid(True, which=u'major')
+    
+    # Shrink current axis by 20%
+    box = ax1.get_position()
+    ax1.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    
+    # Put a legend to the right of the current axis
+    ax1.legend(loc='upper left', bbox_to_anchor=(1, 1.05))
 #    
+
+    plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 #    ax2 = plt.subplot(2,1,2, sharex=ax1)
 #    plt.plot(multiplier*monthlyData[energyType][indices['H'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for H', color='r')
 #    plt.plot(multiplier*monthlyData[energyType][indices['C'], dummyRange]-multiplier*monthlyData[energyType][indices[energyType], dummyRange], label = 'optimized for C', color='b')

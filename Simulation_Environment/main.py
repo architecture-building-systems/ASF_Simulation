@@ -91,13 +91,13 @@ pvFlipOrientation = False
 
 
 # specify if  plots should be created (True or False):
-createPlots = False
+createPlots = True
 
 # only tradeoffs flag, set true if general data plots should not be evaluated:
 onlyTradeoffs = False
 
 # specify if detailed DIVA results should be shown (hourly values for the whole year):
-showDetailedDIVA = False
+showDetailedDIVA = True
 
 # post processing options: change efficiencies of heating(COP)/
 # cooling(COP)/lighting(Lighting Load)/PV(Factor by which results are multiplied)

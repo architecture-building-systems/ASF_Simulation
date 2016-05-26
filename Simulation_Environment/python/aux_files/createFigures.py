@@ -109,7 +109,16 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
             cbart = plt.title("Azimuth", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
-        cbar.ax.set_yticklabels(angles)
+        
+        if DIVA_results['LayoutAndCombinations']['NoClusters']==1 and not arg[0]=='xy':
+            angleList = []
+            for i in angles:
+                angleList.append(i[0])
+            print angleList
+            cbar.ax.set_yticklabels(angleList)
+        else:
+            cbar.ax.set_yticklabels(angles)
+            
     elif plotFunction == pcolorEnergyDays:
         plt.suptitle("Energy Demand at Optimum Orientation", size=16)
         cbar = plt.colorbar(cax=cbar_ax)

@@ -2,47 +2,53 @@
 \chapter{Results and Discussion}
 \label{ch:results}
 
+With the fully functional parametric model, various aspects of dynamic PV shading systems were evaluated for the ASF case study. This chapter presents and discusses the results of these evaluations. First, the base case is evaluated, visualizing the optimisation and the main outputs of the parametric model. Next, the influence of the angle actuation is discussed and the optimisation for PV electricity output is compared to an approach using sun-tracking. This is followed by sensitivity evaluations on the building orientation, the building location, and various building system parameters. Finally the influence of different combination settings is shown, and the potential of independent actuation is evaluated. 
 %Optimum angles and their corresponding electricity use were found for the building energy simulation for all hours of the year. For the radiation and PV evaluations, a grid-convergence study was performed and results of an optimising angle strategy was compared to sun-tracking. The combined simulations could then be evaluated to find the most efficient overall combinations and the sensitivities of various parameters on the system performance was found.
 
 %\section{Combined Evaluation}
 
-By combining results for building energy simulations and PV electricity production, the overall optimum configurations can be found. Figures \ref{fig:monthly_altitude} and \ref{fig:monthly_azimuth} detail carpet-plots of the facade optimised to maximise PV generation, and minimise heating, cooling and lighting demands independently. The simulation was done for a total of 49 angle combinations with seven different states for the altitude and the azimuth angles, i.e. a step size of $15\degree$. While the altitude angles are shown in figure \ref{fig:monthly_altitude}, the corresponding azimuth angles of the same optimisation are shown in figure \ref{fig:monthly_azimuth}.
+\section{Base Case Evaluation}
+\label{s:baseCase}
+	By combining results for building energy simulations and PV electricity production, the overall optimum configurations can be found. Figures \ref{fig:monthly_altitude} and \ref{fig:monthly_azimuth} detail carpet-plots of the facade optimised to maximise PV generation, and minimise heating, cooling and lighting demands independently. The simulation was done for a base case with a total of 49 angle combinations with seven different states for the altitude and the azimuth angles, i.e. a step size of $15\degree$. While the altitude angles are shown in figure \ref{fig:monthly_altitude}, the corresponding azimuth angles of the same optimisation are shown in figure \ref{fig:monthly_azimuth}.
 
-\begin{figure*}
-	\begin{center}
-	\includegraphics[width=\textwidth, trim= 1cm 0.5cm 1cm 1.4cm,clip]{monthly_altitude}
-	\caption{Carpet plots detailing the optimal altitude angles to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise PV electricity production. Figure (e) details the combinations for optimum building thermal management without PV production, (f) also includes the PV production. Small angles correspond to closed positions, whereas large angles represent open positions. The corresponding azimuth angles for each hour can be seen in the following figure (\ref{fig:monthly_azimuth}).}
-	\label{fig:monthly_altitude}
-	\end{center}
-\end{figure*}
+	\begin{figure*}
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 1cm 0.5cm 1cm 1.4cm,clip]{monthly_altitude}
+		\caption{Carpet plots detailing the optimal altitude angles to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise PV electricity production. Figure (e) details the combinations for optimum building thermal management without PV production, (f) also includes the PV production. Small angles correspond to closed positions, whereas large angles represent open positions. The corresponding azimuth angles for each hour can be seen in the following figure (\ref{fig:monthly_azimuth}).}
+		\label{fig:monthly_altitude}
+		\end{center}
+	\end{figure*}
 
-\begin{figure*}
-	\begin{center}
-	\includegraphics[width=\textwidth, trim= 1cm 0.5cm 1cm 1.4cm,clip]{monthly_azimuth}
-	\caption{Carpet plots detailing the optimal azimuth angles to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise PV electricity production. Figure (e) details the combinations for optimum building thermal management without PV production, (f) also includes the PV production. Negative angles correspond to the panels facing west, whereas positive angles represent east-facing panels. The corresponding altitude angles for each hour can be seen in the previous figure (\ref{fig:monthly_altitude}).}
-	\label{fig:monthly_azimuth}
-	\end{center}
-\end{figure*}
+	\begin{figure*}
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 1cm 0.5cm 1cm 1.4cm,clip]{monthly_azimuth}
+		\caption{Carpet plots detailing the optimal azimuth angles to minimise the (a) heating demand, (b) cooling demand, (c) lighting demand, and (d) maximise PV electricity production. Figure (e) details the combinations for optimum building thermal management without PV production, (f) also includes the PV production. Negative angles correspond to the panels facing west, whereas positive angles represent east-facing panels. The corresponding altitude angles for each hour can be seen in the previous figure (\ref{fig:monthly_altitude}).}
+		\label{fig:monthly_azimuth}
+		\end{center}
+	\end{figure*}
 
-In the altitude angle visualization it can be see that open configurations (light coloured) are chosen to minimise the building heating (a) and lighting (c) demand. Likewise, closed configurations (dark colours) are the preferred solutions to minimise the cooling demand (b). The PV optimisation tends to choose more open angles, corresponding to the minimisation of longitudinal shading as will be described in section \ref{s:compareSunTracking}. In (e), the angles that optimise the overall building demand are shown. The optimisation chooses open positions at hours where heating and lighting are important, whereas closed positions are used for hours where cooling is dominant. The configurations for total energy minimisation - including the PV electricity production - are depicted in (f). It can be seen that there is a conflict in the summer evenings between minimising lighting and cooling demands. Likewise, there is a conflict between heating and PV production during the winter months. The overall energy optimisation shows a strong tendency to follow the optimal PV production pattern. This, however changes if the building system becomes more inefficient. Less efficient heating for example, would result in configurations optimised for heating overpowering those of PV electricity generation.
+	In the altitude angle visualization it can be see that open configurations (light coloured) are chosen to minimise the building heating (a) and lighting (c) demand. Likewise, closed configurations (dark colours) are the preferred solutions to minimise the cooling demand (b). The PV optimisation tends to choose more open angles, corresponding to the minimisation of longitudinal shading as will be described in section \ref{s:compareSunTracking}. In (e), the angles that optimise the overall building demand are shown. The optimisation chooses open positions at hours where heating and lighting are important, whereas closed positions are used for hours where cooling is dominant. The configurations for total energy minimisation - including the PV electricity production - are depicted in (f). It can be seen that there is a conflict in the summer evenings between minimising lighting and cooling demands. Likewise, there is a conflict between heating and PV production during the winter months. The overall energy optimisation shows a strong tendency to follow the optimal PV production pattern. This, however changes if the building system becomes more inefficient. Less efficient heating for example, would result in configurations optimised for heating overpowering those of PV electricity generation.
 
 
-Similar patterns can be seen for the azimuth variations. The azimuth angles correspond to the deviation from the building facade normal. Since the simulation was done for a south-facing facade, this means an angle with a positive sign represents the panels facing towards south-east (bright colours), whereas negative angles represent the panels facing towards south-west (dark colours). It can be seen that for heating and lighting, the facade takes positions that let the sun in, whereas for cooling the facade follows a sun-tracking pattern which prevents radiation to enter the room. The PV optimisation also follows a sun-tracking pattern, though with a deviation towards facing east. This is caused by the PV-layout and the effects of longitudinal shading \cite{hofer2015PVSEC}. The optimisation minimises longitudinal shading in order to maximise PV electricity production. 
+	Similar patterns can be seen for the azimuth variations. The azimuth angles correspond to the deviation from the building facade normal. Since the simulation was done for a south-facing facade, this means an angle with a positive sign represents the panels facing towards south-east (bright colours), whereas negative angles represent the panels facing towards south-west (dark colours). It can be seen that for heating and lighting, the facade takes positions that let the sun in, whereas for cooling the facade follows a sun-tracking pattern which prevents radiation to enter the room. The PV optimisation also follows a sun-tracking pattern, though with a deviation towards facing east. This is caused by the PV-layout and the effects of longitudinal shading \cite{hofer2015PVSEC}. The optimisation minimises longitudinal shading in order to maximise PV electricity production. 
 
-Figure \ref{fig:carpetplot_energy} shows the net energy use at these optimum angles. (a) shows that heating is mainly dominant in the winter and in the mornings, cooling (b) is primarily needed in the summer afternoons, lighting (c) at hours of low or no solar insolation, whereas PV electricity production (d) is dominant at hours with high solar insolation. (e) shows the total building energy demand and (f) visualizes the net energy demand including the PV electricity production. It can be seen that there is a net negative energy demand for most sunlit hours, meaning that the ASF is generating more energy than is used by the building for these hours. 
+	\begin{figure*}[b!!]
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 1cm 0.5cm 1cm 1.4cm,clip]{monthly_energy_perArea}
+		\caption{Carpet plots detailing the net energy consumption. Each square represents the total energy consumption for that specific hour of the entire month. Red colours detail the energy demand, while blue colours detail the energy supply.}
+		\label{fig:carpetplot_energy}
+		\end{center}
+	\end{figure*}
 
-Overall, the optimization yields an energy benefit of 9\% compared to the best performing fixed solar facade solution, and the PV electricity production is able to compensate for 41\% of the total building energy demand. 
+	Figure \ref{fig:carpetplot_energy} shows the net energy use at these optimum angles. (a) shows that heating is mainly dominant in the winter and in the mornings, cooling (b) is primarily needed in the summer afternoons, lighting (c) at hours of low or no solar insolation, whereas PV electricity production (d) is dominant at hours with high solar insolation. (e) shows the total building energy demand and (f) visualizes the net energy demand including the PV electricity production. It can be seen that there is a net negative energy demand for most sunlit hours, meaning that the ASF is generating more energy than is used by the building for these hours. 
 
-\begin{figure*}
-	\begin{center}
-	\includegraphics[width=\textwidth, trim= 1cm 0.5cm 1cm 1.4cm,clip]{monthly_energy}
-	\caption{Carpet plots detailing the net energy consumption. Each square represents the total energy consumption for that specific hour of the entire month. Red colours detail the energy demand, while blue colours detail the energy supply.}
-	\label{fig:carpetplot_energy}
-	\end{center}
-\end{figure*}
+	Overall, the optimization yields an energy benefit of 9\% compared to the best performing fixed solar facade solution, and the PV electricity production is able to compensate for 41\% of the total building energy demand. 
+
+	
 
 
 \section{Influence of Angle Actuation}
+\label{s:actuation}
 	In order to evaluate the influence of the actuation, three dimensional plots can be used to display all possible configurations and their corresponding energy benefit. In figure \ref{fig:3d}, the energy benefits of the altitude actuation are visualized for the months of March (a), June (b) and September (c). Each plot displays one cumulative day in hourly resolution. The x-axis  represents the altitude angles (19 different angles were evaluated with a step size of $5\degree$), the y-axis corresponds to the hour of the day, and the z-axis represents the energy benefit of the actuation, i.e. the difference in energy usage between the evaluated angle and the angle that yields the worst overall energy usage for each hour. It can be seen that the energy benefit is by far the largest around noon. Furthermore, positions that are rather closed tend to have the highest influence for the said mid-day hours. Open positions normally yield the worst benefits, except for some early morning or evening hours, where heating and lighting become important. This overall behaviour corresponds well to the results depicted in figure \ref{fig:monthly_altitude}, and shows why the angles that yield the optimum total energy, generally match the angles that optimise cooling and PV electricity production. A further interesting observation that can be made from this figure is the non continuous curves for midday hours in summer. At an altitude angle of around $30^{\circ}$, the energy benefit reduces over proportionally. This is caused by the PV electricity production, larger angles will increase longitudinal shading and therefore over proportionally reduce the energy yield. 
 
 	\begin{figure*}
@@ -90,6 +96,7 @@ Overall, the optimization yields an energy benefit of 9\% compared to the best p
 
 
 \section{Sensitivity on Control Strategy Approach}
+\label{s:tradeoffs}
 
 	To evaluate further possibilities and limitations of the control strategy of the ASF, the tradeoffs between different strategies were visualised, as can be seen in figure \ref{fig:tradeoffs}. (a) shows the total energy demand used for heating, cooling, and lighting, the PV electricity production, as well as the total building demand and the net energy demand (building demand minus PV electricity production) for various control strategies. In (b) the corresponding differences in energy of the control strategy to the individually optimised solution is shown. As expected, the overall optimisation is able to have the smallest deviations from the individually optimised results. When comparing the different control strategies, one can see that especially cooling and PV need to be optimised, while the heating and lighting demand have a lower sensitivity on the control strategy. Another observation that can be gained, is that the optimisation for cooling is not very beneficial for the PV electricity production. This corresponds to the results in the previous section (\ref{s:compareSunTracking}), and is caused by the longitudinal shading, which naturally the cooling optimisation does not take into account. However, the optimisation for PV electricity production has a smaller negative influence on the cooling demand. This graph is part of the parametric simulation model, and can easily be adjusted to evaluate different building system parameters, as well as time periods. 
 
