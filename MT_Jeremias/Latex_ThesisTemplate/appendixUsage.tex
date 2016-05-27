@@ -2,11 +2,14 @@
 
 \chapter{Usage of Simulation Environment}\label{usage}
 
-This chapter describes the usage of the simulation environment. It provides essentialy the same content to the github wiki that can be found at 
+This chapter describes the usage of the simulation environment. It provides essentially the same content as the github wiki that can be found at 
 
-\url{https://github.com/architecture-building-systems/ASF_Simulation/wiki}.
+\url{https://github.com/architecture-building-systems/ASF_Simulation/wiki}.\\
+
+First, a description on how to get the simulation environment and what tools must be installed is given. Then, the main files that run the evaluations are described in detail. Finally, a step-by-step guide leads through the detailed usage of the simulation environment. 
 
 \section{Get ASF\_Simulation Folder}
+\label{s:getFolder}
 	
 	In order to use the ASF simulation framework, you can either download the .zip file and unpack the folder or you can use the following commands within git:
 
@@ -14,7 +17,7 @@ This chapter describes the usage of the simulation environment. It provides esse
 
 	In Your working directory type:
 
-	\begin{verbatim}git init\end{verbatim}\\
+	\begin{verbatim}git init\end{verbatim}
 
 	\noindent{Then Checkout the repository:}
 
@@ -23,7 +26,7 @@ This chapter describes the usage of the simulation environment. It provides esse
 	\noindent{To download the files type:}
 
 	\begin{verbatim}git pull\end{verbatim}
-	}
+	
 		
 \section{Installation Guides}
 \label{s:installation}
@@ -50,7 +53,7 @@ This chapter describes the usage of the simulation environment. It provides esse
 
 		\url{http://diva4rhino.com/}
 
-	 + You will need to add the Zuerich-Kloten weather file to C:/DIVA/WeatherData}
+	 + The Zuerich-Kloten weather file must be added to \emph{C:/DIVA/WeatherData}}
 
 	\item{Hoopsnake: For looping grasshopper scripts
 
@@ -117,176 +120,208 @@ This chapter describes the usage of the simulation environment. It provides esse
 
 	\subsection{EnergyPlus Simulation}
 
-	\subsubsection{DIVA Interface Conversion
-	* Converts ASF panels into DIVA shading elements 
-	* Converts all interior walls into adiabatic surfaces
-	* Converts the front wall to a facade element
-	* Converts the glazed section into a window element
+	In this section the EnergyPlus simulations are run.
 
-	\subsubsection{Run the Simulation}
-	Run through the Viper interface. **It is important that the right settings are used.** Especially the weather file is subject to change. For the DIVA analysis, this can only be done in the Viper settings. 
-	* Lx set point: 300
-	* Heating COP=variable (usually 4 or 5)
-	* Cooling COP=3
-	* Lighting Load: Default is 11.74 W/m2
+		\subsubsection{DIVA Interface Conversion}
+		\begin{itemize}
+		\item{Converts ASF panels into DIVA shading elements}
+		\item{Converts all interior walls into adiabatic surfaces}
+		\item{Converts the front wall to a facade element}
+		\item{Converts the glazed section into a window element}
+		\end{itemize}
 
-	\subsubsection{Save Data}
-	Python script that saves the DIVA data for post processing. The folder where it will be saved is set automatically in the script 'set DIVA data path' to 'Simulation_Environment/data/grasshopper/DIVA/DIVA_results'. **After a simulation finishes, the acquired data has to be moved to a separate folder with a unique name, which will be used for post processing.** Alternatively, the folder 'DIVA_results' can simply be renamed. It is good practice to also save a backup of the current main.gh file to this folder ([Ctr+Alt+s] saves a backup, this should then also be moved to the corresponding data folder. 
+		\subsubsection{Run the Simulation}
+		Run through the Viper interface. {\bf It is important that the right settings are used.} Especially the weather file is subject to change. For the DIVA analysis, this can only be done in the Viper settings. 
+		\begin{itemize}
+		\item{Lx set point: variable (evaluations were done with a value of 300)}
+		\item{Heating COP: variable (evaluations were done with a value of 4)}
+		\item{Cooling COP: variable (evaluations were done with a value of 3)}
+		\item{Lighting Load: variable (evaluations were done with the default value of 11.74\,$W/m^2$}
+		\item{Infiltration: variable (evaluations were done with a value of 1/h)}
+		\item{Fresh Air: variable (evaluations were done with a value of 0.016 $\frac{m^3}{s\cdot person}$ )}
+		\end{itemize}
 
-	\subsection{Loop E+}
-	Uses hoopsnake to iterate through all possible configurations
-	 - Note that sometimes the hoopsnake algorithm is not connected correctly
+		\subsubsection{Save Data}
+		Python script that saves the DIVA data for post processing. The folder where it will be saved is set automatically in the script \emph{set DIVA data path} to \emph{Simulation\_Environment/data/grasshopper/DIVA/DIVA\_results}. {\bf After a simulation finishes, the acquired data has to be moved to a separate folder with a unique name, which will be used for post processing.} Alternatively, the folder \emph{DIVA\_results} can simply be renamed. It is good practice to also save a backup of the current \emph{main.gh} file to this folder ([Ctr+Alt+s] saves a backup, this should then also be moved to the corresponding data folder. 
 
-
+	\subsection{Loop EnergyPlus}
+	Uses hoopsnake to iterate through all possible configurations. It must be made sure that the hoopsnake algorithm is connected correctly.
 
 	\subsection{Set Weather File}
-	The weather file used for the ladybug radiation analysis is set in this section. The desired .epw file must already be in the WeatherData folder and the full name of the weather file has to be input to the python weatherPath python script. 
+	The weather file used for the ladybug radiation analysis is set in this section. The desired .epw file must already be in the WeatherData folder and the full name of the weather file has to be input to the \emph{weatherPath} Python script. 
 
-
-
-	\subsection{Save details of weather file}
-	The weather file that was specified is read and relevant information is on the sun position and the temperature is saved to the folder 'Simulation_Environment\data\geographical_location'. If a new weather file is used, the main.py file has to be run in 'initialize' mode to prepare the data for further use with grasshopper. Make sure that the component 'Ladybug_SunPath' is enabled when a new weather-file is introduced. 
+	\subsection{Save Details of Weather File}
+	The weather file that was specified is read and relevant information is on the sun position and the temperature is saved to the folder \linebreak {\it Simulation\_Environment/data/geographical\_location}. If a new weather file is used, the main.py file has to be run in \emph{initialize} mode to prepare the data for further use with grasshopper. It must be made sure that the component \emph{Ladybug\_SunPath} is enabled when a new weather-file is introduced. 
 
 
 	\subsection{Loop LadyBug}
-	In this section ladybug is looped according to the specified angle combinations and for relevant hours (see 'Set Evaluation Period')
-
+	In this section ladybug is looped according to the specified angle combinations and for relevant hours (see Section \ref{ss:setEvalPeriod})
 
 	\subsection{Set Evaluation Period}
+	\label{ss:setEvalPeriod}
 	Analysis period is set according to the loop number and the auxiliary data on the sun positions. 
 
 	\subsection{Ladybug Solar Analysis}
-	First of all, you have to let ladybug fly. For this the ladybug_ladybug component has to be put onto the GH screen. This component has to run first, if there still are warnings that you first have to let ladybug fly, click on the component and press CTRL+B, then disable and enable again components that show the warning. This ensures, that the ladybug_ladybug component runs first. 
+	First of all, one has to let ladybug fly. For this the ladybug\_ladybug component has to be put onto the GH screen. This component has to run first, if there still are warnings that you first have to let ladybug fly, click on the component and press CTRL+B, then disable and enable again components that show the warning. This ensures, that the ladybug\_ladybug component runs first. 
 
-	\subsubsection{Create Mesh for Radiation Analysis}
-	Creates a mesh of the asf for the radiation analysis according to the desired grid point size. The normals of the ASF geometry are flipped so that they face away from the building. 
+		\subsubsection{Create Mesh for Radiation Analysis}
+		Creates a mesh of the ASF for the radiation analysis according to the desired grid point size. The normals of the ASF geometry are flipped so that they face away from the building. 
 
-	\subsubsection{Create Sky Matrix}
-	In the selectSkyMtx component, it is possible to either choose a specific hour of the year or a period of time, which can be chosen with the Analysis Period component. **WARNING: This component is not working correctly in the current version of ladybug.** The bug has been found, fixed, and reported to the developers [here](https://github.com/mostaphaRoudsari/ladybug/issues/233). 
+		\subsubsection{Create Sky Matrix}
+		In the selectSkyMtx component, it is possible to either choose a specific hour of the year or a period of time, which can be chosen with the Analysis Period component. {\bf WARNING: This component is not working correctly in the current version of ladybug.} The bug has been found, fixed, and reported to the developers:
 
-	\subsubsection{Calculate Radiance on Panels}
-	Calculates the radiance on a specified geometry. The simulation is done for the chosen settings given by the SelectSkyMtx component. **Toggle runIt to start the evaluation**, this can take up to 20 seconds on a fast computer. 
+		\url{https://github.com/mostaphaRoudsari/ladybug/issues/233)}
 
-	\subsubsection{Sky Dome for reference}
-	This component creates sky domes, that show where the radiation is coming from. 
+		\subsubsection{Calculate Radiance on Panels}
+		Calculates the radiance on a specified geometry. The simulation is done for the chosen settings given by the SelectSkyMtx component. {\bf Toggle runIt to start the evaluation}, this can take up to 20 seconds on a fast computer. 
+
+		\subsubsection{Sky Dome for reference}
+		This component creates sky domes, that show where the radiation is coming from. 
 
 
 
 	\subsection{Save Radiation Results}
-	The detailed radiation results are saved to a .csv file with a C# script. The results are saved to the folder Simulation_Environment/data/grasshopper/LadyBug/radiation_results. It should be made sure that this folder is empty before starting a simulation, because otherwise there might be 'leftover' data, which will fill up space without being used. The 'copyLayoutAndComb' component copies the file generated in the 'Geometry Calculations' section and also saves it to the radiation_results folder for convenience. **After a simulation finishes, the acquired data has to be moved to a separate folder with a unique name, which will be used for post processing.** Alternatively the 'radiation_results' folder can be renamed. It is good practice to also save a backup of the current main.gh file to this folder ([Ctr+Alt+s] saves a backup, which should then also be moved to the corresponding data folder). 
+	The detailed radiation results are saved to a .csv file with a C\# script. The results are saved to the folder \emph{Simulation\_Environment/data/grasshopper/ LadyBug/radiation\_results}. It should be made sure that this folder is empty before starting a simulation, because otherwise there might be \emph{leftover} data, which will fill up space without being used. The \emph{copyLayoutAndComb} component copies the file generated in the \emph{Geometry Calculations} section and also saves it to the radiation\_results folder for convenience. {\bf After a simulation finishes, the acquired data has to be moved to a separate folder with a unique name, which will be used for post processing.} Alternatively the \emph{radiation\_results} folder can be renamed. It is good practice to also save a backup of the current \emph{main.gh} file to this folder ([Ctr+Alt+s] saves a backup). 
 
 
 \section{Python Evaluation}
 
-	\subsection{How it works}
-	The data that was previously generated by the main.gh script is read in and post processed to output several graphs and a summary.csv file. 
+	The data that was previously generated by the \emph{main.gh} script is read in by the \emph{main.py} file and post processed to output several graphs, aggregated data, and a summary.csv file. 
 
 	\subsection{main.py}
-	This is the main file for the python evaluation. There are two modes: 'initialize' and 'post_processing'. If an evaluation is done for the first time for a specific location, it must first run in 'initialize' mode, otherwise it can be run directly in 'post_processing' mode (see also Installation Guides). 
+	This is the main file for the python evaluation. There are two modes: \emph{initialize} and \emph{post\_processing}. If an evaluation is done for the first time for a specific location, it must first run in \emph{initialize} mode, otherwise it can be run directly in \emph{post\_processing} mode. 
 	At the beginning of the script, there is a user interaction section. When starting an evaluation, a user must go through this section to make sure everything is set as wished. All variables are described in detail right before they are defined. 
 
-\section{Set Up}
+	\subsection{compareResults.py}
+	This file can be used to generate various plots on comparing simulation results. The corresponding result folders must be set manually, and adjustment might be needed in the script. 
+	
+	\subsection{PostProcessSunTracking.py}
+	This file can be used to compare a sun-tracking approach to an optimized solution. In order to run this script, the corresponding optimization results must be available and the folders that will be compared have to be manually set.
 
-	All the files that are necessary to perform simulations of the ASF are in the folder Simulation_Environment. There are two main simulation files, one for grasshopper, the other one for the python part of the simulation (main.gh, main.py). In order to get started with simulations, the following steps have to be taken to generate the auxiliary files that are needed:
+	\subsection{createFiguresAfterMain.py}
+	With this file, additional plots can be generated that visualize the simulation results. 
 
-	1. Open the main.gh file.  
+	\subsection{aux\_files}
+	This folder contains all auxiliary files, that are needed for the post-processing and the optimisation. It is recommended to go through an optimisation-run step-by-step, in order to clearly understand how the simulation works. 
 
-	2. Assign the desired weather file that will be used for the radiation simulation in the section "Set Weather File". 
+\section{First Time Set-Up of a Simulation}
+\label{s:setUp}
 
-	3. Make sure that the component 'Ladybug_SunPath' is enabled in the section 'Save details of weather file'. A new folder in "Simulation_Environment\data\geographical_location" with the name of the location and information on temperature and the sun position will now be created. 
+	All the files that are necessary to perform simulations of the ASF are in the folder Simulation\_Environment. There are two main simulation files, one for grasshopper, the other one for the python part of the simulation (\emph{main.gh}, \emph{main.py}). In order to get started with simulations, the following steps have to be taken to generate the auxiliary files that are needed:
 
-	4. Open the main.py file.
+	\begin{enumerate}
+	\item Open the \emph{main.gh} file.  
 
-	5. In the "user interaction" section, the mainMode must be set to 'initialize' and the geoLocation must be set to the folder that was generated in grasshopper (for the zurich-kloten epw file, the corresponding folder is called 'Zuerich-Kloten'). The other options do not yet require any change, as they are only important for the post-processing mode.
+	\item Assign the desired weather file that will be used for the radiation simulation in the section \emph{Set Weather File}. 
 
-	6. Run the main.py script. Be aware that the first time the file is run, it will take some time, as the lookup-table for the pv-electricity-generation needs to be generated first.
+	\item Make sure that the component \emph{Ladybug\_SunPath} is enabled in the section \emph{Save details of weather file}. A new folder in {\it Simulation\_Environment/ data/geographical\_location} with the name of the location and information on temperature and the sun position will now be created. 
 
-	7. Once the main.py script has finished without errors, the 'Ladybug_SunPath' component in the sectioin 'Save details of weather file' of the main.gh script can be disabled again, as it is no longer needed. This will speed up the initialization of grasshopper when restarting it. 
+	\item Open the \emph{main.py} file.
 
-	Now, simulations can be performed using grasshopper. See [[Run Grasshopper]]
+	\item In the \emph{user interaction} section, the mainMode must be set to \emph{initialize} and the geoLocation must be set to the folder that was generated in grasshopper (for the zurich-kloten epw file, the corresponding folder is called \emph{Zuerich-Kloten}). The other options do not yet require any change, as they are only important for the post-processing mode.
 
-\section{Run Grasshopper}
+	\item Run the \emph{main.py} script. Be aware that the first time the file is run, it will take some time, as the lookup-table for the pv-electricity-generation needs to be generated first.
 
-	After carefully following the instructions given in [[Installation Guides]] and [[Set-Up]], simulations can now be done using grasshopper as follows:
+	\item Once the \emph{main.py} script has finished without errors, the \emph{Ladybug\_SunPath} component in the section \emph{Save details of weather file} of the \emph{main.gh} script can be disabled again, as it is no longer needed. This will speed up the initialization of grasshopper when restarting it. 
 
-	#General Set-Up
+	\end{enumerate}
 
-	1. Open main.gh
+	Now, simulations can be run with grasshopper, as described in the following section.
 
-	2. Make sure the 'run' switch in the 'E+ Simulation' section as well as the '_runIt' switch in the 'Ladybug Solar Analysis' section are set to False 
+\section{Run Grasshopper Simulations}
+\label{s:runGH}
 
-	3. Set the building geometry and the facade geometry for the simulation in the section 'Set Geometry'
+	After carefully following the instructions given in Sections \ref{s:getFolder}, \ref{s:installation}, and \ref{s:setUp}, simulations can now be run using grasshopper by taking the steps described in this section.
 
-	#LadyBug Radiation Simulation
+	\subsection{General Simulation Set-Up}
 
-	1. Set the weather file in the section 'Set Weather File' (If you want to use a new weather file, follow the instruction given in [[Set-Up]])
+	\begin{enumerate}
 
-	2. Reset HoopSnake in the section 'Loop Lady Bug'
+	\item Open \emph{main.gh}
 
-	3. Go to the folder 'ASF_Simulation\Simulation_Environment\data\grasshopper\LadyBug\radiation_results' and make sure it is empty. 
+	\item Make sure the \emph{run} switch in the \emph{E+ Simulation} section as well as the \emph{\_runIt} switch in the \emph{Ladybug Solar Analysis} section are set to False 
 
-	4. Connect 'RadiationComb' to the 'combination' input of the 'Combination Maker V2' in the Section Geometry Calculations
+	\item Set the building geometry and the facade geometry for the simulation in the section \emph{Set Geometry}
+	\end{enumerate}
 
-	5. Test loop hoopsnake and make sure the combinations are run as desired. It can be stopped by right clicking on hoopsnake and selecting 'stop'. 
+	\subsection{Run a LadyBug Radiation Simulation}
 
-	6. Reset hoopsnake again. 
+	\begin{enumerate}
 
-	7. Toggle the '_runIt' input in the 'Ladybug Solar Analysis' section to true. 
+	\item Set the weather file in the section \emph{Set Weather File} (If you want to use a new weather file, follow the instruction given in Section \ref{s:setUp})
 
-	8. Go again to the radiation_results folder and see if the .csv file for the first iteration was created. Also look at the graphical output from Ladybug in the rhino scene, make sure everything is evaluated as desired. 
+	\item Reset HoopSnake in the section \emph{Loop Lady Bug}
 
-	9. If everything looks fine, start to loop hoopsnake again. 
+	\item Go to the folder \emph{ASF\_Simulation/Simulation\_Environment/data/}\linebreak\emph{grasshopper/LadyBug/radiation\_results} and make sure it is empty. 
 
-	10. Check that the 'LayoutAndCombinations.txt' file was created in the 'radiation_results' folder and look at the csv files to see if the results are reasonable. 
+	\item Connect \emph{RadiationComb} to the \emph{combination} input of the \emph{Combination Maker V2} in the Section Geometry Calculations
 
-	11. Wait until the simulation is done. This step will generally take sever hours, so it is a good idea to let it run over night. 
+	\item Test loop hoopsnake and make sure the combinations are run as desired. It can be stopped by right clicking on hoopsnake and selecting \emph{stop}. 
 
-	12. When the simulation is over, the folder 'radiation_results' has to be renamed to have a unique name, typical for the simulation, such as 'Radiation_Kloten_5x_1y_2clust_SE'. 
+	\item Reset hoopsnake again. 
 
-	13. Turn off the radiation analysis (set '_runIt' to False). This will automatically create a new and empty 'radiation_results' folder.  
+	\item Toggle the \emph{\_runIt} input in the \emph{Ladybug Solar Analysis} section to true. 
 
-	15. Save a backup of the main.gh file [CTR + ALT + S] and move it to the folder where the results are saved. 
+	\item Go again to the \emph{radiation\_results} folder and see if the .csv file for the first iteration was created. Also look at the graphical output from Ladybug in the rhino scene, make sure everything is evaluated as desired. 
 
-	# E+ Building Simulation
+	\item If everything looks fine, start to loop hoopsnake again. 
 
-	1. Set the desired weather file and other options in the Viper component settings in the section 'E+ Simulation'
+	\item  Check that the \emph{LayoutAndCombinations.txt} file was created in the \emph{radiation\_results} folder and look at the csv files to see if the results are reasonable. 
 
-	2. Set all other options in this section. 
+	\item  Wait until the simulation is done. This step will generally take several hours, so it is a good idea to let it run over night. 
 
-	3. Connect 'EplusComb' to the 'combination' input of the 'Combination Maker V2' component in the 'Geometry Calculations' section.  
+	\item  When the simulation is over, the folder \emph{radiation\_results} has to be renamed to have a unique name, typical for the simulation, such as \emph{Radiation\_Kloten\_5x\_1y\_2clust\_SE}. 
 
-	3. Loop hoopsnake in the 'Loop E+' section while looking at the rhino scene to make sure the desired combinations will be evaluated. 
+	\item  Turn off the radiation analysis (set \emph{\_runIt} to False). This will automatically create a new and empty \emph{radiation\_results} folder.  
 
-	4. Reset hoopsnake in the 'Loop E+' section. 
+	\item  Save a backup of the \emph{main.gh} file ([CTR+ALT+s]) and move it to the folder where the results are saved. 
+	\end{enumerate}
 
-	4. Turn the run input toggle in the 'E+ Simulation' section to true. 
+	\subsection{Run an EnergyPlus Building Simulation}
+	\begin{enumerate}
 
-	5. Go to the folder 'ASF_Simulation\Simulation_Environment\data\grasshopper\DIVA\DIVA_results' and check the 'LayoutAndCombinations.txt' file as well as the first iteration. 
+	\item Set the desired weather file and other options in the Viper component settings in the section \emph{E+ Simulation}
 
-	6. Check the output of the VIPER component in the 'E+ Simulation' section, there should be no erros and no warnings. 
+	\item Set all other options in this section. 
 
-	7. When everything looks fine, loop hoopsnake in the 'Loop E+' section. 
+	\item Connect \emph{EplusComb} to the \emph{combination} input of the \emph{Combination Maker V2} component in the \emph{Geometry Calculations} section.  
 
-	8. Check the rhino scene and the result files to make sure everything is working correctly while looping. 
+	\item Loop hoopsnake in the \emph{Loop E+} section while looking at the rhino scene to make sure the desired combinations will be evaluated. 
 
-	9. Rename the 'DIVA_results' folder to a unique name, such as 'DIVA_Kloten_5x_1y_2clust_SE'. 
+	\item Reset hoopsnake in the \emph{Loop E+} section. 
 
-	10. Turn the 'run' input of VIPER to False. This will create a new, empty 'DIVA_results' folder. 
+	\item Turn the run input toggle in the \emph{E+ Simulation} section to true. 
 
-	11. Save a backup of the main.gh file [CTR + ALT + S] and move it to the folder where the results are saved. 
+	\item Go to the folder \emph{ASF\_Simulation/Simulation\_Environment/data/\linebreak grasshopper/DIVA/DIVA\_results} and check the \emph{LayoutAndCombinations.txt} file as well as the first iteration. 
 
-	# Next Steps
+	\item Check the output of the VIPER component in the \emph{E+ Simulation} section, there should be no erros and no warnings. 
 
-	The results can now be post-processed as described in [[Run Python]]
+	\item When everything looks fine, loop hoopsnake in the \emph{Loop E+} section. 
+
+	\item Check the rhino scene and the result files to make sure everything is working correctly while looping. 
+
+	\item Rename the \emph{DIVA\_results} folder to a unique name, such as \linebreak\emph{DIVA\_Kloten\_5x\_1y\_2clust\_SE}. 
+
+	\item Turn the \emph{run} input of VIPER to False. This will create a new, empty \emph{DIVA\_results} folder. 
+\
+	\item Save a backup of the \emph{main.gh} file ([CTR+ALT+s]) and move it to the folder where the results are saved. 
+	\end{enumerate}
+
 
 \section{Run Python}
 
-	Once the grasshopper simulations are finished (see [[Run Grasshopper]]), the results can be post-processed as follows:
+	Once the grasshopper simulations (Section \ref{s:runGH}) are finished, the results can be post-processed in order to visualize the data, find the optimum angle combinations as well as the corresponding energies. 
 
-	1. Open main.py
+	\begin{enumerate}
+	\item Open \emph{main.py}
 
-	2. Set all the post-processing options in the user interaction section (each variable is described before its definition)
+	\item Set all the post-processing options in the user interaction section (each variable is described in detail before its definition)
 
-	3. Run main.py (you can press F5)
+	\item Run \emph{main.py} (you can press F5)
 
-	4. Done
+	\item A folder with the corresponding optimization results will be created in \emph{ASF\_Simulation/Simulation\_Environment/results}. The created folder is named with the date and time of the simulation start. 
+
+	\item Rename the result folder
+
+	\item Done
+	\end{enumerate}
