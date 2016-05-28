@@ -1,3 +1,4 @@
+%!TEX root = thesis.tex
 
 % Enter your data in the file titlepage.tex
 \input{titlepage}
@@ -21,20 +22,35 @@
 % please explain them here.
 
 %%%%%%%
-%\chapter*{List of Acronyms}
+\chapter*{List of Acronyms}
 %\addcontentsline{toc}{chapter}{List of Acronyms}
-%\begin{tabular}{ll}
-%PV		&Photovoltaic \\
+\addcontentsline{toc}{section}{List of Acronyms}
+\begin{tabular}{lll}
+BIPV	&&Building Integrated Photovoltaics\\
+PV		&&Photovoltaic \\
+ASF		&&Adaptive Solar Facade \\
+CIGS	&&Copper Indium Gallium Selenide \\
+CAD		&&Computer-Aided Design \\
+COP		&&Coefficient of Performance \\
+HoNR	&&House of Natural Resources \\
 
-%\end{tabular}
+\end{tabular}
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%% If you are also using lots of equations and symbols, define them in a list of symbols.
 %%%%%%%%%%%%%%%%%%%%
-%\chapter*{List of Symbols}
-%\addcontentsline{toc}{chapter}{List of Symbols}
-%\begin{tabular}{ll}
-%$\underline{S}_w$				&Apparent power generation of wind on bus $w$\\
+\chapter*{List of Symbols}
+\addcontentsline{toc}{section}{List of Symbols}
+\begin{tabular}{lll}
+$C$				&&Cooling Electricity Demand\\
+$H$				&&Heating Electricity Demand\\
+$L$				&&Lighting Electricity Demand\\
+$PV$			&&Photovoltaic Electricity Production\\
+$T_{cell}$		&&Temperature of Gridpoint on Panel\\
+$T_{air}$		&&Ambient Air Temperature\\
+$S$				&&Insolation\\
+$HCL$			&&Total Heating, Cooling, and Lighting Electricity Demand\\
+$E_{tot}$		&&Overall Electricity Demand ($HCL-PV$)\\
 
-%\end{tabular}
+\end{tabular}
 %%%%%%%%%%%%%%%%%%%%%%%
