@@ -180,13 +180,13 @@ Radiation_difference_perc = (1-(monthlyData_tracking['R_avg']/monthlyData_comb['
 where_are_NaNs = np.isnan(Radiation_difference_perc)
 Radiation_difference_perc[where_are_NaNs] = 0
 # figure to compare sun-tracking radiation to optimized radiation:
-fig = plt.figure(figsize=(16, 12))
+fig = plt.figure(figsize=(16, 9))
 
 plt.subplot(3,1,1)
 plt.plot(monthlyData_comb['R_avg'][R_max_ind, R_range], label = 'Radiation optimized')
 plt.plot(monthlyData_comb['R_avg'][PV_max_ind, R_range], label = 'PV optimized')
 plt.plot(monthlyData_tracking['R_avg'].transpose(), label = 'sun tracking')
-plt.title('Comparison of Radiation with sun tracking to optimized solution')
+plt.suptitle('Comparison of Radiation with sun tracking to optimized solution')
 plt.ylabel('Average Radiation [W/m2]')
 plt.legend()
 
@@ -209,25 +209,47 @@ PV_difference_perc = (1-(monthlyData_tracking['PV_avg']/monthlyData_comb['PV_avg
 where_are_NaNs = np.isnan(PV_difference_perc)
 PV_difference_perc[where_are_NaNs] = 0
 # figure to compare sun-tracking pv production to optimized pv production:
-fig = plt.figure(figsize=(16, 12))
+fig = plt.figure(figsize=(16, 9))
 
-plt.subplot(3,1,1)
+ax = plt.subplot(2,1,1)
 plt.plot(monthlyData_comb['PV_avg'][PV_max_ind, PV_range], label='optimized')
 plt.plot(monthlyData_tracking['PV_avg'].transpose(), label = 'sun tracking' )
-plt.title('Comparison of PV with sun tracking to optimized solution')
-plt.ylabel('Average PV Energy Production [W/m2]')
+plt.title('Comparison of PV Electricity with sun tracking to optimized solution')
+plt.ylabel('Power [W/m2]', fontsize = 14)
 plt.legend()
+plt.grid()
+ax.tick_params(labelsize=14)
 
-plt.subplot(3,1,2)
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+ax.xaxis.set_minor_locator(minorLocator)
+plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
+
+ax = plt.subplot(2,1,2)
 plt.plot((monthlyData_comb['PV_avg'][PV_max_ind, PV_range]-monthlyData_tracking['PV_avg']).transpose())
-plt.title('Comparison of PV with sun tracking to optimized solution')
-plt.ylabel('Average PV Production Difference [W/m2]')
+#plt.title('Comparison of PV with sun tracking to optimized solution')
+plt.ylabel('Power Difference [W/m2]', fontsize = 14)
+plt.grid()
+ax.tick_params(labelsize=14)
 
-plt.subplot(3,1,3)
-plt.plot(PV_difference_perc)
-plt.title('Comparison of PV with sun tracking to optimized solution')
-plt.ylabel('Average PV Difference [%]')
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+ax.xaxis.set_minor_locator(minorLocator)
+plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 
+#
+#ax = plt.subplot(3,1,3)
+#plt.plot(PV_difference_perc)
+##plt.title('Comparison of PV with sun tracking to optimized solution')
+#plt.ylabel('Power Difference [%]', fontsize = 14)
+#plt.grid()
+#ax.tick_params(labelsize=14)
+#
+#ax.xaxis.set_major_locator(majorLocator)
+#ax.xaxis.set_major_formatter(majorFormatter)
+#ax.xaxis.set_minor_locator(minorLocator)
+#plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 
 
 ############# for thesis:
@@ -295,26 +317,40 @@ plt.xlabel('Month', fontsize = 14)
 
 #fig.tight_layout()
 
+#####################
 
+fig =plt.figure(figsize=(16,9))
+plt.suptitle('Comparison of PV efficiencies with sun tracking to optimized solution', fontsize = 14)
 
-
-fig =plt.figure(figsize=(16, 12))
-plt.suptitle('Comparison of PV efficiencies with sun tracking to optimized solution')
-
-plt.subplot(2,1,1)
-plt.title('PV Efficiencies')
-plt.plot(monthlyData_comb['PV_eff'][PV_max_ind, PV_range], label = 'PV efficiency optimized')
-plt.plot(monthlyData_tracking['PV_eff'].transpose(), label = 'PV efficiency tracking')
-plt.ylabel('Efficiency [%]')
+ax = plt.subplot(2,1,1)
+#plt.title('PV Efficiencies')
+plt.plot(monthlyData_comb['PV_eff'][PV_max_ind, PV_range], label = 'optimised for PV')
+plt.plot(monthlyData_tracking['PV_eff'].transpose(), label = 'solar tracking')
+plt.ylabel('Efficiency [%]', fontsize = 14)
+plt.ylim(0,16)
 plt.legend()
 plt.grid()
+ax.tick_params(labelsize=14)
 
-fig.tight_layout()
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+ax.xaxis.set_minor_locator(minorLocator)
+plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 
-plt.subplot(2,1,2)
+#fig.tight_layout()
+
+ax = plt.subplot(2,1,2)
 plt.plot((monthlyData_comb['PV_eff'][PV_max_ind, PV_range]-monthlyData_tracking['PV_eff']).transpose())
-plt.ylabel('Efficiency Difference [%]')
+plt.ylabel('Efficiency Difference [%]', fontsize = 14)
 plt.grid()
+
+
+ax.tick_params(labelsize=14)
+
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+ax.xaxis.set_minor_locator(minorLocator)
+plt.xticks(range(0,288,24),('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 
     
 fig = plt.figure(figsize=(16, 12))
@@ -333,37 +369,55 @@ PV_electricity_results_comb['LayoutAndCombinations'] = readLayoutAndCombinations
 monthlyData_comb['angles'] = CalcXYAnglesAndLocation(PV_electricity_results_comb['LayoutAndCombinations'])
 monthlyData_comb['LBmask'] = createLBmask(monthlyData_comb['R'])
 
-fig.tight_layout()
+#fig.tight_layout()
 
 
-fig = plt.figure(figsize=(16, 12))
+fig = plt.figure(figsize=(16, 9))
 
+anglesTuple = monthlyData['angles']['x_angles'] 
+xangles = []
+for i in anglesTuple:
+    xangles.append(str(i[0]))
+                
+anglesTuple = monthlyData['angles']['y_angles']    
+yangles = []
+for i in anglesTuple:
+    yangles.append(str(i[0]))
+                
 plt.subplot(2,2,1)
 arg = ['max','R_avg', 'x', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
 plt.title('Altitude Angles optimized for Radiation')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['x_angles'])))
-cbar.ax.set_yticklabels(monthlyData_comb['angles']['x_angles'])
+cbar.ax.set_yticklabels(xangles, size=14)
+cbar.solids.set_rasterized(True) 
+
 
 plt.subplot(2,2,3)
 arg = ['max','R_avg', 'y', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
 plt.title('Azimuth Angles optimized for Radiation')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['y_angles'])))
-cbar.ax.set_yticklabels(monthlyData_comb['angles']['y_angles'])
+cbar.ax.set_yticklabels(yangles, size=14)
+cbar.solids.set_rasterized(True) 
+
 
 plt.subplot(2,2,2)
 arg = ['max','PV', 'x', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
 plt.title('Altitude Angles optimized for PV')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['x_angles'])))
-cbar.ax.set_yticklabels(monthlyData_comb['angles']['x_angles'])
+cbar.ax.set_yticklabels(xangles, size=14)
+cbar.solids.set_rasterized(True) 
+
 
 plt.subplot(2,2,4)
 arg = ['max','PV', 'y', 'LB', 0, 0]
 pcolorMonths(monthlyData_comb, arg)
 plt.title('Azimuth Angles optimized for PV')
 cbar =plt.colorbar(ticks=range(0,len(monthlyData_comb['angles']['y_angles'])))
-cbar.ax.set_yticklabels(monthlyData_comb['angles']['y_angles'])
+cbar.ax.set_yticklabels(yangles, size=14)
+cbar.solids.set_rasterized(True) 
+
 
 fig.tight_layout()

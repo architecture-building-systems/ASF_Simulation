@@ -5,6 +5,8 @@
 \section{Building Energy Analysis}
 \label{s:buildingResults}
 	
+	As the building energy results are available for every hour of the year, they can be visualised in greater detail than the overall results that include the PV electricity production given in Section \ref{s:baseCase}. 
+
 	The optimal configurations of the ASF can be visualised using carpet-plots. For a classical building analysis this was done for every hour of the year. Figures \ref{f:DIVAx} and \ref{f:DIVAy} show the optimizing altitude and azimuth angles for heating, cooling, lighting and total building energy demand. In figure \ref{f:DIVAx}, darker colours represent closed positions, whereas brighter colours correspond to open positions. To optimize heating and lighting, open positions (corresponding to large altitude angles) are favourable, cooling is optimized by using closed positions (corresponding to small altitude angles). The overall optimized solutions follow the corresponding patterns at the hours of importance. The azimuth angles in figure \ref{f:DIVAy} correspond to the deviation from the facade normal. For a south facing facade, this means an angle with a positive sign represents the panels facing towards south-east (bright colours), whereas negative angles represent the panels facing towards south-west (dark colours). It can be seen that for heating and lighting, the facade takes positions that let the sun in, whereas for cooling the facade follows a sun-tracking pattern which prevents radiation to enter the room. 
 
 	\begin{figure*}
@@ -96,3 +98,35 @@
 		\label{f:energies}
 		\end{center}
 	\end{figure*}
+
+	\cleardoublepage
+
+\section{Further Visualisations of Radiation and PV results}
+\label{a:PV}
+
+	The results of Sections \ref{s:baseCase} and \ref{s:compareSunTracking} were further visualised as can be seen in the following. Figure \ref{f:PV_angles} compares the angles that optimise PV electricity production with the angles that optimise the total radiation on the panels. The difference in the optimising angles can nicely be seen when comparing them side by side. Figures \ref{f:PV_power} and \ref{f:PV_efficiency} correspond to the summarising Figure \ref{f:compareSuntracking}, but also show the actual difference in the power production and the efficiency, respectively. 
+
+	\begin{figure*}[hb]
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{PV_angles}
+		\caption{Angle visulisations, that optimise the altitude (top) and azimuth (bottom) angles for radiation (left) and PV electricity production (right). While the Radiation optimisation yields a symmetric pattern, the PV electricity optimisation deviates from the pattern that optimises the radiation in order to minimise longitudinal shading on the panels.}
+		\label{f:PV_angles}
+		\end{center}
+	\end{figure*}
+
+	\begin{figure*}
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 3cm 2cm 2cm 0cm,clip]{PV_power}
+		\caption{Comparison of PV electricity production with sun tracking to optimised solution. Top: Average power output for every month of the year. Bottom: Corresponding power difference. The difference is especially high during noon and in the afternoon.}
+		\label{f:PV_power}
+		\end{center}
+	\end{figure*}
+
+	\begin{figure*}
+		\begin{center}
+		\includegraphics[width=\textwidth, trim= 3cm 2cm 2cm 0cm,clip]{PV_efficiency}
+		\caption{Comparison of PV efficiency with sun tracking to optimised solution. Top: Average efficiency for every month of the year. Bottom: Corresponding efficiency difference. The difference is especially high during noon and in the afternoon.}
+		\label{f:PV_efficiency}
+		\end{center}
+	\end{figure*}
+

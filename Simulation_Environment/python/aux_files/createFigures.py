@@ -51,7 +51,8 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
     if DIVA_results['efficienciesChanged']:
         plt.title("Heating Demand COP=" + str(DIVA_results['efficiencyChanges']['H_COP']))
     else:
-        plt.title("Heating Demand COP=" + str(DIVA_results['efficiencies']['H_COP']))
+#        plt.title("Heating Demand COP=" + str(DIVA_results['efficiencies']['H_COP']))
+        plt.title("(a) Heating Demand")
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,2,2)
     arg1 = ['min','C', rotation_axis, 'DIVA', z_min, z_max]
@@ -59,20 +60,24 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
     if DIVA_results['efficienciesChanged']:
         plt.title("Cooling Demand COP=" + str(DIVA_results['efficiencyChanges']['C_COP']))
     else:
-        plt.title("Cooling Demand COP=" + str(DIVA_results['efficiencies']['C_COP']))
+#        plt.title("Cooling Demand COP=" + str(DIVA_results['efficiencies']['C_COP']))
+        plt.title("(a) Cooling Demand")
+
     plt.subplot(2,2,3)
     arg1 = ['min','L', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg1)
     if DIVA_results['efficienciesChanged']:
         plt.title("Lighting Demand Load=" + str(DIVA_results['efficiencyChanges']['L_Load']) + " W/m2")
     else:
-        plt.title("Lighting Demand Load=" + str(DIVA_results['efficiencies']['L_Load']) + " W/m2")
+#        plt.title("Lighting Demand Load=" + str(DIVA_results['efficiencies']['L_Load']) + " W/m2")
+        plt.title("(a) Lighting Demand")
+
     plt.xlabel("Day of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     plt.subplot(2,2,4)
     arg1 = ['min','E', rotation_axis, 'DIVA', z_min, z_max]
     plotFunction(DIVA_results, arg1)
-    plt.title("Total Thermal/Lighting Demand")
+    plt.title("(d) Total Thermal/Lighting Demand")
     plt.xlabel("Day of the Year",size=14)
     fig.subplots_adjust(right=0.8)
     #cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
@@ -109,6 +114,8 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
             cbart = plt.title("Azimuth", fontsize=14)
         cbart.set_position((1.1,1.02))
         cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(angles)))
+        cbar.solids.set_rasterized(True) 
+
         
         if DIVA_results['LayoutAndCombinations']['NoClusters']==1 and not arg[0]=='xy':
             angleList = []
@@ -122,6 +129,7 @@ def createDIVAcarpetPlots(plotFunction, DIVA_results, *arg):
     elif plotFunction == pcolorEnergyDays:
         plt.suptitle("Energy Demand at Optimum Orientation", size=16)
         cbar = plt.colorbar(cax=cbar_ax)
+        cbar.solids.set_rasterized(True) 
         cbart = plt.title("Net Energy [kWh]", fontsize=14)
         cbart.set_position((1.1,1.02))
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))

@@ -98,7 +98,7 @@ def pcolorDays(DIVA_results, arg):
     #print z_min, z_max
     
     #plt.pcolor(x, y, z, cmap='jet', vmin=z_min, vmax=z_max)
-    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max)
+    plt.pcolor(x, y, z, cmap='cubehelix', vmin=z_min, vmax=z_max, rasterized=True)
 #    plt.pcolor(x, y, z, cmap='PRGn', vmin=z_min, vmax=z_max)
     #plt.pcolor(x, y, z, cmap='nipy_spectral', vmin=z_min, vmax=z_max)
 
@@ -427,7 +427,7 @@ def pcolorEnergyDays(DIVA_results, arg):
     blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)   
    
    # plot data:
-    plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max)   
+    plt.pcolor(x, y, z, cmap='afmhot', vmin=z_min, vmax=z_max, rasterized=True)   
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     plt.tick_params(axis=u'both',labelsize=14)
     
