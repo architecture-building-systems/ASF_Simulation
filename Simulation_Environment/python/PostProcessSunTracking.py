@@ -4,7 +4,8 @@ Created on Tue Apr 12 14:25:32 2016
 
 SunTracking evaluation
 
-first the electrical simulation must be done by running main.py
+first the electrical simulation must be done by running main.py for both, the
+sun-tracking and the multi-combination folders. 
 
 @author: Jeremias
 """
