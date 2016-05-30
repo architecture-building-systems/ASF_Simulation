@@ -1,5 +1,0 @@
-IDF file written: C:\DIVA\Thermal\Grasshopper\Projects\-90.0\-90.0.idf
-E+ batch file written: C:\DIVA\EnergyPlusV7-2-0\DIVA_for_Grasshopper.bat
-Weather file: CHE_Geneva.067000_IWEC
-Attempting to run batch file...
-Batch file launched successfully.
