@@ -47,19 +47,19 @@
 			\label{ss:gridconvergence}
 
 				%With a larger grid size, radiation results are less accurate. In order to account for this effect, a grid convergence study was conducted. 
-				A grid convergence study was conducted to determine the effect of the grid size on the accuracy of the radiation results, as larger grid sizes yield faster computational speeds, but generally at the cost of lower accuracy. Figure \ref{f:gridConvergence} shows the grid size dependency of the total radiation on the ASF. The colours in the first two plots on the upper left ((a) and (b)) represent the hours of the day. One can see in the second plot (b), where the radiation is normalized to the results when the grid size is 12.5\,mm, that the simulations are significantly more accurate for morning and evening hours. This is caused by increased self-shading at midday hours. The colours in the third plot on the left (c) show the dependency on different combinations. No clear pattern could be found here. Finally, the average deviation is depicted in the fourth plot on the left (d) and a box-plot with all deviations is shown on the right (e). It can be seen that a smaller grid size leads to larger deviations. While for a grid size of 400\,mm the average deviation is over 10\%, the deviation goes down to below 1\% for a grid size of 25\,mm. 25\,mm was therefore taken as the grid size of all simulations, as it gives accurate results, while still being computationally feasible. 
+				A grid convergence study was conducted to determine the effect of the grid size on the accuracy of the radiation results. Generally, larger grid sizes yield faster computational speeds, at the cost of lower accuracy. Figure \ref{f:gridConvergence} shows the grid size dependency of the total radiation on the ASF. The colours in the first two plots on the upper left ((a) and (b)) represent the hours of the day. One can see in the second plot (b), where the radiation is normalized to the results when the grid size is 12.5\,mm, that the simulations are significantly more accurate for morning and evening hours. This is caused by increased self-shading at midday hours. The colours in the third plot on the left (c) show the dependency on different combinations. No clear pattern could be found here. Finally, the average deviation is depicted in the fourth plot on the left (d) and a box-plot with all deviations is shown on the right (e). It can be seen that a smaller grid size leads to larger deviations. While for a grid size of 400\,mm the average deviation is over 10\%, the deviation goes down to below 1\% for a grid size of 25\,mm. 25\,mm was therefore taken as the grid size of all simulations, as it gives accurate results, while still being computationally feasible. 
 
 				\begin{figure*}
 					\begin{center}
 					\includegraphics[width=\textwidth, trim= 0cm 0cm 0cm 0cm,clip]{gridConvergence.pdf}
-					\caption{Grid convergence evaluation, showing the deviations of the radiation in dependence of the grid size, time of the day and panel orientation. (a) shows the total radiation on the panels in dependence of the hour of the day, (b) depicts the same results, but normalized with a division of the results with the smallest grid size, (c) presents the influence of the panel orientation, (d) plots the average deviation from the smallest grid size and (e) visualises all deviations with the usage of box-plots.}
+					\caption{Grid convergence evaluation, showing the deviations of the radiation in dependence of the grid size, time of the day and panel orientation. (a) shows the total radiation on the panels in dependence of the hour of the day, (b) depicts the same results, but normalized to the results with the smallest grid size, (c) presents the influence of the panel orientation, (d) plots the average deviation from the smallest grid size and (e) visualises all deviations with the usage of box-plots.}
 					\label{f:gridConvergence}
 					\end{center}
 				\end{figure*}
 
 		\subsection{Photovoltaic Simulation}
 			%The  results are afterwards coupled to an electrical circuit simulation of thin-film PV modules with sub-cell level representation \cite{hofer2016}. 
-			The electrical model of the PV cells builds upon the methodology presented in \cite{hofer2016}, which is using the standard equivalent circuit model to calculate sub-cell I-V curves with a single diode, one series, and one shunt resistance \cite{mermoud2010}. For the work in \cite{hofer2016}, the PV simulation was implemented in MATLAB. For this work, the MATLAB code was adjusted to match the new radiation simulations and then translated to python, in which the rest of the framework is written (details in Section \ref{s:simulationFramework}). PV electricity production is calculated based on a reference module. In addition to the irradiation dependency, the PV simulation includes temperature dependency. The temperature is estimated as suggested in \cite{Ross_Smokler_1986} with the following equation:
+			The electrical model of the PV cells builds upon the methodology presented in \cite{hofer2016}, which is using the standard equivalent circuit model to calculate sub-cell I-V curves with a single diode, one series, and one shunt resistance \cite{mermoud2010}. For the work in \cite{hofer2016}, the PV simulation was implemented in MATLAB. For the work in this thesis, the MATLAB code was adjusted to match the new radiation simulations and then translated to python, in which the rest of the framework is written (details in Section \ref{s:simulationFramework}). PV electricity production is calculated based on a reference module. In addition to the irradiation dependency, the PV simulation includes temperature dependency. The temperature is estimated as suggested in \cite{Ross_Smokler_1986} with the following equation:
 
 			\begin{equation}
 				T_{cell} = T_{air} + \left(\frac{T_{cell}^0-T_{air}^0}{S^0}\right)S_{cell}
@@ -105,9 +105,10 @@
 			\end{figure}
 
 	\section{Case Study}
+	\label{s:caseStudy}
 		%The case study is done for a room and facade representing the prototype of the ASF at the house of natural resources (HONR) \cite{honr}.  The solar facade consists of 400mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis, the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open) position in steps of 22.5$^{\circ}$. In the vertical axis, it can move from 45$^{\circ}$ to -45$^{\circ}$ in 22.5$^{\circ}$ steps. Existing ASF systems \cite{nagy2016} have independently actuated panels and a continuous range of actuation, however for simplicity, we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system.
 
-		The case study is done for a room and facade representing the prototype of the ASF at the house of natural resources (HoNR) \cite{nagy2016}.  The solar facade consists of 400\,mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis, the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open), whereas on the vertical axis, they can move from -45$^{\circ}$ to 45$^{\circ}$. %Existing ASF systems \cite{nagy2016} have independently actuated panels and a continuous range of actuation, however for simplicity, we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system. 
+		A case study was conducted for a room and facade representing the prototype of the ASF at the house of natural resources (HoNR) \cite{nagy2016}.  The solar facade consists of 400\,mm CIGS square panels that can rotate in two degrees of freedom. On the horizontal axis, the panels can move from 0$^{\circ}$ (closed) to 90$^{\circ}$ (open), whereas on the vertical axis, they can move from -45$^{\circ}$ to 45$^{\circ}$. %Existing ASF systems \cite{nagy2016} have independently actuated panels and a continuous range of actuation, however for simplicity, we group all panels into one cluster that moves in unison. This leaves us with 25 possible dynamic configurations of the facade system. 
 
 		%The office environment is heated with a heatpump with an average COP of 4 and cooled with an average COP of 3. When required, the electric lighting consumption is 11.74 $W/m^2$. 
 
@@ -142,11 +143,13 @@
 		    Heating Setpoint          	&& 22     		&& $\degree C$    \\
 		    Cooling Setpoint       		&& 26     		&& $\degree C$   \\
 		    Lighting Control       		&& 300     		&& $lux$    \\ 
-		    R-Value of Exterior Wall 	&& 3.61     	&& $K\cdot m^2/W$    \\
-		    R-Value of Window	 		&& 0.585     	&& $K\cdot m^2/W$    \\ 
-		    Solar Heat Gain Coefficient of Window	 		
+		    R-Value of Exterior Wall\footnotemark[1]
+		    						 	&& 3.61     	&& $K\cdot m^2/W$    \\
+		    R-Value of Window\footnotemark[2]
+		    					 		&& 0.585     	&& $K\cdot m^2/W$    \\ 
+		    Solar Heat Gain Coefficient of Window\footnotemark[2]	 		
 		    							&& 0.691     	&& $-$    \\
-		    Visible Light Transmittance of Window
+		    Visible Light Transmittance of Window\footnotemark[2]
 		    					 		&& 0.744     	&& $-$    \\ \hline
 		    \bf Facade Dimensions 		&& ~     		&& ~    \\ \hline
 		    Panel Size          		&& 400     		&& $mm$    \\
@@ -154,11 +157,11 @@
 		    Panel Offset          		&& 400     		&& $mm$    \\
 		    Number of Panels          	&& 50     		&& $-$    \\\hline
 		    \bf Facade Simulation 		&& ~     		&& ~    \\ \hline
-		    Solar Reflectance\footnote{\label{reflectance}Only the EnergyPlus Analysis with DIVA is able to include reflectance. Ladybug does not take reflectance into account.}      									&& 0.5     		&& $-$    \\
-		    Visible Reflectance\footnotemark[1]
+		    Solar Reflectance\footnotemark[3]      									&& 0.5     		&& $-$    \\
+		    Visible Reflectance\footnotemark[4]
 		    				    		&& 0.5     		&& $-$    \\
 		    Grid Size      	    		&& 25     		&& $mm$    \\
-		    Distance from Base\footnotemark[2]
+		    Distance from Base\footnotemark[4]
 		    				     		&& 0.5     		&& $mm$    \\
 		   % %Heating COP          		&& 4     		& $-$    \\
 		    %Heating COP          		&& 4     		& $-$    \\
@@ -172,8 +175,12 @@
 		    \caption{Parameters used for Simulations}
 		\end{table}
 
-		\footnotetext{Only the EnergyPlus analysis with DIVA is able to include reflectance. Ladybug does not take reflectance into account.}
-		\footnotetext[2]{This value represents the distance from the panels used for the radiation calculations.}
+		\footnotetext[1]{Corresponds to: \emph{ASHRAE\_90.1-2007\_Climate\_Zone\_4-8\_Exterior\_Wall\_R-13 + R-7.5} }
+		\footnotetext[2]{Corresponds to: \emph{Dbl LoE (e2=.2) Clr 3mm/13mm Arg}}
+		\footnotetext[3]{Only the EnergyPlus analysis with DIVA is able to include reflectance. Ladybug does not take reflectance into account.}
+		\footnotetext[4]{This value represents the distance from the panels used for the radiation calculations.}
+
+
 
 
 

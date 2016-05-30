@@ -2,7 +2,7 @@
 
 \chapter{Usage of Simulation Environment}\label{a:usage}
 
-This chapter describes the usage of the simulation environment. It provides essentially the same content as the github wiki that can be found at 
+This appendix chapter describes the usage of the simulation environment. It provides essentially the same content as the github wiki that can be found at 
 
 \url{https://github.com/architecture-building-systems/ASF_Simulation/wiki}.\\
 
@@ -11,19 +11,19 @@ First, a description on how to get the simulation environment and what tools mus
 \section{Get ASF\_Simulation Folder}
 \label{s:getFolder}
 	
-	In order to use the ASF simulation framework, you can either download the .zip file and unpack the folder or you can use the following commands within git:
+	In order to use the ASF simulation framework, one can either download the .zip file and unpack the folder or use the following commands within git:
 
 	\subsection{Git Set-Up}
 
-	In Your working directory type:
+	In the working directory, type:
 
 	\begin{verbatim}git init\end{verbatim}
 
-	\noindent{Then Checkout the repository:}
+	\noindent{Then checkout the repository:}
 
 	\begin{verbatim}git clone https://github.com/architecture-building-systems/ASF_Simulation.git\end{verbatim}
 
-	\noindent{To download the files type:}
+	\noindent{To download the files, type:}
 
 	\begin{verbatim}git pull\end{verbatim}
 	
@@ -70,8 +70,8 @@ First, a description on how to get the simulation environment and what tools mus
 	\end{itemize}
 
 
-	\subsection{Python}
-	Anaconda is recommended as it is easy to create virtual environments and manage python
+	\subsection{Installing Python}
+	Anaconda is recommended as it is easy to create virtual environments and manage python:
 
 	\url{https://www.continuum.io/downloads}\\
 
@@ -90,7 +90,7 @@ First, a description on how to get the simulation environment and what tools mus
 
 
 	\subsection{General Description of \emph{main.gh}}
-		GhPython scripts generate the geometry of the ASF of every possible configuration. The script then loops through every configuration and runs an energy plus simulation and a ladybug simulation on every geometry for each hourly time step. Special attention has to be given to the sections in the script which have a red frame, these sections should be checked before every simulation, to make sure that it is running correctly. Furthermore, one has to be aware of the places the results are stored, and the instructions given on how to save the data should be closely followed. 
+		GhPython scripts generate the geometry of the ASF of every possible configuration. The script then loops through every configuration and runs an EnergyPlus simulation and a Ladybug simulation on every geometry for each hourly time step. Special attention has to be given to the sections in the script which have a red frame, these sections should be checked before every simulation, to make sure that it is running correctly. Furthermore, one has to be aware of the places the results are stored, and the instructions given on how to save the data should be closely followed. 
 
 
 
@@ -142,7 +142,7 @@ First, a description on how to get the simulation environment and what tools mus
 		\end{itemize}
 
 		\subsubsection{Save Data}
-		Python script that saves the DIVA data for post processing. The folder where it will be saved is set automatically in the script \emph{set DIVA data path} to \emph{Simulation\_Environment/data/grasshopper/DIVA/DIVA\_results}. {\bf After a simulation finishes, the acquired data has to be moved to a separate folder with a unique name, which will be used for post processing.} Alternatively, the folder \emph{DIVA\_results} can simply be renamed. It is good practice to also save a backup of the current \emph{main.gh} file to this folder ([Ctr+Alt+s] saves a backup, this should then also be moved to the corresponding data folder. 
+		Python script that saves the DIVA data for post processing. The folder where it will be saved is set automatically in the script \emph{set DIVA data path} to \emph{Simulation\_Environment/data/grasshopper/DIVA/DIVA\_results}. {\bf After a simulation finishes, the acquired data has to be moved to a separate folder with a unique name, which will be used for post processing.} Alternatively, the folder \emph{DIVA\_results} can simply be renamed. It is good practice to also save a backup of the current \emph{main.gh} file to this folder ([Ctr+Alt+s] saves a backup). 
 
 	\subsection{Loop EnergyPlus}
 	Uses hoopsnake to iterate through all possible configurations. It must be made sure that the hoopsnake algorithm is connected correctly.
@@ -151,11 +151,11 @@ First, a description on how to get the simulation environment and what tools mus
 	The weather file used for the ladybug radiation analysis is set in this section. The desired .epw file must already be in the WeatherData folder and the full name of the weather file has to be input to the \emph{weatherPath} Python script. 
 
 	\subsection{Save Details of Weather File}
-	The weather file that was specified is read and relevant information is on the sun position and the temperature is saved to the folder \linebreak {\it Simulation\_Environment/data/geographical\_location}. If a new weather file is used, the main.py file has to be run in \emph{initialize} mode to prepare the data for further use with grasshopper. It must be made sure that the component \emph{Ladybug\_SunPath} is enabled when a new weather-file is introduced. 
+	The weather file that was specified is read and relevant information on the sun position and the temperature is saved to the folder \linebreak {\it Simulation\_Environment/data/geographical\_location}. If a new weather file is used, the main.py file has to be run in \emph{initialize} mode to prepare the data for further use with grasshopper. It must be made sure that the component \emph{Ladybug\_SunPath} is enabled when a new weather-file is introduced. 
 
 
 	\subsection{Loop LadyBug}
-	In this section ladybug is looped according to the specified angle combinations and for relevant hours (see Section \ref{ss:setEvalPeriod})
+	In this section, Ladybug is looped according to the specified angle combinations and for relevant hours (see Section \ref{ss:setEvalPeriod})
 
 	\subsection{Set Evaluation Period}
 	\label{ss:setEvalPeriod}
@@ -170,7 +170,7 @@ First, a description on how to get the simulation environment and what tools mus
 		\subsubsection{Create Sky Matrix}
 		In the selectSkyMtx component, it is possible to either choose a specific hour of the year or a period of time, which can be chosen with the Analysis Period component. {\bf WARNING: This component is not working correctly in the current version of ladybug.} The bug has been found, fixed, and reported to the developers:
 
-		\url{https://github.com/mostaphaRoudsari/ladybug/issues/233)}
+		\url{https://github.com/mostaphaRoudsari/ladybug/issues/233}
 
 		\subsubsection{Calculate Radiance on Panels}
 		Calculates the radiance on a specified geometry. The simulation is done for the chosen settings given by the SelectSkyMtx component. {\bf Toggle runIt to start the evaluation}, this can take up to 20 seconds on a fast computer. 
@@ -186,23 +186,23 @@ First, a description on how to get the simulation environment and what tools mus
 
 \section{Python Evaluation}
 
-	The data that was previously generated by the \emph{main.gh} script is read in by the \emph{main.py} file and post processed to output several graphs, aggregated data, and a summary.csv file. 
+	The data that was previously generated by the \emph{main.gh} script is read in by the \emph{main.py} file and post-processed to output several graphs, aggregated data, and a summary.csv file. 
 
-	\subsection{main.py}
-	This is the main file for the python evaluation. There are two modes: \emph{initialize} and \emph{post\_processing}. If an evaluation is done for the first time for a specific location, it must first run in \emph{initialize} mode, otherwise it can be run directly in \emph{post\_processing} mode. 
+	\subsection{Main Python File}
+	The \emph{main.py} file is the main file for the python evaluation. There are two modes: \emph{initialize} and \emph{post\_processing}. If an evaluation is done for the first time for a specific location, it must first run in \emph{initialize} mode, otherwise it can be run directly in \emph{post\_processing} mode. 
 	At the beginning of the script, there is a user interaction section. When starting an evaluation, a user must go through this section to make sure everything is set as wished. All variables are described in detail right before they are defined. 
 
-	\subsection{compareResults.py}
-	This file can be used to generate various plots on comparing simulation results. The corresponding result folders must be set manually, and adjustment might be needed in the script. 
+	\subsection{Compare Results}
+	The file \emph{compareResults.py} can be used to generate various plots on comparing simulation results. The corresponding result folders must be set manually, and adjustment might be needed in the script. 
 	
-	\subsection{PostProcessSunTracking.py}
-	This file can be used to compare a sun-tracking approach to an optimized solution. In order to run this script, the corresponding optimization results must be available and the folders that will be compared have to be manually set.
+	\subsection{Post-Process Sun Tracking}
+	The file \emph{PostProcessSunTracking.py} can be used to compare a sun-tracking approach to an optimized solution. In order to run this script, the corresponding optimization results must be available and the folders that will be compared have to be manually set.
 
-	\subsection{createFiguresAfterMain.py}
-	With this file, additional plots can be generated that visualize the simulation results. 
+	\subsection{Create Further Visulisations}
+	With the file \emph{createFiguresAfterMain.py}, additional plots can be generated that visualize the simulation results. 
 
-	\subsection{aux\_files}
-	This folder contains all auxiliary files, that are needed for the post-processing and the optimisation. It is recommended to go through an optimisation-run step-by-step, in order to clearly understand how the simulation works. 
+	\subsection{Auxiliary Files}
+	The \emph{aux\_files} folder contains all auxiliary files that are needed for the post-processing and the optimisation. It is recommended to go through an optimisation-run step-by-step, in order to clearly understand how the simulation works. 
 
 \section{First Time Set-Up of a Simulation}
 \label{s:setUp}
