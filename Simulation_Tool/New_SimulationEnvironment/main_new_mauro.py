@@ -7,7 +7,7 @@ main file for simulation environment
 @author: Prageeth Jayathissa
 @credits: Jerimias Schmidli
 
-28.09.2016
+29.09.2016
 """
 
 import os, sys
@@ -17,6 +17,7 @@ import time
 import warnings
 import csv
 import matplotlib.pyplot as plt
+import csv
 
 # get current time
 now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
@@ -34,8 +35,8 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 5344
-end =  5345
+start = 11
+end =  13
 
 #5341 -> 11.august, 11 uhr bis 12 uhr
 
@@ -66,6 +67,8 @@ paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 paths['data'] = paths['main'] + '\\data'
 paths['python'] = paths['main'] + '\\python'
 paths['radiation_results'] = paths['main'] + '\\radiation_results'
+paths['radiation_wall'] = paths['main'] + '\\radiation_wall'
+
 paths['PV'] = paths['main'] + '\\PV_results'
 
 # define path of geographical location:
@@ -76,6 +79,9 @@ paths['geo'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\
 
 if not os.path.isdir(paths['radiation_results']):
         os.makedirs(paths['radiation_results'])
+
+if not os.path.isdir(paths['radiation_wall']):
+        os.makedirs(paths['radiation_wall'])
 
 # add python_path to system path, so that all files are available:
 sys.path.insert(0, paths['python'] + '\\aux_files')
@@ -96,8 +102,8 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[90]
-YANGLES= [90]
+XANGLES=[0]
+YANGLES= [-22.5,22.5]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -155,9 +161,12 @@ opt_angles = {}
 HOY_night = {}
 
 
+BuildingRadiationData_HOY = {}
+
 
 for HOY in range(start,end):
     HOY_night[HOY] = False
+    BuildingRadiationData = []
     
     for x_angle in XANGLES:
         
@@ -179,6 +188,11 @@ for HOY in range(start,end):
             #Wait until the radiation_results were created    
             while not os.path.exists(paths['radiation_results']+'\\RadiationResults' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv'):
                 time.sleep(1)
+   
+                  
+                
+                
+                
             else:
                 if os.path.getsize(paths['radiation_results']+'\\RadiationResults' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv') == 25879L:
                     print 'No Radiaiton: HOY =', HOY, '\nEvaluate next hour of the year!\n'
@@ -188,9 +202,22 @@ for HOY in range(start,end):
                 else:
                     print 'next step'
                     resultsdetected += 1
-        
-        
+                                            
+                    #read total radition on wall and save it in BuildingRadiationData              
+                    while not os.path.exists(paths['radiation_wall'] + '\RadiationWall' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv'):
+                        time.sleep(1)
+                    else:
+                        
+                        with open(paths['radiation_wall'] + '\RadiationWall' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv', 'r') as csvfile:
+                            reader = csv.reader(csvfile)
+                            for idx,line in enumerate(reader):
+                                if idx == 1:
+                                    BuildingRadiationData.append(float(line[0]))
+                                    break
+                    
+                                       
     print 'radiation calculation finished!'
+    BuildingRadiationData_HOY[HOY]= BuildingRadiationData
     
     
     from prepareData import prepareMonthlyRadiatonData, readLayoutAndCombinations, CalcXYAnglesAndLocation, sum_monthly
@@ -246,10 +273,9 @@ for hour_of_year in range(start,end):
         # do evaluation if HOY is not in the night 
         #from the dicitionary PV_electricity_results access from the key 4000, the values from Pmpp_sum
         PV_sum = PV_electricity_results[hour_of_year]['Pmpp_sum']
-        Rad_sum = PV_electricity_results[hour_of_year]['Ins_sum']
+        
         
         PV_results_HOY= {}
-        RadiationBuilding_HOY = {}
          
         i = 0
            
@@ -258,14 +284,9 @@ for hour_of_year in range(start,end):
             PV_results_HOY[i]=ii
             i += 1
             
-        print PV_results_HOY
-        j = 0
+        print 'PV results:', PV_electricity_results[hour_of_year]['Pmpp_sum']    
         
-        for jj in Rad_sum:
-            
-            RadiationBuilding_HOY[j] = jj - PV_results_HOY[j]
-            j += 1
-        
+#        
                         
                                                 
         #                                        
@@ -283,15 +304,16 @@ for hour_of_year in range(start,end):
                                         
         # calcualte Building Simulation (RC Model) and save H,C,L and uncomfortable hours
                                                 
-        from main_RC_model import main_RC_model
+        from main_RC_model2 import main_RC_model
         
         paths['epw_name'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Zurich-Kloten_2013.epw'
         paths['Radiation_Buidling'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\adiation_Building_Zh.csv'
         paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv'                                        
                                                 
         
-                                            
-        Data_T_in, Data_Heating, Data_Cooling, Data_Lighting, Q_fenstRad = main_RC_model(paths['epw_name'],paths['Radiation_Buidling'],paths['Occupancy'])
+        NumberCombinations = len(XANGLES)*len(YANGLES) #*NoClusters
+                                    
+        Data_T_in, Data_Heating, Data_Cooling, Data_Lighting, Q_fenstRad = main_RC_model(start, end, NumberCombinations, BuildingRadiationData_HOY,paths['epw_name'],paths['Radiation_Buidling'],paths['Occupancy'])
         
         
         #if actiuation energy schould be included, option == 'True'
@@ -373,5 +395,14 @@ print "simulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 #
 #for hour_of_year in range (start,end):
 #    E_tot[1] = Results[hour_of_year]['E_tot']
+
+
+
+    
+   
+
+#        
+#  
+    
     
 
