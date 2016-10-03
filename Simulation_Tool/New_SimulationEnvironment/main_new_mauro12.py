@@ -36,8 +36,8 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 5335
-end =  5350
+start = 4000
+end =  4024
 
 
 
@@ -116,8 +116,8 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[22.5,45,67.5]
-YANGLES= [-22.5,0,22.5]
+XANGLES=[45]
+YANGLES= [-22.5,22.5]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -338,9 +338,30 @@ for hour_of_year in range(start,end):
     results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]   
     results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
     
+    Building_Simulation_df = pd.DataFrame(results_building_simulation)
+    Building_Simulation_df = Building_Simulation_df.T
+    
+    
     T_in = Data_T_in_HOY[hour_of_year][comb]
 
 print results_building_simulation
+
+
+plt.figure() 
+
+    
+with pd.plot_params.use('x_compat', True):
+    Building_Simulation_df['E_tot'].plot(color='r')
+    Building_Simulation_df['PV'].plot(color='g') 
+    Building_Simulation_df['H'].plot(color='b') 
+    Building_Simulation_df['C'].plot(color='k') 
+    Building_Simulation_df['L'].plot(color='y') 
+    
+
+plt.legend(loc='best')
+
+
+    
  
         
 # create folder where results will be saved:
