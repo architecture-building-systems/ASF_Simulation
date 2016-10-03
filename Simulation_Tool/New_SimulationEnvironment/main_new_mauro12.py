@@ -308,9 +308,7 @@ for hour_of_year in range(start,end):
         
     for comb in range(0, NumberCombinations):
         
-#        print BuildingRadiationData_HOY[hour_of_year][comb]
-#        print T_in
-        
+        #set occupancy profil of the building
         Data_T_in, Data_Heating, Data_Cooling, Data_Lighting = main_RC_model(hour_of_year, T_in, BuildingRadiationData_HOY[hour_of_year][comb],paths['epw_name'],paths['Radiation_Building'],paths['Occupancy'])
         
         #save all combination results for one HOY
@@ -378,6 +376,10 @@ print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime()
     print '\nFor HOY', hour_of_year, 'the hourly total energy demand is:', hourlyData['E_tot'][BestComb], 'kWh'
     print 'With optimal angle combination(X-angle,Y-angle):', combinationAngles[BestComb]
 #        
+"""
+
+
+for ii in 
 
     
 #plt.figure(1)
