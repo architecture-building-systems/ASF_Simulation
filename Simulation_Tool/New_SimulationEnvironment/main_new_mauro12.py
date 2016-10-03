@@ -379,7 +379,6 @@ print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime()
 """
 
 
-for ii in 
 
     
 #plt.figure(1)
@@ -407,4 +406,3 @@ for ii in
 #       else:
 #           hourlyData['Actuation'] = XY
 
-"""

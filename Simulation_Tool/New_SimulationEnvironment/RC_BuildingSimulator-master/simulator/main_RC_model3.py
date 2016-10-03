@@ -63,7 +63,7 @@ def main_RC_model (ii, T_in, BuildingRadiationData_HOY, epw_name, myfilename1, m
     
     #Calculate external heat gains
     
-    print 'Building Radiation:', BuildingRadiationData_HOY
+    #print 'Building Radiation:', BuildingRadiationData_HOY
           
     Q_fenstRad=Q_fenstRad*Office.glass_solar_transmitance #Solar Gains from ladybug analysis
     Q=Q_fenstRad + Q_human[ii] #only solar gains and human gains for now
