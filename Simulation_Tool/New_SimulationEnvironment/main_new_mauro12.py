@@ -36,8 +36,8 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 4000
-end =  4024
+start = 4986
+end =  4993
 
 
 
@@ -85,8 +85,6 @@ from epwreader import epw_reader
 #read epw file of needed destination
 weatherData = epw_reader(paths['weather'])
 
-#pj m,ade a change
-
 
 
 #radiation subfolder is created, there the radiation_results are saved
@@ -116,8 +114,8 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[45]
-YANGLES= [-22.5,22.5]
+XANGLES=[0,22.5,45,67.5,90]
+YANGLES= [-45,-22.5,0,22.5,45]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -264,7 +262,7 @@ for HOY in range(start,end):
         
 
 #Temperature value, to start the simulation with
-T_in = 20
+T_in = 22
 
 #create dicitionary to save relevant hourly data:
 hourlyData = {}
@@ -344,7 +342,6 @@ for hour_of_year in range(start,end):
     
     T_in = Data_T_in_HOY[hour_of_year][comb]
 
-print results_building_simulation
 
 
 plt.figure() 
