@@ -7,7 +7,7 @@ main file for simulation environment
 @author: Prageeth Jayathissa
 @credits: Jerimias Schmidli
 
-28.09.2016
+30.09.2016
 """
 
 import os, sys
@@ -17,6 +17,8 @@ import time
 import warnings
 import csv
 import matplotlib.pyplot as plt
+import csv
+import pandas as pd
 
 # get current time
 now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
@@ -34,8 +36,10 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 5344
-end =  5345
+start = 5341
+end =  5342
+
+
 
 #5341 -> 11.august, 11 uhr bis 12 uhr
 
@@ -66,16 +70,27 @@ paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 paths['data'] = paths['main'] + '\\data'
 paths['python'] = paths['main'] + '\\python'
 paths['radiation_results'] = paths['main'] + '\\radiation_results'
+paths['radiation_wall'] = paths['main'] + '\\radiation_wall'
+
 paths['PV'] = paths['main'] + '\\PV_results'
 
 # define path of geographical location:
 paths['geo'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\data\geographical_location\Zuerich-Kloten' 
 
 
+from EnergyplusFileReader import epw_reader
+
+weatherData = epw_reader(paths['geo'])
+
+
+
 #radiation subfolder is created, there the radiation_results are saved
 
 if not os.path.isdir(paths['radiation_results']):
         os.makedirs(paths['radiation_results'])
+
+if not os.path.isdir(paths['radiation_wall']):
+        os.makedirs(paths['radiation_wall'])
 
 # add python_path to system path, so that all files are available:
 sys.path.insert(0, paths['python'] + '\\aux_files')
@@ -96,8 +111,8 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[90]
-YANGLES= [90]
+XANGLES=[0]
+YANGLES= [-22.5,22.5]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -112,7 +127,7 @@ combinationAngles = {}
 for i in range(0,len(ANGLES)):
     combinationAngles[i] = ANGLES[i]
 
-   
+NumberCombinations = len(XANGLES)*len(YANGLES) #*NoClusters   
 
 #Set panel data
 panel_data={"XANGLES": XANGLES ,
@@ -155,9 +170,15 @@ opt_angles = {}
 HOY_night = {}
 
 
+BuildingRadiationData_HOY = {}
+
+#np.array([1,2,3])
+#array = []
+#array.append(valueToBeInserted)
 
 for HOY in range(start,end):
     HOY_night[HOY] = False
+    BuildingRadiationData = np.array([])
     
     for x_angle in XANGLES:
         
@@ -179,19 +200,34 @@ for HOY in range(start,end):
             #Wait until the radiation_results were created    
             while not os.path.exists(paths['radiation_results']+'\\RadiationResults' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv'):
                 time.sleep(1)
+               
             else:
                 if os.path.getsize(paths['radiation_results']+'\\RadiationResults' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv') == 25879L:
                     print 'No Radiaiton: HOY =', HOY, '\nEvaluate next hour of the year!\n'
-                    HOY_night[HOY] = True
+                    HOY_night[HOY] = True                  
                     break  #HOY with no radiation are not further evaluated
                 
                 else:
                     print 'next step'
                     resultsdetected += 1
-        
-        
+                                            
+                    #read total radition on wall and save it in BuildingRadiationData              
+                    while not os.path.exists(paths['radiation_wall'] + '\RadiationWall' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv'):
+                        time.sleep(1)
+                    else:
+                        
+                        with open(paths['radiation_wall'] + '\RadiationWall' + '_' + str(HOY) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv', 'r') as csvfile:
+                            reader = csv.reader(csvfile)
+                            for idx,line in enumerate(reader):
+                                if idx == 1:
+                                    BuildingRadiationData = np.append(BuildingRadiationData, [float(line[0])])
+                                    break
+                    
+                                       
     print 'radiation calculation finished!'
     
+    BuildingRadiationData_HOY[HOY]= BuildingRadiationData
+        
     
     from prepareData import prepareMonthlyRadiatonData, readLayoutAndCombinations, CalcXYAnglesAndLocation, sum_monthly
 
@@ -237,123 +273,108 @@ for HOY in range(start,end):
         print "\npreparing data\n"  
 
 
+T_in = 16
 
+#create dicitionary to save relevant hourly data:
+hourlyData = {}
+Data_Heating_HOY = {}
+Data_Cooling_HOY = {}
+Data_Lighting_HOY = {}
+Data_T_in_HOY = {}
 
 
 #one could delete this loop, and change variable names to HOY
+
 for hour_of_year in range(start,end):
-    if HOY_night[hour_of_year] != True:  
-        # do evaluation if HOY is not in the night 
-        #from the dicitionary PV_electricity_results access from the key 4000, the values from Pmpp_sum
-        PV_sum = PV_electricity_results[hour_of_year]['Pmpp_sum']
-        Rad_sum = PV_electricity_results[hour_of_year]['Ins_sum']
-        
-        PV_results_HOY= {}
-        RadiationBuilding_HOY = {}
-         
-        i = 0
-           
-        for ii in PV_sum:
-            
-            PV_results_HOY[i]=ii
-            i += 1
-            
-        print PV_results_HOY
-        j = 0
-        
-        for jj in Rad_sum:
-            
-            RadiationBuilding_HOY[j] = jj - PV_results_HOY[j]
-            j += 1
-        
-                        
-                                                
-        #                                        
-        #""" radiation energy, which enters the building (not absorbed by the PV panels) has to be transfered to
-        #the building simulation
-        #
-        #- dependend on the amount of angle combinations, H,C,L values are going to be calcualted (maybe only for relevant hour)
-        #- H,C,L values will be returned and the PV energy production is going to be subtracted
-        #- the lowest overall energy demand will be determined and angle combination for specific HOY returned
-        #
-        # """                                        
-        
-        # add python_path to system path, so that all files are available:
-        sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
-                                        
-        # calcualte Building Simulation (RC Model) and save H,C,L and uncomfortable hours
-                                                
-        from main_RC_model import main_RC_model
-        
-        paths['epw_name'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Zurich-Kloten_2013.epw'
-        paths['Radiation_Buidling'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\adiation_Building_Zh.csv'
-        paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv'                                        
-                                                
-        
-                                            
-        Data_T_in, Data_Heating, Data_Cooling, Data_Lighting, Q_fenstRad = main_RC_model(paths['epw_name'],paths['Radiation_Buidling'],paths['Occupancy'])
-        
-        
-        #if actiuation energy schould be included, option == 'True'
-    #    if Actuation:
-    #        if opt_angles[hour_of_year] == opt_angles[hour_of_year]:
-    #           #if there is no acuation between the hour time step, acutaion energy = 0           
-    #           hourlyData['Actuation'] = 0
-    #       else:
-    #           hourlyData['Actuation'] = XY
     
-        #create dicitionary to save relevant hourly data:
-        hourlyData = {}
-        
-        #get key with max value from the pv results dictionary, save the max value into hourlyData['PV']
-        hourlyData['PV'] = PV_results_HOY[max(PV_results_HOY, key=lambda i: PV_results_HOY[i])]
-        
-        
-        
-        if hourlyData['PV'] != 0 or bool(opt_angles) == False :
-            opt_angles[hour_of_year] = combinationAngles[max(PV_results_HOY, key=lambda i: PV_results_HOY[i])]
-              
-        else:      
-            #do not move the PV panels, optimal angle HOY== angle HOY-1        
-            opt_angles[hour_of_year] = opt_angles[hour_of_year-1]
+    Results[hour_of_year] = {}
+    Data_Heating_HOY[hour_of_year] = {}
+    Data_Cooling_HOY[hour_of_year] = {}
+    Data_Lighting_HOY[hour_of_year] =  {}   
+    Data_T_in_HOY[hour_of_year] = {}
+    
             
-                   
-            
+    # add python_path to system path, so that all files are available:
+    sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
+                                    
+    # calcualte Building Simulation (RC Model) and save H,C,L and uncomfortable hours
+                                            
+    from main_RC_model3 import main_RC_model
+    
+    paths['epw_name'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Zurich-Kloten_2013.epw'
+    paths['Radiation_Buidling'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\adiation_Building_Zh.csv'
+    paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv'                                        
+                                            
+    
+    #for every angle combination in HOY, transfer the BuildingRadiaiton and determine the smallest enrgy demand respectively angle combination
+    
+    hourlyData['PV'] = 0.001 * PV_electricity_results[hour_of_year]['Pmpp_sum']
+    
+    for comb in range(0, NumberCombinations):
+        Data_T_in, Data_Heating, Data_Cooling, Data_Lighting = main_RC_model(hour_of_year, T_in, BuildingRadiationData_HOY[HOY][comb],paths['epw_name'],paths['Radiation_Buidling'],paths['Occupancy'])
         
-        hourlyData['H'] = Data_Heating[hour_of_year]
-        hourlyData['C'] = Data_Cooling[hour_of_year]
-        hourlyData['L'] = Data_Lighting[hour_of_year]
-        hourlyData['E_HCL'] = hourlyData['H'] + hourlyData['C'] + hourlyData['L']
+        Data_Heating_HOY[hour_of_year][comb] = Data_Heating
+        Data_Cooling_HOY[hour_of_year][comb] = Data_Cooling
+        Data_Lighting_HOY[hour_of_year][comb] =  Data_Lighting       
+        Data_T_in_HOY[hour_of_year][comb] = Data_T_in
+   
+   
+print Data_Heating_HOY,Data_Cooling_HOY, Data_Lighting_HOY, Data_T_in_HOY    
         
+#        if hourlyData['PV'] != 0 or bool(opt_angles) == False :
+#            opt_angles[hour_of_year] = combinationAngles[max(PV_results_HOY, key=lambda i: PV_results_HOY[i])]
+#              
+#        else:      
+#            #do not move the PV panels, optimal angle HOY== angle HOY-1        
+#            opt_angles[hour_of_year] = opt_angles[hour_of_year-1]
+       
+ 
+"""
+   
+    hourlyData['H'] = Data_Heating_HOY[hour_of_year]
+    hourlyData['C'] = Data_Cooling_HOY[hour_of_year]
+    hourlyData['L'] = Data_Lighting_HOY[hour_of_year]
+    hourlyData['E_HCL'] = {}
+    hourlyData['E_tot'] = {}
+    
+    for ii in range(0, NumberCombinations):
+        hourlyData['E_HCL'][ii] = hourlyData['H'][ii] + hourlyData['C'][ii] + hourlyData['L'][ii]
+    
         #Add PV production to the energy demand of H,C,L, total energy demand at hour_of_year
-        
-        hourlyData['E_tot'] = hourlyData['E_HCL'] - hourlyData['PV']/1000 #+ hourlyData['Actuation']
-        
+    
+        hourlyData['E_tot'][ii] = hourlyData['E_HCL'][ii] - hourlyData['PV'][ii] #+ hourlyData['Actuation']
+    
         print '\nThe Evaluated hour of the year:', hour_of_year
-        
-        print 'Hourly PV production is:', hourlyData['PV'], 'Wh'
-        print 'Hourly Heating load is:',hourlyData['H'],  'kWh' 
-        print 'Hourly Cooling load is:',hourlyData['C'], 'kWh'
-        print 'Hourly Lighting load is:',hourlyData['L'], 'kWh' 
-        print 'Hourly total load is:',hourlyData['E_HCL'], 'kWh' 
-        
-        #Add PV production to the energy demand of H,C,L, total energy demand at hour_of_year
-        
-        print 'Hourly total energy demand is:', hourlyData['E_tot'], 'kWh'
-        print '\nOptimal angle combination(X-angle,Y-angle):', opt_angles[hour_of_year],'\n'
-        
-        Results[hour_of_year] = hourlyData
-        Results[hour_of_year]['OptAngles'] = opt_angles[hour_of_year]
-    else:
-        Results[hour_of_year] = 'night'
+        print 'Angle combination: ', combinationAngles[ii]
+        print 'Hourly PV production is:', hourlyData['PV'][ii], 'kWh'
+        print 'Hourly Heating load is:',hourlyData['H'][ii],  'kWh' 
+        print 'Hourly Cooling load is:',hourlyData['C'][ii], 'kWh'
+        print 'Hourly Lighting load is:',hourlyData['L'][ii], 'kWh' 
+        print 'Hourly total Energy demand:',hourlyData['E_tot'][ii], 'kWh' 
+#                
+#        #Add PV production to the energy demand of H,C,L, total energy demand at hour_of_year
+     
+     #get key with max value from the pv results dictionary, save the max value into hourlyData['PV']
+    BestComb = min(hourlyData['E_tot'], key=lambda i: hourlyData['E_tot'][i])
+#        
+    print '\nFor HOY', hour_of_year, 'the hourly total energy demand is:', hourlyData['E_tot'][BestComb], 'kWh'
+    print 'With optimal angle combination(X-angle,Y-angle):', combinationAngles[BestComb]
+#        
+    Results[hour_of_year]['E_tot'] = hourlyData['E_tot'][BestComb]
+    Results[hour_of_year]['H']  = hourlyData['H'][BestComb]
+    Results[hour_of_year]['C']  = hourlyData['C'][BestComb]
+    Results[hour_of_year]['L']  = hourlyData['L'][BestComb]
+    Results[hour_of_year]['PV']  = hourlyData['PV'][BestComb]
+    Results[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
+    
         
 # create folder where results will be saved:
 if not os.path.isdir(paths['main'] + '\\Results'):
     os.makedirs(paths['main'] + '\\Results')    
 # save all results
 np.save(paths['main'] + '\\Results' + '\\Results' + '_' + str(now) + '.npy', Results)
-        
-print "simulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+#        
+print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
 
 
@@ -373,5 +394,14 @@ print "simulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 #
 #for hour_of_year in range (start,end):
 #    E_tot[1] = Results[hour_of_year]['E_tot']
-    
 
+
+    #if actiuation energy schould be included, option == 'True'
+#    if Actuation:
+#        if opt_angles[hour_of_year] == opt_angles[hour_of_year]:
+#           #if there is no acuation between the hour time step, acutaion energy = 0           
+#           hourlyData['Actuation'] = 0
+#       else:
+#           hourlyData['Actuation'] = XY
+
+"""
