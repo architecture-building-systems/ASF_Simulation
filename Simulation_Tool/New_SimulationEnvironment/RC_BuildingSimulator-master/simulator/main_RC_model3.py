@@ -37,6 +37,8 @@ def main_RC_model (ii, T_in, BuildingRadiationData_HOY, epw_name, myfilename1, m
     #Import Data
     T_out,glbRad, glbIll= f.read_EWP(epw_name) #C, W, lx
     
+    
+    #print T_out[ii]
     #heat gain from the sun
     Q_fenstRad=BuildingRadiationData_HOY #kWh/h, Solar Gains from ladybug analysis
     
@@ -150,7 +152,7 @@ def main_RC_model (ii, T_in, BuildingRadiationData_HOY, epw_name, myfilename1, m
     Data_Lighting=Lighting_hr
  
     
-    return Data_T_in, Data_Heating, Data_Cooling, Data_Lighting   
+    return Data_T_in, T_out[ii], Data_Heating, Data_Cooling, Data_Lighting   
     
    
     

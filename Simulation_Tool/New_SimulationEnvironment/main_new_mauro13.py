@@ -36,8 +36,8 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 1
-end =  745
+start = 13
+end =  14
 
 
 
@@ -114,7 +114,7 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[45]
+XANGLES=[22.5,45]
 YANGLES= [0]
 
 #XANGLES=[22.5,67.5]
@@ -284,6 +284,7 @@ for hour_of_year in range(start,end):
     Data_Lighting_HOY[hour_of_year] =  {}   
     Data_T_in_HOY[hour_of_year] = {}
     results_building_simulation[hour_of_year] = {}
+    hourlyData[hour_of_year]={}
             
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
@@ -345,7 +346,7 @@ for hour_of_year in range(start,end):
 
 
 
-plt.figure() 
+fig = plt.figure() 
 
     
 with pd.plot_params.use('x_compat', True):
@@ -358,21 +359,44 @@ with pd.plot_params.use('x_compat', True):
 
 plt.legend(loc='best')
 
-
-    
- 
         
 # create folder where results will be saved:
 if not os.path.isdir(paths['main'] + '\\Results'):
     os.makedirs(paths['main'] + '\\Results')    
 # save all results
 np.save(paths['main'] + '\\Results' + '\\Building_Simulation' + '_' + str(now) + '.npy', results_building_simulation)
+
+# create folder to save figures as png:
+os.makedirs(paths['main'] + '\\Results' + '\\' + now + '\\png' )
+
+
+fig.savefig(paths['main'] + '\\Results' + '\\' + now + '\\png\\' + 'figure' + '.png')
+
+
+
 #        
 print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
 
 
 """
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.style.use('ggplot')
+ts = pd.Series(np.random.randn(1000), index=pd.date_range('1/1/2000', periods=1000))
+ts = ts.cumsum()
+plt.figure()
+ts.plot()
+plt.savefig("foo.png", bbox_inches='tight')
+
+
+
+
+
     if hourlyData['PV'] == 0:
          opt_angles[hour_of_year] = combinationAngles[BestComb]
               
