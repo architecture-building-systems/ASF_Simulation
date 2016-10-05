@@ -36,8 +36,8 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 1
-end =  745
+start = 12
+end =  14
 
 
 
@@ -114,8 +114,8 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[45]
-YANGLES= [0]
+XANGLES=[0,22.5,45,67.5,90]
+YANGLES= [-45,-22.5,0,22.5,45]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -284,6 +284,7 @@ for hour_of_year in range(start,end):
     Data_Lighting_HOY[hour_of_year] =  {}   
     Data_T_in_HOY[hour_of_year] = {}
     results_building_simulation[hour_of_year] = {}
+    hourlyData[hour_of_year]= {}
             
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
@@ -299,9 +300,9 @@ for hour_of_year in range(start,end):
     
     #for every angle combination in HOY, transfer the BuildingRadiaiton and determine the smallest enrgy demand respectively angle combination
     if weatherData['glohorrad_Whm2'][hour_of_year] > 0:
-        hourlyData['PV'] = 0.001 * PV_electricity_results[hour_of_year]['Pmpp_sum']
+        hourlyData[hour_of_year]['PV'] = 0.001 * PV_electricity_results[hour_of_year]['Pmpp_sum']
     else:
-        hourlyData['PV']= [0] * len(combinationAngles)
+        hourlyData[hour_of_year]['PV']= [0] * len(combinationAngles)
         
         
     for comb in range(0, NumberCombinations):
@@ -316,26 +317,28 @@ for hour_of_year in range(start,end):
         Data_T_in_HOY[hour_of_year][comb] = Data_T_in[0]
  
         #determine best combination for the evaluated HOY
-        E_tot[hour_of_year][comb]=  Data_Heating_HOY[hour_of_year][comb] + Data_Cooling_HOY[hour_of_year][comb] + Data_Lighting_HOY[hour_of_year][comb] - hourlyData['PV'][comb]       
+        E_tot[hour_of_year][comb]=  Data_Heating_HOY[hour_of_year][comb] + Data_Cooling_HOY[hour_of_year][comb] + Data_Lighting_HOY[hour_of_year][comb] - hourlyData[hour_of_year]['PV'][comb]       
         
-    hourlyData['H'] = Data_Heating_HOY[hour_of_year]
-    hourlyData['C'] = Data_Cooling_HOY[hour_of_year]
-    hourlyData['L'] = Data_Lighting_HOY[hour_of_year]            
-    hourlyData['E_tot'] = E_tot[hour_of_year]
-    hourlyData['T_out'] = T_out    
+    hourlyData[hour_of_year]['H'] = Data_Heating_HOY[hour_of_year]
+    hourlyData[hour_of_year]['C'] = Data_Cooling_HOY[hour_of_year]
+    hourlyData[hour_of_year]['L'] = Data_Lighting_HOY[hour_of_year]            
+    hourlyData[hour_of_year]['E_tot'] = E_tot[hour_of_year]
+    hourlyData[hour_of_year]['T_out'] = T_out
+    hourlyData[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year]
+    hourlyData[hour_of_year]['AngleComb'] = combinationAngles
         
     #get key with min value from the E_tot dictionary
     BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
    
-  
-    results_building_simulation[hour_of_year]['E_tot'] = hourlyData['E_tot'][BestComb]
-    results_building_simulation[hour_of_year]['H']  = hourlyData['H'][BestComb]
-    results_building_simulation[hour_of_year]['C']  = hourlyData['C'][BestComb]
-    results_building_simulation[hour_of_year]['L']  = hourlyData['L'][BestComb]
-    results_building_simulation[hour_of_year]['PV']  = hourlyData['PV'][BestComb]
+    #save optimal results in a dictionary and convert to a DataFrame   
+    results_building_simulation[hour_of_year]['E_tot'] = hourlyData[hour_of_year]['E_tot'][BestComb]
+    results_building_simulation[hour_of_year]['H']  = hourlyData[hour_of_year]['H'][BestComb]
+    results_building_simulation[hour_of_year]['C']  = hourlyData[hour_of_year]['C'][BestComb]
+    results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
+    results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
     results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]   
     results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
-    results_building_simulation[hour_of_year]['T_out'] = hourlyData['T_out']
+    results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
     
     Building_Simulation_df = pd.DataFrame(results_building_simulation)
     Building_Simulation_df = Building_Simulation_df.T
@@ -343,9 +346,12 @@ for hour_of_year in range(start,end):
     
     T_in = Data_T_in_HOY[hour_of_year][comb]
 
+#store all results in a DataFrame
+hourlyData_df = pd.DataFrame(hourlyData)
 
 
-plt.figure() 
+
+fig = plt.figure() 
 
     
 with pd.plot_params.use('x_compat', True):
@@ -358,18 +364,18 @@ with pd.plot_params.use('x_compat', True):
 
 plt.legend(loc='best')
 
-
-    
- 
         
 # create folder where results will be saved:
 if not os.path.isdir(paths['main'] + '\\Results'):
     os.makedirs(paths['main'] + '\\Results')    
 # save all results
-np.save(paths['main'] + '\\Results' + '\\Building_Simulation' + '_' + str(now) + '.npy', results_building_simulation)
-#        
-print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+np.save(paths['main'] + '\\Results' + '\\Building_Simulation' + '_' + str(now) + '.npy', Building_Simulation_df)
+np.save(paths['main'] + '\\Results' + '\\hourlyData' + '_' + str(now) + '.npy', hourlyData_df)
 
+
+# create folder to save figures as png:
+os.makedirs(paths['main'] + '\\Results' + '\\' + now + '\\png' )
+fig.savefig(paths['main'] + '\\Results' + '\\' + now + '\\png\\' + 'figure' + '.png')
 
 
 """
