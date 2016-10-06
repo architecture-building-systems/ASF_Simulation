@@ -7,7 +7,7 @@ main file for simulation environment
 @author: Prageeth Jayathissa
 @credits: Jerimias Schmidli
 
-5.10.2016
+6.10.2016
 
 monthly Simulation - main_new_mauro_5.gh
 RC 4
@@ -40,15 +40,8 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 13
-end =  15
-
-
-
-
-
-
-
+#start = 13
+#end =  15
 
 #5341 -> 11.august, 11 uhr bis 12 uhr
 
@@ -66,7 +59,7 @@ end =  15
 simulationOption = {'timePeriod' : None}
 
 #PV production plots
-createPlots = True
+createPlots = False
 
 
 # create dictionary to write all paths:
@@ -90,9 +83,9 @@ paths['geo'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\
 paths['weather'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zurich-Kloten_2013.epw'
 
 
-from epwreader import epw_reader
-#read epw file of needed destination
-weatherData = epw_reader(paths['weather'])
+#from epwreader import epw_reader
+##read epw file of needed destination
+#weatherData = epw_reader(paths['weather'])
 
 
 
@@ -196,12 +189,16 @@ hour_in_month = {1:[8, 9, 10, 11, 12, 13, 14, 15],
                  11:[7, 8, 9, 10, 11, 12, 13, 14, 15],
                  12:[8, 9, 10, 11, 12, 13, 14, 15]}
 
+#months
+start = 1
+end = 13
 
-for monthi in range(1,13): #month:
+
+for monthi in range(start,end): #month:
     
     BuildingRadiationData_HOD[monthi] = {}
     
-    for HOD in hour_in_month[monthi]: #hourMonth:
+    for HOD in hour_in_month[monthi]:
     #check if there is any radiation to analyse
         print 'HOD:', HOD, 'Month:', monthi
     
@@ -246,82 +243,106 @@ for monthi in range(1,13): #month:
         BuildingRadiationData_HOD[monthi][HOD]= BuildingRadiationData
      
 #with the radiation_results the Pv_results are calcualted
-if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'): 
-    if not os.path.isdir(paths['PV']):
-        os.makedirs(paths['PV'])
-    from asf_electricity_production_mauro_3 import asf_electricity_production
-    print '\ncalculating PV electricity production'     
+#if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'): 
 
     
-    if createPlots:
-        PV_electricity_results, PV_detailed_results, fig1, fig2 = \
-        asf_electricity_production(
-                           createPlots = createPlots, 
-                           lb_radiation_path = paths['radiation_results'],
-                           panelsize = 400, 
-                           pvSizeOption = 0,
-                           save_results_path = paths['PV'], 
-                           lookup_table_path = paths['data'] + '\python\electrical_simulation', 
-                           geo_path = paths['geo'],
-                           flipOrientation= False, 
-                           simulationOption = {'timePeriod' : None},
-                           XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month)
-                           
-    else:
-        PV_electricity_results, PV_detailed_results = \
-        asf_electricity_production(
-                           createPlots = createPlots, 
-                           lb_radiation_path = paths['radiation_results'],
-                           panelsize = 400, 
-                           pvSizeOption = 0,
-                           save_results_path = paths['PV'], 
-                           lookup_table_path = paths['data'] + '\python\electrical_simulation', 
-                           geo_path = paths['geo'],
-                           flipOrientation= False, 
-                           simulationOption = {'timePeriod' : None},
-                           XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month)
+if not os.path.isdir(paths['PV']):
+    os.makedirs(paths['PV'])
+from asf_electricity_production_mauro_3 import asf_electricity_production
+print '\ncalculating PV electricity production'     
 
-else: 
-    PV_electricity_results = np.load(paths['PV'] + '\PV_electricity_results.npy').item()
-    PV_detailed_results = np.load(paths['PV'] + '\PV_detailed_results.npy').item()
-    print 'PV_electricity_results loaded from folder'
-    
+
+if createPlots:
+    PV_electricity_results, PV_detailed_results, fig1, fig2 = \
+    asf_electricity_production(
+                       createPlots = createPlots, 
+                       lb_radiation_path = paths['radiation_results'],
+                       panelsize = 400, 
+                       pvSizeOption = 0,
+                       save_results_path = paths['PV'], 
+                       lookup_table_path = paths['data'] + '\python\electrical_simulation', 
+                       geo_path = paths['geo'],
+                       flipOrientation= False, 
+                       simulationOption = {'timePeriod' : None},
+                       XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month, 
+                       start = start, end = end)
+                       
+else:
+    PV_electricity_results, PV_detailed_results = \
+    asf_electricity_production(
+                       createPlots = createPlots, 
+                       lb_radiation_path = paths['radiation_results'],
+                       panelsize = 400, 
+                       pvSizeOption = 0,
+                       save_results_path = paths['PV'], 
+                       lookup_table_path = paths['data'] + '\python\electrical_simulation', 
+                       geo_path = paths['geo'],
+                       flipOrientation= False, 
+                       simulationOption = {'timePeriod' :None},
+                       XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month,
+                       start = start, end = end)
+
+#else: 
+#    PV_electricity_results = np.load(paths['PV'] + '\PV_electricity_results.npy').item()
+#    PV_detailed_results = np.load(paths['PV'] + '\PV_detailed_results.npy').item()
+#    print 'PV_electricity_results loaded from folder'
+#    
 print "\npreparing data\n"
 
-        
+
+## create dictionary to save monthly data:
+#monthlyData = {}
+#
+#
+#
+#from prepareData_mauro import prepareMonthlyRadiationData       
+#
+#monthlyData['efficiencies'] = {}
+#monthlyData['PV'], monthlyData['R'], monthlyData['efficiencies']['PV'],  monthlyData['R_avg'],\
+#monthlyData['R_theo'], monthlyData['PV_avg'], monthlyData['PV_eff'] = prepareMonthlyRadiationData(PV_electricity_results, simulationOption)
+#
+#PV_monthly, R_monthly, PV_eff_opt, Ins_avg, Ins_theoretical, PV_avg, eff= prepareMonthlyRadiationData(PV_electricity_results, simulationOption)
+
 
 #Temperature value, to start the simulation with
 T_in = 20
 
 #create dicitionary to save relevant hourly data:
 hourlyData = {}
+hourlyData_2={}
 Data_Heating_HOY = {}
 Data_Cooling_HOY = {}
 Data_Lighting_HOY = {}
 Data_T_in_HOY = {}
+Data_PV_HOY = {}
 
 results_building_simulation = {}
 E_tot = {}
 
-for monthi in range(1,13):
+PV={}
+## create zero array that includes 24 hours for every month:
+#PV_monthly = np.zeros((PV_electricity_results['numComb'],TotalHours))
+ii= 0
+for monthi in range(start,end):
     E_tot[monthi] = {}
+    Data_PV_HOY[monthi] = {}
     Data_Heating_HOY[monthi] = {}
     Data_Cooling_HOY[monthi] = {}
     Data_Lighting_HOY[monthi] =  {}   
     Data_T_in_HOY[monthi] = {}
-    results_building_simulation[monthi] = {}
-    hourlyData[monthi]={}
+    
+    hourlyData={}
     
     for HOD in hour_in_month[monthi]:
         print 'HOD:', HOD, 'Month:', monthi
 
-        E_tot[monthi][HOD] = {}
-        Data_Heating_HOY[monthi][HOD] = {}
-        Data_Cooling_HOY[monthi][HOD] = {}
-        Data_Lighting_HOY[monthi][HOD] =  {}   
-        Data_T_in_HOY[monthi][HOD] = {}
-        results_building_simulation[monthi][HOD] = {}
-        hourlyData[monthi][HOD]={}
+        E_tot[monthi][HOD] = []
+        Data_PV_HOY[monthi][HOD] = {}
+        Data_Heating_HOY[monthi][HOD] = []
+        Data_Cooling_HOY[monthi][HOD] = []
+        Data_Lighting_HOY[monthi][HOD] =  []   
+        Data_T_in_HOY[monthi][HOD] = []
+        
             
         # add python_path to system path, so that all files are available:
         sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
@@ -334,12 +355,14 @@ for monthi in range(1,13):
         paths['Radiation_Building'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\adiation_Building_Zh.csv'
         paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv'                                        
                                                 
+        daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
         
-        ii= 0
-        hourlyData[monthi][HOD]['PV'] = 0.001 * PV_electricity_results['Pmpp_sum'][ii]
+        #PV data in KWh and per hour
+        
+        Data_PV_HOY[monthi][HOD] = 0.001 * PV_electricity_results['Pmpp_sum'][range(ii*NumberCombinations,(ii+1)*NumberCombinations)] #evt. noch +1
+        hourlyData['PV']= Data_PV_HOY        
         ii += 1
         
-        daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
         
         hour_of_year = 0
         
@@ -349,155 +372,78 @@ for monthi in range(1,13):
             for i in range(0,monthi-1):  
                 hour_of_year += daysPerMonth[i]*24
             hour_of_year += HOD
-        
-        
+    
             
         for comb in range(0, NumberCombinations):
             
             #set occupancy profil of the building
             Data_T_in, T_out, Data_Heating, Data_Cooling, Data_Lighting = main_RC_model(monthi, hour_of_year, T_in, BuildingRadiationData_HOD[monthi][HOD][comb],paths['epw_name'],paths['Radiation_Building'],paths['Occupancy'])
             
+                   
             #save all combination results for one HOY
-            Data_Heating_HOY[monthi][HOD][comb] = Data_Heating
-            Data_Cooling_HOY[monthi][HOD][comb] = Data_Cooling
-            Data_Lighting_HOY[monthi][HOD][comb] =  Data_Lighting       
-            Data_T_in_HOY[monthi][HOD][comb] = Data_T_in[0]
+            Data_Heating_HOY[monthi][HOD].append(Data_Heating)
+            Data_Cooling_HOY[monthi][HOD].append(Data_Cooling)
+            Data_Lighting_HOY[monthi][HOD].append(Data_Lighting)       
+            Data_T_in_HOY[monthi][HOD].append(Data_T_in[0])
+            
      
             #determine best combination for the evaluated HOY
-            E_tot[monthi][HOD][comb]=  Data_Heating_HOY[monthi][HOD][comb] + Data_Cooling_HOY[monthi][HOD][comb] + Data_Lighting_HOY[monthi][HOD][comb] - hourlyData[monthi][HOD]['PV'][comb]
-            """
-            Achtung PV hat combinationen noch nicht intergriert, zu ordnung muss different gemacht werden
-            """
-            
-        hourlyData[monthi][HOD]['H'] = Data_Heating_HOY[monthi][HOD]
-        hourlyData[monthi][HOD]['C'] = Data_Cooling_HOY[monthi][HOD]
-        hourlyData[monthi][HOD]['L'] = Data_Lighting_HOY[monthi][HOD]           
-        hourlyData[monthi][HOD]['E_tot'] = E_tot[monthi][HOD]
-        hourlyData[monthi][HOD]['T_out'] = T_out    
+            E_tot[monthi][HOD].append( Data_Heating_HOY[monthi][HOD][comb] + Data_Cooling_HOY[monthi][HOD][comb] + Data_Lighting_HOY[monthi][HOD][comb] - Data_PV_HOY[monthi][HOD][comb])
+
+                    
+        
+        hourlyData['E_tot'] = E_tot
+        hourlyData['H'] = Data_Heating_HOY
+        hourlyData['C'] = Data_Cooling_HOY
+        hourlyData['L'] = Data_Lighting_HOY         
+        hourlyData['T_in'] = Data_T_in_HOY
+        hourlyData['T_out'] ={monthi : {HOD: float(T_out)}}    
             
         #get key with min value from the E_tot dictionary
-        BestComb = min(E_tot[monthi][HOD], key=lambda comb: E_tot[monthi][HOD][comb])
+        #BestComb = min(E_tot[monthi][HOD], key=lambda comb: E_tot[monthi][HOD][comb])
+        BestComb = E_tot[monthi][HOD].index(min(E_tot[monthi][HOD]))
        
-      
-        results_building_simulation[monthi][HOD]['E_tot'] = hourlyData[monthi][HOD]['E_tot'][BestComb]
-        results_building_simulation[monthi][HOD]['H']  = hourlyData[monthi][HOD]['H'][BestComb]
-        results_building_simulation[monthi][HOD]['C']  = hourlyData[monthi][HOD]['C'][BestComb]
-        results_building_simulation[monthi][HOD]['L']  = hourlyData[monthi][HOD]['L'][BestComb]
-        results_building_simulation[monthi][HOD]['PV']  = hourlyData[monthi][HOD]['PV']#[BestComb]
-        results_building_simulation[monthi][HOD]['OptAngles'] = combinationAngles[BestComb]   
-        results_building_simulation[monthi][HOD]['T_in'] = Data_T_in_HOY[monthi][HOD][BestComb]
-        results_building_simulation[monthi][HOD]['T_out'] = hourlyData[monthi][HOD]['T_out']
-        
-        Building_Simulation_df = pd.DataFrame(results_building_simulation)
-        Building_Simulation_df = Building_Simulation_df.T
-        
-        
+
+        results_building_simulation['E_tot'] = {monthi : {HOD: hourlyData['E_tot'][monthi][HOD][BestComb]}}
+        results_building_simulation['H'] = {monthi : {HOD: hourlyData['H'][monthi][HOD][BestComb]}}
+        results_building_simulation['C'] = {monthi : {HOD: hourlyData['C'][monthi][HOD][BestComb]}}
+        results_building_simulation['L'] = {monthi : {HOD: hourlyData['L'][monthi][HOD][BestComb]}}
+        results_building_simulation['PV'] = {monthi : {HOD: hourlyData['PV'][monthi][HOD][BestComb]}}
+        results_building_simulation['OptAngles'] ={monthi : {HOD:  combinationAngles[BestComb]}}   
+        results_building_simulation['T_in'] = {monthi : {HOD: hourlyData['T_in'][monthi][HOD][BestComb]}}
+        results_building_simulation['T_out'] = {monthi : {HOD: hourlyData['T_out'][monthi][HOD]}}
+               
         T_in = Data_T_in_HOY[monthi][HOD][comb]
-        
-df = pd.Panel.from_dict(results_building_simulation).to_frame()
+       
 
-#data for chossen month can be displayed
-Building_df= pd.DataFrame(results_building_simulation[1]).T
+reform = {(outerKey, innerKey): values for outerKey, innerDict in results_building_simulation.iteritems() for innerKey, values in innerDict.iteritems()}
+reform2 = {(outerKey, innerKey): values for outerKey, innerDict in reform.iteritems() for innerKey, values in innerDict.iteritems()}
 
-fig = plt.figure() 
+Building_Simulation_df = pd.DataFrame(reform)
 
-    
-with pd.plot_params.use('x_compat', True):
-    Building_df['E_tot'].plot(color='r')
-    Building_df['PV'].plot(color='g') 
-    Building_df['H'].plot(color='b') 
-    Building_df['C'].plot(color='k') 
-    Building_df['L'].plot(color='y') 
-    
 
-plt.legend(loc='best')
-     
+#fig = plt.figure() 
+#
+#    
+#with pd.plot_params.use('x_compat', True):
+#    Building_df['E_tot'].plot(color='r')
+#    Building_df['PV'].plot(color='g') 
+#    Building_df['H'].plot(color='b') 
+#    Building_df['C'].plot(color='k') 
+#    Building_df['L'].plot(color='y') 
+#    
+#
+#plt.legend(loc='best')
+
 # create folder where results will be saved:
 if not os.path.isdir(paths['main'] + '\\Results'):
     os.makedirs(paths['main'] + '\\Results')    
 # save all results
 np.save(paths['main'] + '\\Results' + '\\Building_Simulation' + '_' + str(now) + '.npy', results_building_simulation)
-
-# create folder to save figures as png:
-os.makedirs(paths['main'] + '\\Results' + '\\' + now + '\\png' )
-fig.savefig(paths['main'] + '\\Results' + '\\' + now + '\\png\\' + 'figure' + '.png')
-
-
-
-#        
-print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-
-
-"""
-"""
-"""
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.style.use('ggplot')
-ts = pd.Series(np.random.randn(1000), index=pd.date_range('1/1/2000', periods=1000))
-ts = ts.cumsum()
-plt.figure()
-ts.plot()
-plt.savefig("foo.png", bbox_inches='tight')
-
-
-
-
-
-    if hourlyData['PV'] == 0:
-         opt_angles[hour_of_year] = combinationAngles[BestComb]
-              
-    else:      
-         #do not move the PV panels, optimal angle HOY== angle HOY-1        
-         opt_angles[hour_of_year] = opt_angles[hour_of_year-1]
-       
-    
-        print '\nThe Evaluated hour of the year:', hour_of_year
-        print 'Angle combination: ', combinationAngles[ii]
-        print 'Hourly PV production is:', hourlyData['PV'][ii], 'kWh'
-        print 'Hourly Heating load is:',hourlyData['H'][ii],  'kWh' 
-        print 'Hourly Cooling load is:',hourlyData['C'][ii], 'kWh'
-        print 'Hourly Lighting load is:',hourlyData['L'][ii], 'kWh' 
-        print 'Hourly total Energy demand:',hourlyData['E_tot'][ii], 'kWh' 
-#                
-#        #Add PV production to the energy demand of H,C,L, total energy demand at hour_of_year
-     
-    
-    print '\nFor HOY', hour_of_year, 'the hourly total energy demand is:', hourlyData['E_tot'][BestComb], 'kWh'
-    print 'With optimal angle combination(X-angle,Y-angle):', combinationAngles[BestComb]
-#        
-"""
-
-
-
-    
-#plt.figure(1)
-#plt.plot(range(0, int(len(PV_sum))),PV_sum[0:int(len(PV_sum))])
-#plt.ylabel('Energy production')
-#plt.xlabel('Angle combination')
-#plt.title('HOY: ' + str(hour_of_year))
-
-#plt.figure(2)
-#plt.plot(range(4000,4001), Results[4000]['E_tot'], Results[4001]['E_tot'])
-
-#plt.show()
-
-#E_tot = []  
 #
-#for hour_of_year in range (start,end):
-#    E_tot[1] = Results[hour_of_year]['E_tot']
+## create folder to save figures as png:
+#os.makedirs(paths['main'] + '\\Results' + '\\' + now + '\\png' )
+#fig.savefig(paths['main'] + '\\Results' + '\\' + now + '\\png\\' + 'figure' + '.png')
 
 
-    #if actiuation energy schould be included, option == 'True'
-#    if Actuation:
-#        if opt_angles[hour_of_year] == opt_angles[hour_of_year]:
-#           #if there is no acuation between the hour time step, acutaion energy = 0           
-#           hourlyData['Actuation'] = 0
-#       else:
-#           hourlyData['Actuation'] = XY
-
-"""
-"""
+print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
