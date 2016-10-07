@@ -134,11 +134,11 @@ def main_RC_model (ii, T_in, BuildingRadiationData_HOY, epw_name, myfilename1, m
     Total_Cooling+=Cool_hr
 
 
-	#Check for Hours outside the setpoint +/- 1
-    if T_in>tintC_set+1 or T_in<tintH_set-1:
-        if occupancy['People'].iat[ii]>0:
-            uncomfortHours+=1 #Number of uncomfortable hours
-            Data_uncomfortHours[ii]=1 #array to show which hours were uncomfortable
+#	#Check for Hours outside the setpoint +/- 1
+#    if T_in>tintC_set+1 or T_in<tintH_set-1:
+#        if occupancy['People'].iat[ii]>0:
+#            uncomfortHours+=1 #Number of uncomfortable hours
+#            Data_uncomfortHours[ii]=1 #array to show which hours were uncomfortable
 
 	#Lighting calc. Double check this as I wrote it rushed. Try find allternative for .iat
     if Lux < Office.LightingControl and occupancy['People'].iat[ii]>0:

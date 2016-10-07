@@ -7,7 +7,7 @@ main file for simulation environment
 @author: Prageeth Jayathissa
 @credits: Jerimias Schmidli
 
-6.10.2016
+7.10.2016
 
 monthly Simulation - main_new_mauro_5.gh
 RC 4
@@ -116,8 +116,8 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[0,15,30,45,60,75,90]
-YANGLES= [-45,-30,-15,0,15,30,45]
+XANGLES=[0]
+YANGLES= [-45]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -174,7 +174,7 @@ PV_detailed_results = {}
 opt_angles = {}
 BuildingRadiationData_HOD = {}
 
-
+daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
 
 hour_in_month = {1:[8, 9, 10, 11, 12, 13, 14, 15],
                  2:[7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
@@ -189,16 +189,35 @@ hour_in_month = {1:[8, 9, 10, 11, 12, 13, 14, 15],
                  11:[7, 8, 9, 10, 11, 12, 13, 14, 15],
                  12:[8, 9, 10, 11, 12, 13, 14, 15]}
 
+
+#hourRadiation
+#
+#hourRadiation = []
+#
+#for monthi in range(1,2):
+#    for HOD in range(8,9):#hour_in_month[monthi]:
+#        if monthi==1:
+#            hourRadiation.append(HOD)
+#        else:
+#            day = 0
+#            for i in range(0,monthi):  
+#                day += daysPerMonth[i]*24
+#            day += HOD
+#            hourRadiation.append(day)
+#
+#
+#print hourRadiation
+
 #months
 start = 1
 end = 13
 
 
-for monthi in range(start,end): #month:
+for monthi in range(1,2):#range(start,end): #month:
     
     BuildingRadiationData_HOD[monthi] = {}
     
-    for HOD in hour_in_month[monthi]:
+    for HOD in range(8,9):#hour_in_month[monthi]:
     #check if there is any radiation to analyse
         print 'HOD:', HOD, 'Month:', monthi
     
@@ -245,7 +264,7 @@ for monthi in range(start,end): #month:
 #with the radiation_results the Pv_results are calcualted
 #if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'): 
 
-    
+ 
 if not os.path.isdir(paths['PV']):
     os.makedirs(paths['PV'])
 from asf_electricity_production_mauro_3 import asf_electricity_production
@@ -290,20 +309,6 @@ else:
 print "\npreparing data\n"
 
 
-## create dictionary to save monthly data:
-#monthlyData = {}
-#
-#
-#
-#from prepareData_mauro import prepareMonthlyRadiationData       
-#
-#monthlyData['efficiencies'] = {}
-#monthlyData['PV'], monthlyData['R'], monthlyData['efficiencies']['PV'],  monthlyData['R_avg'],\
-#monthlyData['R_theo'], monthlyData['PV_avg'], monthlyData['PV_eff'] = prepareMonthlyRadiationData(PV_electricity_results, simulationOption)
-#
-#PV_monthly, R_monthly, PV_eff_opt, Ins_avg, Ins_theoretical, PV_avg, eff= prepareMonthlyRadiationData(PV_electricity_results, simulationOption)
-
-
 #Temperature value, to start the simulation with
 T_in = 20
 
@@ -323,6 +328,18 @@ PV={}
 ## create zero array that includes 24 hours for every month:
 #PV_monthly = np.zeros((PV_electricity_results['numComb'],TotalHours))
 ii= 0
+
+
+
+
+
+
+for HOY in range(0,8760):
+    if HOY not in hourRadiation:
+       BuildingRadiationData_HOD = [0]* len(combinationAngles)
+    #transfer values to RCmodel   
+
+
 for monthi in range(start,end):
     E_tot[monthi] = {}
     Data_PV_HOY[monthi] = {}
@@ -362,6 +379,9 @@ for monthi in range(start,end):
         Data_PV_HOY[monthi][HOD] = 0.001 * PV_electricity_results['Pmpp_sum'][range(ii*NumberCombinations,(ii+1)*NumberCombinations)] #evt. noch +1
         hourlyData['PV']= Data_PV_HOY        
         ii += 1
+        
+        
+        
         
         
         hour_of_year = 0
@@ -447,3 +467,4 @@ np.save(paths['main'] + '\\Results' + '\\Building_Simulation' + '_' + str(now) +
 
 
 print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+"""
