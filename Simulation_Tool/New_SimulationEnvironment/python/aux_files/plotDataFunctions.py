@@ -51,9 +51,9 @@ def pcolorDays(DIVA_results, arg):
     rotation_axis = arg[2]
     
     # assign angles and angle_locations:    
-    x_angle_location = DIVA_results['angles']['x_angle_location']
-    y_angle_location = DIVA_results['angles']['y_angle_location']
-    allAngles = DIVA_results['angles']['allAngles']
+#    x_angle_location = DIVA_results['angles']['x_angle_location']
+#    y_angle_location = DIVA_results['angles']['y_angle_location']
+#    allAngles = DIVA_results['angles']['allAngles']
     
     if len(arg)==0:
         max_min = 'min'
@@ -67,21 +67,21 @@ def pcolorDays(DIVA_results, arg):
     elif max_min == 'max':
         ind=np.argmax(X,axis=0)
 
-
+    z_max= 1
     z_min=0
-    if rotation_axis == 'x':
-        for i in range(len(ind)):
-            axis_ind.append(x_angle_location[ind[i]])
-            z_max=max(x_angle_location)
-    elif rotation_axis == 'y':
-        for i in range(len(ind)):
-            axis_ind.append(y_angle_location[ind[i]])
-            z_max=max(y_angle_location)
-    elif rotation_axis == 'xy':
-        axis_ind = ind
-        z_max=len(allAngles[0])-1
-    else:
-        print 'axis not available'
+#    if rotation_axis == 'x':
+#        for i in range(len(ind)):
+#            axis_ind.append(x_angle_location[ind[i]])
+#            z_max=max(x_angle_location)
+#    elif rotation_axis == 'y':
+#        for i in range(len(ind)):
+#            axis_ind.append(y_angle_location[ind[i]])
+#            z_max=max(y_angle_location)
+#    elif rotation_axis == 'xy':
+#        axis_ind = ind
+#        z_max=len(allAngles[0])-1
+#    else:
+#        print 'axis not available'
     dx, dy = 1, 1
     
     # generate 2 2d grids for the x & y bounds

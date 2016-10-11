@@ -5,7 +5,7 @@ Created on Thu Mar 24 11:14:42 2016
 main file for simulation environment
 
 @author: Prageeth Jayathissa
-@credits: Jerimias Schmidli
+@credits: Mauro
 
 4.10.2016
 """
@@ -36,8 +36,8 @@ geoLocation = 'Zuerich‐Kloten'
 
 #For evalation period, which is greater than only 1 hour
  
-start = 12
-end =  14
+start = 5342
+end =  5343
 
 
 
@@ -114,8 +114,8 @@ else:
 
 
 #Set Solar Panel Properties
-XANGLES=[0,22.5,45,67.5,90]
-YANGLES= [-45,-22.5,0,22.5,45]
+XANGLES=[45]
+YANGLES= [-15,0,15]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -262,7 +262,7 @@ for HOY in range(start,end):
         
 
 #Temperature value, to start the simulation with
-T_in = 22
+T_in = 20
 
 #create dicitionary to save relevant hourly data:
 hourlyData = {}

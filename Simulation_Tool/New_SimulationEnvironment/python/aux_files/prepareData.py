@@ -313,6 +313,9 @@ def CalcXYAnglesAndLocation(LayoutAndCombinations):
     return SimulationAngles
     
 
+
+    
+
 def sum_monthly(X, options=None):
     """
     function that adds data for every month
@@ -342,6 +345,8 @@ def sum_monthly(X, options=None):
 
     return X_sum
 #            testmonth.append(monthi)
+        
+    
     
 def average_monthly(X):
     """

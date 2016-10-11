@@ -408,7 +408,7 @@ for monthi in range(start,end):
             
      
             #determine best combination for the evaluated HOY
-            E_tot[monthi][HOD].append( Data_Heating_HOY[monthi][HOD][comb] + Data_Cooling_HOY[monthi][HOD][comb] + Data_Lighting_HOY[monthi][HOD][comb] - Data_PV_HOY[monthi][HOD][comb])
+            E_tot[monthi][HOD].append(Data_Heating_HOY[monthi][HOD][comb] + Data_Cooling_HOY[monthi][HOD][comb] + Data_Lighting_HOY[monthi][HOD][comb] - Data_PV_HOY[monthi][HOD][comb])
 
                     
         

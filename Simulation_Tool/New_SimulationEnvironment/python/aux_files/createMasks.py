@@ -18,7 +18,7 @@ def createDIVAmask(L_month):
     axis_ind=np.argmin(L_month,axis=0)
     
     # maximum minus minimum of lighting data:
-    maxmin = np.max(L_month,axis=0)-np.min(L_month,axis=0)
+    maxmin = np.max(L_month,axis=0)
     # set step size:
     dx, dy = 1, 1
     

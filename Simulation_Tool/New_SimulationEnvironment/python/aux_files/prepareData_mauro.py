@@ -13,7 +13,7 @@ from calculate_angles_function import create_ASF_angles
 from auxFunctions import unique, calcDaysPassedMonth, calculate_sum_for_index
 
 
-def prepareMonthlyRadiationData(PV_electricity_results, simulationOption):
+def prepareMonthlyRadiatonData(PV_electricity_results, simulationOption):
     """
     input: dictionary with PV_electricity_results, simulationOption dictionary\n
     output: monthly radiation data for post-processing
@@ -53,31 +53,6 @@ def prepareMonthlyRadiationData(PV_electricity_results, simulationOption):
             elif PV_electricity_results['month'][i]==12: 
                 month.append(4)
                 hour_in_month.append(PV_electricity_results['hour_in_month'][i])
-                
-    elif simulationOption['timePeriod'] == '3month':
-        months = 3
-        hour_in_month = []
-        month = []
-        for i in range(len(PV_electricity_results['month'])):
-            if PV_electricity_results['month'][i]==1:
-                month.append(1)
-                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
-            elif PV_electricity_results['month'][i]==2:
-                month.append(2)
-                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
-            elif PV_electricity_results['month'][i]==3:
-                month.append(3)
-                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
-                
-    elif simulationOption['timePeriod'] == '1month':
-        months = 3
-        hour_in_month = []
-        month = []
-        for i in range(len(PV_electricity_results['month'])):
-            if PV_electricity_results['month'][i]==1:
-                month.append(1)
-                hour_in_month.append(PV_electricity_results['hour_in_month'][i])
-                   
     else:
         months = 12
         month = PV_electricity_results['month']
@@ -219,26 +194,6 @@ def prepareMonthlyRadiationData(PV_electricity_results, simulationOption):
         Ins_theoretical = Ins_theoretical[:,indices4m]
         PV_avg = PV_avg[:,indices4m]
         eff = eff[:,indices4m]
-    elif simulationOption['timePeriod'] == '3month':
-        indices3m = np.hstack((range(0,72)))
-        PV_monthly = PV_monthly[:,indices3m]
-        R_monthly = R_monthly[:,indices3m]
-#        PV_eff_opt = PV_eff_opt[:,indices4m]
-        Ins_avg = Ins_avg[:,indices3m]
-        Ins_theoretical = Ins_theoretical[:,indices3m]
-        PV_avg = PV_avg[:,indices3m]
-        eff = eff[:,indices3m]
-        
-    elif simulationOption['timePeriod'] == '1month':
-        indices1m = np.hstack((range(0,24)))
-        PV_monthly = PV_monthly[:,indices1m]
-        R_monthly = R_monthly[:,indices1m]
-#        PV_eff_opt = PV_eff_opt[:,indices4m]
-        Ins_avg = Ins_avg[:,indices1m]
-        Ins_theoretical = Ins_theoretical[:,indices1m]
-        PV_avg = PV_avg[:,indices1m]
-        eff = eff[:,indices1m]
-    
         
     return PV_monthly, R_monthly, PV_eff_opt, Ins_avg, Ins_theoretical, PV_avg, eff
     
@@ -358,7 +313,10 @@ def CalcXYAnglesAndLocation(LayoutAndCombinations):
     return SimulationAngles
     
 
-def sum_monthly(X, options=None):
+
+    
+
+def sum_monthly(X):
     """
     function that adds data for every month
     input: numpy array with yearly data, options to only look at certain months
@@ -368,25 +326,22 @@ def sum_monthly(X, options=None):
     daysPassedMonth, daysPerMonth = calcDaysPassedMonth()
     
 
-    NumberCombinations = np.shape(X)[0]
-    X_sum=np.zeros((NumberCombinations, 24*12))
-    for combination in range(NumberCombinations):
-        #dayi=0
-        monthi=0
-        #testmonth=[]
-        for day in range(365):
-            for hour in range(24):
-                X_sum[combination][monthi*24+hour]+=X[combination][day*24+hour]
-                if day == daysPassedMonth[monthi]:
-                    monthi+=1
-                    
     
-    if options['timePeriod'] == '4months':
-        indices = np.hstack((range(48,72),range(120,144),range(192,216),range(264,288)))
-        X_sum = X_sum[:,indices]
+    X_sum=np.zeros(24*12)
+    
+    monthi=0
+    #testmonth=[]
+    for day in range(365):
+        for hour in range(24):
+            X_sum[monthi*24+hour]+=X[day*24+hour]
+            if day == daysPassedMonth[monthi]:
+                monthi+=1
+    
 
     return X_sum
 #            testmonth.append(monthi)
+        
+    
     
 def average_monthly(X):
     """
@@ -397,17 +352,16 @@ def average_monthly(X):
     # get days per month and added up days per month:
     daysPassedMonth, daysPerMonth = calcDaysPassedMonth()
     
-    NumberCombinations = np.shape(X)[0]
-    X_average=np.zeros((NumberCombinations, 24*12))
-    for combination in range(NumberCombinations):
-        #dayi=0
-        monthi=0
-        #testmonth=[]
-        for day in range(365):
-            for hour in range(24):
-                X_average[combination][monthi*24+hour]+=X[combination][day*24+hour]/daysPerMonth[monthi]
-                if day == daysPassedMonth[monthi]:
-                    monthi+=1
+    
+    X_average=np.zeros(24*12)
+    
+    monthi=0
+    #testmonth=[]
+    for day in range(365):
+        for hour in range(24):
+            X_average[monthi*24+hour]+=X[day*24+hour]/daysPerMonth[monthi]
+            if day == daysPassedMonth[monthi]:
+                monthi+=1
     return X_average
   
 def changeDIVAresults(DIVA_results, efficiencyChanges):

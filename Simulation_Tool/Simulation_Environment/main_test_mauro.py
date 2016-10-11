@@ -18,8 +18,8 @@ import warnings
 
 # set mode of this main script ('initialize', 'post_processing'):
 
-#mainMode = 'initialize' #'initialize'
-mainMode = 'post_processing' #'initialize'
+mainMode = 'initialize' #'initialize'
+#mainMode = 'post_processing' #'initialize'
 
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
@@ -36,7 +36,7 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_25comb_W'
-diva_folder = 'DIVA_Kloten_49comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_7x_13y'
@@ -48,7 +48,7 @@ diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_2clust_25comb'
 #diva_folder = 'DIVA_Cairo_noShade'
 #diva_folder = 'Simulation_Madrid_25comb'
-diva_folder = 'Test_ZH'
+diva_folder = 'Test_ZH_jeri'
 
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
@@ -73,7 +73,7 @@ diva_folder = 'Test_ZH'
 #radiation_folder = 'Radiation_10panels_2clust_25comb'
 #radiation_folder = 'Radiation_Cairo_25comb'
 #radiation_folder = 'Radiation_Helsinki_25comb'
-radiation_folder = 'Test_ZH'
+radiation_folder = 'Test_ZH_jeri'
 
 
 
@@ -391,8 +391,6 @@ if mainMode == 'post_processing':
             figureHandles['DIVAe'] = createDIVAcarpetPlots(pcolorEnergyDays, DIVA_results)        
         
         # create masks for plotting:
-        monthlyData['DIVAmask'] = createDIVAmask(monthlyData['L'])
-        monthlyData['LBmask'] = createLBmask(monthlyData['R'])
         
         if auxVar['combineResults']:
             # plot the optimum angles of the monthly data:
