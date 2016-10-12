@@ -15,7 +15,7 @@ def carpetPlot(X, z_min, z_max, title):
     
     
     #in kWh/m2, so divide through 8m2
-    z= np.reshape(X,(12,24)).T/8
+    z= np.reshape(X,(12,24)).T
     
 
     dx, dy = 1, 1
@@ -43,6 +43,6 @@ def carpetPlot(X, z_min, z_max, title):
     
     #legend
     cbar = plt.colorbar()
-    cbar.set_label('kWh/m2')
+    cbar.set_label('kWh')
         
     return fig
