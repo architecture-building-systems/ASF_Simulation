@@ -18,8 +18,8 @@ import warnings
 
 # set mode of this main script ('initialize', 'post_processing'):
 
-#mainMode = 'initialize' #'initialize'
-mainMode = 'post_processing' #'initialize'
+mainMode = 'initialize' #'initialize'
+#mainMode = 'post_processing' #'initialize'
 
 # specify the location used for the analysis - this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
@@ -36,7 +36,7 @@ geoLocation = 'Zuerich-Kloten' # 'Zuerich-Kloten', 'MADRID_ESP', 'SINGAPORE_SGP'
 #diva_folder = 'Simulation_Madrid_25comb' #'Simulation_Kloten_25comb'
 #diva_folder = 'DIVA_Kloten_25comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_25comb_W'
-diva_folder = 'DIVA_Kloten_49comb_1Infilt'
+#diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_noShade_E'
 #diva_folder = 'DIVA_Kloten_2clust_5x_1y'
 #diva_folder = 'DIVA_Kloten_7x_13y'
@@ -48,7 +48,7 @@ diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #diva_folder = 'DIVA_Kloten_2clust_25comb'
 #diva_folder = 'DIVA_Cairo_noShade'
 #diva_folder = 'Simulation_Madrid_25comb'
-
+diva_folder = 'Jeri'
 
 
 # set folder name of LadyBug simulation data (in data\grasshopper\LadyBug). 
@@ -59,7 +59,7 @@ diva_folder = 'DIVA_Kloten_49comb_1Infilt'
 #radiation_folder = 'Radiation_Kloten_25comb_largeContext'
 #radiation_folder = 'Radiation_Kloten_25comb_W'
 #radiation_folder = 'Radiation_Kloten_tracking'
-radiation_folder = 'Radiation_Kloten_49comb'
+#radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_Dummy_NoShade'
 #radiation_folder = 'Radiation_Kloten_2clust_5x_1y'
 #radiation_folder = 'Radiation_Kloten_7x_13y'
@@ -73,7 +73,7 @@ radiation_folder = 'Radiation_Kloten_49comb'
 #radiation_folder = 'Radiation_10panels_2clust_25comb'
 #radiation_folder = 'Radiation_Cairo_25comb'
 #radiation_folder = 'Radiation_Helsinki_25comb'
-
+radiation_folder = 'Jeri'
 
 
 
@@ -170,7 +170,9 @@ auxVar = {}
 paths = {}
 
 # find path of current folder (simulation_environment)
-paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+#paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+paths['main'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment'
+
 
 # define paths of subfolders:
 paths['data'] = paths['main'] + '\\data'
@@ -201,12 +203,12 @@ if mainMode == 'initialize':
     execfile(paths['python'] + "\\aux_files\\SunAngles_Tracking_and_temperature.py")
 
     # calculate and save lookup table if it does not yet exist:
-    if not os.path.isfile(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup.npy'): 
-        if not os.path.isdir(paths['data'] + '\python\electrical_simulation'):
-            os.makedirs(paths['data'] + '\python\electrical_simulation')
-        execfile(paths['python'] + '\\aux_files\\create_lookup_table.py')
-    else:
-        print 'lookup table not created as it already exists'
+    #if not os.path.isfile(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup.npy'): 
+    if not os.path.isdir(paths['data'] + '\python\electrical_simulation'):
+        os.makedirs(paths['data'] + '\python\electrical_simulation')
+    execfile(paths['python'] + '\\aux_files\\create_lookup_table.py')  
+#    else:
+#        print 'lookup table not created as it already exists'
     
 # calculate and save PV electricity production:
 if mainMode == 'post_processing':

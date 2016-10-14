@@ -50,8 +50,8 @@ def main_RC_model (ii, T_in, BuildingRadiationData_HOY, epw_name, myfilename1, m
     
     
     #Set Office Building Parameters. See BuildingProperties.py
-    Office=Building(Cm=2.07, R_env=42, Infl=0.5, vent_Pp=0.016)
-    
+    #Office=Building(Cm=2.07, R_env=42, Infl=0.5, vent_Pp=0.016) #old calculation Infl = 0.5
+    Office=Building(Cm=2.07, R_env=42, Infl=1.0, vent_Pp=0.016) #new calculation Infl = 1.0
     
     #Calculate Illuminance in the room. 
     fenstIll=Q_fenstRad*1000*Ill_Eq[0] #Lumens.  Note that the constant has been ignored because it should be 0

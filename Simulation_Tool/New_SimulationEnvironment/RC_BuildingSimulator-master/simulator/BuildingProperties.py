@@ -52,12 +52,12 @@ class Building(object):
 		self.R_env=R_env #[K/kW] Wall resistance to outside air. Default based off glass having a Uvalue of 1.978W/m2K, 12m2 facade glass
 
 		#Infiltration 
-		self.Infl=Infl # [ACH/hr] Air Changes per hour
+		self.Infl=Infl # [ACH/hr] Air Changes per hour, Jeri used the value 1 for the air changes per hour
 		InflHeatTransfer=Infl*self.Room_Vol*1.2*1/3600 #[kW/K]
 		self.R_infl=1.0/InflHeatTransfer # [K/kW]Resistance due to infiltration
 
 		#Initialise ventilation set point
-		self.vent_Pp=vent_Pp #[m3/s/person] ventilation rate requirements per person
+		self.vent_Pp=vent_Pp #[m3/s/person] ventilation rate requirements per person, Jeri used the same value for the ventilation
 
 
 	def setVentilation(self, people):

@@ -7,6 +7,7 @@ Created on Tue Oct 11 17:14:42 2016
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import LinearSegmentedColormap
 
 def carpetPlot(X, z_min, z_max, title):
     
@@ -24,8 +25,13 @@ def carpetPlot(X, z_min, z_max, title):
     y, x = np.mgrid[slice(0, 24 + dy, dy),
                     slice(0, 12 + dx, dx)]
     
-    cmap = plt.cm.gnuplot
-    cmap = plt.cm.afmhot
+    
+    # define the location of the middle number (where 0 is):
+    z_middle = float(abs(z_min)) / (z_max-z_min) 
+                
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'),
+                                                    (z_middle, 'white'),
+                                                    (1, 'firebrick')])
     
     # define what happens to bad data (i.e. data outside the mask):
     cmap.set_bad('grey',1.)
