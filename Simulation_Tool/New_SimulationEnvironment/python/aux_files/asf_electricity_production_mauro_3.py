@@ -76,6 +76,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
             
     elif simulationOption['timePeriod'] == None:
         numHours = np.shape(SunTrackingData['HOY'])[0]
+        print "numHours", numHours
         
     elif simulationOption['timePeriod'] == '1hour':
         #simulation for 1 hour
@@ -83,7 +84,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_radiation_path))['allAngles'][0])
-    
+    print "CombPerHour", numCombPerHour
     # set numCombPerHour to 1 if it appears to be zero (this is the case for suntracking)
     if numCombPerHour == 0:
         numCombPerHour = 1
@@ -94,8 +95,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     filenames = []
     for monthi in range(start,end):
-        for HOD in hour_in_month[monthi]:
-            
+        for HOD in hour_in_month[monthi]:      
             for x_angle in XANGLES:
                 for y_angle in YANGLES:
                     # filenames.append(filename + str(i) + filetype)

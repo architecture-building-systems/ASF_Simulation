@@ -47,82 +47,90 @@ Chapter4: Determines that combination of Angles should be recorded for each itte
         
         '''
 
-def NoClusters():    
+
+
+
+from prepareData import readLayoutAndCombinations
+
+
+paths = {}
+
+
+paths['radiation_results'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\\radiation_results'
+
+# panelsize used for simulation:
+NoClusters = 2 #readLayoutAndCombinations(paths['radiation_results'])['NoClusters']  
     
-    
-    from prepareData import readLayoutAndCombinations
-    
-    
-    paths = {}
-    
-    
-    paths['radiation_results'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\\radiation_results'
-    
-    # panelsize used for simulation:
-    NoClusters = 2 #readLayoutAndCombinations(paths['radiation_results'])['NoClusters']  
-        
-    # desired grid point size used for simulation:
-    ASFarray = readLayoutAndCombinations(paths['radiation_results'])['ASFarray']
-    
-    #XANGLES = readLayoutAndCombinations(paths['radiation_results'])['XANGLES']
-    #YANGLES = readLayoutAndCombinations(paths['radiation_results'])['YANGLES']
-    
-    
-    
-    
-    #for i in yangle1:    
-    #    for j in yangle2:        
-    
-    XANGLES= [90]
-    YANGLES= [22.5,-22.5]
-    
-    combination = (len(XANGLES) * len(YANGLES))
-        
-    
-    
-    #Import Modules------------------------------------------------
-    
-    import json
-    import math
-    import copy
-    ####---CHAPTER1-------------------------
-    
-    #unpack json file and coppy ASF array to create an empty anglearray
-    
-    ASFangles=copy.deepcopy(ASFarray)
-    
-    
-    #Possible Angles in simulation
-    #XANGLES=[0,30,45,60,90]#[0,45,90]#[0,15,30,45,60,75,90]
-    #YANGLES=[0]#[-45,0,45]#[-45,-30,-15,0,15,30,45]
-    #exec XANGLES
-    #exec YANGLES
-    
-    #XANGLES = [XANGLES]
-    #YANGLES = [YANGLES]
-    
-    print XANGLES
-    print YANGLES
-    
-    #Array to hold final list
-    ListASFangles=[]
-    
-    #Number of groups that the facade can exist in (now input to function)
-    NoClusters=int(NoClusters)
-    #NoClusters=1
-    #Number of angle combinations
-    NoAngles=len(XANGLES)*len(YANGLES)
-    
-    #Define the angle value that a row is in
-    #the value is between 0 and NoAngles
-    rowVal=[0]*NoClusters
-    
-    #Make a list of all angle combinations
-    
-    ANGLES= [(x, y) for x in XANGLES for y in YANGLES]
-    
+# desired grid point size used for simulation:
+ASFarray = readLayoutAndCombinations(paths['radiation_results'])['ASFarray']
+
+#XANGLES = readLayoutAndCombinations(paths['radiation_results'])['XANGLES']
+#YANGLES = readLayoutAndCombinations(paths['radiation_results'])['YANGLES']
+
+
+
+
+#for i in yangle1:    
+#    for j in yangle2:        
+
+XANGLES= [90]
+YANGLES= [22.5,-22.5]
+
+combination = (len(XANGLES) * len(YANGLES))
+maxcomb=NoAngles**NoClusters    
+
+
+#Import Modules------------------------------------------------
+
+import json
+import math
+import copy
+####---CHAPTER1-------------------------
+
+#unpack json file and coppy ASF array to create an empty anglearray
+
+ASFangles=copy.deepcopy(ASFarray)
+
+
+#Possible Angles in simulation
+#XANGLES=[0,30,45,60,90]#[0,45,90]#[0,15,30,45,60,75,90]
+#YANGLES=[0]#[-45,0,45]#[-45,-30,-15,0,15,30,45]
+#exec XANGLES
+#exec YANGLES
+
+#XANGLES = [XANGLES]
+#YANGLES = [YANGLES]
+
+print XANGLES
+print YANGLES
+
+#Array to hold final list
+#ListASFangles=[]
+
+#Number of groups that the facade can exist in (now input to function)
+NoClusters=int(NoClusters)
+#NoClusters=1
+#Number of angle combinations
+NoAngles=len(XANGLES)*len(YANGLES)
+
+#Define the angle value that a row is in
+#the value is between 0 and NoAngles
+rowVal=[0]*NoClusters
+
+#Make a list of all angle combinations
+
+#ANGLES= [(x, y) for x in XANGLES for y in YANGLES]
+total = {0: [(90, 22.5), (90, 22.5)],
+            1: [(90, 22.5), (90, -22.5)],
+                2: [(90, -22.5), (90, 22.5)],
+                       3: [(90, -22.5), (90, -22.5)]}
+
+
+
+
+for index in range(maxcomb):
+    ANGLES = total[index]
     print ANGLES
-    
     ####---CHAPTER2-------------------------
     
     #Deside which rows to break according to the Number
@@ -158,7 +166,7 @@ def NoClusters():
     combcount=0
     
     a=0
-    results={}
+    output={}
     
     while keepLooping:
         #If we have reached the maximum number of combinations then break the main loop
@@ -195,8 +203,7 @@ def NoClusters():
                     #rscount: is rowVal element identifier        
                     ASFangles[icount][jcount]=ANGLES[rowVal[rscount]]
                     
-                    results[a]= ASFangles
-                    a += 1
+                    
             
         
         
@@ -236,14 +243,16 @@ def NoClusters():
     #    
     #print ListASFangles
     
-    maxcomb=NoAngles**NoClusters
+    
     
     print 'max number of combinations is', maxcomb
     if combination>combcount:
         print 'Warning! Requested Combination is not available'
     
     outputASFangles=json.dumps(ASFangles)
-    
-    return outputASFangles    
+    output[a]= str(ASFangles)
+    a += 1    
+
+
 
 

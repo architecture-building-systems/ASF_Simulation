@@ -11,8 +11,13 @@ from matplotlib.colors import LinearSegmentedColormap
 
 def carpetPlot(X, z_min, z_max, title):
     
+    
+    
     fig = plt.figure(figsize=(8, 4))
-    # define what data should be plotted:
+   
+       
+    
+    
     
     
     #in kWh/m2, so divide through 8m2

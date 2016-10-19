@@ -87,7 +87,8 @@ def main_RC_model (ii, T_in, BuildingRadiationData_HOY, epw_name, myfilename1, m
     uncomfortHours=0
     
     #PID setup
-    heatingControl=PID_controller.PID(P=1.0, I=0.08, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
+    #heatingControl=PID_controller.PID(P=1.0, I=0.08, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
+    heatingControl=PID_controller.PID(P=2, I=1.0, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
     coolingControl=PID_controller.PID(P=2.0, I=1.0, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
     heatingControl.setPoint(tintH_set)
     coolingControl.setPoint(tintC_set)

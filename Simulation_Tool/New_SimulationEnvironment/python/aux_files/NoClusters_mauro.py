@@ -5,145 +5,168 @@
 #Status: Complete but difficult to read
 
 #Warning: If NoCluster>2 then the program becomes slow
+#Functioning ASFanlges calculaion
 
 #------------------------------------------------
-'''README
+      
 
-This code can be read as three chapters
 
-Chapter1: Produces a list of possible angle combinations for a single panel
-    Output: ANGLES - a list of all possible angle combinations
 
-Chapter2: Splits the facade into independant clusters of rows. 
-    Output: rowsplit - a list of intergers that indicate the start and end point
-        of clusters
-    Example: If a facade with 9 rows is split into 2 clusters, rowsplit=[0,4,9]
-        this indicates that one cluser starts at 0 and ends at 4
-        the second cluster starts at 4 and ends at 9
 
-Chapter3: Itterates through all possible panel combinations and produces an output
-    list which contains each outputASFangle combination
-    Output: ListASFangles - a list of all possible ASFangles
+def NoClusters_mauro(XANGLES,YANGLES,NoClusters, paths):
+
+
+    from prepareData import readLayoutAndCombinations
+
+        
+    # panelsize used for simulation:
+    #    NoClusters = 5 #readLayoutAndCombinations(paths['radiation_results'])['NoClusters']  
+        
+    # desired grid point size used for simulation:
+    ASFarray = readLayoutAndCombinations(paths)['ASFarray']
     
-Chapter4: Determines that combination of Angles should be recorded for each itteration
-    How it works: In priciple, this is a counter where base= Number of angle combinations
-    Example: If number of angles =10 and number of clusters =2 this would be a normal 2digit base10 counter
-    rowVal=[0,0]
-    rowVal=[0,1]
-    ...
-    rowVal=[0,9]
-    rowVal=[1,0]
+    #    XANGLES=[90]
+    #    YANGLES= [0,45]
+    #    
+    combination = len(XANGLES) * len(YANGLES)
     
-    if number of angles =49 then
-    rowVal=[0,0]
-    rowVal=[0,1]
-    ...
-    rowVal=[0,48]
-    rowVal=[1,0]
-    rowVal=[1,1] etc
     
-    This numer rowVal is then used to call on the ANGLE list produced in Chapter 1
-    which is then fed into Chapter 3
-'''      
-
-
-
-
-#def NoClusters_mauro():
-
-
-from prepareData import readLayoutAndCombinations
+    #Import Modules------------------------------------------------
     
-
-#    XANGLES=[0,90]
-#    YANGLES= [45]
-NoClusters = 2
-
-paths = {}
-
-
-paths['radiation_results'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\\radiation_results'
-
-# panelsize used for simulation:
-#NoClusters = 2#readLayoutAndCombinations(paths['radiation_results'])['NoClusters']  
+    import json
+    import math
+    import copy
+    ####---CHAPTER1-------------------------
     
-# desired grid point size used for simulation:
-ASFarray = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
-#XANGLES = readLayoutAndCombinations(paths['radiation_results'])['XANGLES']
-#YANGLES = readLayoutAndCombinations(paths['radiation_results'])['YANGLES']
-
-XANGLES=[1]
-YANGLES= [2,3]
-
-combination = len(XANGLES) * len(YANGLES)
-
-
-#Import Modules------------------------------------------------
-
-import json
-import math
-import copy
-####---CHAPTER1-------------------------
-
-#unpack json file and coppy ASF array to create an empty anglearray
-
-ASFangles=copy.deepcopy(ASFarray)
-
-
-#Possible Angles in simulation
-#XANGLES=[0,30,45,60,90]#[0,45,90]#[0,15,30,45,60,75,90]
-#YANGLES=[0]#[-45,0,45]#[-45,-30,-15,0,15,30,45]
-#exec XANGLES
-#exec YANGLES
-
-#XANGLES = [XANGLES]
-#YANGLES = [YANGLES]
-
-#Array to hold final list
-ListASFangles=[]
-
-#Number of groups that the facade can exist in (now input to function)
-NoClusters=int(NoClusters)
-#NoClusters=1
-#Number of angle combinations
-NoAngles=len(XANGLES)*len(YANGLES)
-
-maxcomb=NoAngles**NoClusters
-
-#Define the angle value that a row is in
-#the value is between 0 and NoAngles
-rowVal=[0]*NoClusters
-
-output = {}
-outputASFangles2 = {}
-
-#Make a list of all angle combinations
-ANGLES= [(x, y) for x in XANGLES for y in YANGLES]
-
-ANGLEScomb = {}
-count = 0
-#for two clusters
-for ii in range(len(ANGLES)):
-    for jj in range(len(ANGLES)):
-        ANGLEScomb[count] = [ANGLES[ii],ANGLES[jj]]
+    #unpack json file and coppy ASF array to create an empty anglearray
+    
+    ASFangles=copy.deepcopy(ASFarray)
+    
+      
+    #Array to hold final list
+    #ListASFangles=[]
+    
+    #Number of groups that the facade can exist in (now input to function)
+    NoClusters=int(NoClusters)
+    #NoClusters=1
+    #Number of angle combinations
+    NoAngles=len(XANGLES)*len(YANGLES)
+    
+    maxcomb=NoAngles**NoClusters
+    
+    #Define the angle value that a row is in
+    #the value is between 0 and NoAngles
+    #rowVal=[0]*NoClusters
+    
+    
+    output = {}
+    
+    
+    #Make a list of all angle combinations
+    ANGLES= [[x, y] for x in XANGLES for y in YANGLES]
+    
+    ANGLEScomb = {}
+    count = 0
+    
+    for ii in range(combination):
+        ANGLEScomb[count] = ANGLES[ii]
         count += 1
+        
+    #for one cluster
+    if NoClusters == 1:
+        count1 = 0
+        total = {}
+        for qq in range(0,len(ANGLEScomb)):
+            total[count1] =[ANGLEScomb[qq]]
+            count1 += 1
+     
+    
+    #for two clusters
+    elif NoClusters == 2:
+        count1 = 0
+        total = {}
+        for qq in range(0,len(ANGLEScomb)):
+            for ww in range(0,len(ANGLEScomb)):
+                total[count1] =[ANGLEScomb[qq],ANGLEScomb[ww]]
+                count1 += 1
+     
+    #for three Clusters
+    elif NoClusters == 3:
+                 
+        count1 = 0
+        total = {}
+        for qq in range(len(ANGLEScomb)):
+            for ww in range(len(ANGLEScomb)):
+                for ee in range(len(ANGLEScomb)):
+                    total[count1] =[ANGLEScomb[qq],ANGLEScomb[ww],ANGLEScomb[ee]]
+                    count1 += 1
+                     
+    elif NoClusters == 4:
+                 
+        count1 = 0
+        total = {}
+        for qq in range(len(ANGLEScomb)):
+            for ww in range(len(ANGLEScomb)):
+                for ee in range(len(ANGLEScomb)):
+                    for rr in range(len(ANGLEScomb)):
+                        total[count1] =[ANGLEScomb[qq],ANGLEScomb[ww],ANGLEScomb[ee], ANGLEScomb[rr]]
+                        count1 += 1
+    
+    elif NoClusters == 5:
+              
+        count1 = 0
+        total = {}
+        for qq in range(len(ANGLEScomb)):
+            for ww in range(len(ANGLEScomb)):
+                for ee in range(len(ANGLEScomb)):
+                    for rr in range(len(ANGLEScomb)):
+                        for tt in range(len(ANGLEScomb)):                    
+                            total[count1] =[ANGLEScomb[qq],ANGLEScomb[ww],ANGLEScomb[ee], ANGLEScomb[rr], ANGLEScomb[tt]]
+                            count1 += 1
+        
+     ####---CHAPTER2-------------------------
+    
+    #Deside which rows to break according to the Number
+    #of clusters
+    #How many items do we split the ASF into
+    rowdivide=int(math.floor(len(ASFangles)/NoClusters))
+    #What is remaining
+    rowremain=len(ASFangles)%NoClusters
+    #print rowdivide
+    #print rowremain
+    rowsplit=[]
+    ii=0
+    #These are positions within ASF array where we split
+    for ii in range(NoClusters-1):
+        rowsplit.append(rowdivide*(ii+1)+1) #a =y, b=2y...
+    rowsplit.append(rowdivide*(ii+2)+rowremain) #c=2y+x
+    #Add a 0 at the start of the list to indicate the top row is 0
+    rowsplit = [0] + rowsplit
+    #Bypass funciton if the number of clusters is 1
+    if NoClusters==1:
+        rowsplit=[]
+        rowsplit.append(rowdivide) #Note rowdivide=Number of rows
+        rowsplit = [0] + rowsplit
+    
+      
+    
+    
+      
+    for index in range(0,maxcomb):
+        
+        for yy in range(NoClusters):
+            for zz in range(rowsplit[yy],rowsplit[yy+1]):
+                for xx in range(len(ASFangles[zz])):
+                    ASFangles[zz][xx]= total[index][yy]
+                
+        output[index] = copy.deepcopy(ASFangles)
+    
+    
+    return output                 
 
-#for three clusters
-#for
-#    for
-#        for
 
-
-
-total = {0: [(67.5, -22.5), (-6, 4)], 
-             1: [(6, -5), (3, 3)]}
-
-
-#1: [(6, -5), (-6, 4)],
-#                2: [(67.5, -22.5), (-6, 4)],
-#                    3: [(67.5, -22.5), (-6, 4)]
-
-for index in range(0,2):
+"""
+for index in range(0,maxcomb):
     ANGLES = total[index]
     print "total", ANGLES
     
@@ -238,8 +261,8 @@ for index in range(0,2):
         combcount+=1
         
         
-    a = ASFangles
-    output[index].append(a)            
+    a = str(ASFangles)
+    output[index]=a            
         
         
     #outputListASFangles=json.dumps(ListASFangles)
@@ -261,3 +284,13 @@ for index in range(0,2):
 print 'combinations is', maxcomb
         #return outputASFangles
 
+#if NoClusters == 1:
+#    rows = len(ASFangles)
+#    columns = len(ASFangles[0])
+#     
+#    for index in range(combination):
+#        for yy in range(rows):
+#            for xx in range(columns):
+#                ASFangles[yy][xx]= ANGLEScomb[index]
+#        output[index]=str(ASFangles)
+"""
