@@ -35,7 +35,7 @@ print "simulation start: " + now
 # specify the location used for the analysis ‐ this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographica
 # new locations can be added with the grasshopper main script for any .epw weather
-geoLocation = 'Zuerich‐Kloten_2005'
+geoLocation = 'Zuerich_Kloten_2005'
 
 NoClusters = 1
 
@@ -93,7 +93,7 @@ if not os.path.isdir(paths['radiation_wall']):
 
 
 # define path of geographical location:
-paths['geo'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\data\geographical_location\Zuerich-Kloten' 
+paths['geo'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\data\geographical_location\Zuerich-Kloten' 
 #paths['geo'] = os.path.join(( paths['data'] + "\geographical_location"), geoLocation)
 
 
@@ -116,7 +116,7 @@ with open(paths['geo'] + '\SunTrackingData.json', 'r') as fp:
 
 
 #Set Solar Panel Properties
-XANGLES=[0]
+XANGLES=[0,15,30,45,60,75,90]
 YANGLES= [-45,-30,-15, 0, 15, 30, 45]
 
 #XANGLES=[22.5,67.5]
@@ -270,47 +270,47 @@ PV_electricity_results = {}
 PV_detailed_results = {}
 
 #with the radiation_results the Pv_results are calcualted
-#if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'): 
-if not os.path.isdir(paths['PV']):
-    os.makedirs(paths['PV'])
-from asf_electricity_production_mauro_3 import asf_electricity_production
-print '\ncalculating PV electricity production'     
+if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'): 
+    if not os.path.isdir(paths['PV']):
+        os.makedirs(paths['PV'])
+    from asf_electricity_production_mauro_3 import asf_electricity_production
+    print '\ncalculating PV electricity production'     
+    
+    
+    if createPlots:
+        PV_electricity_results, PV_detailed_results, fig1, fig2 = \
+        asf_electricity_production(
+                           createPlots = createPlots, 
+                           lb_radiation_path = paths['radiation_results'],
+                           panelsize = 400, 
+                           pvSizeOption = 0,
+                           save_results_path = paths['PV'], 
+                           lookup_table_path = paths['data'] + '\python\electrical_simulation', 
+                           geo_path = paths['geo'],
+                           flipOrientation= False, 
+                           simulationOption = {'timePeriod' : None},
+                           XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month, 
+                           start = start, end = end)
+                           
+    else:
+        PV_electricity_results, PV_detailed_results = \
+        asf_electricity_production(
+                           createPlots = createPlots, 
+                           lb_radiation_path = paths['radiation_results'],
+                           panelsize = 400, 
+                           pvSizeOption = 0,
+                           save_results_path = paths['PV'], 
+                           lookup_table_path = paths['data'] + '\python\electrical_simulation', 
+                           geo_path = paths['geo'],
+                           flipOrientation= False, 
+                           simulationOption = {'timePeriod' :None},
+                           XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month,
+                           start = start, end = end)
 
-
-if createPlots:
-    PV_electricity_results, PV_detailed_results, fig1, fig2 = \
-    asf_electricity_production(
-                       createPlots = createPlots, 
-                       lb_radiation_path = paths['radiation_results'],
-                       panelsize = 400, 
-                       pvSizeOption = 0,
-                       save_results_path = paths['PV'], 
-                       lookup_table_path = paths['data'] + '\python\electrical_simulation', 
-                       geo_path = paths['geo'],
-                       flipOrientation= False, 
-                       simulationOption = {'timePeriod' : None},
-                       XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month, 
-                       start = start, end = end)
-                       
-else:
-    PV_electricity_results, PV_detailed_results = \
-    asf_electricity_production(
-                       createPlots = createPlots, 
-                       lb_radiation_path = paths['radiation_results'],
-                       panelsize = 400, 
-                       pvSizeOption = 0,
-                       save_results_path = paths['PV'], 
-                       lookup_table_path = paths['data'] + '\python\electrical_simulation', 
-                       geo_path = paths['geo'],
-                       flipOrientation= False, 
-                       simulationOption = {'timePeriod' :None},
-                       XANGLES = XANGLES, YANGLES= YANGLES, hour_in_month = hour_in_month,
-                       start = start, end = end)
-
-#else: 
-#    PV_electricity_results = np.load(paths['PV'] + '\PV_electricity_results.npy').item()
-#    PV_detailed_results = np.load(paths['PV'] + '\PV_detailed_results.npy').item()
-#    print 'PV_electricity_results loaded from folder'
+else: 
+    PV_electricity_results = np.load(paths['PV'] + '\PV_electricity_results.npy').item()
+    PV_detailed_results = np.load(paths['PV'] + '\PV_detailed_results.npy').item()
+    print 'PV_electricity_results loaded from folder'
     
 print "\npreparing data\n"
 
@@ -378,9 +378,20 @@ for monthi in range(1,13):
        
 
 
+ # add python_path to system path, so that all files are available:
+sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
+                                
+# calcualte Building Simulation (RC Model) and save H,C,L for every our of the year                              
+from main_RC_model3 import main_RC_model
+
+   
+paths['Radiation_Building'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\adiation_Building_Zh.csv'
+paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv'                                        
+
+
 print '\nStart RC-Model calculation'
 print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-
+tic = time.time()
 
 for hour_of_year in range(0,8760):
     
@@ -399,22 +410,25 @@ for hour_of_year in range(0,8760):
     hourlyData[hour_of_year]['T_in'] = []
     hourlyData[hour_of_year]['AngleComb'] = []
 
+
     if hour_of_year not in hourRadiation:
         BuildingRadiationData_HOY[hour_of_year] = [0]* NumberCombinations
         hourlyData[hour_of_year]['PV'] = [0]* NumberCombinations
     else:
         hourlyData[hour_of_year]['PV'] = PV[hour_of_year]['PV']
-          
-    # add python_path to system path, so that all files are available:
-    sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
-                                    
-    # calcualte Building Simulation (RC Model) and save H,C,L for every our of the year                              
-    from main_RC_model3 import main_RC_model
-    
-       
-    paths['Radiation_Building'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\adiation_Building_Zh.csv'
-    paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv'                                        
-    
+        
+    results_building_simulation[hour_of_year]['E_tot'] = float('NaN')
+    results_building_simulation[hour_of_year]['H']  = float('NaN')
+    results_building_simulation[hour_of_year]['C']  = float('NaN')
+    results_building_simulation[hour_of_year]['L']  = float('NaN')
+    results_building_simulation[hour_of_year]['PV']  = float('NaN')
+    results_building_simulation[hour_of_year]['OptAngles'] = float('NaN')
+    results_building_simulation[hour_of_year]['T_in'] = float('NaN')
+    results_building_simulation[hour_of_year]['T_out'] = float('NaN')
+    results_building_simulation[hour_of_year]['RadiationWindow'] = float('NaN')
+
+for hour_of_year in range(0,8760):
+           
     #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))
     for comb in range(0, NumberCombinations):
         
@@ -467,9 +481,12 @@ for hour_of_year in range(0,8760):
     T_in = Data_T_in_HOY[hour_of_year][comb]
     
     #show which HOY is calculated
-    if hour_of_year % 1000 == 0:
-        print 'HOY:', hour_of_year    
+    if hour_of_year % 10 == 0:
+        print 'HOY:', hour_of_year
+        toc = time.time() - tic
+        print 'time passed (min): ' + str(toc/60.)
     
+print "\nEnd of RC-Model calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
 #store all results in a DataFrame
 hourlyData_df = pd.DataFrame(hourlyData)

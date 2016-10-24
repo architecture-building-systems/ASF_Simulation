@@ -32,7 +32,7 @@ theta_m_t: Medium temperature of the enxt time step
 theta_m_prev: Medium temperature from the previous time step
 c_m: Thermal Capacitance of the medium 
 h_tr_3: combined heat conductance, see function for definition
-h_tr_em: Heat conductance from the outside through opaque elements TODO: Check this
+h_tr_em: Heat conductance from the outside through opaque elements 
 phi_m_tot: see formula for the calculation, eq C.5 in standard
 
 phi_m: Combination of internal and solar gains directly to the medium 
@@ -45,7 +45,7 @@ phi_hc_nd: Heating and Cooling of the supply air
 h_ve_adj: Ventilation heat transmission coefficient 
 h_tr_2: combined heat conductance, see function for definition 
 
-h_tr_is: Some heat transfer coefficient between the air and the inside surface TODO: Check this
+h_tr_is: Heat transfer coefficient between the air and the inside surface 
 
 H_tr_ms: Heat transfer coefficient between the internal surface temperature and the medium
 
@@ -67,14 +67,14 @@ class Building(object):
 		glass_light_transmitance=0.744 ,
 		lighting_load=0.0117 ,
 		lighting_control = 300,
-		h_tr_em = 47 , 
-		h_tr_w = 13,
-		h_ve_adj = 45,
-		c_m = 2.07*3.6*10**6,
-		h_tr_ms = 45,
-		h_tr_is = 15,
+		U_em = 0.2 , 
+		U_w = 1.1,
+		ACH=2,
+		c_m_A_f = 165000,
 		theta_int_h_set = 20,
 		theta_int_c_set = 26,
+		phi_c_max_A_f=-12,
+		phi_h_max_A_f=12,
 
 		):
 		# type: (object, object, object, object, object, object, object, object, object, object, object, object, object, object, object, object) -> object
@@ -95,16 +95,16 @@ class Building(object):
 		self.A_f=Room_Depth*Room_Width #[m2] Floor Area
 		self.A_m=self.A_f* 2.5 #[m2] Effective Mass Area assuming a medium weight building #12.3.1.2
 		self.Room_Vol=Room_Width*Room_Depth*Room_Height #[m3] Room Volume
-		self.A_t=self.A_f*2 + Room_Width*Room_Height*2 + Room_Depth*Room_Height*2 #TODO: Not sure what A_t is, check it out
+		self.A_tot=self.A_f*2 + Room_Width*Room_Height*2 + Room_Depth*Room_Height*2
+		self.A_t=self.A_tot #TODO: Not sure what A_t is, check it out
 
-		#Single Capacitance Model Parameters
-		self.c_m=c_m #[kWh/K] Room Capacitance. Default based of Madsen2011, consider changing to ISO standard 12.3.1.2
-		self.h_tr_em = h_tr_em #Conductance of opaque surfaces to exterior [W/K]
-		self.h_tr_w = 	h_tr_w  #Conductance to exterior through glazed surfaces [W/K]
-		self.h_ve_adj =	h_ve_adj  #Conductance through ventilation [W/M]
-		self.c_m = c_m 			#Thermal Capacitance in J/K
-		self.h_tr_ms = 	h_tr_ms #Opaque transimitance #TODO: Check what this really means
-		self.h_tr_is = 	h_tr_is # Conductance from the conditioned air to interior building surface
+		#Single Capacitance  5 conductance Model Parameters
+		self.c_m=c_m_A_f*self.A_f #[kWh/K] Room Capacitance. Default based on ISO standard 12.3.1.2 for medium heavy buildings
+		self.h_tr_em = U_em*(Room_Height*Room_Width-Fenst_A) #Conductance of opaque surfaces to exterior [W/K]
+		self.h_tr_w = 	U_w*Fenst_A  #Conductance to exterior through glazed surfaces [W/K], based on U-wert of 1W/m2K
+		self.h_ve_adj =	1200*self.Room_Vol*ACH/3600  #Conductance through ventilation [W/M]
+		self.h_tr_ms = 	9.1 * self.A_m #Transmitance from the internal air to the thermal mass of the building
+		self.h_tr_is = 	self.A_tot * 3.45 # Conductance from the conditioned air to interior building surface
 
 		#Thermal set points
 		self.theta_int_h_set = theta_int_h_set
@@ -113,14 +113,14 @@ class Building(object):
 		#Thermal Properties
 		self.has_heating_demand=False #Boolean for if heating is required
 		self.has_cooling_demand=False #Boolean for if cooling is required
-		self.phi_hc_nd=0 			#the heating/cooilng load
-		self.phi_c_max = 100 #max cooling load
-		self.phi_h_max = 100 #max heating load
+		self.phi_c_max = phi_c_max_A_f*self.A_f #max cooling load
+		self.phi_h_max = phi_h_max_A_f*self.A_f #max heating load
 
 
 	def calc_heatflow(self,phi_int, phi_sol):
 		#C.1 - C.3 in [C.3 ISO 13790]
 
+		#Calculates the heat flows to various points of the building based on the breakdown in section C.2, formulas C.1-C.3
 
 		self.phi_ia=0.5*phi_int
 
@@ -128,11 +128,12 @@ class Building(object):
 
 		self.phi_st=(1-(self.A_m/self.A_t)-(self.h_tr_w/(9.1*self.A_t)))*(0.5*phi_int+phi_sol)
 
-		'''manually checked, OK'''
 
 	def calc_theta_m_t(self, theta_m_prev):
 
 		# (C.4) in [C.3 ISO 13790]
+
+		#Primary Equation, calculates the temperature of the next time step
 
 		self.theta_m_t = ((theta_m_prev*((self.c_m/3600.0)-0.5*(self.h_tr_3+self.h_tr_em))) + self.phi_m_tot) / ((self.c_m/3600.0)+0.5*(self.h_tr_3+self.h_tr_em))
 
@@ -144,41 +145,46 @@ class Building(object):
 		# (C.5) in [C.3 ISO 13790]
 		# h_ve = h_ve_adj and theta_sup = theta_e [9.3.2 ISO 13790]
 
+		#Calculates a global heat transfer. This is a definition used to simplify equation calc_theta_m_t so it's not so long
+
 		self.phi_m_tot = self.phi_m + self.h_tr_em*theta_e + \
 		self.h_tr_3*(self.phi_st + self.h_tr_w*theta_e+self.h_tr_1*(((self.phi_ia+phi_hc_nd)/self.h_ve_adj)+theta_e))/self.h_tr_2
 
-		print 'phi_m_tot =', self.phi_m_tot
+		#print 'phi_m_tot =', self.phi_m_tot
 
-	'''Functions to Caluculate the derived heat transfer simplifications'''
+
 
 	def calc_h_tr_1(self):
 
 		# (C.6) in [C.3 ISO 13790]
 
+		#Definition to simplify calc_phi_m_tot
+
 		self.h_tr_1 = 1.0/(1.0/self.h_ve_adj + 1.0/self.h_tr_is)
 
-		print 'h_tr_1=', self.h_tr_1
+		#print 'h_tr_1=', self.h_tr_1
 
 	def calc_h_tr_2(self):
 
 		# (C.7) in [C.3 ISO 13790]
 
+		#Definition to simplify calc_phi_m_tot
 		self.h_tr_2 = self.h_tr_1 + self.h_tr_w
 
-		print 'h_tr_2 =',self.h_tr_2
+		#print 'h_tr_2 =',self.h_tr_2
 
 	def calc_h_tr_3(self):
-
 		# (C.8) in [C.3 ISO 13790]
 
+		#Definition to simplify calc_phi_m_tot
 		self.h_tr_3 = 1.0/(1.0/self.h_tr_2 + 1.0/self.h_tr_ms)
 		
-		print 'h_tr_3=', self.h_tr_3
+		#print 'h_tr_3=', self.h_tr_3
 
 	'''Functions to Calculate the temperatures at the nodes'''
 
 	def calc_theta_m(self,theta_m_prev):
-		#PJ doesn't understand this
+		#PJ doesn't understand this but it's in the ISO standard
 
 		# (C.9) in [C.3 ISO 13790]
 		self.theta_m = (self.theta_m_t+theta_m_prev)/2.0
@@ -189,6 +195,8 @@ class Building(object):
 
 		# (C.10) in [C.3 ISO 13790]
 		# h_ve = h_ve_adj and theta_sup = theta_e [9.3.2 ISO 13790]
+
+		#Calculate the temperature of the inside room surfaces
 		self.theta_s = (self.h_tr_ms*self.theta_m+self.phi_st+self.h_tr_w*theta_e+self.h_tr_1*(theta_e+(self.phi_ia+phi_hc_nd)/self.h_ve_adj)) / \
 				  (self.h_tr_ms+self.h_tr_w+self.h_tr_1)
 
@@ -198,20 +206,26 @@ class Building(object):
 		# (C.11) in [C.3 ISO 13790]
 		# h_ve = h_ve_adj and theta_sup = theta_e [9.3.2 ISO 13790]
 
+		#Calculate the temperature of the inside air
 		self.theta_air = (self.h_tr_is * self.theta_s + self.h_ve_adj * theta_e + self.phi_ia + phi_hc_nd) / (self.h_tr_is + self.h_ve_adj)
 
 
 	def calc_theta_op(self):
 
 		# (C.12) in [C.3 ISO 13790]
+
+		#The opperative temperature is a weighted average of the air and mean radiant temperatures. It is not used in any further calculation at this stage
 		self.theta_op = 0.3 * self.theta_air + 0.7 * self.theta_s
 
 	'''Derivate using the Crank-Nicolson method'''
 
 	def calc_temperatures_crank_nicholson(self, phi_hc_nd, phi_int, phi_sol, theta_e, theta_m_prev):
+		# section C.3 in [C.3 ISO 13790]
 
 		# calculates air temperature and operative temperature for a given heating/cooling load
-		# section C.3 in [C.3 ISO 13790]
+		#It effectively runs all the functions above
+
+		
 
 
 		self.calc_heatflow(phi_int, phi_sol)
@@ -234,9 +248,13 @@ class Building(object):
 
 		# step 1 in section C.4.2 in [C.3 ISO 13790]
 
+		#Determines if the building has a heating or cooling demand
+
 		phi_hc_nd=0
+		#Determine the temperatures at various nodes
 		self.calc_temperatures_crank_nicholson(phi_hc_nd, phi_int, phi_sol, theta_e, theta_m_prev)
 
+		#If the air temperature is less or greater than the set temperature, there is a heating/cooling load
 		if self.theta_air < self.theta_int_h_set:
 			self.has_heating_demand=True
 			self.has_cooling_demand=False
@@ -253,6 +271,12 @@ class Building(object):
 		# calculates unrestricted heating power
 		# (C.13) in [C.3 ISO 13790]
 
+		'''Based on the Thales Intercept Theorem. 
+		Where we set a heating case that is 10x the floor area and determine the temperature as a result 
+		Assuming that the relation is linear, one can draw a right angle triangle. 
+		From this we can determine the heating level required to achieve the set point temperature
+		This assumes a perfect HVAC control system
+		'''
 		self.phi_hc_nd_un = phi_hc_nd_10*(theta_air_set - theta_air_0)/(theta_air_10 - theta_air_0)
 
 
@@ -261,14 +285,17 @@ class Building(object):
 		# Crank-Nicholson calculation procedure if heating/cooling system is active
 		# Step 1 - Step 4 in Section C.4.2 in [C.3 ISO 13790]
 
-		# Step 1:
+		# Step 1: Check if heating or cooling is needed
+		#Set heating/cooling to 0
 		phi_hc_nd_0 = 0
+		#Calculate the air temperature with no heating/cooling
 		theta_air_0=self.calc_temperatures_crank_nicholson(phi_hc_nd_0, phi_int, phi_sol, theta_e, theta_m_prev)[1] #This is more stable
 		#theta_air_0 = self.theta_air #This should return the same value
 
-		# Step 2:
 
+		# Step 2: Calculate the unrestricted heating/cooling required
 
+		#determine if we need heating or cooling based based on the condition that no heating or cooling is required
 		if self.has_heating_demand:
 			theta_air_set = self.theta_int_h_set
 		elif self.has_cooling_demand:
@@ -276,22 +303,25 @@ class Building(object):
 		else:
 			print "error heating function has been called event though no heating is required"
 
+		#Set a heating case where the heating load is 10x the floor area
 		phi_hc_nd_10 = 10 * self.A_f
 
+		#Calculate the air temperature obtained by having this 10x setpoint
 		theta_air_10=self.calc_temperatures_crank_nicholson(phi_hc_nd_10, phi_int, phi_sol, theta_e, theta_m_prev)[1]
 		#theta_air_10 = self.theta_air
 
-		self.phi_hc_nd_un = self.calc_phi_hc_nd_un(phi_hc_nd_10,theta_air_set, theta_air_0, theta_air_10)
+		#Determine the unrestricted heating/cooling off the building
+		self.calc_phi_hc_nd_un(phi_hc_nd_10,theta_air_set, theta_air_0, theta_air_10)
 
-		# Step 3:
-
-
+		# Step 3: Check if available heating or cooling power is sufficient
+		#print 'hello', self.phi_hc_nd_un
 		if self.phi_c_max <= self.phi_hc_nd_un <= self.phi_h_max:
 
-			self.phi_hc_nd_ac = phi_hc_nd_un
-			self.theta_air_ac = theta_air_set
 
-		# Step 4:
+			self.phi_hc_nd_ac = self.phi_hc_nd_un
+			self.theta_air_ac = theta_air_set #not sure what this is used for at this stage TODO
+
+		# Step 4: if not sufficient then set the heating/cooling setting to the maximum
 		elif self.phi_hc_nd_un > self.phi_h_max: # necessary heating power exceeds maximum available power
 
 			self.phi_hc_nd_ac = self.phi_h_max
@@ -321,34 +351,12 @@ class Building(object):
 	def solve_building_energy(self,phi_int, phi_sol,theta_e, theta_m_prev):
 
 
-		#TODO: Define theta_m_prev and theta_e
-		
-		# building thermal properties at previous time step
-		# +++++++++++++++++++++++++++++++++++++++++++++++++
-		#theta_m_prev = None
-
-		# environmental properties
-		# ++++++++++++++++++++++++
-		#theta_e = None
-
-		# air flows
-		# +++++++++
-		m_ve_mech = None
-		m_ve_window = None
-		m_ve_leakage = None
-
-		# air supply temperatures (HEX)
-		# +++++++++++++++++++++++++++++
-		temp_ve_mech = None
-
-	   
-
+		#Calculate the heat transfer definitions for formula simplification
 		self.calc_h_tr_1()
 		self.calc_h_tr_2()
 		self.calc_h_tr_3()
 
 		# check demand
-		# ++++++++++++
 		self.has_demand(phi_int, phi_sol,theta_e, theta_m_prev)
 
 		if not self.has_heating_demand and not self.has_cooling_demand:
@@ -356,14 +364,14 @@ class Building(object):
 			# no heating or cooling demand
 			# calculate temperatures of building R-C-model and exit
 			# --> rc_model_function_1(...)
-			self.phi_hc_nd = 0
-			calc_temperatures_crank_nicholson( phi_hc_nd, phi_int, phi_sol, theta_e, theta_m_prev)
+			self.phi_hc_nd_ac=0
+			self.calc_temperatures_crank_nicholson( self.phi_hc_nd_ac, phi_int, phi_sol, theta_e, theta_m_prev)
 
 		   
 
 		else:
 
-			# has heating demand
+			# has heating/cooling demand
 			
 			self.calc_phi_hc_ac(phi_int, phi_sol, theta_e, theta_m_prev)
 

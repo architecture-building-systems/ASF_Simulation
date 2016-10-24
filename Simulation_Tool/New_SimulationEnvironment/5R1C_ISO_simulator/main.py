@@ -22,7 +22,7 @@ __status__ = "Production"
 
 
 theta_e=10
-theta_m_prev=20
+theta_m_prev=22
 
 #Internal heat gains, in Watts
 phi_int=10
@@ -47,12 +47,13 @@ print Office.theta_m
 
 print Office.lighting_demand
 
+
 # print 'phi_ia=', Office.phi_ia
 # print 'phi_m=', Office.phi_m
 # print 'phi_st=',Office.phi_st
 
-# print Office.phi_hc_nd_ac
+print Office.phi_hc_nd_ac
 
-# print Office.has_heating_demand
+#print Office.has_heating_demand
 
 # print Office.phi_m_tot

@@ -203,7 +203,6 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     # loop through simulation data files:
     for SimulationNumber in range(startIt,numASFit):
     
-        
         endata = np.genfromtxt(Simulation_Data_Folder + '/' + filenames[SimulationNumber], delimiter=',', skip_header=7) #filenames list of all files, access with indices
         maxRadPoint = np.max(endata)*1000 # Wh/(m2*h)
         theoreticalMaxRad[SimulationNumber] = maxRadPoint/ days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
@@ -211,6 +210,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         #theoreticalMaxRad[SimulationNumber] = maxRadPoint
         
         gridPsize = panellength / nparcell * panelwidth / nparcell# size of each gridpoint
+        
         
         #irr_gridP = endata * gridPsize
         irr_gridP = endata * gridPsize / days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
@@ -221,6 +221,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         Imod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
         Pmod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
     
+            
         
         for mod_sel in range(panelnum):    # module iteration
     
