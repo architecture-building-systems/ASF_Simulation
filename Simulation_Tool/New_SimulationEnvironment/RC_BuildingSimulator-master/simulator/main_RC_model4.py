@@ -16,43 +16,23 @@ possible input parameters:
 - building stystem: capacitive heating/ cooling
 - occupancy profil: type of building utilisation (Office)
 
-
-
-
 """
     
-def main_RC_model (monthi, ii, T_in, BuildingRadiationData_HOY, epw_name, myfilename1, myfilename2):
+def main_RC_model (HOY, T_in, T_out, BuildingRadiationData_HOY, occupancy, Q_human, Ill_Eq):
     
-    import sys
     import numpy as np
-    import math
-    import input_data_mauro as f
-    import matplotlib.pyplot as plt
     import PID_controller
     from BuildingProperties import Building #Importing Building Class
-    
-    sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\RC_BuildingSimulator-master\simulator\data')                                        
-                      
-
-    #Import Data
-    T_out,glbRad, glbIll= f.read_EWP(epw_name) #C, W, lx
-    
-    daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
-    #print T_out[ii]
-    #heat gain from the sun
-    Q_fenstRad=BuildingRadiationData_HOY/daysPerMonth[monthi-1] #kWh/h, Solar Gains from ladybug analysis (divide through days per month, to get hourly values)
-    
-    #print Q_fenstRad 
-    
-    #occupancy profil of the building
-    occupancy, Q_human=f.read_occupancy(myfilename2) #people/m2/h, kWh/h
-    Ill_Eq= f.Equate_Ill(epw_name) #Equation coefficients for linear polynomial
-    
+      
     
     #Set Office Building Parameters. See BuildingProperties.py
-    Office=Building(Cm=2.07, R_env=42, Infl=0.5, vent_Pp=0.016)
+    #Office=Building(Cm=2.07, R_env=42, Infl=0.5, vent_Pp=0.016) #old calculation Infl = 0.5
+    Office=Building(Cm=2.07, R_env=42, Infl=1.0, vent_Pp=0.016) #new calculation Infl = 1.0
     
     
+    
+    #heat gain from the sun
+    Q_fenstRad=BuildingRadiationData_HOY #kWh/h, Solar Gains from ladybug analysis
     #Calculate Illuminance in the room. 
     fenstIll=Q_fenstRad*1000*Ill_Eq[0] #Lumens.  Note that the constant has been ignored because it should be 0
     TransIll=fenstIll*Office.glass_light_transmitance
@@ -63,14 +43,11 @@ def main_RC_model (monthi, ii, T_in, BuildingRadiationData_HOY, epw_name, myfile
     tintC_set=26.0 #Because data in occupancy is a bit wierd and will causes control issues FIX THIS
     
     
-    #Calculate external heat gains
-    
-    #print 'Building Radiation:', BuildingRadiationData_HOY
-          
+    #Calculate external heat gains            
     Q_fenstRad=Q_fenstRad*Office.glass_solar_transmitance #Solar Gains from ladybug analysis
-    Q=Q_fenstRad + Q_human[ii] #only solar gains and human gains for now
+    Q=Q_fenstRad + Q_human[HOY] #only solar gains and human gains for now
     
-    #print Q  
+       
     
     #Initialise Conditions
     Q_heat=0
@@ -87,7 +64,8 @@ def main_RC_model (monthi, ii, T_in, BuildingRadiationData_HOY, epw_name, myfile
     uncomfortHours=0
     
     #PID setup
-    heatingControl=PID_controller.PID(P=1.0, I=0.08, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
+    #heatingControl=PID_controller.PID(P=1.0, I=0.08, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
+    heatingControl=PID_controller.PID(P=2, I=1.0, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
     coolingControl=PID_controller.PID(P=2.0, I=1.0, D=0.0, Derivator=0, Integrator=0, Integrator_max=5, Integrator_min=-5)
     heatingControl.setPoint(tintH_set)
     coolingControl.setPoint(tintC_set)
@@ -101,13 +79,13 @@ def main_RC_model (monthi, ii, T_in, BuildingRadiationData_HOY, epw_name, myfile
     Heat_hr=0
     Cool_hr=0
     Lighting_hr=0
-    Office.setVentilation(occupancy['People'][ii])
+    Office.setVentilation(occupancy['People'][HOY])
     
     for jj in range(0,int(1/dt)):
         		       
-		dT_in=((Q+Q_heat+Q_cool)/(Office.Cm) + (1/(Office.Cm*Office.R_i))*(float(T_out[ii])-T_in))*dt
+		dT_in=((Q+Q_heat+Q_cool)/(Office.Cm) + (1/(Office.Cm*Office.R_i))*(float(T_out)-T_in))*dt
 		T_in=T_in+dT_in
-		if T_in<tintH_set and occupancy['People'].iat[ii]>=0: 
+		if T_in<tintH_set and occupancy['People'].iat[HOY]>=0: 
 			#Note that occupancy control is currently disabled. This is done through the >=. If you want occupancy
 			#control then set it to >
 
@@ -116,7 +94,7 @@ def main_RC_model (monthi, ii, T_in, BuildingRadiationData_HOY, epw_name, myfile
 			Q_heat=0
 		Heat_hr+=Q_heat #Determine total heat in kW for this time step. This will be averaged later
 
-		if  T_in>tintC_set and occupancy['People'].iat[ii]>=0:
+		if  T_in>tintC_set and occupancy['People'].iat[HOY]>=0:
 			#Note that occupancy control is currently disabled. This is done through the >=. If you want occupancy
 			#control then set it to >
 					
@@ -141,7 +119,7 @@ def main_RC_model (monthi, ii, T_in, BuildingRadiationData_HOY, epw_name, myfile
 #            Data_uncomfortHours[ii]=1 #array to show which hours were uncomfortable
 
 	#Lighting calc. Double check this as I wrote it rushed. Try find allternative for .iat
-    if Lux < Office.LightingControl and occupancy['People'].iat[ii]>0:
+    if Lux < Office.LightingControl and occupancy['People'].iat[HOY]>0:
             Lighting_hr=Office.LightLoad*Office.Floor_A
             Total_Lighting+=Lighting_hr
  
@@ -152,26 +130,6 @@ def main_RC_model (monthi, ii, T_in, BuildingRadiationData_HOY, epw_name, myfile
     Data_Lighting=Lighting_hr
  
     
-    return Data_T_in, T_out[ii], Data_Heating, Data_Cooling, Data_Lighting   
-    
-   
-    
-    
-    
-#    pltrange=8760
-#    
-#    plt.figure(1)
-#    plt.plot(range(0, int(pltrange)),Data_T_in[0:pltrange], range(0, int(pltrange)),T_out[0:pltrange])
-#        
-#    plt.figure(2)
-#    plt.plot(range(0, int(pltrange)),Data_Heating[0:pltrange])
-#    
-#    plt.figure(3)
-#    plt.plot(range(0, int(pltrange)),Data_Cooling[0:pltrange])
-#    
-#    plt.figure(4)
-#    plt.plot(range(0, int(pltrange)),Data_Lighting[0:pltrange])
-#                
-#    plt.show()
+    return Data_T_in, Data_Heating, Data_Cooling, Data_Lighting   
     
     

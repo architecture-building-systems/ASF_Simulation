@@ -44,6 +44,16 @@ def Equate_Ill(weatherData):
     x=np.arange(0,1000)
 
     return eq
+    
+def BuildingData(R_extWall, R_window, FreshAir,People, roomFloorArea, roomVolume):
+      
+    U_exWall = 1/R_extWall #W/(m2*K)
+    U_window = 1/R_window #W/(m2*K)        
+    
+    Ventilation = FreshAir * People *3600 * roomFloorArea #m3/h 
+    Ventilation_per_hour = Ventilation/roomVolume # 1/m3
+    
+    return U_exWall,U_window, Ventilation_per_hour  
   
  
 

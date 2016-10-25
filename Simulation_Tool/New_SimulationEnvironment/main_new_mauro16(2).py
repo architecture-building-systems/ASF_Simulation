@@ -9,9 +9,7 @@ main file for simulation environment
 
 25.10.2016
 
-
-monthly Simulation - main_new_mauro_5.gh
-RC 4
+new RC-Model
 
 """
 
@@ -115,8 +113,8 @@ with open(paths['geo'] + '\SunTrackingData.json', 'r') as fp:
 
 
 #Set Solar Panel Properties
-XANGLES=[0,15,30,45,60,75,90]
-YANGLES= [-45,-30,-15, 0, 15, 30, 45]
+XANGLES=[0,15,30,45,60,75, 90]
+YANGLES= [-45,-30,-15, 0, 15,30, 45]
 
 #XANGLES=[22.5,67.5]
 #YANGLES= [-22.5,22.5]
@@ -320,6 +318,7 @@ T_in = 20
 
 #create dicitionary to save relevant hourly data:
 hourlyData = {}
+Data_HC_HOY = {}
 Data_Heating_HOY = {}
 Data_Cooling_HOY = {}
 Data_Lighting_HOY = {}
@@ -360,6 +359,8 @@ for hour_of_year in range(0,8760):
 
 count = 0
 DAY = 0
+
+
 #for jj in range(1,len(PV_electricity_results['Pmpp_sum'])):
 for monthi in range(1,13):
     if monthi == 1:
@@ -370,51 +371,61 @@ for monthi in range(1,13):
     for HOD in hour_in_month[monthi]:
             for jj in range(0,daysPerMonth[monthi-1]):
                 DAY = HOD + jj*24    
-                PV[passedHours + DAY]['PV'] = 0.001 * PV_electricity_results['Pmpp_sum'][count:count+NumberCombinations]
+                PV[passedHours + DAY]['PV'] = PV_electricity_results['Pmpp_sum'][count:count+NumberCombinations] #Watts
             count +=NumberCombinations
-       
-
-# add python_path to system path, so that all files are available:
-sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
-                                
-# calcualte Building Simulation (RC Model) and save H,C,L for every our of the year                              
-from main_RC_model4 import main_RC_model
-from input_data_mauro import Equate_Ill, read_occupancy
-   
-paths['Radiation_Building'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\adiation_Building_Zh.csv'
-paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv'                                        
-                                                  
-
-#Import Data
-T_out = weatherData['drybulb_C']
-
-#occupancy profil of the building
-occupancy, Q_human=read_occupancy(paths['Occupancy']) #people/m2/h, kWh/h
-Ill_Eq= Equate_Ill(paths['weather']) #Equation coefficients for linear polynomial
-
-
+     
 
 print '\nStart RC-Model calculation'
 print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 tic = time.time()
 
-for hour_of_year in range(0,8760):
+# add python_path to system path, so that all files are available:
+sys.path.insert(0, r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\5R1C_ISO_simulator')
+                                
+  
+paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv' 
+
+#set parameters
+human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
+roomFloorArea = building_data['room_width']/1000.0*building_data['room_depth']/1000.0 #[m^2] floor area
+
+
+from buildingPhysics import Building #Importing Building Class
+from read_occupancy import read_occupancy, Equate_Ill
+    
+#people/m2/h, W    
+occupancy, Q_human = read_occupancy(myfilename = paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)
+
+#Equation coefficients for linear polynomial
+Ill_Eq = Equate_Ill(weatherData = weatherData)
+
+#outside Temperatur
+T_out = weatherData['drybulb_C']   
+
+
+
+
+
+for hour_of_year in range(0,8760):#range(0,8760):
+    
     
     E_tot[hour_of_year] = {}
+    Data_HC_HOY[hour_of_year] = {}
     Data_Heating_HOY[hour_of_year] = {}
-    Data_Cooling_HOY[hour_of_year] = {}
+    Data_Cooling_HOY[hour_of_year] = {}    
     Data_Lighting_HOY[hour_of_year] =  {}   
     Data_T_in_HOY[hour_of_year] = {}
+    
     results_building_simulation[hour_of_year] = {}
     hourlyData[hour_of_year]= {}
-    hourlyData[hour_of_year]['H'] = []
-    hourlyData[hour_of_year]['C'] = []
+    hourlyData[hour_of_year]['HC'] = []
+    hourlyData[hour_of_year]['H'] = [] 
+    hourlyData[hour_of_year]['C'] = [] 
     hourlyData[hour_of_year]['L'] = []       
     hourlyData[hour_of_year]['E_tot'] = []
     hourlyData[hour_of_year]['T_out'] = []
     hourlyData[hour_of_year]['T_in'] = []
     hourlyData[hour_of_year]['AngleComb'] = []
-
 
     if hour_of_year not in hourRadiation:
         BuildingRadiationData_HOY[hour_of_year] = [0]* NumberCombinations
@@ -431,33 +442,104 @@ for hour_of_year in range(0,8760):
     results_building_simulation[hour_of_year]['T_in'] = float('NaN')
     results_building_simulation[hour_of_year]['T_out'] = float('NaN')
     results_building_simulation[hour_of_year]['RadiationWindow'] = float('NaN')
+                 
 
-for hour_of_year in range(0,8760):
-           
+    """
+    use of the new RC-Model
+    """
+    #set building properties 
+    BuildingProperties={
+        "Fenst_A": 13.5,
+        "Room_Dept":7,
+        "Room_Width": 4.9,
+        "Room_Height":3.1 ,
+        "glass_solar_transmitance" : 0.691 ,
+        "glass_light_transmitance" : 0.744 ,
+        "lighting_load" : 0.01174 ,
+        "lighting_control" : 300,
+        "U_em" : 0.277 , 
+        "U_w" : 1.709,
+        "ACH": 1, #ACH: Air changes per hour
+        "c_m_A_f" : 165000,
+        "theta_int_h_set" : 22,
+        "theta_int_c_set" : 26,
+        "phi_c_max_A_f": -np.inf,
+        "phi_h_max_A_f": np.inf}
+
+
+    #class Building   
+    Office=Building(lighting_load= BuildingProperties['lighting_load'],
+                    lighting_control = BuildingProperties["lighting_control"],
+                    c_m_A_f = BuildingProperties["c_m_A_f"],
+                    ACH = BuildingProperties['ACH'],
+                    phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
+                    phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
+                    U_em= BuildingProperties["U_em"], 
+                    U_w = BuildingProperties["U_w"],
+                    glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
+                    glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
+                    theta_int_h_set = BuildingProperties['theta_int_h_set'],
+                    theta_int_c_set = BuildingProperties['theta_int_c_set']
+                    )
+    
+    
     #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))
     for comb in range(0, NumberCombinations):
         
-        #set occupancy profil of the building
-        Data_T_in, Data_Heating, Data_Cooling, Data_Lighting = main_RC_model(hour_of_year, T_in, T_out[hour_of_year], BuildingRadiationData_HOY[hour_of_year][comb], occupancy, Q_human, Ill_Eq)
+        
+        #print "Rad", BuildingRadiationData_HOY[hour_of_year][comb]*1000
+                
+        
+        Office.solve_building_energy(phi_int = Q_human[hour_of_year], 
+                                     phi_sol = BuildingRadiationData_HOY[hour_of_year][comb]*1000,
+                                     theta_e = T_out[hour_of_year], 
+                                     theta_m_prev = T_in)
+    
+            
+        #Calculate Illuminance in the room. 
+        fenstIll=BuildingRadiationData_HOY[hour_of_year][comb]*1000*Ill_Eq[0] #Lumens.  Note that the constant has been ignored because it should be 0
+        #Illuminance after transmitting through the window         
+        TransIll=fenstIll*Office.glass_light_transmitance
+        
+       
+        Office.solve_building_lighting(ill = TransIll, 
+                                       occupancy = occupancy['People'][hour_of_year])
+
+        
         
         #save all combination results for one HOY
-        Data_Heating_HOY[hour_of_year][comb]= Data_Heating
-        Data_Cooling_HOY[hour_of_year][comb] = Data_Cooling
-        Data_Lighting_HOY[hour_of_year][comb] = Data_Lighting       
-        Data_T_in_HOY[hour_of_year][comb] = Data_T_in[0]
- 
+        """
+        units lighting_demand?
+        """
+        Data_Lighting_HOY[hour_of_year][comb] = Office.lighting_demand *1000 # * roomFloorArea Watts
+        Data_HC_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac #achtung heating und cooling 
+        Data_T_in_HOY[hour_of_year][comb] = Office.theta_m
+        
+        if Office.phi_hc_nd_ac > 0:
+            Data_Heating_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac
+            Data_Cooling_HOY[hour_of_year][comb] = 0
+        elif Office.phi_hc_nd_ac < 0:
+            Data_Heating_HOY[hour_of_year][comb] = 0
+            Data_Cooling_HOY[hour_of_year][comb] = -Office.phi_hc_nd_ac
+        else:
+            Data_Heating_HOY[hour_of_year][comb] = 0
+            Data_Cooling_HOY[hour_of_year][comb] = 0
+            
+        
         #determine best combination for the evaluated HOY
         #integrate the needed actuation energy to calculate the real total energy demand 
-        E_tot[hour_of_year][comb]=  Data_Heating_HOY[hour_of_year][comb] + Data_Cooling_HOY[hour_of_year][comb] + Data_Lighting_HOY[hour_of_year][comb] - hourlyData[hour_of_year]['PV'][comb]      
-      
+        E_tot[hour_of_year][comb]=  Data_Heating_HOY[hour_of_year][comb] + Data_Cooling_HOY[hour_of_year][comb] + Data_Lighting_HOY[hour_of_year][comb] - hourlyData[hour_of_year]['PV'][comb]
+        
+        
+    hourlyData[hour_of_year]['HC'] = Data_HC_HOY[hour_of_year]
     hourlyData[hour_of_year]['H'] = Data_Heating_HOY[hour_of_year]
-    hourlyData[hour_of_year]['C'] = Data_Cooling_HOY[hour_of_year]
-    hourlyData[hour_of_year]['L'] = Data_Lighting_HOY  [hour_of_year]       
+    hourlyData[hour_of_year]['C'] = Data_Cooling_HOY[hour_of_year]    
+    hourlyData[hour_of_year]['L'] = Data_Lighting_HOY[hour_of_year]       
     hourlyData[hour_of_year]['E_tot'] = E_tot[hour_of_year]
     hourlyData[hour_of_year]['T_out'] =T_out[hour_of_year]
     hourlyData[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year]
     hourlyData[hour_of_year]['AngleComb'] = combinationAngles
-    hourlyData[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year]
+    hourlyData[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year] #kW
     
     if hour_of_year == 0:
     #initil condition        
@@ -468,11 +550,14 @@ for hour_of_year in range(0,8760):
         BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
     elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
         #Check if there is no PV-value (nor radiation), then don't move the modules
-        BestComb = BestComb
-  
-  
+        BestComb = BestComb    
+
+    
+    T_in = Data_T_in_HOY[hour_of_year][BestComb] #most efficient solution has to be used again
+    
     #save optimal results in a dictionary and convert to a DataFrame   
     results_building_simulation[hour_of_year]['E_tot'] = hourlyData[hour_of_year]['E_tot'][BestComb]
+    results_building_simulation[hour_of_year]['HC']  = hourlyData[hour_of_year]['HC'][BestComb]
     results_building_simulation[hour_of_year]['H']  = hourlyData[hour_of_year]['H'][BestComb]
     results_building_simulation[hour_of_year]['C']  = hourlyData[hour_of_year]['C'][BestComb]
     results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
@@ -482,66 +567,65 @@ for hour_of_year in range(0,8760):
     results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
     results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb]
     
-    
-    T_in = Data_T_in_HOY[hour_of_year][BestComb]
-    
     #show which HOY is calculated
-    if hour_of_year % 100 == 0:
+    if hour_of_year % 1000 == 0 and hour_of_year != 0:
         print 'HOY:', hour_of_year
         toc = time.time() - tic
-        print 'time passed (min): ' + str(toc/60.)
+        print 'time passed (min): ' + str(toc/60.) 
+        
+#        print "Q_human", Q_human[hour_of_year]
+#        print "Office.lightning_demand", Office.lighting_demand
+#        print "Office.phi_hc_nd_ac", Office.phi_hc_nd_ac
+#        print "T_in", Office.theta_m
+    
     
 print "\nEnd of RC-Model calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
-#store all results in a DataFrame
-hourlyData_df = pd.DataFrame(hourlyData)
 
 #store results of the best angle combinations in DataFrame   
-Building_Simulation_df= pd.DataFrame(results_building_simulation).T   
+Building_Simulation_df= pd.DataFrame(results_building_simulation).T
 
+#store all results in a DataFrame
+hourlyData_df = pd.DataFrame(hourlyData)
 hourlyData_reform = {(outerKey, innerKey): values for outerKey, innerDict in hourlyData.iteritems() for innerKey, values in innerDict.iteritems()}
 
-#fig = plt.figure() 
+
+#
+#
+#
+#HC_df = pd.DataFrame(Data_HC_HOY).T
+#H_df = pd.DataFrame(Data_Heating_HOY).T
+#C_df = pd.DataFrame(Data_Cooling_HOY).T
+
+
+#   
+#fig = plt.figure()   
 #fig.suptitle('Yearly Energy Demand', fontsize=20)
-#        
+
+
 #with pd.plot_params.use('x_compat', True):
-#    Building_Simulation_df['T_in'].plot(color='r')
-#    Building_Simulation_df['T_out'].plot(color='g') 
-##    Building_Simulation_df['H'].plot(color='b') 
-##    Building_Simulation_df['C'].plot(color='k') 
-###    Building_Simulation_df['L'].plot(color='y') 
-#
+#     HC_df[0].plot(color='y')
 #plt.legend(loc='best')
 #plt.xlabel('Hour of the year', fontsize=18)
-#plt.ylabel('Temperatur [°C]', fontsize=16)
+#plt.ylabel('HC', fontsize=16)
 #
-#
-##fig1 = plt.figure() 
+#fig = plt.figure()   
 #with pd.plot_params.use('x_compat', True):
-#    Building_Simulation_df['PV'].plot(color='g')
-#    
+#     H_df[0].plot(color='y')
 #plt.legend(loc='best')
 #plt.xlabel('Hour of the year', fontsize=18)
-#plt.ylabel('Energy consumption [kWh/h]', fontsize=16)    
+#plt.ylabel('H', fontsize=16)
 #
 #
-#fig2 = plt.figure()   
+#fig = plt.figure()   
 #with pd.plot_params.use('x_compat', True):
-#    Building_Simulation_df['C'].plot(color='k')
-#    
+#     C_df[0].plot(color='y')    
 #plt.legend(loc='best')
 #plt.xlabel('Hour of the year', fontsize=18)
-#plt.ylabel('Energy consumption [kWh/h]', fontsize=16)
-#
-#
-#
-#fig3 = plt.figure()   
-#with pd.plot_params.use('x_compat', True):
-#    Building_Simulation_df['H'].plot(color='y')
-#    
-#plt.legend(loc='best')
-#plt.xlabel('Hour of the year', fontsize=18)
-#plt.ylabel('Energy consumption [kWh/h]', fontsize=16)
+#plt.ylabel('C', fontsize=16)        
+
+
+
 
 
 
@@ -552,11 +636,12 @@ from prepareData_mauro import prepareMonthlyRadiatonData, average_monthly, sum_m
 PV_monthly, R_monthly, PV_eff_opt, Ins_avg, Ins_theoretical, PV_Function_Average, eff=  prepareMonthlyRadiatonData(PV_electricity_results, simulationOption)
 
 
-H =Building_Simulation_df['H']
-C =Building_Simulation_df['C']
-L =Building_Simulation_df['L']
-E =Building_Simulation_df['E_tot'] 
-PV =Building_Simulation_df['PV']
+
+H =Building_Simulation_df['H'] *0.001
+C =Building_Simulation_df['C'] *0.001
+L =Building_Simulation_df['L'] *0.001
+E =Building_Simulation_df['E_tot'] *0.001 
+PV =Building_Simulation_df['PV'] *0.001
 
 # new empty array for Heating data:
 H_monthly_array = np.empty(len(H))*np.nan
@@ -590,7 +675,7 @@ C_sum = sum_monthly(C_monthly_array)
 H_sum = sum_monthly(H_monthly_array)
 PV_sum = -1* sum_monthly(PV_monthly_array)
 
-#PV_function = PV_average[5]/1000
+
 
 
 
@@ -606,28 +691,28 @@ monthlyData['PV'] = PV_sum
 
 
 yearlyData[geoLocation]={}
-yearlyData[geoLocation]['E'] = Building_Simulation_df['E_tot'].sum()
-yearlyData[geoLocation]['PV'] = Building_Simulation_df['PV'].sum()
-yearlyData[geoLocation]['H'] = Building_Simulation_df['H'].sum()
-yearlyData[geoLocation]['C'] = Building_Simulation_df['C'].sum()
-yearlyData[geoLocation]['L'] = Building_Simulation_df['L'].sum()
+yearlyData[geoLocation]['E'] = E.sum()
+yearlyData[geoLocation]['PV'] = PV.sum() 
+yearlyData[geoLocation]['H'] = H.sum() 
+yearlyData[geoLocation]['C'] = C.sum()
+yearlyData[geoLocation]['L'] = L.sum()
 
 #create DataFrame
 monthlyData_df = pd.DataFrame(monthlyData)
 yearlyData_df = pd.DataFrame(yearlyData)
 
-roomFloorArea = building_data['room_width']/1000.0*building_data['room_depth']/1000.0
+roomFloorArea = building_data['room_width']/1000.0*building_data['room_depth']/1000.0 #m2
 
 
-fig0 = carpetPlot(X = PV_sum, z_min = -12, z_max= 70, title = 'PV supply')
+fig0 = carpetPlot(X = PV_sum, z_min = -12, z_max= 20, title = 'PV supply')
 
-fig1 = carpetPlot(X = E_sum, z_min = -12, z_max= 70, title = 'Net Demand including PV')
+fig1 = carpetPlot(X = E_sum, z_min = -12, z_max= 20, title = 'Net Demand including PV')
 
-fig2 = carpetPlot(X = C_sum, z_min = -12, z_max= 70, title = 'Cooling Demand')
+fig2 = carpetPlot(X = C_sum, z_min = -12, z_max= 20, title = 'Cooling Demand')
 
-fig3 = carpetPlot(X = L_sum, z_min = -12, z_max= 70, title = 'Lightning Demand')
+fig3 = carpetPlot(X = L_sum, z_min = -12, z_max= 20, title = 'Lightning Demand')
 
-fig4 = carpetPlot(X = H_sum, z_min = -12, z_max= 70, title = 'Heating Demand')
+fig4 = carpetPlot(X = H_sum, z_min = -12, z_max= 20, title = 'Heating Demand')
 
 
 
@@ -664,6 +749,13 @@ Building_Simulation_df.to_csv(paths['result'] + '\\Building_Simulation.csv')
 hourlyData_df.to_csv(paths['result'] + '\\hourlyData.csv')
 monthlyData_df.to_csv(paths['result'] + '\\monthlyData.csv')
 yearlyData_df.to_csv(paths['result'] + '\\yearlyData.csv')
+
+
+#save building properties
+with open(paths['result'] + '\\BuildingProperties.json', 'w') as f:
+    f.write(json.dumps(BuildingProperties))
+
+
 
 
 print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())

@@ -4,13 +4,14 @@ Created on Thu Mar 24 11:14:42 2016
 
 main file for simulation environment
 
-@author: Mauro Luzzatto 
-@credits: Prageeth Jayathissa, Jerimias Schmidli
+@author: Prageeth Jayathissa
+@credits: Jerimias Schmidli
 
-25.10.2016
+18.10.2016
 
+add clusters
 
-monthly Simulation - main_new_mauro_5.gh
+monthly Simulation - main_new_mauro_6.gh
 RC 4
 
 """
@@ -329,6 +330,8 @@ E_tot = {}
 PV={}
 
 
+ii= 0
+
 from hourRadiation import hourRadiation, hourRadiation_calculated, sumHours
 
 hourRadiation = hourRadiation(hour_in_month, daysPerMonth)
@@ -374,7 +377,8 @@ for monthi in range(1,13):
             count +=NumberCombinations
        
 
-# add python_path to system path, so that all files are available:
+
+ # add python_path to system path, so that all files are available:
 sys.path.insert(0, 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator')
                                 
 # calcualte Building Simulation (RC Model) and save H,C,L for every our of the year                              
@@ -483,7 +487,7 @@ for hour_of_year in range(0,8760):
     results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb]
     
     
-    T_in = Data_T_in_HOY[hour_of_year][BestComb]
+    T_in = Data_T_in_HOY[hour_of_year][comb]
     
     #show which HOY is calculated
     if hour_of_year % 100 == 0:
@@ -501,6 +505,17 @@ Building_Simulation_df= pd.DataFrame(results_building_simulation).T
 
 hourlyData_reform = {(outerKey, innerKey): values for outerKey, innerDict in hourlyData.iteritems() for innerKey, values in innerDict.iteritems()}
 
+           
+
+#else: 
+#    results_building_simulation = np.load(paths['main'] + '\\Results' + '\\Building_Simulation_12_10_2016.npy').item()
+#    Building_Simulation_df= pd.DataFrame(results_building_simulation).T
+#    print 'Building_Simulation_results loaded from folder'
+     #read csv file and load as dataFrame   
+#    test_df = pd.read_csv(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\test.csv')   
+#
+#
+#
 #fig = plt.figure() 
 #fig.suptitle('Yearly Energy Demand', fontsize=20)
 #        
@@ -643,7 +658,7 @@ fig4 = carpetPlot(X = H_sum, z_min = -12, z_max= 70, title = 'Heating Demand')
 
 
 # create folder where results will be saved:
-paths['result']= paths['main'] + '\\Results'+ '\\Results_' + geoLocation + '_date_' + now
+paths['result']= paths['main'] + '\\Results'+ '\\Results_' + geoLocation + '_' + now
 
 if not os.path.isdir(paths['result']):
     os.makedirs(paths['result'])    
@@ -659,7 +674,7 @@ fig3.savefig(paths['png'] + '\\figure3' + '.png')
 fig4.savefig(paths['png'] + '\\figure4' + '.png')
 
 
-# save all results, in kWh
+# save all results
 Building_Simulation_df.to_csv(paths['result'] + '\\Building_Simulation.csv')
 hourlyData_df.to_csv(paths['result'] + '\\hourlyData.csv')
 monthlyData_df.to_csv(paths['result'] + '\\monthlyData.csv')

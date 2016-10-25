@@ -12,7 +12,12 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                                save_results_path = None, 
                                lookup_table_path = None, 
                                geo_path = None, flipOrientation = False, 
-                               simulationOption = None):
+                               simulationOption = None,
+                               XANGLES = [], YANGLES = [], hour_in_month = None, 
+                               start = 0, end = 0):
+                                   
+                                   
+  
     import json
     import numpy as np
     import time
@@ -38,48 +43,64 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
     
     
-    #simulation for 1 hour
-    numHours = 1
+#    #simulation for 1 hour
+#    numHours = 1
     
     
     # load weather file data corresponding to Simulation Data:
     with open(geo_path + '\SunTrackingData.json', 'r') as fp:
         SunTrackingData = json.load(fp)
         fp.close()
-#        
-#    # find the number of hours analysed by ladybug:
-#    if simulationOption['timePeriod'] == '4months':
-#        MonthTracking = SunTrackingData['MonthTracking']
-#        numHours = 0
-#        for i in range(len(MonthTracking)):
-#            if MonthTracking[i]==3 or MonthTracking[i]==6 or MonthTracking[i]==9 or MonthTracking[i]==12: 
-#                numHours += 1
-#    else:
-#        numHours = np.shape(SunTrackingData['HOY'])[0]
+        
+    # find the number of hours analysed by ladybug:
+    if simulationOption['timePeriod'] == '4months':
+        MonthTracking = SunTrackingData['MonthTracking']
+        numHours = 0
+        for i in range(len(MonthTracking)):
+            if MonthTracking[i]==3 or MonthTracking[i]==6 or MonthTracking[i]==9 or MonthTracking[i]==12: 
+                numHours += 1
+    elif simulationOption['timePeriod'] == '3month':
+        MonthTracking = SunTrackingData['MonthTracking']
+        numHours = 0
+        for i in range(len(MonthTracking)):
+            if MonthTracking[i]==1 or MonthTracking[i]==2 or MonthTracking[i]==3: 
+                numHours += 1 
+        print numHours
+        
+    elif simulationOption['timePeriod'] == '1month':
+        MonthTracking = SunTrackingData['MonthTracking']
+        numHours = 0
+        for i in range(len(MonthTracking)):
+            if MonthTracking[i]==7: 
+                numHours += 1         
+            
+    elif simulationOption['timePeriod'] == None:
+        numHours = np.shape(SunTrackingData['HOY'])[0]
+        print "numHours", numHours
+        
+    elif simulationOption['timePeriod'] == '1hour':
+        #simulation for 1 hour
+        numHours = 1
     
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_radiation_path))['allAngles'][0])
-    
+    print "CombPerHour", numCombPerHour
     # set numCombPerHour to 1 if it appears to be zero (this is the case for suntracking)
     if numCombPerHour == 0:
         numCombPerHour = 1
     
    
-    numASFit = numHours*numCombPerHour -1
+    numASFit = numHours*numCombPerHour
     
     
     filenames = []
-    
-    XANGLES=[45,67.5]
-    YANGLES= [0,22.5,45]
-    HOY = 4000
-
-    
-    for x_angle in XANGLES:
-        for y_angle in YANGLES:
-            #    filenames.append(filename + str(i) + filetype)
-            filenames.append(filename + '_'+ str(HOY) + '_' + str(x_angle) + '_' + str(y_angle) + filetype)
-    print filenames
+    for monthi in range(start,end):
+        for HOD in hour_in_month[monthi]:      
+            for x_angle in XANGLES:
+                for y_angle in YANGLES:
+                    # filenames.append(filename + str(i) + filetype)
+                    filenames.append(filename + '_' + str(HOD) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
+    #print filenames
     
     
     
@@ -176,21 +197,31 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         
     tic = time.time()
     
+    
+    
+    
     # loop through simulation data files:
     for SimulationNumber in range(startIt,numASFit):
     
-        
-        endata = np.genfromtxt(Simulation_Data_Folder + '/' + filenames[SimulationNumber], delimiter=',', skip_header=7)
+        endata = np.genfromtxt(Simulation_Data_Folder + '/' + filenames[SimulationNumber], delimiter=',', skip_header=7) #filenames list of all files, access with indices
         maxRadPoint = np.max(endata)*1000 # Wh/(m2*h)
         theoreticalMaxRad[SimulationNumber] = maxRadPoint/ days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
+        
+        #theoreticalMaxRad[SimulationNumber] = maxRadPoint
+        
         gridPsize = panellength / nparcell * panelwidth / nparcell# size of each gridpoint
+        
+        
+        #irr_gridP = endata * gridPsize
         irr_gridP = endata * gridPsize / days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
+        
         #irr_pan2 = sum(irr_gridP, 1) # Wh/h per panel
     
         Vmod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
         Imod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
         Pmod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
     
+            
         
         for mod_sel in range(panelnum):    # module iteration
     
@@ -313,17 +344,17 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         toc = time.time() - tic
         
         print 'time passed (min): ' + str(toc/60.)
-        print 'iteration number: ' + str(SimulationNumber) + ' of ' + str(numASFit)
+        print 'iteration number: ' + str(SimulationNumber + 1) + ' of ' + str(numASFit)
     
     
-    PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month}
+    PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'HOD' : HOD, 'Month':monthi}
     np.save(save_results_path + '\PV_electricity_results.npy',PV_electricity_results)    
     
-    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month}
+    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'HOD': HOD, 'Month':monthi}
     np.save(save_results_path + '\PV_detailed_results.npy',PV_detailed_results)    
     
    
-    print PV_electricity_results, PV_detailed_results   
+    
    
    
     if create_plots_flag:
