@@ -20,7 +20,6 @@ import time
 import warnings
 import csv
 import matplotlib.pyplot as plt
-import csv
 import pandas as pd
 
 # get current time
@@ -251,7 +250,7 @@ for monthi in range(1,13): #month:
         for jj in range(0,daysPerMonth[monthi-1]):
             #Radiation data is calculated for all days per month, so the data is divided through the amount of days per month
             BuildingRadiationData_HOD[monthi][HOD+24*jj]= BuildingRadiationData * 1/daysPerMonth[monthi-1]
-        
+     
 print 'radiation calculation finished!'
 
 PV_electricity_results = {}
@@ -372,7 +371,7 @@ tic = time.time()
 
 # add python_path to system path, so that all files are available:
 #sys.path.insert(0, r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\5R1C_ISO_simulator')
-sys.path.insert(0, paths['main'] + '\5R1C_ISO_simulator')
+sys.path.insert(0, paths['main'] + '\\5R1C_ISO_simulator')
 
                                 
   
@@ -411,8 +410,6 @@ FreshAir = 0.016 #m3/(s*person)
 People = 0.1 #1/m2
 
 U_exWall, U_window, Ventilation_per_hour = BuildingData(R_extWall, R_window, FreshAir, People, roomFloorArea, roomVolume)
-
-print "Vent:", Ventilation_per_hour
 
 
 for hour_of_year in range(0,8760):
@@ -456,38 +453,40 @@ for hour_of_year in range(0,8760):
    
     #set building properties 
     BuildingProperties={
-        "Fenst_A": 13.5,
-        "Room_Dept":7,
-        "Room_Width": 4.9,
-        "Room_Height":3.1 ,
-        "glass_solar_transmitance" : 0.691 ,
-        "glass_light_transmitance" : 0.744 ,
-        "lighting_load" : 0.01174 ,
-        "lighting_control" : 300,
-        "U_em" : U_exWall , 
-        "U_w" : U_window,
-        "ACH": 1,# + Ventilation_per_hour, #ACH: Air changes per hour, total volume of room per hour
-        "c_m_A_f" : 370 * 10**3, #capcitance of the building dependent on building type: medium = 165'000, heavy = 260'000, light = 110'000, very heavy = 370'000
-        "theta_int_h_set" : 22,
-        "theta_int_c_set" : 26,
-        "phi_c_max_A_f": -np.inf,
-        "phi_h_max_A_f": np.inf}
+#        "Fenst_A": 13.5,
+#        "Room_Dept":7,
+#        "Room_Width": 4.9,
+#        "Room_Height":3.1 ,
+#        "glass_solar_transmitance" : 0.691 ,
+#        "glass_light_transmitance" : 0.744 ,
+#        "lighting_load" : 0.01174 ,
+#        "lighting_control" : 300,
+#        "U_em" : U_exWall, 
+#        "U_w" : U_window,
+#        "ACH": 1.5}# + Ventilation_per_hour, #ACH: Air changes per hour, total volume of room per hour
+#        "c_m_A_f" : 165 * 10**3, #capcitance of the building dependent on building type: medium = 165'000, heavy = 260'000, light = 110'000, very heavy = 370'000
+#        "theta_int_h_set" : 22,
+#        "theta_int_c_set" : 26,
+        "phi_c_max_A_f": -20, #-np.inf,
+        "phi_h_max_A_f": 20} #np.inf}
 
 
     #class Building   
-    Office=Building(lighting_load= BuildingProperties['lighting_load'],
-                    lighting_control = BuildingProperties["lighting_control"],
-                    c_m_A_f = BuildingProperties["c_m_A_f"],
-                    ACH = BuildingProperties['ACH'],
-                    phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
-                    phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
-                    U_em= BuildingProperties["U_em"], 
-                    U_w = BuildingProperties["U_w"],
-                    glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
-                    glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
-                    theta_int_h_set = BuildingProperties['theta_int_h_set'],
-                    theta_int_c_set = BuildingProperties['theta_int_c_set']
-                    )
+    Office=Building (phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
+                    phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'])                
+#                    lighting_load= BuildingProperties['lighting_load'],
+#                    lighting_control = BuildingProperties["lighting_control"],
+#                    c_m_A_f = BuildingProperties["c_m_A_f"],
+#                    ACH = BuildingProperties['ACH'],                    
+#                    phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
+#                    phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
+#                    U_em= BuildingProperties["U_em"], 
+#                    U_w = BuildingProperties["U_w"],
+#                    glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
+#                    glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
+#                    theta_int_h_set = BuildingProperties['theta_int_h_set'],
+#                    theta_int_c_set = BuildingProperties['theta_int_c_set'])
+                    
     
     
     #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))
@@ -600,8 +599,6 @@ hourlyData_reform = {(outerKey, innerKey): values for outerKey, innerDict in hou
 
 
 #
-#
-#
 #HC_df = pd.DataFrame(Data_HC_HOY).T
 #H_df = pd.DataFrame(Data_Heating_HOY).T
 #C_df = pd.DataFrame(Data_Cooling_HOY).T
@@ -632,6 +629,16 @@ hourlyData_reform = {(outerKey, innerKey): values for outerKey, innerDict in hou
 #plt.legend(loc='best')
 #plt.xlabel('Hour of the year', fontsize=18)
 #plt.ylabel('C', fontsize=16)        
+
+
+
+fig = plt.figure()   
+with pd.plot_params.use('x_compat', True):
+     T_out.plot(color='y')
+     Building_Simulation_df['T_in'].plot(color='r')
+plt.legend(loc='best')
+plt.xlabel('Hour of the year', fontsize=18)
+plt.ylabel('Temp', fontsize=16)
 
 
 
@@ -710,15 +717,15 @@ yearlyData_df = pd.DataFrame(yearlyData)
 roomFloorArea = building_data['room_width']/1000.0*building_data['room_depth']/1000.0 #m2
 
 
-fig0 = carpetPlot(X = sum_PV, z_min = -12, z_max= 20, title = 'PV supply')
-
-fig1 = carpetPlot(X = sum_E, z_min = -12, z_max= 20, title = 'Net Demand including PV')
-
-fig2 = carpetPlot(X = sum_C, z_min = -12, z_max= 20, title = 'Cooling Demand')
-
-fig3 = carpetPlot(X = sum_L, z_min = -12, z_max= 20, title = 'Lightning Demand')
-
-fig4 = carpetPlot(X = sum_H, z_min = -12, z_max= 20, title = 'Heating Demand')
+#fig0 = carpetPlot(X = sum_PV, z_min = -12, z_max= 20, title = 'PV supply')
+#
+#fig1 = carpetPlot(X = sum_E, z_min = -12, z_max= 20, title = 'Net Demand including PV')
+#
+#fig2 = carpetPlot(X = sum_C, z_min = -12, z_max= 20, title = 'Cooling Demand')
+#
+#fig3 = carpetPlot(X = sum_L, z_min = -12, z_max= 20, title = 'Lightning Demand')
+#
+#fig4 = carpetPlot(X = sum_H, z_min = -12, z_max= 20, title = 'Heating Demand')
 
 
 
@@ -739,20 +746,20 @@ paths['result']= paths['main'] + '\\Results'+ '\\Results_' + geoLocation + '_dat
 if not os.path.isdir(paths['result']):
     os.makedirs(paths['result'])    
 
-#create folder to save figures as png:
-paths['png'] =paths['result'] + '\\png'
-
-os.makedirs(paths['png'])
-fig0.savefig(paths['png'] + '\\figure0' + '.png')
-fig1.savefig(paths['png'] + '\\figure1' + '.png')
-fig2.savefig(paths['png'] + '\\figure2' + '.png')
-fig3.savefig(paths['png'] + '\\figure3' + '.png')
-fig4.savefig(paths['png'] + '\\figure4' + '.png')
+##create folder to save figures as png:
+#paths['png'] =paths['result'] + '\\png'
+#
+#os.makedirs(paths['png'])
+#fig0.savefig(paths['png'] + '\\figure0' + '.png')
+#fig1.savefig(paths['png'] + '\\figure1' + '.png')
+#fig2.savefig(paths['png'] + '\\figure2' + '.png')
+#fig3.savefig(paths['png'] + '\\figure3' + '.png')
+#fig4.savefig(paths['png'] + '\\figure4' + '.png')
 
 
 # save all results, in kWh
 Building_Simulation_df.to_csv(paths['result'] + '\\Building_Simulation.csv')
-hourlyData_df.to_csv(paths['result'] + '\\hourlyData.csv')
+#hourlyData_df.to_csv(paths['result'] + '\\hourlyData.csv')
 monthlyData_df.to_csv(paths['result'] + '\\monthlyData.csv')
 yearlyData_df.to_csv(paths['result'] + '\\yearlyData.csv')
 

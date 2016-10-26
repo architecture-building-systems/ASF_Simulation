@@ -56,10 +56,10 @@ void plastic Interior_Wall
 # end of generic materials definition(s)
 
 # start of material(s) specific to this study (if any)
-void glass TVIS_0.6
+void glass Visible_Light_Tansmittance_of_Window
 0
 0
-4 0.872 0.872 0.872 1.520
+4 0.811 0.811 0.811 1.520
 
 
 # end of material(s) specific to this study (if any)

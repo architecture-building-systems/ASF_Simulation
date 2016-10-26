@@ -69,7 +69,7 @@ class Building(object):
 		lighting_control = 300,
 		U_em = 0.2 , 
 		U_w = 1.1,
-		ACH=2,
+		ACH=1,
 		c_m_A_f = 165000,
 		theta_int_h_set = 20,
 		theta_int_c_set = 26,
