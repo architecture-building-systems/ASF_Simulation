@@ -8,6 +8,7 @@ Calculate IV-curves Lookup-Table for ASF electricity production
 """
 import numpy as np
 import time
+import sys,os
 
 
 def diode_equation(y,Iphi,Io,a,CC,x,AA,BB2):
@@ -100,7 +101,7 @@ for i in range(301):#i=1:301
     print 'time passed: ' + str(toc/60.0) + ' min'
     print 'percentage done: ' + str(i/301.*100) + '%'
     
-np.save(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup',curr_model_submod_lookup)
+np.save(os.path.join(paths['electrical_simulation'], 'curr_model_submod_lookup'),curr_model_submod_lookup)
 
 print 'lookup table succesfuly created and saved'
 

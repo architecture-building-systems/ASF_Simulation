@@ -48,7 +48,7 @@ paths['python'] = paths['main'] + '\\python'
 
 
 # define path of weather file:
-paths['weather'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich-Kloten_2005.epw' #paths['epw_name']
+paths['weather'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich_Kloten_2005.epw' #paths['epw_name']
 
 # add python_path to system path, so that all files are available:
 sys.path.insert(0, paths['python'] + '\\aux_files')
@@ -118,8 +118,6 @@ comb_data={"x_angle": x_angle,
            "Day": Day
             }
             
-
-            
  #create json file with the set combination of x-angle,y-angle and HOY
 with open('comb.json','w') as f:
     f.write(json.dumps(comb_data))
@@ -129,7 +127,7 @@ resultsdetected=0
 
 print '\nStart illuminance calculation with ladybug'
 
-gridSize = [800.0,400.0,200.0,100.0,50.0,25.0] #mm2
+gridSize = [800.0,400.0,200.0,100.0,50.0,25.0,12.5] #mm2
 #gridSize = [7000.0, 6000.0, 5000.0] #mm2
 
 illuminance_avg = {}
@@ -151,7 +149,6 @@ for size in gridSize:
         print 'next step'
         resultsdetected += 1
 
-    print 'illuminance calculation finished!'
                                 
     IlluminanceData = np.array([])
     
@@ -167,9 +164,10 @@ print 'illuminance calculation finished!'
 print "end"
                     
 
-"""
+illuminance_avg_geolocation = {}
+illuminance_avg_geolocation[geoLocation] = illuminance_avg
 #create DataFrame and store it as .csv
-illuminance_avg_df = pd.DataFrame(illuminance_avg)
+illuminance_avg_df = pd.DataFrame(illuminance_avg_geolocation)
 illuminance_avg_df.to_csv(paths['illuminance'] + '\\illuminance_avg_results_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle) +'.csv')
                                        
 #plot avg values
@@ -181,12 +179,11 @@ plt.xlabel('grid size [mm]', fontsize=18)
 plt.ylabel('average illuminance [lux]', fontsize=16)
 
 #nomralize the illuminance value for the smallest value
-#illuminance_avg_df[1].div(100,axis='columns')
+#illuminance_avg_df[geoLocation].div(illuminance_avg[12.5],axis='columns')
 
-#illuminance_avg_df[2] = illuminance_avg_df[1].div(100)
 
 #plot normalized avg values
-
+"""
 #plot avg values
 fig1 = plt.figure()   
 with pd.plot_params.use('x_compat', True):

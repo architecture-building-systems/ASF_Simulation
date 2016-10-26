@@ -26,8 +26,6 @@ import pandas as pd
 now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 print "simulation start: " + now
 
-
-
 # specify the location used for the analysis ‐ this name must be the same as a
 # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographica
 # new locations can be added with the grasshopper main script for any .epw weather
@@ -36,12 +34,10 @@ geoLocation = 'Zuerich_Kloten_2005'
 NoClusters = 1
 
 
-
 #Option to integrate the actuation energy consumption, 'yes' = energy consumption is included
 #Actuation = True # False
 
 #set builiding parameters, will be used, when calling the RC_model function
-#location = (epw_name)
 #building_stystem = capacitive heating/ cooling
 #occupancy_profil = type of building utilisation (Office)
 
@@ -61,18 +57,22 @@ paths = {}
 paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 # define paths of subfolders:
-paths['data'] = paths['main'] + '\\data'
-paths['python'] = paths['main'] + '\\python'
-paths['radiation_results'] = paths['main'] + '\\radiation_results'
-paths['radiation_wall'] = paths['main'] + '\\radiation_wall'
-paths['PV'] = paths['main'] + '\\PV_results'
+paths['data'] =os.path.join(paths['main'], 'data')
+paths['python'] = os.path.join(paths['main'], 'python')
+paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
+paths['radiation_results'] = os.path.join(paths['main'],'radiation_results')
+paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall')
+paths['PV'] = os.path.join(paths['main'], 'PV_results')
+
+paths['weather_folder']= os.path.join(os.path.dirname(paths['main']), 'WeatherData')
 
 
 # define path of weather file:
-paths['weather'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich-Kloten_2005.epw' #paths['epw_name']
+paths['weather_folder']= os.path.join(os.path.dirname(paths['main']), 'WeatherData')
+paths['weather'] = os.path.join(paths['weather_folder'], geoLocation + '.epw')
 
 # add python_path to system path, so that all files are available:
-sys.path.insert(0, paths['python'] + '\\aux_files')
+sys.path.insert(0, paths['aux_files'])
 sys.path.insert(0, paths['python'])
 
 from epwreader import epw_reader
@@ -87,25 +87,28 @@ if not os.path.isdir(paths['radiation_results']):
 if not os.path.isdir(paths['radiation_wall']):
         os.makedirs(paths['radiation_wall'])
 
-
 # define path of geographical location:
-paths['geo'] = os.path.join(( paths['data'] + "\geographical_location"), geoLocation)
+paths['geo_location'] = os.path.join(paths['data'], 'geographical_location')
+paths['geo'] = os.path.join(paths['geo_location'], geoLocation)
 
 
 # create sun data based on grasshopper file, this is only possible with the ladybug component SunPath
-#execfile(paths['python'] + "\\aux_files\\SunAngles_Tracking_and_temperature.py")
+#execfile( os.path.join(paths['aux_files'], 'SunAngles_Tracking_and_temperature.py'))
 
 # calculate and save lookup table if it does not yet exist:
-if not os.path.isfile(paths['data'] + '\python\electrical_simulation\curr_model_submod_lookup.npy'): 
-    if not os.path.isdir(paths['data'] + '\python\electrical_simulation'):
-        os.makedirs(paths['data'] + '\python\electrical_simulation')
-    execfile(paths['python'] + '\\aux_files\\create_lookup_table.py')
+paths['data_python'] = os.path.join(paths['data'], 'python')
+paths['electrical_simulation'] = os.path.join(paths['data_python'], 'electrical_simulation') 
+
+if not os.path.isfile(os.path.join(paths['electrical_simulation'], 'curr_model_submod_lookup.npy')): 
+    if not os.path.isdir(paths['electrical_simulation']):
+        os.makedirs(paths['electrical_simulation'])
+    execfile(os.path.join(paths['aux_files'], 'create_lookup_table.py'))
 else:
     print 'lookup table not created as it already exists'
 
 
 # load sunTrackingData used for the LadyBug simulation:
-with open(paths['geo'] + '\SunTrackingData.json', 'r') as fp:
+with open(os.path.join(paths['geo'], 'SunTrackingData.json'), 'r') as fp:
     SunTrackingData = json.load(fp)
     fp.close()
 
@@ -162,6 +165,7 @@ with open('building.json','w') as f:
 resultsdetected=0
 
 print '\nStart radiation calculation with ladybug'
+print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
 
 # create dicitionary to save optimal angles:
@@ -193,14 +197,22 @@ for item in range(0,len(hours)):
 start = 1
 end = 13
 
+tic = time.time()
+
 
 for monthi in range(1,13): #month:
+    
+    print 'Month:', monthi
+    toc = time.time() - tic
+    print 'time passed (min): ' + str(toc/60.)
+    
     
     BuildingRadiationData_HOD[monthi] = {}
     
     for HOD in hour_in_month[monthi]:
     #check if there is any radiation to analyse
         print 'HOD:', HOD, 'Month:', monthi
+        
     
         BuildingRadiationData = np.array([])
         
@@ -225,7 +237,7 @@ for monthi in range(1,13): #month:
 #                      
                     
                 #Wait until the radiation_results were created    
-                while not os.path.exists(paths['radiation_results']+'\\RadiationResults' +'_'+  str(int(HOD)) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv'):
+                while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_'+  str(int(HOD)) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                     time.sleep(1)
                 
                 #paths['radiation_results']+'\\RadiationResults' +'_Index_'+ str(index) + '_NoCluster_' + str(NoClusters) + '_'  + str(HOD) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv'                
@@ -233,12 +245,12 @@ for monthi in range(1,13): #month:
                 else:
                     print 'next step'
                     resultsdetected += 1
-                                            
+                                                                                    
                     #read total radition on wall and save it in BuildingRadiationData              
-                    while not os.path.exists(paths['radiation_wall'] + '\RadiationWall' + '_' + str(int(HOD)) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + '.csv'):
+                    while not os.path.exists(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(int(HOD)) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + '.csv')):
                         time.sleep(1)
                     else:
-                        with open(paths['radiation_wall'] + '\RadiationWall' + '_' + str(int(HOD)) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + '.csv', 'r') as csvfile:
+                        with open(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(int(HOD)) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + '.csv'), 'r') as csvfile:
                             reader = csv.reader(csvfile)
                             for idx,line in enumerate(reader):
                                 if idx == 1:
@@ -251,13 +263,13 @@ for monthi in range(1,13): #month:
             #Radiation data is calculated for all days per month, so the data is divided through the amount of days per month
             BuildingRadiationData_HOD[monthi][HOD+24*jj]= BuildingRadiationData * 1/daysPerMonth[monthi-1]
      
-print 'radiation calculation finished!'
+print "\nEnd of radiaiton calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
 PV_electricity_results = {}
 PV_detailed_results = {}
 
 #with the radiation_results the Pv_results are calcualted
-if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'): 
+if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results.npy')): 
     if not os.path.isdir(paths['PV']):
         os.makedirs(paths['PV'])
     from asf_electricity_production_mauro import asf_electricity_production
@@ -272,7 +284,7 @@ if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'):
                            panelsize = 400, 
                            pvSizeOption = 0,
                            save_results_path = paths['PV'], 
-                           lookup_table_path = paths['data'] + '\python\electrical_simulation', 
+                           lookup_table_path = paths['electrical_simulation'], 
                            geo_path = paths['geo'],
                            flipOrientation= False, 
                            simulationOption = {'timePeriod' : None},
@@ -287,7 +299,7 @@ if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'):
                            panelsize = 400, 
                            pvSizeOption = 0,
                            save_results_path = paths['PV'], 
-                           lookup_table_path = paths['data'] + '\python\electrical_simulation', 
+                           lookup_table_path = paths['electrical_simulation'], 
                            geo_path = paths['geo'],
                            flipOrientation= False, 
                            simulationOption = {'timePeriod' :None},
@@ -295,8 +307,8 @@ if not os.path.isfile(paths['PV'] + '\PV_electricity_results.npy'):
                            start = start, end = end)
 
 else: 
-    PV_electricity_results = np.load(paths['PV'] + '\PV_electricity_results.npy').item()
-    PV_detailed_results = np.load(paths['PV'] + '\PV_detailed_results.npy').item()
+    PV_electricity_results = np.load(os.path.join(paths['PV'], 'PV_electricity_results.npy')).item()
+    PV_detailed_results = np.load(os.path.join(paths['PV'], 'PV_detailed_results.npy')).item()
     print 'PV_electricity_results loaded from folder'
     
 print "\npreparing data\n"
@@ -324,8 +336,6 @@ hourRadiation = hourRadiation(hour_in_month, daysPerMonth)
 hourRadiation_calculated = hourRadiation_calculated(hour_in_month,daysPerMonth)
 sumHours = sumHours(daysPerMonth)
 
-
-#if not os.path.isfile(paths['main'] + '\\Results' + '\\Building_Simulation.npy'): 
         
 #add the radiation data to the specific HOY
 BuildingRadiationData_HOY= {}
@@ -350,8 +360,6 @@ for hour_of_year in range(0,8760):
 count = 0
 DAY = 0
 
-
-#for jj in range(1,len(PV_electricity_results['Pmpp_sum'])):
 for monthi in range(1,13):
     if monthi == 1:
         passedHours = 0
@@ -367,16 +375,16 @@ for monthi in range(1,13):
 
 print '\nStart RC-Model calculation'
 print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+
 tic = time.time()
 
-# add python_path to system path, so that all files are available:
-#sys.path.insert(0, r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\5R1C_ISO_simulator')
-sys.path.insert(0, paths['main'] + '\\5R1C_ISO_simulator')
+paths['5R1C_ISO_simulator'] = os.path.join(paths['main'], '5R1C_ISO_simulator')
+paths['5R1C_ISO_simulator_data'] = os.path.join(paths['5R1C_ISO_simulator'], 'data')    
+paths['Occupancy'] = os.path.join(paths['5R1C_ISO_simulator_data'],'Occupancy_COM.csv') 
 
-                                
-  
-#paths['Occupancy'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RC_BuildingSimulator-master\simulator\data' + '\\Occupancy_COM.csv' 
-paths['Occupancy'] = paths['main'] + '\RC_BuildingSimulator-master\simulator\data\Occupancy_COM.csv' 
+
+# add python_path to system path, so that all files are available:
+sys.path.insert(0, paths['5R1C_ISO_simulator'])
 
 
 #set parameters
@@ -445,6 +453,7 @@ for hour_of_year in range(0,8760):
     results_building_simulation[hour_of_year]['L']  = float('NaN')
     results_building_simulation[hour_of_year]['PV']  = float('NaN')
     results_building_simulation[hour_of_year]['OptAngles'] = float('NaN')
+    results_building_simulation[hour_of_year]['KeyComb'] = float('NaN')
     results_building_simulation[hour_of_year]['T_in'] = float('NaN')
     results_building_simulation[hour_of_year]['T_out'] = float('NaN')
     results_building_simulation[hour_of_year]['RadiationWindow'] = float('NaN')
@@ -457,35 +466,37 @@ for hour_of_year in range(0,8760):
 #        "Room_Dept":7,
 #        "Room_Width": 4.9,
 #        "Room_Height":3.1 ,
-#        "glass_solar_transmitance" : 0.691 ,
-#        "glass_light_transmitance" : 0.744 ,
-#        "lighting_load" : 0.01174 ,
-#        "lighting_control" : 300,
-#        "U_em" : U_exWall, 
-#        "U_w" : U_window,
-#        "ACH": 1.5}# + Ventilation_per_hour, #ACH: Air changes per hour, total volume of room per hour
+        "glass_solar_transmitance" : 0.691 ,
+        "glass_light_transmitance" : 0.744 ,
+        "lighting_load" : 0.01174 ,
+        "lighting_control" : 300,
+        "U_em" : U_exWall, 
+        "U_w" : U_window,
+        "ACH": 1.5, # + Ventilation_per_hour, #ACH: Air changes per hour, total volume of room per hour
 #        "c_m_A_f" : 165 * 10**3, #capcitance of the building dependent on building type: medium = 165'000, heavy = 260'000, light = 110'000, very heavy = 370'000
-#        "theta_int_h_set" : 22,
+        "theta_int_h_set" : 22,
 #        "theta_int_c_set" : 26,
-        "phi_c_max_A_f": -20, #-np.inf,
-        "phi_h_max_A_f": 20} #np.inf}
+#        "phi_c_max_A_f": -20, #-np.inf,
+#        "phi_h_max_A_f": 20} #np.inf
+            }
 
 
     #class Building   
-    Office=Building (phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
-                    phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'])                
-#                    lighting_load= BuildingProperties['lighting_load'],
-#                    lighting_control = BuildingProperties["lighting_control"],
+    Office=Building (#phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
+                    #phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'])                
+                    lighting_load= BuildingProperties['lighting_load'],
+                    lighting_control = BuildingProperties["lighting_control"],
 #                    c_m_A_f = BuildingProperties["c_m_A_f"],
-#                    ACH = BuildingProperties['ACH'],                    
-#                    phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
-#                    phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
-#                    U_em= BuildingProperties["U_em"], 
-#                    U_w = BuildingProperties["U_w"],
-#                    glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
-#                    glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
-#                    theta_int_h_set = BuildingProperties['theta_int_h_set'],
-#                    theta_int_c_set = BuildingProperties['theta_int_c_set'])
+                    ACH = BuildingProperties['ACH'],                    
+                    #phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
+                    #phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
+                    U_em= BuildingProperties["U_em"], 
+                    U_w = BuildingProperties["U_w"],
+                    glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
+                    glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
+                    theta_int_h_set = BuildingProperties['theta_int_h_set'],
+                    #theta_int_c_set = BuildingProperties['theta_int_c_set']
+                    )
                     
     
     
@@ -570,6 +581,7 @@ for hour_of_year in range(0,8760):
     results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
     results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
     results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]   
+    results_building_simulation[hour_of_year]['KeyComb'] = [BestComb]   
     results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
     results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
     results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #kw
@@ -641,10 +653,6 @@ plt.xlabel('Hour of the year', fontsize=18)
 plt.ylabel('Temp', fontsize=16)
 
 
-
-
-
-
 from carpetPlot import carpetPlot
 from prepareData_mauro import prepareMonthlyRadiatonData, average_monthly, sum_monthly
         
@@ -676,12 +684,12 @@ for i in range(len(H)):
     PV_monthly_array[i] = PV[i]
 
 #
-## average data for every hour of a month:
-#L_avg = average_monthly(L_monthly_array)
-#E_avg = average_monthly(E_monthly_array)
-#C_avg = average_monthly(C_monthly_array)
-#H_avg = average_monthly(H_monthly_array)
-#PV_avg = -1* average_monthly(PV_monthly_array)
+# average data for every hour of a month:
+L_avg = average_monthly(L_monthly_array)
+E_avg = average_monthly(E_monthly_array)
+C_avg = average_monthly(C_monthly_array)
+H_avg = average_monthly(H_monthly_array)
+PV_avg = -1* average_monthly(PV_monthly_array)
 
 
 # summed data for each hour of a month:
@@ -717,15 +725,15 @@ yearlyData_df = pd.DataFrame(yearlyData)
 roomFloorArea = building_data['room_width']/1000.0*building_data['room_depth']/1000.0 #m2
 
 
-#fig0 = carpetPlot(X = sum_PV, z_min = -12, z_max= 20, title = 'PV supply')
-#
-#fig1 = carpetPlot(X = sum_E, z_min = -12, z_max= 20, title = 'Net Demand including PV')
-#
-#fig2 = carpetPlot(X = sum_C, z_min = -12, z_max= 20, title = 'Cooling Demand')
-#
-#fig3 = carpetPlot(X = sum_L, z_min = -12, z_max= 20, title = 'Lightning Demand')
-#
-#fig4 = carpetPlot(X = sum_H, z_min = -12, z_max= 20, title = 'Heating Demand')
+fig0 = carpetPlot(X = sum_PV, z_min = -12, z_max= 20, title = 'PV supply')
+
+fig1 = carpetPlot(X = sum_E, z_min = -12, z_max= 20, title = 'Net Demand including PV')
+
+fig2 = carpetPlot(X = sum_C, z_min = -12, z_max= 20, title = 'Cooling Demand')
+
+fig3 = carpetPlot(X = sum_L, z_min = -12, z_max= 20, title = 'Lightning Demand')
+
+fig4 = carpetPlot(X = sum_H, z_min = -12, z_max= 20, title = 'Heating Demand')
 
 
 
@@ -741,31 +749,32 @@ roomFloorArea = building_data['room_width']/1000.0*building_data['room_depth']/1
 
 
 # create folder where results will be saved:
-paths['result']= paths['main'] + '\\Results'+ '\\Results_' + geoLocation + '_date_' + now
+paths['result_folder'] = os.path.join(paths['main'], 'Results') 
+paths['result']= os.path.join(paths['result_folder'], 'Results_' + geoLocation + '_date_' + now)
 
 if not os.path.isdir(paths['result']):
     os.makedirs(paths['result'])    
 
-##create folder to save figures as png:
-#paths['png'] =paths['result'] + '\\png'
-#
-#os.makedirs(paths['png'])
-#fig0.savefig(paths['png'] + '\\figure0' + '.png')
-#fig1.savefig(paths['png'] + '\\figure1' + '.png')
-#fig2.savefig(paths['png'] + '\\figure2' + '.png')
-#fig3.savefig(paths['png'] + '\\figure3' + '.png')
-#fig4.savefig(paths['png'] + '\\figure4' + '.png')
+#create folder to save figures as png:
+paths['png'] = os.path.join(paths['result'], 'png')
+
+os.makedirs(paths['png'])
+fig0.savefig(os.path.join(paths['png'], 'figure0' + '.png'))
+fig1.savefig(os.path.join(paths['png'], 'figure1' + '.png'))
+fig2.savefig(os.path.join(paths['png'], 'figure2' + '.png'))
+fig3.savefig(os.path.join(paths['png'], 'figure3' + '.png'))
+fig4.savefig(os.path.join(paths['png'], 'figure4' + '.png'))
 
 
 # save all results, in kWh
-Building_Simulation_df.to_csv(paths['result'] + '\\Building_Simulation.csv')
-#hourlyData_df.to_csv(paths['result'] + '\\hourlyData.csv')
-monthlyData_df.to_csv(paths['result'] + '\\monthlyData.csv')
-yearlyData_df.to_csv(paths['result'] + '\\yearlyData.csv')
+Building_Simulation_df.to_csv(os.path.join(paths['result'], 'Building_Simulation.csv'))
+hourlyData_df.to_csv(os.path.join(paths['result'], 'hourlyData.csv'))
+monthlyData_df.to_csv(os.path.join(paths['result'], 'monthlyData.csv'))
+yearlyData_df.to_csv(os.path.join(paths['result'], 'yearlyData.csv'))
 
 
 #save building properties
-with open(paths['result'] + '\\BuildingProperties.json', 'w') as f:
+with open(os.path.join(paths['result'], 'BuildingProperties.json'), 'w') as f:
     f.write(json.dumps(BuildingProperties))
 
 print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
