@@ -114,11 +114,11 @@ with open(os.path.join(paths['geo'], 'SunTrackingData.json'), 'r') as fp:
 
 
 #Set Solar Panel Properties
-XANGLES=[0,15,30,45,60,75, 90]
-YANGLES= [-45,-30,-15, 0, 15,30, 45]
+#XANGLES=[0, 15, 30, 45, 60, 75, 90]
+#YANGLES= [-45, -30, -15, 0, 15, 30, 45]
 
-#XANGLES=[22.5,67.5]
-#YANGLES= [-22.5,22.5]
+XANGLES=[0, 15, 30, 45, 60, 75, 90]
+YANGLES= [-45,-30,-15,0, 15, 30, 45]
 
 
 #Make a list of all angle combinations
@@ -169,7 +169,6 @@ print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
 
 # create dicitionary to save optimal angles:
-opt_angles = {}
 BuildingRadiationData_HOD = {}
 
 daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
@@ -201,19 +200,11 @@ tic = time.time()
 
 
 for monthi in range(1,13): #month:
-    
-    print 'Month:', monthi
-    toc = time.time() - tic
-    print 'time passed (min): ' + str(toc/60.)
-    
-    
+      
     BuildingRadiationData_HOD[monthi] = {}
     
     for HOD in hour_in_month[monthi]:
-    #check if there is any radiation to analyse
-        print 'HOD:', HOD, 'Month:', monthi
         
-    
         BuildingRadiationData = np.array([])
         
         for x_angle in XANGLES:
@@ -228,7 +219,9 @@ for monthi in range(1,13): #month:
                 #create json file with the set combination of x-angle,y-angle and HOY
                 with open('comb.json','w') as f:
                     f.write(json.dumps(comb_data))
-                    print HOD, monthi, x_angle, y_angle, resultsdetected              
+                    print HOD, monthi, x_angle, y_angle, resultsdetected
+                    toc = time.time() - tic
+                    print 'time passed (min): ' + str(toc/60.)
                 
 #                #write ASFangles for Clusters
 #                with open('outputASFangles.json','w') as f:
@@ -447,16 +440,17 @@ for hour_of_year in range(0,8760):
     else:
         hourlyData[hour_of_year]['PV'] = PV[hour_of_year]['PV']
         
-    results_building_simulation[hour_of_year]['E_tot'] = float('NaN')
-    results_building_simulation[hour_of_year]['H']  = float('NaN')
-    results_building_simulation[hour_of_year]['C']  = float('NaN')
-    results_building_simulation[hour_of_year]['L']  = float('NaN')
-    results_building_simulation[hour_of_year]['PV']  = float('NaN')
-    results_building_simulation[hour_of_year]['OptAngles'] = float('NaN')
-    results_building_simulation[hour_of_year]['KeyComb'] = float('NaN')
-    results_building_simulation[hour_of_year]['T_in'] = float('NaN')
-    results_building_simulation[hour_of_year]['T_out'] = float('NaN')
-    results_building_simulation[hour_of_year]['RadiationWindow'] = float('NaN')
+    results_building_simulation[hour_of_year]['E_tot'] = np.nan
+    results_building_simulation[hour_of_year]['H']  = np.nan
+    results_building_simulation[hour_of_year]['C']  = np.nan
+    results_building_simulation[hour_of_year]['L']  = np.nan
+    results_building_simulation[hour_of_year]['PV']  = np.nan
+    results_building_simulation[hour_of_year]['OptAngles'] = np.nan
+    results_building_simulation[hour_of_year]['BestCombKey'] = np.nan
+    results_building_simulation[hour_of_year]['HeatComb'] = np.nan
+    results_building_simulation[hour_of_year]['T_in'] = np.nan
+    results_building_simulation[hour_of_year]['T_out'] = np.nan
+    results_building_simulation[hour_of_year]['RadiationWindow'] = np.nan
                  
 for hour_of_year in range(0,8760):
    
@@ -476,8 +470,8 @@ for hour_of_year in range(0,8760):
 #        "c_m_A_f" : 165 * 10**3, #capcitance of the building dependent on building type: medium = 165'000, heavy = 260'000, light = 110'000, very heavy = 370'000
         "theta_int_h_set" : 22,
 #        "theta_int_c_set" : 26,
-#        "phi_c_max_A_f": -20, #-np.inf,
-#        "phi_h_max_A_f": 20} #np.inf
+        "phi_c_max_A_f": -np.inf, #-np.inf,
+        "phi_h_max_A_f": np.inf #np.inf
             }
 
 
@@ -488,8 +482,8 @@ for hour_of_year in range(0,8760):
                     lighting_control = BuildingProperties["lighting_control"],
 #                    c_m_A_f = BuildingProperties["c_m_A_f"],
                     ACH = BuildingProperties['ACH'],                    
-                    #phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
-                    #phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
+                    phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
+                    phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
                     U_em= BuildingProperties["U_em"], 
                     U_w = BuildingProperties["U_w"],
                     glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
@@ -567,7 +561,18 @@ for hour_of_year in range(0,8760):
         BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
     elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
         #Check if there is no PV-value (nor radiation), then don't move the modules
-        BestComb = BestComb    
+        BestComb = BestComb
+    
+    #best comb for heating
+    if hour_of_year == 0:
+    #initil condition        
+        HeatComb = 0
+    if hourlyData[hour_of_year]['PV'][0] != 0:
+        #get key with min value from the E_tot dictionary
+        HeatComb = min(Data_Heating_HOY[hour_of_year], key=lambda comb: Data_Heating_HOY[hour_of_year][comb])
+    elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
+        #Check if there is no PV-value (nor radiation), then don't move the modules
+        HeatComb = HeatComb    
 
     
     T_in = Data_T_in_HOY[hour_of_year][BestComb] #most efficient solution has to be used again
@@ -581,7 +586,8 @@ for hour_of_year in range(0,8760):
     results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
     results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
     results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]   
-    results_building_simulation[hour_of_year]['KeyComb'] = [BestComb]   
+    results_building_simulation[hour_of_year]['BestCombKey'] = [BestComb]
+    results_building_simulation[hour_of_year]['HeatComb'] = [HeatComb]
     results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
     results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
     results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #kw
@@ -608,6 +614,22 @@ Building_Simulation_df= pd.DataFrame(results_building_simulation).T
 #store all results in a DataFrame
 hourlyData_df = pd.DataFrame(hourlyData)
 hourlyData_reform = {(outerKey, innerKey): values for outerKey, innerDict in hourlyData.iteritems() for innerKey, values in innerDict.iteritems()}
+
+from prepareAngles import prepareAngles
+
+
+evaluationType = 'BestCombKey'
+
+Best_Key_df, x_angle_array_best, y_angle_array_best = prepareAngles(evaluationType = evaluationType,
+                                                          Building_Simulation_df = Building_Simulation_df, 
+                                                          daysPerMonth = daysPerMonth,
+                                                          ANGLES = ANGLES)
+evaluationType = 'HeatComb'
+
+Heat_Key_df, x_angle_array_heat, y_angle_array_heat = prepareAngles(evaluationType = evaluationType,
+                                                          Building_Simulation_df = Building_Simulation_df, 
+                                                          daysPerMonth = daysPerMonth,
+                                                          ANGLES = ANGLES)
 
 
 #
@@ -643,7 +665,7 @@ hourlyData_reform = {(outerKey, innerKey): values for outerKey, innerDict in hou
 #plt.ylabel('C', fontsize=16)        
 
 
-
+"""
 fig = plt.figure()   
 with pd.plot_params.use('x_compat', True):
      T_out.plot(color='y')
@@ -651,10 +673,26 @@ with pd.plot_params.use('x_compat', True):
 plt.legend(loc='best')
 plt.xlabel('Hour of the year', fontsize=18)
 plt.ylabel('Temp', fontsize=16)
+"""
 
-
-from carpetPlot import carpetPlot
+from carpetPlot import carpetPlot, carpetPlotAngles, carpetPlotMask
 from prepareData_mauro import prepareMonthlyRadiatonData, average_monthly, sum_monthly
+
+
+#fig5 = carpetPlotAngles(X = x_angle_array, z_min = 0, z_max= 90, title = 'Altitude Angle (X-Angles)')
+#fig6 = carpetPlotAngles(X = y_angle_array, z_min = -45, z_max= 45, title = 'Azimuth Angle (Y-Angles)')
+
+fig7 = carpetPlotMask(X = x_angle_array_best, z_min = 0, z_max= 90, title = 'Altitude Angle (X-Angles)', hour_in_month = hour_in_month)
+fig8 = carpetPlotMask(X = y_angle_array_best, z_min = -45, z_max= 45, title = 'Azimuth Angle (Y-Angles)', hour_in_month = hour_in_month)
+
+#fig.suptitle('Yearly Energy Demand', fontsize=20)
+fig9 = carpetPlotMask(X = x_angle_array_heat, z_min = 0, z_max= 90, title = 'Altitude Angle (X-Angles)', hour_in_month = hour_in_month)
+fig10 = carpetPlotMask(X = y_angle_array_heat, z_min = -45, z_max= 45, title = 'Azimuth Angle (Y-Angles)', hour_in_month = hour_in_month)
+
+
+
+
+
         
 #From the radiation results calculate the monthly Radiation data, PV_monthly = kWh for each hour of a month      
 PV_monthly, R_monthly, PV_eff_opt, Ins_avg, Ins_theoretical, PV_Function_Average, eff=  prepareMonthlyRadiatonData(PV_electricity_results, simulationOption)
@@ -724,7 +762,7 @@ yearlyData_df = pd.DataFrame(yearlyData)
 
 roomFloorArea = building_data['room_width']/1000.0*building_data['room_depth']/1000.0 #m2
 
-
+"""
 fig0 = carpetPlot(X = sum_PV, z_min = -12, z_max= 20, title = 'PV supply')
 
 fig1 = carpetPlot(X = sum_E, z_min = -12, z_max= 20, title = 'Net Demand including PV')
@@ -778,3 +816,4 @@ with open(os.path.join(paths['result'], 'BuildingProperties.json'), 'w') as f:
     f.write(json.dumps(BuildingProperties))
 
 print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+"""

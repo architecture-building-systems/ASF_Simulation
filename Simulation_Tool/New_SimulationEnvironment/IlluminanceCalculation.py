@@ -85,71 +85,76 @@ HOD = 12.0
 Day = 15.0
 monthi = 1.0
 x_angle = 0
-y_angle = 0
+y_angle = 45
 
 #gridSize = []
 
 
 
 
-#for y_angle in [0,45]:
-#Set panel data
-panel_data={"XANGLES": x_angle ,
-"YANGLES" : y_angle,
-"NoClusters":1,
-"numberHorizontal":6,
-"numberVertical":9,
-"panelOffset":400,
-"panelSize":400,
-"panelSpacing":500,
-}
-
-#Save parameters to be imported into grasshopper
-with open('panel.json','w') as f:
-    f.write(json.dumps(panel_data))
-
-#for monthi in [1,3,6,9,12]:
-#for HOD in [8,12,18]
-
-comb_data={"x_angle": x_angle,
-           "y_angle":y_angle,
-           "HOD":HOD,
-           "Month":monthi,
-           "Day": Day
-            }
+for y_angle in [0,45]:
+    #Set panel data
+    panel_data={"XANGLES": x_angle ,
+    "YANGLES" : y_angle,
+    "NoClusters":1,
+    "numberHorizontal":6,
+    "numberVertical":9,
+    "panelOffset":400,
+    "panelSize":400,
+    "panelSpacing":500,
+    }
+    
+    #Save parameters to be imported into grasshopper
+    with open('panel.json','w') as f:
+        f.write(json.dumps(panel_data))
+    
+    #for monthi in [1,3,6,9,12]:
+    #for HOD in [8,12,18]
+    
+    comb_data={"x_angle": x_angle,
+               "y_angle":y_angle,
+               "HOD":HOD,
+               "Month":monthi,
+               "Day": Day
+                }
+                
+     #create json file with the set combination of x-angle,y-angle and HOY
+    with open('comb.json','w') as f:
+        f.write(json.dumps(comb_data))
+    
+                             
+    resultsdetected=0
+    
+    print '\nStart illuminance calculation with ladybug'
+    
+    gridSize = [1600.0, 800.0, 400.0, 200.0, 100.0, 50.0, 25.0, 12.5] #mm2
+    #gridSize = [7000.0, 6000.0, 5000.0] #mm2
+    
+    illuminance_avg = {}
+    illuminance_data = {}
+               
+    for size in gridSize:
+        
+        print 'size', size
             
- #create json file with the set combination of x-angle,y-angle and HOY
-with open('comb.json','w') as f:
-    f.write(json.dumps(comb_data))
+        with open('illuminance.json','w') as f:
+            f.write(json.dumps(size)) 
+                    
+        #Wait until the radiation_results were created    
+        while not os.path.exists(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv'):
+            time.sleep(3)
+               
+        else:
+            print 'next step'
+            resultsdetected += 1
+    
+                                    
+    
+"""            
+print 'illuminance calculation finished!'        
 
-                         
-resultsdetected=0
-
-print '\nStart illuminance calculation with ladybug'
-
-gridSize = [800.0,400.0,200.0,100.0,50.0,25.0,12.5] #mm2
-#gridSize = [7000.0, 6000.0, 5000.0] #mm2
-
-illuminance_avg = {}
-illuminance_data = {}
-
-           
 for size in gridSize:
     
-    print 'size', size
-        
-    with open('illuminance.json','w') as f:
-        f.write(json.dumps(size)) 
-                
-    #Wait until the radiation_results were created    
-    while not os.path.exists(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv'):
-        time.sleep(1)
-           
-    else:
-        print 'next step'
-        resultsdetected += 1
-
-                                
     IlluminanceData = np.array([])
     
     with open(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv', 'r') as csvfile:
@@ -159,16 +164,24 @@ for size in gridSize:
                 IlluminanceData = np.append(IlluminanceData, [float(line[0])])
     illuminance_data[size] = IlluminanceData                        
     illuminance_avg[size]= np.average(IlluminanceData)
-            
-print 'illuminance calculation finished!'        
+
+
+
 print "end"
-                    
+
+              
 
 illuminance_avg_geolocation = {}
 illuminance_avg_geolocation[geoLocation] = illuminance_avg
 #create DataFrame and store it as .csv
 illuminance_avg_df = pd.DataFrame(illuminance_avg_geolocation)
-illuminance_avg_df.to_csv(paths['illuminance'] + '\\illuminance_avg_results_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle) +'.csv')
+
+paths['result']= os.path.join(paths['illuminance'], 'Results_' + geoLocation + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle))
+
+if not os.path.isdir(paths['result']):
+    os.makedirs(paths['result'])    
+
+illuminance_avg_df.to_csv(paths['result'] + '\\illuminance_avg_results_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle) +'.csv')
                                        
 #plot avg values
 fig0 = plt.figure()   
@@ -179,11 +192,11 @@ plt.xlabel('grid size [mm]', fontsize=18)
 plt.ylabel('average illuminance [lux]', fontsize=16)
 
 #nomralize the illuminance value for the smallest value
-#illuminance_avg_df[geoLocation].div(illuminance_avg[12.5],axis='columns')
+illuminance_ = illuminance_avg_df.div(illuminance_avg_df[geoLocation][800], axis= geoLocation)
 
 
 #plot normalized avg values
-"""
+
 #plot avg values
 fig1 = plt.figure()   
 with pd.plot_params.use('x_compat', True):

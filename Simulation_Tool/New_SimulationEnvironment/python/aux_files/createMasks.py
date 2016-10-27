@@ -139,9 +139,9 @@ def createLBmask(R_month):
     for i in range(24):
        for j in range(12):
            if np.sum(z[0:i+1,j]) == 0 or np.sum(z[i:-1,j])==0:
-               z3[i,j] = False
-           else:
                z3[i,j] = True
+           else:
+               z3[i,j] = False
                
     # set values to nan wihich are zero:
     z3[z3 == 0] = np.nan

@@ -10,8 +10,8 @@ Calculate hour of the year based on date input
 import numpy as np
 
 
-month = 1
-day = 1
+month = 12
+day = 31
 hour = 24  #hour of the day (i.e between 0:00 and 1:00 corresponds to value 1)
 
 def calcHOY(month, day, hour):
@@ -25,5 +25,7 @@ def calcHOY(month, day, hour):
     HOY +=(day-1)*24+hour
     return HOY
     
-HOY = calcHOY(month, day, hour)
-    
+#HOY = calcHOY(month, day, hour)
+#
+#print HOY
+#    
