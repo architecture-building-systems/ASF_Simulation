@@ -367,7 +367,7 @@ def main ():
      
     fig0.savefig(os.path.join(paths['pdf'], 'figure0' + '.pdf'))
     
-    if optimizationType == ['E_total','Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting']:    
+    if optimization_Types == ['E_total','Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting']:    
         #create the angles carpet plots for the opimised simulation option, this option needs all simulation types
         fig1 = createCarpetPlotXAngles(x_angle_array, hour_in_month)
         fig2 = createCarpetPlotYAngles(y_angle_array, hour_in_month)
