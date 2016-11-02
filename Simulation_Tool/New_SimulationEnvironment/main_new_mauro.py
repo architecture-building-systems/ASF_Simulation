@@ -300,6 +300,12 @@ def main ():
     hourlyData = {}
     ResultsBuildingSimulation = {}
     
+    #create dicitionaries to save the results 
+    x_angle_array = {} #optimized x-angles
+    y_angle_array = {} #optimized y-angles
+    Best_Key_df = {} #optimized keys of the ANGLES dictionary
+    
+    
     
     #set optimization type:
     
@@ -333,10 +339,7 @@ def main ():
         from prepareDataMain import prepareAngles, prepareResults
         from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
         
-        #create dicitionaries to save the results 
-        x_angle_array = {} #optimized x-angles
-        y_angle_array = {} #optimized y-angles
-        Best_Key_df = {} #optimized keys of the ANGLES dictionary
+        
     
         Best_Key_df[optimizationType], x_angle_array[optimizationType], y_angle_array[optimizationType] = prepareAngles(
                                                                             Building_Simulation_df = ResultsBuildingSimulation[optimizationType], 
@@ -384,7 +387,7 @@ def main ():
     
     # save all results, in kWh
     ResultsBuildingSimulation['E_total'].to_csv(os.path.join(paths['result'], 'Building_Simulation.csv'))
-    hourlyData['E_total'].to_csv(os.path.join(paths['result'], 'hourlyData.csv'))
+    #hourlyData['E_total'].to_csv(os.path.join(paths['result'], 'hourlyData.csv'))
     monthlyData.to_csv(os.path.join(paths['result'], 'monthlyData.csv'))
     yearlyData.to_csv(os.path.join(paths['result'], 'yearlyData.csv'))
     
@@ -395,6 +398,6 @@ def main ():
     
     print "\nsimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
-    return hourlyData, monthlyData, yearlyData
+    return ResultsBuildingSimulation['E_total'], monthlyData, yearlyData
 
-hourlyData, monthlyData, yearlyData = main()
+ResultsBuildingSimulation, monthlyData, yearlyData = main()
