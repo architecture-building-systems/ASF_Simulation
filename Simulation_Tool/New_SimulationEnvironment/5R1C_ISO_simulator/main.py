@@ -31,7 +31,7 @@ phi_int=10
 phi_sol=2000
 
 #Illuminance after transmitting through the window 
-ill=14000 #Lumens
+ill=44000 #Lumens
 
 #Occupancy for the timestep [people/hour/square_meter]
 occupancy = 0.1

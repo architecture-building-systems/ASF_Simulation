@@ -8,13 +8,17 @@ Created on Tue Oct 11 17:14:42 2016
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.cm as cm
+import matplotlib
 
-def carpetPlot(X, z_min, z_max, title):
+
+def carpetPlot(X, z_min, z_max, title, roomFloorArea):
     
         
-    fig = plt.figure(figsize=(8, 4))
-   
+#    fig = plt.figure(figsize=(4, 4))
+        
     z= np.reshape(X,(12,24)).T
+    z = z/roomFloorArea
     
 
     dx, dy = 1, 1
@@ -41,18 +45,22 @@ def carpetPlot(X, z_min, z_max, title):
     plt.axis([x.min(), x.max(), 3, 22])
     plt.tick_params(axis=u'both',labelsize=14)
     plt.title(title)
-    plt.xlabel("Month of the Year",size=14)
-    plt.ylabel("Hour of the Day",size=14)
+    
+    #for single carpet plots
+#    plt.xlabel("Month of the Year",size=14)
+#    plt.ylabel("Hour of the Day",size=14)
     
     
-    #legend
-    cbar = plt.colorbar()
-    cbar.set_label('kWh')
+#    #legend
+#    cbar = plt.colorbar()
+#    cbar.set_label('kWh')
         
-    return fig
+    #return fig
     
 def carpetPlotAngles(X, z_min, z_max, title):
-    
+    """
+    night values are not grey
+    """
         
     fig = plt.figure(figsize=(4, 4))
    
@@ -68,7 +76,15 @@ def carpetPlotAngles(X, z_min, z_max, title):
         
     cmap = plt.cm.CMRmap
     cmap = plt.cm.gnuplot
-    cmap = plt.cm.afmhot
+    #cmap = plt.cm.afmhot
+    
+    cmap = plt.cm.autumn
+    #cmap = plt.cm.hot
+    #cmap = plt.cm.gist_heat
+    #cmap = plt.cm.YlOrRd
+    
+
+    
     
         
     # define what happens to bad data (i.e. data outside the mask):
@@ -94,7 +110,7 @@ def carpetPlotAngles(X, z_min, z_max, title):
 def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
     
         
-    fig = plt.figure(figsize=(4, 4))
+    #fig = plt.figure(figsize=(4, 4))
    
     z= np.reshape(X,(12,24)).T
     
@@ -115,7 +131,10 @@ def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
     # and the hours with no sun to (False)
     for i in range(24):
        for j in range(1,13):
-           if i in hour_in_month[j]:
+           if z3[i][j-1] == np.nan:
+               z3[i,j-1] = False
+               
+           elif i in hour_in_month[j]:
                #sun                
                z3[i,j-1] = True
            else:
@@ -123,21 +142,64 @@ def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
                z3[i,j-1] = False
                
     # set values to nan wihich are zero:
+ 
+    z3[19][6] = False
+    z3[19][5] = False    
+    z3[18][3] = False           
     z3[z3 == 0] = np.nan
+    
+    
     
     # create sun mask where True corresponds to no sun, all values with no sun will later be grey
     sunMask=np.isnan(z3)
-
+    
+#    for hour in range(0,24):
+#        for month in range(0,12):
+#            if z[hour][month] == np.nan:
+#                print "hallo"
+#                sunMask [hour][month] = True
+                
+                
     # create masked array from sunMask:
     masked_array = np.ma.array(z, mask=sunMask)
     
-    # define colormap:
-    cmap = plt.cm.CMRmap
-    cmap = plt.cm.gnuplot
-    cmap = plt.cm.afmhot
+    
+    #print masked_array
+    
+#    for hour in range(0,24):
+#        for month in range(0,12):
+#            
+#            if z[hour][month] == np.nan:
+#                print "hallo"                
+#                masked_array[hour][month]= 1.
+#    
+#    print title
+#    print masked_array
+    
+#    # define colormap:
+#    cmap = plt.cm.CMRmap
+#    cmap = plt.cm.gnuplot
+#    #cmap = plt.cm.afmhot
+#    
+#    cmap = plt.cm.autumn
+#    #cmap = plt.cm.hot
+#    #cmap = plt.cm.gist_heat
+#    #cmap = plt.cm.YlOrRd
+    
+    
+    # define the location of the middle number (where 0 is):
+    
+    cmap = matplotlib.cm.get_cmap('afmhot')     
+           
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.3, 'darkred'),(0.55, 'orange'), (0.75, 'yellow'),(1, 'white')])                                                
+    #cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.25, cmap(0.325)),(0.5,cmap(0.55)), (0.75, cmap(0.775)),(1, cmap(1))])                                                
+                                         
+    
+    
     
     # define what happens to bad data (i.e. data outside the mask):
     cmap.set_bad('grey',1.)
+    cmap.set_under('black')
     
     # create the carpet plot:
     plt.pcolormesh(x, y, masked_array, cmap=cmap, vmin=z_min, vmax=z_max)
@@ -148,12 +210,13 @@ def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
     plt.axis([x.min(), x.max(), 3, 22])
     plt.tick_params(axis=u'both',labelsize=14)
     plt.title(title)
-    plt.xlabel("Month of the Year",size=14)
-    plt.ylabel("Hour of the Day",size=14)
     
+#    plt.xlabel("Month of the Year",size=14)
+#    plt.ylabel("Hour of the Day",size=14)
+#    
     
-    #legend
-    cbar = plt.colorbar()
-    cbar.set_label('[deg]')
-        
-    return fig    
+#    #legend
+#    cbar = plt.colorbar()
+#    cbar.set_label('[deg]')
+#        
+#    return fig    

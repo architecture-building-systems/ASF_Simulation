@@ -1,0 +1,8 @@
+XANGLES = [0, 15, 30, 45, 60, 75, 90]
+YANGLES = [-45, -30, -15, 0, 15, 30, 45]
+NoClusters = 1
+panelSize = 400
+panelSpacing = 500
+ASFarray = []
+desiredGridPointSize = 25.0
+buildingOrientation = 0.0

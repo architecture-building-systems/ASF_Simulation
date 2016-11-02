@@ -14,9 +14,11 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                                geo_path = None, flipOrientation = False, 
                                simulationOption = None,
                                XANGLES = [], YANGLES = [], hour_in_month = None, 
-                               start = 0, end = 0):
+                               start = 0, end = 0, paths = None):
                                    
-                                   
+    import sys,os                               
+    # add python_path to system path, so that all files are available:
+    sys.path.insert(0, paths['aux_files'])                               
   
     import json
     import numpy as np
@@ -25,7 +27,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     import matplotlib.pyplot as plt
     from scipy import interpolate
     from average_monthly import daysPassedMonth
-    from prepareData import readLayoutAndCombinations, CalcXYAnglesAndLocation
+    from prepareData_mauro import readLayoutAndCombinations, CalcXYAnglesAndLocation
     from auxFunctions import flatten
     
     create_plots_flag = createPlots
@@ -99,7 +101,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
             for x_angle in XANGLES:
                 for y_angle in YANGLES:
                     # filenames.append(filename + str(i) + filetype)
-                    filenames.append(filename + '_' + str(HOD) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
+                    filenames.append(filename + '_' + str(int(HOD)) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
     #print filenames
     
     
