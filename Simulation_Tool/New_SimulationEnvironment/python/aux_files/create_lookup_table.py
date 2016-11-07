@@ -10,7 +10,7 @@ import numpy as np
 import time
 import sys,os
 
-
+global diode_equation
 def diode_equation(y,Iphi,Io,a,CC,x,AA,BB2):
     return y - Iphi + Io * (np.e**(a/CC*(x + y * AA))-1) + (x + y * AA)/BB2
     
@@ -20,6 +20,7 @@ def diode_equation_eval(fitparams=None, x=None, modparams=None, ins=None, temp=N
 
     # general diode equation
     # I = Iphi - Io * (exp(a/gamma*(V + I * Rs))-1) - (V + I * Rs)/Rp
+    # Iphi = (phi/phi_ref) * (Iphi_ref + muIsc*(Tc - Tc_ref));
     # Iphi = (phi/phi_ref) * (Iphi_ref + muIsc*(Tc - Tc_ref));
     # Iphi_ref = Isc + Io_ref*(exp(Isc*Rs*a/gamma)-1) + Isc*Rs/Rp_ref
     # Io = Io_ref*(Tc/Tc_ref)^3*exp(b/gamma*(1/Tc_ref-1/Tc));
@@ -66,6 +67,7 @@ def diode_equation_eval(fitparams=None, x=None, modparams=None, ins=None, temp=N
     y =  [0]*len(x)#zeros(size(x))
     NN = len(x)
 #    opt = optimset(mstring('display'), mstring('off'))
+
 
     for j in range(NN):
         args = (Iphi,Io,a,CC,x[j],AA,BB2)
