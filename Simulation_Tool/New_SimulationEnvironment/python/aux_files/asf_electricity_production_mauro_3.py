@@ -50,7 +50,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     
     # load weather file data corresponding to Simulation Data:
-    with open(geo_path + '\SunTrackingData.json', 'r') as fp:
+    with open(os.path.join(geo_path,'SunTrackingData.json'), 'r') as fp:
         SunTrackingData = json.load(fp)
         fp.close()
         

@@ -8,6 +8,7 @@ functions to import and prepare data for post processing
 """
 
 import numpy as np 
+import sys, os
 import json
 from calculate_angles_function import create_ASF_angles  
 from auxFunctions import unique, calcDaysPassedMonth, calculate_sum_for_index
@@ -243,7 +244,7 @@ def readLayoutAndCombinations(path):
     """
     
     # import parameters used for simulation:
-    with open(path + '\LayoutAndCombinations.txt', 'rb') as f:
+    with open(os.path.join(path,'LayoutAndCombinations.txt'), 'rb') as f:
         parameters = f.readlines()
         f.close()
     
