@@ -28,7 +28,7 @@ paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 paths['data'] =os.path.join(paths['main'], 'data')
 paths['python'] = os.path.join(paths['main'], 'python')
 paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
-
+paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_illuminance')
 
 # add python_path to system path, so that all files are available:
 sys.path.insert(0, paths['python'] + '\\aux_files')
@@ -48,6 +48,28 @@ Y=glbIll
 #Aquire best fit vector of coefficients. 1st order
 Ill_Eq= np.polyfit(X,Y,1)
 print Ill_Eq
+
+monthi = 1
+HOD = 12
+
+RadiationData = {}
+for x_angle in [0,45,90]:
+    RadiationData [x_angle] = {}
+    
+    for y_angle in [-45,0,45]:
+        RadiationData[x_angle][y_angle]= {}
+ 
+        BuildingRadiationData = np.array([])
+
+
+        with open(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(int(HOD)) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + '.csv'), 'r') as csvfile:
+           reader = csv.reader(csvfile)
+           for idx,line in enumerate(reader):
+               if idx == 1:
+                   BuildingRadiationData = np.append(BuildingRadiationData, [float(line[0])])
+                   break
+        
+        RadiationData[x_angle][y_angle]= BuildingRadiationData       
 
 #
 #fig = plt.figure()   

@@ -40,7 +40,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     # load('curr_model_submod_lookup2')
     # load('curr_model_submod_lookup2_constTemp')
     #load('C:/Users/Assistenz/ASF_Simulation/Python/curr_model_submod_lookup.npy','r')
-    curr_model_submod_lookup = np.load(lookup_table_path + '\curr_model_submod_lookup.npy','r')
+    curr_model_submod_lookup = np.load(os.path.join(lookup_table_path, 'curr_model_submod_lookup.npy'),'r')
     pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
     #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
     

@@ -132,6 +132,18 @@ sympy-plots-for-*.tex/
 *.json
 *.npy
 
+# illuminance data
+*.pts
+*.res
+*.bat
+*.oct
+*.rad
+*.sky
+*.ptn
+*.typ
+*.msh
+
+
 # various
 *.pyc
 *.DS_Store

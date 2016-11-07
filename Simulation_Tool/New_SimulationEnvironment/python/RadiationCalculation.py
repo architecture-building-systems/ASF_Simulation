@@ -2,7 +2,7 @@
 """
 Created on Wed Nov 02 08:30:45 2016
 
-@author: Assistenz
+@author: Mauro
 """
 import sys, os
 import time

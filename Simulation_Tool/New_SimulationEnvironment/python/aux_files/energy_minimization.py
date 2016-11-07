@@ -2,7 +2,7 @@
 """
 Created on Fri Oct 28 12:40:50 2016
 
-@author: Assistenz
+@author: Mauro
 """
 
 import os, sys
@@ -11,36 +11,11 @@ import time
 import pandas as pd
 
 
-def energy_minimization(optimization_type, paths,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp):
-    
-    print '\nStart RC-Model calculation'
-    print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-    print "\noptimization", optimization_type
-    
-    #create dicitionary to save relevant hourly data:
-    hourlyData = {}
-    Data_HC_HOY = {}
-    Data_Heating_HOY = {}
-    Data_Cooling_HOY = {}
-    Data_Lighting_HOY = {}
-    Data_T_in_HOY = {}
-    results_building_simulation = {}
-    E_tot = {}
-    E_HCL = {}
-    
-    
-    
+def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp):
+            
     #Temperature value, to start the simulation with
     T_in = 20
-    
-    
-    
-    tic = time.time()
-    
-    paths['5R1C_ISO_simulator'] = os.path.join(paths['main'], '5R1C_ISO_simulator')
-    paths['5R1C_ISO_simulator_data'] = os.path.join(paths['5R1C_ISO_simulator'], 'data')    
-    paths['Occupancy'] = os.path.join(paths['5R1C_ISO_simulator_data'],'Occupancy_COM.csv') 
-    
+        
     
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])
@@ -68,8 +43,7 @@ def energy_minimization(optimization_type, paths,building_data, weatherData, hou
     
     #additional internal gains
     Q_equipment = 4 * roomFloorArea #4 W/m2 * FloorArea
-    #Q_equipment = 0
-    
+        
     R_extWall = 3.61 #(m2*K)/W
     R_window = 0.585 #(m2*K)/W
     
@@ -81,6 +55,22 @@ def energy_minimization(optimization_type, paths,building_data, weatherData, hou
     #initilize uncomftrable hours
     uncomf_hours = 0
     uncomf_hours_HOY = []
+    
+    #create dicitionary to save relevant hourly data:
+    hourlyData = {}
+    Data_HC_HOY = {}
+    Data_Heating_HOY = {}
+    Data_Cooling_HOY = {}
+    Data_Lighting_HOY = {}
+    Data_T_in_HOY = {}
+    results_building_simulation = {}
+    E_tot = {}
+    E_HCL = {}
+    
+    
+    print '\nStart RC-Model calculation'
+    print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+    print "\noptimization", optimization_type
     
     for hour_of_year in range(0,8760):
         
@@ -119,7 +109,8 @@ def energy_minimization(optimization_type, paths,building_data, weatherData, hou
         results_building_simulation[hour_of_year]['T_out'] = np.nan
         results_building_simulation[hour_of_year]['RadiationWindow'] = np.nan
     
-                     
+    tic = time.time()
+    #run for every hour of year the RC-Model    
     for hour_of_year in range(0,8760):
           
         
@@ -211,10 +202,7 @@ def energy_minimization(optimization_type, paths,building_data, weatherData, hou
         hourlyData[hour_of_year]['AngleComb'] = combinationAngles
         hourlyData[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year] #W
         
-        """
-        set the key to NumberCombinations if there is no adjustment of the ASF, set legend to balck for this value
-        
-        """        
+             
         
         if optimization_type == 'E_total':
       
@@ -244,11 +232,10 @@ def energy_minimization(optimization_type, paths,building_data, weatherData, hou
                 
             elif hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the E_tot dictionary
-                
                 BestComb = min(Data_Heating_HOY[hour_of_year], key=lambda comb: Data_Heating_HOY[hour_of_year][comb])
                                 
                 if Data_Heating_HOY[hour_of_year][0] == 0:
-                    
+                #for zero heating, set key to no movement    
                     BestComb = 0
                     BestCombKey =NumberCombinations + 1
                 else:
@@ -329,6 +316,7 @@ def energy_minimization(optimization_type, paths,building_data, weatherData, hou
                 BestComb = min(E_HCL[hour_of_year], key=lambda comb: E_HCL[hour_of_year][comb])
                                 
                 if E_HCL[hour_of_year][0] == 0:
+                    BestComb = 0
                     BestCombKey = NumberCombinations+1
                 else:
                     BestCombKey = BestComb
