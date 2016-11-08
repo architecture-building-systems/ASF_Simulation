@@ -79,7 +79,7 @@ building_data={"room_width":4900,
 
 #set building properties for the RC-Model analysis 
 BuildingProperties={
-        "Fenst_A": 13.5,
+        "Fenst_A": building_data['room_width']*building_data['room_height']*building_data['glazing_percentage_h']*building_data['glazing_percentage_w'],
         "Room_Dept":7,
         "Room_Width": 4.9,
         "Room_Height":3.1 ,
