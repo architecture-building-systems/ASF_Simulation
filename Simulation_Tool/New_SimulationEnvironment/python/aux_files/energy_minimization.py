@@ -115,7 +115,11 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
           
         
         #class Building   
-        Office=Building (                
+        Office=Building (
+                        Fenst_A = BuildingProperties['Fenst_A'],
+                        Room_Depth = BuildingProperties['Room_Depth'],
+                        Room_Width = BuildingProperties['Room_Width'],
+            		 Room_Height = BuildingProperties['Room_Height'],              
                         lighting_load= BuildingProperties['lighting_load'],
                         lighting_control = BuildingProperties["lighting_control"],
                         Lighting_Utilisation_Factor = BuildingProperties["Lighting_Utilisation_Factor"],
@@ -132,8 +136,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                         glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
                         theta_int_h_set = BuildingProperties['theta_int_h_set'],
                         theta_int_c_set = BuildingProperties['theta_int_c_set']
-                        )
-                        
+                        )         
                                
         if occupancy['People'][hour_of_year] == 0:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - setBackTemp
@@ -332,7 +335,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
     
         #count uncomfortable hours
-        if (T_in > 26.0 or T_in < 20.0): #and occupancy['People'][hour_of_year] != 0:#T_in > BuildingProperties['theta_int_c_set'] or T_in < BuildingProperties['theta_int_h_set']:
+        if (T_in > 26.0 or T_in < 20.0) and occupancy['People'][hour_of_year] != 0: #T_in > BuildingProperties['theta_int_c_set'] or T_in < BuildingProperties['theta_int_h_set']:
             uncomf_hours += 1
             uncomf_hours_HOY.append(hour_of_year)
             

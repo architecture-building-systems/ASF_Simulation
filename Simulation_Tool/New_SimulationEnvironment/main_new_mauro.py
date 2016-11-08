@@ -83,10 +83,10 @@ def main ():
         
     #set building properties for the RC-Model analysis 
     BuildingProperties={
-            "Fenst_A": 13.5,
-            "Room_Dept":7,
-            "Room_Width": 4.9,
-            "Room_Height":3.1 ,
+            "Fenst_A": building_data['room_width']/1000.0 * building_data['room_height']/1000.0 *building_data['glazing_percentage_w']*building_data['glazing_percentage_h'],
+            "Room_Depth":building_data['room_depth']/1000.0,
+            "Room_Width": building_data['room_width']/1000.0,
+            "Room_Height":building_data['room_height']/1000.0 ,
             "glass_solar_transmitance" : 0.687 ,
             "glass_light_transmitance" : 0.744 ,
             "lighting_load" : 11.74 ,
@@ -289,7 +289,7 @@ def main ():
             asf_electricity_production(
                                createPlots = createPlots, 
                                lb_radiation_path = paths['radiation_results'],
-                               panelsize = 400, 
+                               panelsize = panel_data['panelSize'], 
                                pvSizeOption = 0,
                                save_results_path = paths['PV'], 
                                lookup_table_path = paths['electrical_simulation'], 
@@ -305,7 +305,7 @@ def main ():
             asf_electricity_production(
                                createPlots = createPlots, 
                                lb_radiation_path = paths['radiation_results'],
-                               panelsize = 400, 
+                               panelsize = panel_data['panelSize'], 
                                pvSizeOption = 0,
                                save_results_path = paths['PV'], 
                                lookup_table_path = paths['electrical_simulation'], 
@@ -322,9 +322,7 @@ def main ():
         print '\nPV_electricity_results loaded from folder'
         
     print "\npreparing data\n"
-    
-    
-    
+        
     
     #rearrange the Radiation Data on PV and Window into HOY form
     PV, BuildingRadiationData_HOY = PrepareRadiationData(hour_in_month = hour_in_month, 
@@ -333,10 +331,7 @@ def main ():
                                                          PV_electricity_results = PV_electricity_results, 
                                                          NumberCombinations = NumberCombinations)
     
-     
-    
-      
-            
+         
     from energy_minimization import RC_Model
     from prepareDataMain import prepareAngles, prepareResults
     from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
