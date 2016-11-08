@@ -25,68 +25,45 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def main ():
-    
-    # specify the location used for the analysis ‐ this name must be the same as a
-    # folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
+
+
+    # specify the location used for the analysis
+    #this name must be the same as a folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
     # new locations can be added with the grasshopper main script for any .epw weather
     geoLocation = 'Zuerich_Kloten_2005'
-     
-        
-    #Set Solar Panel Angles
-    XANGLES=[0, 15, 30, 45, 60, 75, 90]
-    YANGLES= [-45,-30,-15,0, 15, 30, 45]
-    
-    #Set Number of Clusters, for the moment only = 1 is working
-    NoClusters = 1
-    
-    
-    #Set panel data
-    panel_data={"XANGLES": XANGLES ,
-    "YANGLES" : YANGLES,
-    "NoClusters":NoClusters,
-    "numberHorizontal":6,#6,
-    "numberVertical":9,#9,
-    "panelOffset":400,
-    "panelSize":400,
-    "panelSpacing":500,
-    }
     
     #set True if you want to save the results
     SaveResults = True    
     
-    #Option to integrate the actuation energy consumption, 'yes' = energy consumption is included (not included yet)
-    #Actuation = True # False
-    
-    #option used for simulations, for example if radiation analysis was only done for 
-    #4 months ('4months'), not yet working in all cases, set 'timePeriod' to None
-    #for regular simulations
-    simulationOption = {'timePeriod' : None}
-    #simulationOption = {'timePeriod' : '4months'} #not fully implemented
-    #simulationOption = {'timePeriod' : '1h'} #not fully implemented
+   
+        
+   panel_data = initializeASF(XANGLES=[0, 15, 30, 45, 60, 75, 90], 
+                              YANGLES= [-45,-30,-15,0, 15, 30, 45], 
+                              NoClusters = 1, 
+                              ActuationEnergy = False)
     
     
-    #PV production plots
-    createPlots = False
+    
     
     ########################################################################### 
     
-    #Set Building Parameters [mm]
+    #Set Building Parameters
     building_data={"room_width":4900,     
     "room_height":3100,
     "room_depth":7000,
     "glazing_percentage_w":0.92,
     "glazing_percentage_h":0.97,
     }
-
-
-        
+    #Save parameters to be imported into grasshopper
+    with open('building.json','w') as f:
+        f.write(json.dumps(building_data))    
+    
     #set building properties for the RC-Model analysis 
     BuildingProperties={
-            "Fenst_A": 13.5,
-            "Room_Dept":7,
-            "Room_Width": 4.9,
-            "Room_Height":3.1 ,
+            "Fenst_A": building_data['room_width']/1000.0*building_data['room_height']/1000.0*building_data['glazing_percentage_h']*building_data['glazing_percentage_w'],
+            "Room_Depth": building_data['room_depth']/1000.0,
+            "Room_Width": building_data['room_width']/1000.0,
+            "Room_Height":building_data['room_height']/1000.0,
             "glass_solar_transmitance" : 0.687 ,
             "glass_light_transmitance" : 0.744 ,
             "lighting_load" : 11.74 ,
@@ -105,18 +82,20 @@ def main ():
             "phi_h_max_A_f": np.inf #np.inf
             }
             
+     
+            
+    #Temperature in what range the heating can become warmer or colder, if there ar no people in the building
+    setBackTemp = 4. #4.
+    
     #set the occupancy profil, dependent on the building utilisation type
     # add csv. file to the following folder:...New_SimulationEnvironment\5R1C_ISO_simulator\data, and change variable Occupancy to the filename
     Occupancy = 'Occupancy_COM.csv' #Office
     
     #building_stystem = capacitive heating/ cooling    
-    #Temperature in what range the heating can become warmer or colder, if there ar no people in the building
-    setBackTemp = 4. #4.
-    
     
     ###########################################################################
     #set optimization type: (Angles plots can only be created, if all types are chosen)
-    #'E_total' is needed, minimize the overall energy consumption
+    # 'E_total' is needed, minimize the overall energy consumption
     
     #optimization_Types = ['E_total'] #
     optimization_Types = ['E_total','Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting']
@@ -176,7 +155,7 @@ def main ():
     
     
     # create sun data based on grasshopper file, this is only possible with the ladybug component SunPath
-    execfile( os.path.join(paths['aux_files'], 'SunAngles_Tracking_and_temperature.py'))
+    execfile(os.path.join(paths['aux_files'], 'SunAngles_Tracking_and_temperature.py'))
     
     # calculate and save lookup table if it does not yet exist:
     paths['data_python'] = os.path.join(paths['data'], 'python')
@@ -195,13 +174,6 @@ def main ():
         SunTrackingData = json.load(fp)
         fp.close()
         
-    #Save parameters to be imported into grasshopper
-    with open('panel.json','w') as f:
-        f.write(json.dumps(panel_data))
-    
-    with open('building.json','w') as f:
-        f.write(json.dumps(building_data))
-           
     
     ###########################################################################
     #Calculate variables
@@ -219,7 +191,7 @@ def main ():
     daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
     
     from hourRadiation import hourRadiation, hourRadiation_calculated, sumHours
-    
+    from prepareDataMain import PrepareRadiationData
     
     hourRadiation = hourRadiation(hour_in_month, daysPerMonth)
     hourRadiation_calculated = hourRadiation_calculated(hour_in_month,daysPerMonth)
@@ -255,17 +227,24 @@ def main ():
     print "simulation start: " + now    
     
     from RadiationCalculation import CalculateRadiationData
-    from prepareDataMain import PrepareRadiationData
     
     #Calculate the Radiation on the solar panels and window with ladybug
-    BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = XANGLES, 
-                                                       YANGLES= YANGLES, 
-                                                       paths = paths, 
-                                                       daysPerMonth = daysPerMonth, 
-                                                       hour_in_month = hour_in_month,
-                                                       DataName = None)
+    BuildingRadiationData_HOD = CalculateRadiationData( XANGLES = XANGLES, 
+                                                        YANGLES = YANGLES, 
+                                                        paths = paths, 
+                                                        daysPerMonth = daysPerMonth, 
+                                                        hour_in_month = hour_in_month,
+                                                        DataName = None)
     
+    #option used for simulations, for example if radiation analysis was only done for 
+    #4 months ('4months'), not yet working in all cases, set 'timePeriod' to None
+    #for regular simulations
+    simulationOption = {'timePeriod' : None}
+    #simulationOption = {'timePeriod' : '4months'} #not fully implemented
+    #simulationOption = {'timePeriod' : '1h'} #not fully implemented    
     
+    #PV production plots
+    createPlots = False
     
     PV_electricity_results = {}
     PV_detailed_results = {}
@@ -275,7 +254,7 @@ def main ():
         PV_electricity_results['Pmpp_sum'] = np.array(NumberCombinations * 145 * [0])
         print "PV_electricity_results is zero"
         
-            
+    
     #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
     if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results.npy')): 
         if not os.path.isdir(paths['PV']):
@@ -289,7 +268,7 @@ def main ():
             asf_electricity_production(
                                createPlots = createPlots, 
                                lb_radiation_path = paths['radiation_results'],
-                               panelsize = 400, 
+                               panelsize = panel_data['panelSize'], 
                                pvSizeOption = 0,
                                save_results_path = paths['PV'], 
                                lookup_table_path = paths['electrical_simulation'], 
@@ -305,7 +284,7 @@ def main ():
             asf_electricity_production(
                                createPlots = createPlots, 
                                lb_radiation_path = paths['radiation_results'],
-                               panelsize = 400, 
+                               panelsize = panel_data['panelSize'], 
                                pvSizeOption = 0,
                                save_results_path = paths['PV'], 
                                lookup_table_path = paths['electrical_simulation'], 
@@ -313,7 +292,7 @@ def main ():
                                flipOrientation= False, 
                                simulationOption = simulationOption,
                                XANGLES = XANGLES, YANGLES= YANGLES, 
-                               hour_in_month = hour_in_month, 
+                               hour_in_month = hour_in_month,
                                paths = paths, DataName = None)
     
     else: 
@@ -323,9 +302,7 @@ def main ():
         
     print "\npreparing data\n"
     
-    
-    
-    
+       
     #rearrange the Radiation Data on PV and Window into HOY form
     PV, BuildingRadiationData_HOY = PrepareRadiationData(hour_in_month = hour_in_month, 
                                                          daysPerMonth = daysPerMonth, 
@@ -333,10 +310,7 @@ def main ():
                                                          PV_electricity_results = PV_electricity_results, 
                                                          NumberCombinations = NumberCombinations)
     
-     
-    
-      
-            
+                 
     from energy_minimization import RC_Model
     from prepareDataMain import prepareAngles, prepareResults
     from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
@@ -375,7 +349,7 @@ def main ():
                                                                             ANGLES = ANGLES)   
         
     
-        #prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
+        # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
         monthlyData, yearlyData = prepareResults (Building_Simulation_df = ResultsBuildingSimulation['E_total'], 
                                                   geoLocation = geoLocation)
     

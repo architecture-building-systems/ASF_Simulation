@@ -129,6 +129,7 @@ sympy-plots-for-*.tex/
 *.png
 *.svg
 *.csv
+!Occupancy_COM.csv
 *.json
 *.npy
 
