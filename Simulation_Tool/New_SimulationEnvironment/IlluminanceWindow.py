@@ -21,7 +21,7 @@ import pandas as pd
 def IlluminanceWindow():
 
     # set if calculation is need, False = No
-    Calculation = False
+    Calculation = True
     
     
     # E = illuminance on work plane (lux)

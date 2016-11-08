@@ -359,8 +359,6 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                                                  geoLocation = geoLocation)
         
     return hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, BestKey_df, x_angles, y_angles
-    
-    
 
 def createAllPlots(monthlyData, roomFloorArea, x_angles, y_angles, hour_in_month, optimization_Types):
     
@@ -375,8 +373,6 @@ def createAllPlots(monthlyData, roomFloorArea, x_angles, y_angles, hour_in_month
         fig2 = createCarpetPlotYAngles(y_angles, hour_in_month)
     
     return fig0, fig1, fig2
-
-
 
 def SaveResults(now, Save, geoLocation, paths, fig0, fig1, fig2, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties):
     
