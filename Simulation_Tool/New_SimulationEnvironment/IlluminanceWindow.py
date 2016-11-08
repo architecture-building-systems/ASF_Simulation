@@ -93,7 +93,7 @@ def IlluminanceWindow():
     with open('building.json','w') as f:
         f.write(json.dumps(building_data))
     
-    paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResultsWindowData'
+    paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceResultsWindowData'
     
     
     if Calculation == True:
@@ -230,8 +230,8 @@ def IlluminanceWindow():
     
     return illuWin, illuWin_avg
     
-#illuWin, illuWin_avg = IlluminanceWindow()
-#print "test"    
+illuWin, illuWin_avg = IlluminanceWindow()
+print "test"    
  
 
 

@@ -32,7 +32,7 @@ def IlluminanceFunction():
     paths['data'] =os.path.join(paths['main'], 'data')
     paths['python'] = os.path.join(paths['main'], 'python')
     paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
-    paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_7_11_2')
+    paths['radiation_wall'] = os.path.join(paths['main'], 'radiation_wall_7_11')
     #paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall')
     
     # add python_path to system path, so that all files are available:

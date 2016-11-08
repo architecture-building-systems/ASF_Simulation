@@ -135,7 +135,7 @@ print MBE20
 if Plot == True:
     
     z_min = 0.0
-    z_max = 14000
+    z_max = 300.0
    
     fig = plt.figure(figsize=(16, 8))
     

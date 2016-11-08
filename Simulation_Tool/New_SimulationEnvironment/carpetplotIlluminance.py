@@ -25,6 +25,7 @@ def carpetPlotIlluminance(z, z_min, z_max, title):
     #cmap = plt.cm.autumn
     cmap = plt.cm.afmhot_r
     
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'white'), (1,'black')])
     
     yy, xx = np.meshgrid(y,x)
     

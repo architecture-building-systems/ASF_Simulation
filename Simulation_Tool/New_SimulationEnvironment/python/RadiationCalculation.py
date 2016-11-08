@@ -10,7 +10,7 @@ import json
 import csv
 import numpy as np
 
-def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month):
+def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month, DataName):
     
     # create dicitionary to save optimal angles:
     BuildingRadiationData_HOD = {}
@@ -20,7 +20,10 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month)
     print '\nStart radiation calculation with ladybug'
     print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
-        
+    if DataName != None:
+       paths['radiation_results'] = os.path.join(paths['radiation_results'], DataName)
+       paths['radiation_wall'] = os.path.join(paths['radiation_wall'], DataName)
+    
     tic = time.time()
 
 
