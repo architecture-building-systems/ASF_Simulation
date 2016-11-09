@@ -143,9 +143,9 @@ def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
                
     # set values to nan wihich are zero:
  
-    z3[19][6] = False
-    z3[19][5] = False    
-    z3[18][3] = False           
+#    z3[19][6] = False
+#    z3[19][5] = False    
+#    z3[18][3] = False           
     z3[z3 == 0] = np.nan
     
     

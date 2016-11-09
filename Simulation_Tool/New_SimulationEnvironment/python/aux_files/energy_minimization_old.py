@@ -29,7 +29,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     
     from buildingPhysics import Building #Importing Building Class
     from read_occupancy import read_occupancy, Equate_Ill, BuildingData
-    from optimzeTemperatureFunction import optimzeTemp, checkEqual
         
     #people/m2/h, W    
     occupancy, Q_human = read_occupancy(myfilename = paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)
@@ -224,9 +223,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                
             elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
                 #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = BestComb    #ändern   
+                BestComb = BestComb        
                 BestCombKey = NumberCombinations
-                
         
         elif optimization_type == 'Lighting':
             #best comb for heating
@@ -250,7 +248,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                 
                 
         elif optimization_type == 'SolarEnergy':
-           #best comb for heating
+            #best comb for heating
             if hour_of_year == 0:
             #initil condition        
                 BestComb = 0
@@ -261,12 +259,12 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the dictionary
                 BestComb = hourlyData[hour_of_year]['PV'].argmax(axis=0)
-                BestCombKey = BestComb               
+                BestCombKey = BestComb                
                         
             elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
                 #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = BestComb   #optimise T_avg     
-                BestCombKey =  NumberCombinations
+                BestComb = BestComb        
+                BestCombKey = NumberCombinations
        
        
        
@@ -275,42 +273,58 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
        
         elif optimization_type == 'Heating':    
         
-                            
+            #best comb for heating
+            if hour_of_year == 0:
+            #initial condition        
+                BestComb = 0
+                BestCombKey = NumberCombinations # = np.nan
+            else:
+                pass
+                
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_Heating_HOY[hour_of_year], key=lambda comb: Data_Heating_HOY[hour_of_year][comb])
-                 
-                equal = checkEqual(Data_Heating_HOY[hour_of_year])
-                
-                if equal == True:
+                                
+                if Data_Heating_HOY[hour_of_year][0] == 0 and Data_Heating_HOY[hour_of_year][round(NumberCombinations/2.,0)] == 0:
                 #for zero heating, set key to no movement    
-                    BestComb = max(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])        
+                    BestComb = max(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])
+                    BestCombKey = BestComb                     
+                    #BestCombKey = NumberCombinations + 1
+                else:
+                    BestCombKey = BestComb
         
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
                 #Check if there is no PV-value (nor radiation), then don't move the modules
                 BestComb =  max(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb]) # take same comb value from the hour before       
-            
-            BestCombKey = BestComb
+                BestCombKey = NumberCombinations
         
         
         
         elif optimization_type == 'Cooling':
-            
+            #best comb for heating
+            if hour_of_year == 0:
+            #initil condition        
+                BestComb = 0
+                BestCombKey = NumberCombinations # = np.nan
+            else:
+                pass
+                
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_Cooling_HOY[hour_of_year], key=lambda comb: Data_Cooling_HOY[hour_of_year][comb])
-                
-                equal = checkEqual(Data_Cooling_HOY[hour_of_year])
-                
-                if equal == True:
+                                
+                if Data_Cooling_HOY[hour_of_year][0] == 0 and Data_Cooling_HOY[hour_of_year][round(NumberCombinations/2.,0)] == 0:
                     BestComb = min(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])
-                  
-        
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
-                #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = min(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])
+                    BestCombKey = BestComb                    
+                    #BestCombKey = NumberCombinations + 1 # = -100.
                 
-            BestCombKey = BestComb
+                else:
+                    BestCombKey = BestComb
+        
+            elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
+                #Check if there is no PV-value (nor radiation), then don't move the modules
+                BestComb = BestComb        
+                BestCombKey = NumberCombinations
                 
                         
         elif optimization_type == 'E_HCL':
@@ -325,18 +339,17 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the dictionary
                 BestComb = min(E_HCL[hour_of_year], key=lambda comb: E_HCL[hour_of_year][comb])
-                
-                equal = checkEqual( E_HCL[hour_of_year])
-                
-                if equal == True:
-                    BestComb =optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = 26, Tmin = 20)
-                    
-                        
+                                
+                if E_HCL[hour_of_year][0] == 0 and E_HCL[hour_of_year][round(NumberCombinations/2.,0)] == 0:
+                    BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
+                    BestCombKey = NumberCombinations+1
+                else:
+                    BestCombKey = BestComb
+        
             elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
                 #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = 26, Tmin = 20)        
-            
-            BestCombKey = BestComb
+                BestComb = BestComb        
+                BestCombKey = NumberCombinations
         
             
         

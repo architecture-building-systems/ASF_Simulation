@@ -72,7 +72,7 @@ def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
             
     return Best_Key_df, x_angle_array, y_angle_array
     
-def prepareResults (Building_Simulation_df, optType):
+def prepareResults (Building_Simulation_df):
     
     from prepareData_mauro import sum_monthly
     

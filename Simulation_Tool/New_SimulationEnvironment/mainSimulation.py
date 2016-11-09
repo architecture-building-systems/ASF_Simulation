@@ -74,7 +74,7 @@ import os, sys
 import numpy as np
 import pandas as pd
 
-optimization_Types = ['E_total', 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'] 
+optimization_Types = ['E_total', 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting']
 DataName = 'ZH05_49comb'
 geoLocation = 'Zuerich_Kloten_2005'
 
@@ -121,6 +121,7 @@ geoLocation = 'Zuerich_Kloten_2005'
 #"phi_h_max_A_f":np.inf
 #}
 
+#SimulationProperties= {
 #setBackTemp = 4.,
 #Occupancy = 'Occupancy_COM.csv')
 
@@ -259,6 +260,6 @@ def MainCalculateASF(geoLocation, optimization_Types, DataName):
                             ResultsBuildingSimulation = ResultsBuildingSimulation, 
                             BuildingProperties = BuildingProperties)
                             
-    return ResultsBuildingSimulation, monthlyData, yearlyData
+    return ResultsBuildingSimulation, monthlyData, yearlyData, hourlyData['Cooling']
 
-ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(geoLocation, optimization_Types, DataName)
+ResultsBuildingSimulation, monthlyData, yearlyData, hourlyData = MainCalculateASF(geoLocation, optimization_Types, DataName)

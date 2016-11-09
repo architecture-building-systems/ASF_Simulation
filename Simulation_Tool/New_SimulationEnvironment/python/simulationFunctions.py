@@ -436,8 +436,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
         
     
         # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
-        monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType], 
-                                                 optType = optimizationType)
+        monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType])
         
     return hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, BestKey_df, x_angles, y_angles
     
@@ -468,6 +467,9 @@ def createAllPlots(monthlyData, roomFloorArea, x_angles, y_angles, hour_in_month
 
 def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties):
     
+    monthlyData = pd.DataFrame(monthlyData)
+    yearlyData = pd.DataFrame(yearlyData)    
+    
     if Save == True: 
         
         # create folder where results will be saved:
@@ -490,11 +492,7 @@ def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthly
             #save figures
             fig['fig1'].savefig(os.path.join(paths['pdf'], 'figure1' + '.pdf'))
             fig['fig2'].savefig(os.path.join(paths['pdf'], 'figure2' + '.pdf'))
-              
-                
-        monthlyData = pd.DataFrame(monthlyData)
-        yearlyData = pd.DataFrame(yearlyData)
-        
+
         # save results of overall energy demand, in kWh
         ResultsBuildingSimulation['E_total'].to_csv(os.path.join(paths['result'], 'Building_Simulation.csv'))
         #hourlyData['E_total'].to_csv(os.path.join(paths['result'], 'hourlyData.csv'))
