@@ -14,7 +14,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                                geo_path = None, flipOrientation = False, 
                                simulationOption = None,
                                XANGLES = [], YANGLES = [], 
-                               hour_in_month = None, paths = None, DataName = None):
+                               hour_in_month = None, paths = None, DataNamePV = None):
                                    
     import sys,os                               
     # add python_path to system path, so that all files are available:
@@ -33,11 +33,6 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     create_plots_flag = createPlots
     Simulation_Data_Folder = lb_radiation_path
     
-    if DataName != None:
-        lb_radiation_path = os.path.join(lb_radiation_path, DataName)
-        Simulation_Data_Folder = os.path.join(lb_radiation_path, DataName)
-        
-        
     
     filename = ('RadiationResults')
     filetype = ('.csv')
@@ -361,10 +356,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     
     PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'HOD' : HOD, 'Month':monthi}
-    np.save(os.path.join(save_results_path,'PV_electricity_results.npy'),PV_electricity_results)    
+    np.save(os.path.join(save_results_path,'PV_electricity_results_'  + DataNamePV + '.npy'),PV_electricity_results)    
     
     PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'HOD': HOD, 'Month':monthi}
-    np.save(os.path.join(save_results_path,'PV_detailed_results.npy'),PV_detailed_results)    
+    np.save(os.path.join(save_results_path,'PV_detailed_results_' + DataNamePV + '.npy'),PV_detailed_results)    
     
    
     

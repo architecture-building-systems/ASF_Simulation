@@ -21,7 +21,7 @@ import pandas as pd
 def IlluminanceWindow():
 
     # set if calculation is need, False = No
-    Calculation = True
+    Calculation = False
     
     
     # E = illuminance on work plane (lux)
@@ -190,7 +190,7 @@ def IlluminanceWindow():
     illuWin_avg_df= {}
     
     Day = 15.0
-    size= 400.0
+    size= 50.0
     y_angle = 0
     
     for x_angle in [0,90]:#[0,90]:

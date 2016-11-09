@@ -7,63 +7,6 @@ Created on Thu Oct 27 14:55:11 2016
 import numpy as np
 import pandas as pd
 
-def PrepareRadiationData(hour_in_month, daysPerMonth, BuildingRadiationData_HOD, PV_electricity_results, NumberCombinations):
-    
-    from hourRadiation import hourRadiation, hourRadiation_calculated, sumHours
-
-    
-    
-    hourRadiation = hourRadiation(hour_in_month, daysPerMonth)
-    hourRadiation_calculated = hourRadiation_calculated(hour_in_month,daysPerMonth)
-    sumHours = sumHours(daysPerMonth)
-    
-              
-    #add the radiation data to the specific HOY
-    PV={}
-    BuildingRadiationData_HOY= {}
-    passedHours = 0
-    
-    for monthi in range(1,13):
-        if monthi == 1:
-            passedHours = 0
-        else:
-            passedHours = sumHours[monthi-2]     
-        
-        for HOD in hour_in_month[monthi]:
-            for ii in range(0,daysPerMonth[monthi-1]):             
-                DAY = ii*24 + int(HOD)   
-                BuildingRadiationData_HOY[passedHours + DAY] = BuildingRadiationData_HOD[monthi][DAY] *1000.0 #W
-    
-    
-    for hour_of_year in range(0,8760):
-        PV[hour_of_year]= {}
-        PV[hour_of_year]['PV']= []
-        
-          
-    count = 0
-    DAY = 0
-    
-    for monthi in range(1,13):
-        if monthi == 1:
-            passedHours = 0
-        else:
-            passedHours = sumHours[monthi-2]
-            
-        for HOD in hour_in_month[monthi]:
-                for jj in range(0,daysPerMonth[monthi-1]):
-                    DAY = jj*24 + HOD     
-                    PV[passedHours + DAY]['PV'] = PV_electricity_results['Pmpp_sum'][count:count+NumberCombinations] #Watts
-                count +=NumberCombinations
-                
-    for hour_of_year in range(0,8760):
-        if hour_of_year not in hourRadiation:
-                BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* NumberCombinations, dtype = np.float64)
-                PV[int(hour_of_year)]['PV'] = np.asarray([0]* NumberCombinations, dtype = np.float64)
-       
-    
-    return PV, BuildingRadiationData_HOY
-
-
 
 def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
     
@@ -129,7 +72,7 @@ def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
             
     return Best_Key_df, x_angle_array, y_angle_array
     
-def prepareResults (Building_Simulation_df, geoLocation):
+def prepareResults (Building_Simulation_df, optType):
     
     from prepareData_mauro import sum_monthly
     
@@ -174,6 +117,7 @@ def prepareResults (Building_Simulation_df, geoLocation):
     monthlyData = {}
     yearlyData = {}
     
+    
     #in kWh/DaysPerMonth
     monthlyData['H'] = sum_H
     monthlyData['C'] = sum_C
@@ -183,18 +127,14 @@ def prepareResults (Building_Simulation_df, geoLocation):
     monthlyData['PV'] = sum_PV
     
     #in kWh/year
-    yearlyData[geoLocation]={}
-    yearlyData[geoLocation]['E'] = E.sum()
-    yearlyData[geoLocation]['E_HCL'] = E_HCL.sum()
-    yearlyData[geoLocation]['PV'] = PV.sum() 
-    yearlyData[geoLocation]['H'] = H.sum() 
-    yearlyData[geoLocation]['C'] = C.sum()
-    yearlyData[geoLocation]['L'] = L.sum()
-    
-    #create DataFrame
-    yearlyData_df = pd.DataFrame(yearlyData)
+    yearlyData['E'] = E.sum()
+    yearlyData['E_HCL'] = E_HCL.sum()
+    yearlyData['PV'] = PV.sum() 
+    yearlyData['H'] = H.sum() 
+    yearlyData['C'] = C.sum()
+    yearlyData['L'] = L.sum()    
 
-    return  monthlyData, yearlyData_df 
+    return  monthlyData, yearlyData
     
     
     
