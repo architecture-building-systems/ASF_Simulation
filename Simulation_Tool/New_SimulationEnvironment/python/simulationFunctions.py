@@ -14,21 +14,16 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def initializeSimulation(geoLocation, Save, optimization_Types, DataName):
-    
-    # specify the location used for the analysis
-    #this name must be the same as a folder in the directory .../ASF_Simulation/Simulation_Environment/data/geographical_location
-    # new locations can be added with the grasshopper main script for any .epw weather
-  
-       
+def initializeSimulation(SimulationData):
+           
     #check if E_total is selcted
     count = 0
-    for ii in optimization_Types:  
+    for ii in SimulationData['optimizationTypes']:  
         if ii == 'E_total':
             pass
         elif ii != 'E_total':
             count +=1
-    if count == len(optimization_Types):       
+    if count == len(SimulationData['optimizationTypes']):       
         print '\nE_total is needed as default!'
         print 'Change the optimizationTypes.\n'
         sys.exit()
@@ -38,8 +33,8 @@ def initializeSimulation(geoLocation, Save, optimization_Types, DataName):
     
     #Set panel data
     FolderName={
-    "DataNamePV": DataName,
-    "DataNameWin": DataName  
+    "DataNamePV": SimulationData['DataName'],
+    "DataNameWin": SimulationData['DataName']  
     }
     
     #Save parameters to be imported into grasshopper
@@ -47,87 +42,35 @@ def initializeSimulation(geoLocation, Save, optimization_Types, DataName):
         f.write(json.dumps(FolderName))    
             
     
-    return geoLocation, Save, optimization_Types, FolderName
+    return FolderName
 
-def initializeASF(XANGLES, YANGLES, NoClusters, ActuationEnergy):
-
-    #Set Solar Panel Angles 
-    #Set Number of Clusters, for the moment only = 1 is working
-
-    #Set panel data
-    panel_data={"XANGLES": XANGLES ,
-    "YANGLES" : YANGLES,
-    "NoClusters":NoClusters,
-    "numberHorizontal":6,#6,
-    "numberVertical":9,#9,
-    "panelOffset":400,
-    "panelSize":400,
-    "panelSpacing":500,
-    }
-    
+def initializeASF(panel_data):
+  
     #Save parameters to be imported into grasshopper
     with open('panel.json','w') as f:
         f.write(json.dumps(panel_data))
         
-    #Option to integrate the actuation energy consumption, 'yes' = energy consumption is included (not included yet)
-    #ActuationEnergy = True # False
-    
-    return panel_data
 
-def setBuildingParameters(room_width, room_height, room_depth, glazing_percentage_w, glazing_percentage_h):
+def setBuildingParameters(building_data):
     
-    #Set Building Parameters
-    building_data={"room_width":room_width,     
-    "room_height":room_height,
-    "room_depth":room_depth,
-    "glazing_percentage_w": glazing_percentage_w,
-    "glazing_percentage_h": glazing_percentage_h
-    }
     #Save parameters to be imported into grasshopper
     with open('building.json','w') as f:
         f.write(json.dumps(building_data))
     
     roomFloorArea = building_data['room_width']/1000.0 * building_data['room_depth']/1000.0 #[m^2] floor area
     
-    return building_data, roomFloorArea
+    return roomFloorArea
     
     
-def initializeBuildingSimulation(building_data,glass_solar_transmitance,glass_light_transmitance, \
-                            lighting_load,lighting_control,Lighting_Utilisation_Factor, Lighting_MaintenanceFactor,U_em,U_w, \
-                            ACH_vent, ACH_infl, ventilation_efficiency, c_m_A_f, theta_int_h_set, theta_int_c_set, phi_c_max_A_f, \
-                            phi_h_max_A_f, setBackTemp, Occupancy):
+def initializeBuildingSimulation(building_data, BuildingProperties):
     #set building properties for the RC-Model analysis 
-    BuildingProperties={
+    BuildingProperties.update({
             "Fenst_A": building_data['room_width']/1000.0*building_data['room_height']/1000.0*building_data['glazing_percentage_h']*building_data['glazing_percentage_w'],
             "Room_Depth": building_data['room_depth']/1000.0,
             "Room_Width": building_data['room_width']/1000.0,
-            "Room_Height":building_data['room_height']/1000.0,
-            "glass_solar_transmitance" : glass_solar_transmitance ,
-            "glass_light_transmitance" : glass_light_transmitance ,
-            "lighting_load" : lighting_load ,
-            "lighting_control" : lighting_control,
-            "Lighting_Utilisation_Factor" : Lighting_Utilisation_Factor,
-            "Lighting_MaintenanceFactor" : Lighting_MaintenanceFactor,
-            "U_em" : U_em, 
-            "U_w" : U_w,
-            "ACH_vent" : ACH_vent,
-            "ACH_infl" :ACH_infl,
-            "ventilation_efficiency" : ventilation_efficiency,
-            "c_m_A_f" : c_m_A_f, #capcitance of the building dependent on building type: medium = 165'000, heavy = 260'000, light = 110'000, very heavy = 370'000
-            "theta_int_h_set" : theta_int_h_set,
-            "theta_int_c_set" : theta_int_c_set,
-            "phi_c_max_A_f": phi_c_max_A_f, #-np.inf,
-            "phi_h_max_A_f":phi_h_max_A_f #np.inf
-            }     
-                 
-    #Temperature in what range the heating can become warmer or colder, if there ar no people in the building
-  
-    #set the occupancy profil, dependent on the building utilisation type
-    # add csv. file to the following folder:...New_SimulationEnvironment\5R1C_ISO_simulator\data, and change variable Occupancy to the filename
-       
-    #building_stystem = capacitive heating/ cooling  
-    
-    return BuildingProperties, setBackTemp, Occupancy
+            "Room_Height":building_data['room_height']/1000.0})                
+        
+    return BuildingProperties
     
     
 def setPaths(geoLocation, Occupancy, FolderName):
