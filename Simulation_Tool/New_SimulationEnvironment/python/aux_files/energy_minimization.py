@@ -15,6 +15,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             
     #Temperature value, to start the simulation with
     T_in = 20
+    
+    Tmax = BuildingProperties['theta_int_c_set'] 
+    Tmin = BuildingProperties['theta_int_h_set']
+    
         
     
     # add python_path to system path, so that all files are available:
@@ -208,91 +212,97 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
                
         if optimization_type == 'E_total':
-      
             #Best comb for overall energy demand
-            if hour_of_year == 0:
-            #initial condition        
-                BestComb = 0
-                BestCombKey = NumberCombinations # = np.nan
-            else:
-                pass
-            
+                        
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
                 BestCombKey = BestComb       
                
-            elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
-                #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = BestComb    #ändern   
-                BestCombKey = NumberCombinations
+            elif hourlyData[hour_of_year]['PV'][0] == 0:
+                #Check if there is no PV-value (no radiation)
+                equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
+                
+                if equal == False:
+                    #if temperatures are not the same, take temp which is closest to average temperature
+                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)           
+                    BestCombKey = BestComb
+                    
+                elif equal == True: #PV = 0, Temp are equal
+                    BestComb = 0 #chose random Temp
+                    BestCombKey = NumberCombinations # make colormap grey    
                 
         
         elif optimization_type == 'Lighting':
-            #best comb for heating
-            if hour_of_year == 0:
-            #initil condition        
-                BestComb = 0
-                BestCombKey = NumberCombinations
-            else:
-                pass
-                
+            
             if hourlyData[hour_of_year]['PV'][0] != 0:
-                #get key with min value from the E_tot dictionary
+                #get key with max building radiaiton value
                 BestComb =BuildingRadiationData_HOY[hour_of_year].argmax(axis=0)
                 BestCombKey = BestComb
               
         
-            elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
-                #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = BestComb       
-                BestCombKey = NumberCombinations
+            elif hourlyData[hour_of_year]['PV'][0] == 0:
+                #Check if there is no PV-value (no radiation)
+                equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
+                
+                if equal == False:
+                    #if temperatures are not the same, take temp which is closest to average temperature
+                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)           
+                    BestCombKey = BestComb
+                    
+                elif equal == True: #PV = 0, Temp are equal
+                    BestComb = 0 #chose random Temp
+                    BestCombKey = NumberCombinations # make colormap grey    
                 
                 
         elif optimization_type == 'SolarEnergy':
-           #best comb for heating
-            if hour_of_year == 0:
-            #initil condition        
-                BestComb = 0
-                BestCombKey = NumberCombinations
-            else:
-                pass
-                
+           
             if hourlyData[hour_of_year]['PV'][0] != 0:
-                #get key with min value from the dictionary
+                #get key with max PV production
                 BestComb = hourlyData[hour_of_year]['PV'].argmax(axis=0)
                 BestCombKey = BestComb               
                         
-            elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
-                #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = BestComb   #optimise T_avg     
-                BestCombKey =  NumberCombinations
-       
-       
-       
-       
+            elif hourlyData[hour_of_year]['PV'][0] == 0:
+                #Check if there is no PV-value (no radiation)
+                equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
+                
+                if equal == False:
+                    #if temperatures are not the same, take temp which is closest to average temperature
+                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)           
+                    BestCombKey = BestComb
+                    
+                elif equal == True: #PV = 0, Temp are equal
+                    BestComb = 0 #chose random Temp
+                    BestCombKey = NumberCombinations # make colormap grey       
        
        
         elif optimization_type == 'Heating':    
         
-                            
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_Heating_HOY[hour_of_year], key=lambda comb: Data_Heating_HOY[hour_of_year][comb])
                  
-                equal = checkEqual(Data_Heating_HOY[hour_of_year])
+                equal = checkEqual(Data = Data_Heating_HOY[hour_of_year])
                 
                 if equal == True:
-                #for zero heating, set key to no movement    
+                #for zero heating, chose key for max inside temperature
                     BestComb = max(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])        
+                
+                BestCombKey = BestComb
         
             elif hourlyData[hour_of_year]['PV'][0] == 0:
-                #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb =  max(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb]) # take same comb value from the hour before       
+                #Check if there is no PV-value (no radiation)
+                equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
+                
+                if equal == False:
+                    #if temperatures are not the same, take heighest temp value
+                    BestComb = max(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])        
+                    BestCombKey = BestComb
+                    
+                elif equal == True: #PV = 0, Temp are equal
+                    BestComb = 0 #chose random Temp
+                    BestCombKey = NumberCombinations # make colormap grey       
             
-            BestCombKey = BestComb
-        
-        
         
         elif optimization_type == 'Cooling':
             
@@ -300,51 +310,60 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_Cooling_HOY[hour_of_year], key=lambda comb: Data_Cooling_HOY[hour_of_year][comb])
                 
-                equal = checkEqual(Data_Cooling_HOY[hour_of_year])
+                equal = checkEqual(Data = Data_Cooling_HOY[hour_of_year])
                 
                 if equal == True:
                     BestComb = min(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])
-                  
+                
+                BestCombKey = BestComb
         
             elif hourlyData[hour_of_year]['PV'][0] == 0:
                 #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = min(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])
+                equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
-            BestCombKey = BestComb
+                if equal == False:
+                    #if temperatures are not the same, take smallest temp value
+                    BestComb = min(Data_T_in_HOY[hour_of_year], key=lambda comb:Data_T_in_HOY[hour_of_year][comb])        
+                    BestCombKey = BestComb
+                    
+                elif equal == True: #PV = 0, Temp are equal
+                    BestComb = 0 #chose random Temp
+                    BestCombKey = NumberCombinations # make colormap grey
                 
                         
         elif optimization_type == 'E_HCL':
-            #best comb for heating
-            if hour_of_year == 0:
-            #initil condition        
-                BestComb = 0
-                BestCombKey = NumberCombinations
-            else:
-                pass
-                
+                            
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the dictionary
                 BestComb = min(E_HCL[hour_of_year], key=lambda comb: E_HCL[hour_of_year][comb])
                 
-                equal = checkEqual( E_HCL[hour_of_year])
+                equal = checkEqual(Data = E_HCL[hour_of_year])
                 
                 if equal == True:
-                    BestComb =optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = 26, Tmin = 20)
-                    
-                        
-            elif hourlyData[hour_of_year]['PV'][0] == 0 and hour_of_year != 0:
+                    BestComb =optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year],Tmax = Tmax, Tmin = Tmin)
+                
+                BestCombKey = BestComb 
+            
+            elif hourlyData[hour_of_year]['PV'][0] == 0:
+                
                 #Check if there is no PV-value (nor radiation), then don't move the modules
-                BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = 26, Tmin = 20)        
-            
-            BestCombKey = BestComb
-        
-            
+                equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
+                
+                if equal == False:
+                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)        
+                    BestCombKey = BestComb
+                    
+                elif equal == True: #PV = 0, Temp are equal
+                    BestComb = 0 #chose random Temp
+                    BestCombKey = NumberCombinations # make colormap grey
+               
+                   
         
         T_in = Data_T_in_HOY[hour_of_year][BestComb] #most efficient solution has to be used again
         
     
         #count uncomfortable hours
-        if (T_in > 26.0 or T_in < 20.0) and occupancy['People'][hour_of_year] != 0: #T_in > BuildingProperties['theta_int_c_set'] or T_in < BuildingProperties['theta_int_h_set']:
+        if (T_in > Tmax or T_in < Tmin) and occupancy['People'][hour_of_year] != 0: 
             uncomf_hours += 1
             uncomf_hours_HOY.append(hour_of_year)
             

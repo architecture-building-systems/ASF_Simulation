@@ -144,7 +144,7 @@ def setPaths(geoLocation, Occupancy, FolderName):
     paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
     
     paths['radiation_results'] = os.path.join(paths['main'],'radiation_results_' + FolderName['DataNamePV'])
-    paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_' + FolderName['DataNameWin'])
+    paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_' + FolderName['DataNamePV'])
     paths['PV'] = os.path.join(paths['main'], 'PV_results')
 
     paths['save_results_path'] = paths['PV']
@@ -281,7 +281,7 @@ def runRadiationCalculation(paths, XANGLES, YANGLES, daysPerMonth, hour_in_month
     
     #if there are no panels vertical and horizontal
     if panel_data['numberHorizontal'] == 0 and panel_data['numberVertical'] == 0:
-        PV_electricity_results['Pmpp_sum'] = np.array(NumberCombinations * 145 * [0])
+        PV_electricity_results['Pmpp_sum'] = np.array(NumberCombinations * len(hour_in_month) * [0])
         print "PV_electricity_results is zero"
         
     
@@ -361,7 +361,7 @@ def PrepareRadiationData(hour_in_month, daysPerMonth, BuildingRadiationData_HOD,
         for HOD in hour_in_month[monthi]:
             for ii in range(0,daysPerMonth[monthi-1]):             
                 DAY = ii*24 + int(HOD)   
-                BuildingRadiationData_HOY[passedHours + DAY] = BuildingRadiationData_HOD[monthi][DAY] *1000.0 #W
+                BuildingRadiationData_HOY[passedHours + DAY] = BuildingRadiationData_HOD[monthi][DAY] #W
     
     
     for hour_of_year in range(0,8760):
@@ -465,7 +465,7 @@ def createAllPlots(monthlyData, roomFloorArea, x_angles, y_angles, hour_in_month
 
 
 
-def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties):
+def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles):
     
     monthlyData = pd.DataFrame(monthlyData)
     yearlyData = pd.DataFrame(yearlyData)    
@@ -493,11 +493,18 @@ def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthly
             fig['fig1'].savefig(os.path.join(paths['pdf'], 'figure1' + '.pdf'))
             fig['fig2'].savefig(os.path.join(paths['pdf'], 'figure2' + '.pdf'))
 
-        # save results of overall energy demand, in kWh
-        ResultsBuildingSimulation['E_total'].to_csv(os.path.join(paths['result'], 'Building_Simulation.csv'))
+        for ii in optimization_Types:
+            # save results 
+            ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'Building_Simulation_'+ ii + '.csv'))
+        
+        x_angles_df = pd.DataFrame(x_angles)
+        y_angles_df = pd.DataFrame(y_angles)           
+        
         #hourlyData['E_total'].to_csv(os.path.join(paths['result'], 'hourlyData.csv'))
         monthlyData.to_csv(os.path.join(paths['result'], 'monthlyData.csv'))
         yearlyData.to_csv(os.path.join(paths['result'], 'yearlyData.csv'))
+        x_angles_df.to_csv(os.path.join(paths['result'], 'X-Angles.csv'))
+        y_angles_df.to_csv(os.path.join(paths['result'], 'Y-Angles.csv'))
         
         
         #save building properties

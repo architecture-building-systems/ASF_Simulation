@@ -12,14 +12,7 @@ import numpy as np
 
 def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month, DataNamePV, DataNameWin):
     
-        
-    if DataNamePV != 'None':
-       paths['radiation_results'] = os.path.join(paths['radiation_results'])
-       paths['radiation_wall'] = os.path.join(paths['radiation_wall'])
                    
-    else:
-        pass
-       
     if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results_' + DataNamePV + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'BuildingRadiationData_HOD_' + DataNameWin + '.npy')):    
         if not os.path.isdir(paths['PV']):
             os.makedirs(paths['PV'])
@@ -64,7 +57,6 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
         #                    f.write(json.dumps(ASFangles[index]))
         #                    print "index:", index
         #                      
-                            
                         #Wait until the radiation_results were created    
                         while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_'+  str(int(HOD)) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                             time.sleep(1)
@@ -90,7 +82,7 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
                 
                 for jj in range(0,daysPerMonth[monthi-1]):
                     #Radiation data is calculated for all days per month, so the data is divided through the amount of days per month
-                    BuildingRadiationData_HOD[monthi][HOD+24*jj]= BuildingRadiationData * 1/daysPerMonth[monthi-1]
+                    BuildingRadiationData_HOD[monthi][HOD+24*jj]= BuildingRadiationData * 1/daysPerMonth[monthi-1] *1000. #W/h
                     
         
         np.save(os.path.join(paths['save_results_path'],'BuildingRadiationData_HOD_' + DataNameWin + '.npy'),BuildingRadiationData_HOD)

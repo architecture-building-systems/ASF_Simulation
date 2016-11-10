@@ -76,7 +76,10 @@ import pandas as pd
 
 optimization_Types = ['E_total', 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting']
 DataName = 'ZH05_49comb'
-geoLocation = 'Zuerich_Kloten_2005'
+geoLocation = 'Zuerich_Kloten_2005' 
+
+# 'ZH13_49comb'
+# 'Zuerich_Kloten_2013.epw'
 
 #DefaultValues
 #Set panel data
@@ -258,8 +261,10 @@ def MainCalculateASF(geoLocation, optimization_Types, DataName):
                             monthlyData = monthlyData, 
                             yearlyData = yearlyData, 
                             ResultsBuildingSimulation = ResultsBuildingSimulation, 
-                            BuildingProperties = BuildingProperties)
+                            BuildingProperties = BuildingProperties,
+                            x_angles = x_angles,
+                            y_angles = y_angles)
                             
-    return ResultsBuildingSimulation, monthlyData, yearlyData, hourlyData['Cooling']
+    return ResultsBuildingSimulation, monthlyData, yearlyData
 
-ResultsBuildingSimulation, monthlyData, yearlyData, hourlyData = MainCalculateASF(geoLocation, optimization_Types, DataName)
+ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(geoLocation, optimization_Types, DataName)
