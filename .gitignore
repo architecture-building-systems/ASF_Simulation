@@ -130,6 +130,8 @@ sympy-plots-for-*.tex/
 *.svg
 *.csv
 !Occupancy_COM.csv
+!Temperature.csv
+!SunPosition.csv
 *.json
 *.npy
 
