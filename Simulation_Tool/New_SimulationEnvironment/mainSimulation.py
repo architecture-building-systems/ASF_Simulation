@@ -76,17 +76,14 @@ import pandas as pd
 
 
 
-# 'ZH13_49comb'
-# 'Zuerich_Kloten_2013.epw'
-
 #DefaultValues
 ###############################################################################
 
 #Set simulation data
 SimulationData= {
-'optimizationTypes' : ['E_total', 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
-'DataName' : 'ZH05_49comb',
-'geoLocation' : 'Zuerich_Kloten_2005',
+'optimizationTypes' : ['E_total'],# 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
+'DataName' : 'ZH05_49comb',#'ZH13_49comb', #'ZH05_49comb', #,
+'geoLocation' : 'Zuerich_Kloten_2005', #'Zuerich_Kloten_2013', #'Zuerich_Kloten_2005',
 'Save' : False}
 
 #Set panel data
@@ -237,6 +234,7 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             x_angles = x_angles,
                             y_angles = y_angles)
                             
-    return ResultsBuildingSimulation, monthlyData, yearlyData
+    return ResultsBuildingSimulation, monthlyData, yearlyData, weatherData
 
-ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+#call fuction
+ResultsBuildingSimulation, monthlyData, yearlyData, weatherData = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)

@@ -102,6 +102,7 @@ def setPaths(geoLocation, Occupancy, FolderName):
     sys.path.insert(0, paths['aux_files'])
     sys.path.insert(0, paths['python'])
     
+    from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature
     from epwreader import epw_reader
     #read epw file of needed destination
     weatherData = epw_reader(paths['weather'])
@@ -125,7 +126,9 @@ def setPaths(geoLocation, Occupancy, FolderName):
     
     
     # create sun data based on grasshopper file, this is only possible with the ladybug component SunPath
-    execfile(os.path.join(paths['aux_files'], 'SunAngles_Tracking_and_temperature.py'))
+    SunTrackingData = SunAnglesTackingAndTemperature(paths = paths,
+                                                     weatherData = weatherData)    
+    #execfile(os.path.join(paths['aux_files'], 'SunAngles_Tracking_and_temperature.py'))
     
     # calculate and save lookup table if it does not yet exist:
     paths['data_python'] = os.path.join(paths['data'], 'python')

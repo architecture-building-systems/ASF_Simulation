@@ -113,4 +113,4 @@ with open(os.path.join(location_path ,'TempTracking.json'), 'w') as fp:
     fp.close()
 
 # clear all variables from memory except for SunTrackingData
-del location_path, Temperature, daysPassedMonth, daysPerMonth, Temp_month, SunAngles, asfSunTracking, counter, AzimuthSouth, MiddleOfMonth, allHours, HoursToEvaluateInMonth, HoursToEvaluate, XanglesTracking, YanglesTracking, HoursInMonthTracking, MonthTracking, monthi, TempTracking, i, j, idx, ind, month, hour 
+#del location_path, Temperature, daysPassedMonth, daysPerMonth, Temp_month, SunAngles, asfSunTracking, counter, AzimuthSouth, MiddleOfMonth, allHours, HoursToEvaluateInMonth, HoursToEvaluate, XanglesTracking, YanglesTracking, HoursInMonthTracking, MonthTracking, monthi, TempTracking, i, j, idx, ind, month, hour 
