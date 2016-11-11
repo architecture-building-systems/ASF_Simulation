@@ -54,6 +54,14 @@ print Office.lighting_demand
 
 print Office.phi_hc_nd_ac
 
+print Office.h_tr_em 
+print Office.h_tr_w 
+		
+print 'hve:', Office.h_ve_adj
+print Office.h_tr_ms 
+print Office.h_tr_is 
+
+
 #print Office.has_heating_demand
 
 # print Office.phi_m_tot

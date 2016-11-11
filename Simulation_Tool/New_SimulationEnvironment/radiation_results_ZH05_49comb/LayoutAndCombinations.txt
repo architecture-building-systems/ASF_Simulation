@@ -1,5 +1,5 @@
-XANGLES = [0, 15, 30, 45, 60, 75, 90]
-YANGLES = [-45, -30, -15, 0, 15, 30, 45]
+XANGLES = [0]
+YANGLES = [-45]
 NoClusters = 1
 panelSize = 400
 panelSpacing = 500
