@@ -72,17 +72,17 @@ def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
             
     return Best_Key_df, x_angle_array, y_angle_array
     
-def prepareResults (Building_Simulation_df):
+def prepareResults (Building_Simulation_df, ETOT, H, C, EHCL):
     
     from prepareData_mauro import sum_monthly
     
     #convert into kWh
-    H =Building_Simulation_df['H'] *0.001
-    C =Building_Simulation_df['C'] *0.001
+    H =Building_Simulation_df[H] *0.001
+    C =Building_Simulation_df[C] *0.001
     L =Building_Simulation_df['L'] *0.001
-    E =Building_Simulation_df['E_tot'] *0.001 
+    E =Building_Simulation_df[ETOT] *0.001 
     PV =Building_Simulation_df['PV'] *0.001
-    E_HCL = Building_Simulation_df['E_HCL'] *0.001
+    E_HCL = Building_Simulation_df[EHCL] *0.001
     
     # new empty array for Heating data:
     H_monthly_array = np.empty(len(H))*np.nan

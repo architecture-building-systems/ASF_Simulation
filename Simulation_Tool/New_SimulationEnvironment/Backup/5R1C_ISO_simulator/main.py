@@ -54,11 +54,13 @@ print Office.lighting_demand
 
 print Office.phi_hc_nd_ac
 
-Office.theta_int_h_set = 20.0
+print Office.h_tr_em 
+print Office.h_tr_w 
+		
+print 'hve:', Office.h_ve_adj
+print Office.h_tr_ms 
+print Office.h_tr_is 
 
-Office.solve_building_energy(phi_int, phi_sol, theta_e, theta_m_prev)
-
-print Office.theta_m
 
 #print Office.has_heating_demand
 

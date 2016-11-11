@@ -73,6 +73,7 @@ INPUT PARAMETER DEFINITION
 import os, sys
 import numpy as np
 import pandas as pd
+from buildingSystem import *  
 
 
 
@@ -81,10 +82,10 @@ import pandas as pd
 
 #Set simulation data
 SimulationData= {
-'optimizationTypes' : ['E_total'],# 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
+'optimizationTypes' : ['E_total', 'E_total_elec'], #'Heating','Cooling', 'E_HCL', 'Heating_elec','Cooling_elec', 'E_HCL_elec', 'SolarEnergy', 'Lighting'],
 'DataName' : 'ZH05_49comb',#'ZH13_49comb', #'ZH05_49comb', #,
 'geoLocation' : 'Zuerich_Kloten_2005', #'Zuerich_Kloten_2013', #'Zuerich_Kloten_2005',
-'Save' : False}
+'Save' : True}
 
 #Set panel data
 PanelData={
@@ -122,7 +123,13 @@ BuildingProperties={
 "theta_int_h_set" : 20,
 "theta_int_c_set" : 26,
 "phi_c_max_A_f": -np.inf,
-"phi_h_max_A_f":np.inf}
+"phi_h_max_A_f":np.inf,
+"heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
+"coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
+"heatingEfficiency" : 1,
+"coolingEfficiency" :1,
+}
+
 
 #Set simulation Properties
 SimulationOptions= {
@@ -138,9 +145,9 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
     sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
     sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'python'))
     
-    from simulationFunctions import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables  
-    from simulationFunctions import PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, createAllPlots, SaveResults 
-     
+    from simulationFunctions import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables, \
+    PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, createAllPlots, SaveResults 
+    
      
     FolderName = initializeSimulation(SimulationData = SimulationData)
                                             
@@ -234,7 +241,7 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             x_angles = x_angles,
                             y_angles = y_angles)
                             
-    return ResultsBuildingSimulation, monthlyData, yearlyData, weatherData
+    return ResultsBuildingSimulation, monthlyData, yearlyData, x_angles
 
 #call fuction
-ResultsBuildingSimulation, monthlyData, yearlyData, weatherData = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
