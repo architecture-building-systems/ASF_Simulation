@@ -177,8 +177,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - setBackTemp
              Office.theta_int_c_set = BuildingProperties['theta_int_c_set'] + setBackTemp
         else:
-             Office.theta_int_h_set = 20
-             Office.theta_int_c_set = 26                   
+             Office.theta_int_h_set = BuildingProperties['theta_int_h_set']
+             Office.theta_int_c_set = BuildingProperties['theta_int_c_set']                   
         
         
        
