@@ -68,50 +68,43 @@ def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
             y_angle_array = np.append(y_angle_array, comb_array[jj][1])
     
     #create DataFrame with the evaluated keys        
-    Best_Key_df = pd.DataFrame(BestKey_HOD)
+    BestKey_df = pd.DataFrame(key_med)
             
-    return Best_Key_df, x_angle_array, y_angle_array
+    return BestKey_df, x_angle_array, y_angle_array
     
-def prepareResults (Building_Simulation_df, ETOT, H, C, EHCL):
+    
+    
+def prepareResults (Building_Simulation_df):
     
     from prepareData_mauro import sum_monthly
     
+    
     #convert into kWh
-    H =Building_Simulation_df[H] *0.001
-    C =Building_Simulation_df[C] *0.001
-    L =Building_Simulation_df['L'] *0.001
-    E =Building_Simulation_df[ETOT] *0.001 
-    PV =Building_Simulation_df['PV'] *0.001
-    E_HCL = Building_Simulation_df[EHCL] *0.001
+    H_monthly_array = np.array(Building_Simulation_df['H'] *0.001)
+    C_monthly_array = np.array(Building_Simulation_df['C'] *0.001)
+    L_monthly_array = np.array(Building_Simulation_df['L'] *0.001)
+    E_monthly_array = np.array(Building_Simulation_df['E_tot'] *0.001) 
+    PV_monthly_array =np.array(Building_Simulation_df['PV'] *0.001)
+    E_HCL_monthly_array = np.array(Building_Simulation_df['E_HCL'] *0.001)
     
-    # new empty array for Heating data:
-    H_monthly_array = np.empty(len(H))*np.nan
-    C_monthly_array = np.empty(len(C))*np.nan
-    L_monthly_array = np.empty(len(L))*np.nan
-    E_monthly_array = np.empty(len(E))*np.nan
-    E_HCL_monthly_array = np.empty(len(E_HCL))*np.nan
-    PV_monthly_array = np.empty(len(PV))*np.nan
+    H_elec_monthly_array = np.array(Building_Simulation_df['H_elec'] *0.001)
+    C_elec_monthly_array = np.array(Building_Simulation_df['C_elec'] *0.001)
+    E_elec_monthly_array = np.array(Building_Simulation_df['E_tot_elec'] *0.001)
+    E_HCL_elec_monthly_array = np.array(Building_Simulation_df['E_HCL_elec'] *0.001)
     
-    #
-    ## multiply the average pv generation by the number of days per month in kWh:
-    for i in range(len(H)):
-        H_monthly_array[i] = H[i]
-        C_monthly_array[i] = C[i]
-        L_monthly_array[i] = L[i]
-        E_monthly_array[i] = E[i]
-        E_HCL_monthly_array[i] = E_HCL[i]
-        PV_monthly_array[i] = PV[i]
-    
-      
-    
+        
     # summed data for each hour of a month in kWh:
-    sum_L = sum_monthly(L_monthly_array)
-    sum_E = sum_monthly(E_monthly_array)
-    sum_E_HCL = sum_monthly(E_HCL_monthly_array)
-    sum_C = sum_monthly(C_monthly_array)
-    sum_H = sum_monthly(H_monthly_array)
-    sum_PV = -1* sum_monthly(PV_monthly_array)
+    sum_L = sum_monthly(X = L_monthly_array)
+    sum_E = sum_monthly(X = E_monthly_array)
+    sum_E_HCL = sum_monthly(X = E_HCL_monthly_array)
+    sum_C = sum_monthly(X = C_monthly_array)
+    sum_H = sum_monthly(X = H_monthly_array)
+    sum_PV = -1* sum_monthly(X = PV_monthly_array)
     
+    sum_E_HCL_elec = sum_monthly(X = E_HCL_elec_monthly_array)
+    sum_C_elec = sum_monthly(X = C_elec_monthly_array)
+    sum_H_elec = sum_monthly(X = H_elec_monthly_array)
+    sum_E_elec = sum_monthly(X = E_elec_monthly_array)
     
     #Calculate the summed monthly values and store it in dicitionary (24 hour per every month)
     monthlyData = {}
@@ -125,14 +118,25 @@ def prepareResults (Building_Simulation_df, ETOT, H, C, EHCL):
     monthlyData['E'] = sum_E
     monthlyData['E_HCL'] = sum_E_HCL
     monthlyData['PV'] = sum_PV
+
+    monthlyData['H_elec'] = sum_H_elec
+    monthlyData['C_elec'] = sum_C_elec
+    monthlyData['E_elec'] = sum_E_elec
+    monthlyData['E_HCL_elec'] = sum_E_HCL_elec
     
     #in kWh/year
-    yearlyData['E'] = E.sum()
-    yearlyData['E_HCL'] = E_HCL.sum()
-    yearlyData['PV'] = PV.sum() 
-    yearlyData['H'] = H.sum() 
-    yearlyData['C'] = C.sum()
-    yearlyData['L'] = L.sum()    
+    yearlyData['E'] = sum_E.sum()
+    yearlyData['E_HCL'] = sum_E_HCL.sum()
+    yearlyData['PV'] = sum_PV.sum() 
+    yearlyData['H'] = sum_H.sum() 
+    yearlyData['C'] = sum_C.sum()
+    yearlyData['L'] = sum_L.sum()
+    
+    yearlyData['E_elec'] = sum_E_elec.sum()
+    yearlyData['E_HCL_elec'] = sum_E_HCL_elec.sum()
+    yearlyData['C_elec'] = sum_C_elec.sum() 
+    yearlyData['H_elec'] = sum_H_elec.sum() 
+    
 
     return  monthlyData, yearlyData
     

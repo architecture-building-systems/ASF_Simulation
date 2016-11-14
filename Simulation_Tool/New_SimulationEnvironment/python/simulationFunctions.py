@@ -16,19 +16,19 @@ import pandas as pd
 
 def initializeSimulation(SimulationData):
            
-    #check if E_total is selcted
-    count = 0
-    for ii in SimulationData['optimizationTypes']:  
-        if ii == 'E_total':
-            pass
-        elif ii != 'E_total':
-            count +=1
-    if count == len(SimulationData['optimizationTypes']):       
-        print '\nE_total is needed as default!'
-        print 'Change the optimizationTypes.\n'
-        sys.exit()
-    else:
-        pass
+#    #check if E_total is selcted
+#    count = 0
+#    for ii in SimulationData['optimizationTypes']:  
+#        if ii == 'E_total':
+#            pass
+#        elif ii != 'E_total':
+#            count +=1
+#    if count == len(SimulationData['optimizationTypes']):       
+#        print '\nE_total is needed as default!'
+#        print 'Change the optimizationTypes.\n'
+#        sys.exit()
+#    else:
+#        pass
     
     
     #Set panel data
@@ -177,8 +177,8 @@ def CalculateVariables(SunTrackingData, building_data, XANGLES, YANGLES):
     ANGLES= [(x, y) for x in XANGLES for y in YANGLES]
     
     #append to more ANGLES combination option for the angle carpetplot
-    ANGLES.append((np.nan,np.nan)) # no sun
-    ANGLES.append((-100.,-100.)) # no movement
+    ANGLES.append((0.1111,0.1111)) # no sun
+   
     
     #create a dicitionary with all angle combinations
     combinationAngles = {}
@@ -333,8 +333,12 @@ def PrepareRadiationData(hour_in_month, daysPerMonth, BuildingRadiationData_HOD,
     
 def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES):
     
+    # add python_path to system path, so that all files are available:
+    sys.path.insert(0, paths['5R1C_ISO_simulator'])     
+    
     from energy_minimization import RC_Model
     from prepareDataMain import prepareAngles, prepareResults
+    from read_occupancy import read_occupancy
     
     #create dicitionaries to save the results
     hourlyData = {}
@@ -346,6 +350,14 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     y_angles = {} #optimized y-angles
     BestKey_df = {} #optimized keys of the ANGLES dictionary
     
+    
+    #set parameters
+    human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
+    roomFloorArea = building_data['room_width']/1000.0 * building_data['room_depth']/1000.0 #[m^2] floor area
+     
+            
+    #people/m2/h, W    
+    occupancy, Q_human = read_occupancy(myfilename = paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)    
     
             
     #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
@@ -362,7 +374,9 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                                                                       NumberCombinations = NumberCombinations, 
                                                                       combinationAngles = combinationAngles,
                                                                       BuildingProperties = BuildingProperties,
-                                                                      setBackTemp = setBackTemp
+                                                                      setBackTemp = setBackTemp, 
+                                                                      occupancy = occupancy,
+                                                                      Q_human = Q_human
                                                                       )
         
         #prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  
@@ -370,62 +384,70 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                                                                             Building_Simulation_df = ResultsBuildingSimulation[optimizationType], 
                                                                             daysPerMonth = daysPerMonth,
                                                                             ANGLES = ANGLES)   
+       
         
-    """ this has to be adjusted """
-    # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
-    monthlyData['E_total'], yearlyData['E_total'] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation['E_total'],
-                                                                        ETOT = 'E_tot', H = 'H', C = 'C', EHCL = 'E_HCL')
-    monthlyData['E_total_elec'], yearlyData['E_total_elec'] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation['E_total_elec'],
-                                                                        ETOT = 'E_tot_elec', H = 'H_elec', C = 'C_elec', EHCL = 'E_HCL_elec')
+    
+    
+        # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
+        monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType])
+                                                                      
+    
         
     return hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, BestKey_df, x_angles, y_angles
     
     
-    
+ 
+   
 
 def createAllPlots(monthlyData, roomFloorArea, x_angles, y_angles, hour_in_month, optimization_Types):
     
-    from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles, createCarpetPlotXAnglesELEC, createCarpetPlotYAnglesELEC
+    from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
     
-    #create the carpet plots detailing the net energy consumption, set only monthlyData['E_total']
-    print '\nFigure: total energy demand'    
+    fig = {}    
     
-    fig0 = createCarpetPlot (monthlyData = monthlyData['E_total'], roomFloorArea = roomFloorArea)
-    
-    fig = {'fig0': fig0}
+    if ('E_total') in optimization_Types:    
+        #create the carpet plots detailing the net energy consumption, set only monthlyData['E_total']
+        print '\nFigure: total energy demand'    
+        
+        fig0 = createCarpetPlot (monthlyData = monthlyData['E_total'], roomFloorArea = roomFloorArea,  H = 'H', C = 'C', E = 'E', E_HCL = 'E_HCL')
+        
+        fig.update({'fig0': fig0})
     
     if ('E_total_elec') in optimization_Types:
         
         print 'Figure: total electrical energy demand'
         
-        figA = createCarpetPlot (monthlyData = monthlyData['E_total_elec'], roomFloorArea = roomFloorArea)
+        figA = createCarpetPlot (monthlyData = monthlyData['E_total_elec'], roomFloorArea = roomFloorArea,  H = 'H_elec', C = 'C_elec', E = 'E_elec', E_HCL = 'E_HCL_elec')
         fig.update({'figA' : figA})
     
     
-    if ('E_total' and 'Heating' and 'Cooling' and 'SolarEnergy' and 'E_HCL' and 'Lighting') in optimization_Types:    
-        #create the angles carpet plots for the opimised simulation option, this option needs all simulation types
-        fig1 = createCarpetPlotXAngles(x_angles, hour_in_month)
-        fig2 = createCarpetPlotYAngles(y_angles, hour_in_month)
-        
-        fig.update({'fig1' : fig1, 'fig2' : fig2})
+    if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in optimization_Types: 
+        if ('SolarEnergy' and 'Lighting') in optimization_Types:
+            #create the angles carpet plots for the opimised simulation option, this option needs all simulation types
+            fig1 = createCarpetPlotXAngles(x_angles, hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
+            fig2 = createCarpetPlotYAngles(y_angles, hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
+            
+            fig.update({'fig1' : fig1, 'fig2' : fig2})
     
-    if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec' and 'SolarEnergy' and 'E_HCL_elec' and 'Lighting') in optimization_Types:  
+    if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in optimization_Types:
+        if ('SolarEnergy' and 'Lighting') in optimization_Types:
         
-        #create the angles carpet plots for the opimised simulation option, this option needs all simulation types
-        figB = createCarpetPlotXAnglesELEC(x_angles, hour_in_month)
-        figC = createCarpetPlotYAnglesELEC(y_angles, hour_in_month)
-        
-        fig.update({'figB' : figB, 'figC' : figC})
+            #create the angles carpet plots for the opimised simulation option, this option needs all simulation types
+            figB = createCarpetPlotXAngles(x_angles, hour_in_month, H = 'Heating_elec', C = 'Cooling_elec', E = 'E_total_elec', E_HCL = 'E_HCL_elec')
+            figC = createCarpetPlotYAngles(y_angles, hour_in_month, H = 'Heating_elec', C = 'Cooling_elec', E = 'E_total_elec', E_HCL = 'E_HCL_elec')
+            
+            fig.update({'figB' : figB, 'figC' : figC})
     
     return fig
 
 
 
 
-def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles):
+def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, BestKey_df):
     
     monthlyData = pd.DataFrame(monthlyData)
-    yearlyData = pd.DataFrame(yearlyData)    
+    yearlyData = pd.DataFrame(yearlyData)
+    #BestKeyDF = pd.DataFrame(BestKey_df)    
     
     if Save == True: 
         
@@ -448,16 +470,19 @@ def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthly
             fig['figA'].savefig(os.path.join(paths['pdf'], 'figureA' + '.pdf'))        
         
         
-        if ('E_total' and 'Heating' and 'Cooling' and 'SolarEnergy' and 'E_HCL' and 'Lighting') in optimization_Types:                           
-            #save figures
-            fig['fig1'].savefig(os.path.join(paths['pdf'], 'figure1' + '.pdf'))
-            fig['fig2'].savefig(os.path.join(paths['pdf'], 'figure2' + '.pdf'))
+        if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in optimization_Types: 
+            if ('SolarEnergy' and 'Lighting') in optimization_Types:                          
+                #save figures
+                fig['fig1'].savefig(os.path.join(paths['pdf'], 'figure1' + '.pdf'))
+                fig['fig2'].savefig(os.path.join(paths['pdf'], 'figure2' + '.pdf'))
             
             
-        if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec' and 'SolarEnergy' and 'E_HCL_elec' and 'Lighting') in optimization_Types:            
-            #save figures
-            fig['figB'].savefig(os.path.join(paths['pdf'], 'figureB' + '.pdf'))
-            fig['figC'].savefig(os.path.join(paths['pdf'], 'figureC' + '.pdf'))
+        if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in optimization_Types:
+            if ('SolarEnergy' and 'Lighting') in optimization_Types:           
+                #save figures
+                fig['figB'].savefig(os.path.join(paths['pdf'], 'figureB' + '.pdf'))
+                fig['figC'].savefig(os.path.join(paths['pdf'], 'figureC' + '.pdf'))
+                
 
         for ii in optimization_Types:
             # save results 
@@ -467,6 +492,7 @@ def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthly
         y_angles_df = pd.DataFrame(y_angles)           
         
         #hourlyData['E_total'].to_csv(os.path.join(paths['result'], 'hourlyData.csv'))
+        #BestKeyDF.to_csv(os.path.join(paths['result'], 'BestKeys.csv'))
         monthlyData.to_csv(os.path.join(paths['result'], 'monthlyData.csv'))
         yearlyData.to_csv(os.path.join(paths['result'], 'yearlyData.csv'))
         x_angles_df.to_csv(os.path.join(paths['result'], 'X-Angles.csv'))
@@ -485,6 +511,6 @@ def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthly
     
     print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
-    return ResultsBuildingSimulation['E_total'], monthlyData, yearlyData
+    return ResultsBuildingSimulation, monthlyData, yearlyData
 
         

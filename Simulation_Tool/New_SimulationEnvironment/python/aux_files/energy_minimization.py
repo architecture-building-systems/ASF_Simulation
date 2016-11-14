@@ -11,13 +11,13 @@ import time
 import pandas as pd
 
 
-def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp):
+def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, occupancy, Q_human):
 
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])    
     
     from buildingPhysics import Building #Importing Building Class
-    from read_occupancy import read_occupancy, Equate_Ill, BuildingData
+    from read_occupancy import Equate_Ill, BuildingData
     from optimzeTemperatureFunction import optimzeTemp, checkEqual
     
        
@@ -27,20 +27,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     Tmax = BuildingProperties['theta_int_c_set'] 
     Tmin = BuildingProperties['theta_int_h_set']
     
-        
-    
-    
-    
-    #set parameters
-    human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
+    #calcualte floor area and room volume
     roomFloorArea = building_data['room_width']/1000.0 * building_data['room_depth']/1000.0 #[m^2] floor area
     roomVolume = building_data['room_width']/1000.0 * building_data['room_depth']/1000.0 * building_data['room_height']/1000.0 #[m^3] room area
-    
-    
-    
-        
-    #people/m2/h, W    
-    occupancy, Q_human = read_occupancy(myfilename = paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)
     
     #Equation coefficients for linear polynomial
     Ill_Eq = Equate_Ill(weatherData = weatherData)
@@ -191,7 +180,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             #print "Rad", BuildingRadiationData_HOY[hour_of_year][comb]
                     
             Q_internal = (Q_human[hour_of_year] + Q_equipment)
-                    
+            
+            #print "HOY" + str(hour_of_year) + "comb" + str(comb) + "Bui" + str(BuildingRadiationData_HOY[hour_of_year][comb])
+            
             Office.solve_building_energy(phi_int = Q_internal, #internal heat gains, humans and equipment [W]
                                          phi_sol = BuildingRadiationData_HOY[hour_of_year][comb], #W
                                          theta_e = T_out[hour_of_year], 
@@ -266,6 +257,14 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
+                
+                equal = checkEqual(Data = E_tot[hour_of_year])
+                
+                if equal == True:
+                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year],Tmax = Tmax, Tmin = Tmin)
+                else:
+                    pass
+                
                 BestCombKey = BestComb       
                
             elif hourlyData[hour_of_year]['PV'][0] == 0:
@@ -287,7 +286,13 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             if hourlyData[hour_of_year]['PV'][0] != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(E_tot_elec[hour_of_year], key=lambda comb: E_tot_elec[hour_of_year][comb])
-                BestCombKey = BestComb       
+                
+                equal = checkEqual(Data = E_tot[hour_of_year])
+                
+                if equal == True:
+                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year],Tmax = Tmax, Tmin = Tmin)
+                
+                BestCombKey = BestComb      
                
             elif hourlyData[hour_of_year]['PV'][0] == 0:
                 #Check if there is no PV-value (no radiation)
@@ -463,7 +468,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                 equal = checkEqual(Data = E_HCL[hour_of_year])
                 
                 if equal == True:
-                    BestComb =optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year],Tmax = Tmax, Tmin = Tmin)
+                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year],Tmax = Tmax, Tmin = Tmin)
                 
                 BestCombKey = BestComb 
             
@@ -479,6 +484,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                 elif equal == True: #PV = 0, Temp are equal
                     BestComb = 0 #chose random Temp
                     BestCombKey = NumberCombinations # make colormap grey
+                                 
+      
         
         elif optimization_type == 'E_HCL_elec':
                             
@@ -540,7 +547,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         if hour_of_year % 1000 == 0 and hour_of_year != 0:
             print 'HOY:', hour_of_year
             toc = time.time() - tic
-            print 'time passed (min): ' + str(toc/60.)
+            print 'time passed (sec): ' + str(round(toc,2))
             
     
     #store results of the best angle combinations in DataFrame   
@@ -551,6 +558,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     print "uncomfortable Hours: ", uncomf_hours
     
     
-    return  hourlyData_df,Building_Simulation_df
+    return  hourlyData_df, Building_Simulation_df
     
     

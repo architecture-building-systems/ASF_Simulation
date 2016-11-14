@@ -201,15 +201,15 @@ def MainCalculateASF(SimulationPeriode, SimulationData, PanelData, BuildingData,
      
 
     #rearrange the Radiation Data on PV and Window into HOY form
-    PV, BuildingRadiationHOY = PrepareRadiationData(
+    PVData, BuildingRadiationHOY = PrepareRadiationData(
                             HourlyRadiation = HourlyRadiation, 
                             PV_electricity_results = PV_electricity_results, 
                             NumberCombinations = NumberCombinations,
                             SimulationPeriode = SimulationPeriode,
                             start = start, end = end)
-    print PV
+    print PVData
                             
-    return PV_electricity_results, PV
+    return PV_electricity_results, PVData
     
 """                 
     hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, \
@@ -221,7 +221,7 @@ def MainCalculateASF(SimulationPeriode, SimulationData, PanelData, BuildingData,
                             weatherData = weatherData, 
                             hourRadiation = hourRadiation, 
                             BuildingRadiationData_HOY = BuildingRadiationData_HOY, 
-                            PV = PV, 
+                            PV = PVData, 
                             NumberCombinations = NumberCombinations, 
                             combinationAngles = combinationAngles, 
                             BuildingProperties = BuildingProperties, 

@@ -210,11 +210,12 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
                                             DataNameWin = FolderName['DataNameWin'])
     
     
-#    PV_electricity_results = {}
-#    PV_detailed_results = {}
+#    
     
     #if there are no panels vertical and horizontal
     if panel_data['numberHorizontal'] == 0 and panel_data['numberVertical'] == 0:
+        PV_electricity_results = {}
+        
         PV_electricity_results['Pmpp_sum'] = np.array(NumberCombinations * len(hour_in_month) * [0])
         print "PV_electricity_results is zero"
         
