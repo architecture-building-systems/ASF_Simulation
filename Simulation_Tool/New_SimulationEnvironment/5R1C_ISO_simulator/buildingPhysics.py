@@ -467,6 +467,7 @@ class Building(object):
 		return
 
 	####################################################Lighting Calculations###################################################
+ 
 	def solve_building_lighting(self, ill, occupancy):
 
 		#Cite: Environmental Science Handbook, SV Szokolay, Section 2.2.1.3

@@ -30,11 +30,6 @@ def epw_reader(weather_path):
     result['index'] = result.index
     return result
 
-def occupancy(occupancy_path):
-    df = pd.read_csv(occupancy_path, header=0,keep_default_na=False)[:8760]
-    occupancy = pd.DataFrame({'occupancy':df['People']})  
-    return occupancy
-
 def radiation(radiation_path):
     df = pd.read_csv(radiation_path,header=None)
     df = df.T
@@ -81,18 +76,7 @@ def resample(dataframe,dt):
     dataframe = dataframe.reset_index(drop=False)     
     return dataframe
 
-#================TESTING====================
-"""
-occ = occupancy(occupancy_path)
-occ = occ.astype('float64', raise_on_error = False) #Convert occupancy values to float
-Qrad = radiation(radiation_path)
-
-data = epw_data(['drybulb_C','dewpoint_C'])
-data['occupancy'] = occ
-data['Qrad'] = Qrad
-data = date_range('01/01','01/02',data)
-data = data.set_index(['date']) 
-
-print data
-data.plot()
-"""
+def occupancy(occupancy_path):
+    df = pd.read_csv(occupancy_path, header=0,keep_default_na=False)[:8760]
+    occupancy = pd.DataFrame({'occupancy':df['People']})  
+    return occupancy
