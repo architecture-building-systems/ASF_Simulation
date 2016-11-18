@@ -1,0 +1,1 @@
+To use this file you need to access the data folder from the server MasterArbeiten/Server

@@ -79,24 +79,25 @@ from buildingSystem import *
 # 'ZH13_49comb'
 # 'Zuerich_Kloten_2013.epw'
 
-for ii in range(3):
+for ii in [0,1,2]: #[2]
+
     
     print "start"
     
     Data = {'Name' : ['ZH13_49comb_cloudy_4_7', 'ZH13_49comb_Notcloudy_6_7', 'ZH13_49comb_Halfcloudy_10_7'],
             'day' : [4,6,10]}
-
-
+    
+    
     
     #DefaultValues
     ###############################################################################
-    SimulationPeriode = {
+    SimulationPeriod = {
     'FromMonth': 7,
     'ToMonth':7,
     'FromDay': Data['day'][ii],
     'ToDay': Data['day'][ii],
-    'FromHour': 1,
-    'ToHour': 24}
+    'FromHour': 5,
+    'ToHour': 19}
     
     
     
@@ -105,7 +106,7 @@ for ii in range(3):
     'optimizationTypes' : ['E_total'],# 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
     'DataName' : Data['Name'][ii],
     'geoLocation' : 'Zuerich_Kloten_2013',
-    'Save' : True}
+    'Save' : False}
     
     #Set panel data
     PanelData={
@@ -151,13 +152,13 @@ for ii in range(3):
     
     #Set simulation Properties
     SimulationOptions= {
-    'setBackTemp' : 4.,
+    'setBackTemp' : 0.,
     'Occupancy' : 'Occupancy_COM.csv',
     'ActuationEnergy' : False}
     
     ###############################################################################
     
-    def MainCalculateASF(SimulationPeriode, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions):
+    def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions):
         
         # add python_path to system path, so that all files are available:
         sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
@@ -166,9 +167,10 @@ for ii in range(3):
         from simulationFunctions_hourly import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables  
         from simulationFunctions_hourly import PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, SaveResults 
         from calculateHOY import calcHOY
-         
-        start =calcHOY(month = 7, day = Data['day'][ii], hour = 1)
-        end = calcHOY(month = 7, day = Data['day'][ii], hour = 24)
+        
+      
+        start =calcHOY(month = SimulationPeriod['FromMonth'], day = SimulationPeriod['FromDay'], hour = SimulationPeriod['FromHour'])
+        end = calcHOY(month = SimulationPeriod['ToMonth'], day = SimulationPeriod['ToDay'], hour = SimulationPeriod['ToHour'])
         
         print "\nThe simulation starts at the hour of the year: " + str(start) + " and ends at: " + str(end) + "\n"
         
@@ -202,7 +204,7 @@ for ii in range(3):
                                 YANGLES = PanelData['YANGLES'])
         
         PV_electricity_results, PV_detailed_results, HourlyRadiation, now = runRadiationCalculation(
-                                SimulationPeriode = SimulationPeriode,
+                                SimulationPeriode = SimulationPeriod,
                                 paths = paths, 
                                 XANGLES = PanelData['XANGLES'], 
                                 YANGLES = PanelData['YANGLES'], 
@@ -212,16 +214,17 @@ for ii in range(3):
                                 NumberCombinations = NumberCombinations, 
                                 createPlots = False, 
                                 start = start, end = end)
-    
+                        
     
         #rearrange the Radiation Data on PV and Window into HOY form
         PV_Data, BuildingRadiationHOY = PrepareRadiationData(
                                 HourlyRadiation = HourlyRadiation, 
                                 PV_electricity_results = PV_electricity_results, 
                                 NumberCombinations = NumberCombinations,
-                                SimulationPeriode = SimulationPeriode,
+                                SimulationPeriode = SimulationPeriod,
                                 start = start, end = end)
-     
+                                
+        #return PV_Data, BuildingRadiationHOY, PV_electricity_results
                    
         hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles = runBuildingSimulation(
                                 geoLocation = SimulationData['geoLocation'], 
@@ -241,10 +244,10 @@ for ii in range(3):
                                 start = start,
                                 end = end)
         
-        print "calucation is finished"
+        #print "calucation is finished"
                                    
             
-        ResultsBuildingSimulation, angles_df = SaveResults(
+        ResultsBuildingSimulation, angles_df, anglesHOY = SaveResults(
                                 now = now, 
                                 Save = SimulationData['Save'], 
                                 geoLocation = SimulationData['geoLocation'], 
@@ -255,7 +258,12 @@ for ii in range(3):
                                 x_angles = x_angles,
                                 y_angles = y_angles,
                                 SimulationData = SimulationData)
-                                
-        return hourlyData, ResultsBuildingSimulation, BestKey, angles_df
+        print "calucation is finished"
+                        
+        return ResultsBuildingSimulation, angles_df, anglesHOY                       
     
-    hourlyData, ResultsBuildingSimulation, BestKey, angles_df = MainCalculateASF(SimulationPeriode, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+
+    ResultsBuildingSimulation, angles_df, anglesHOY = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+    
+    
+    

@@ -82,8 +82,8 @@ paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulat
 
 #set parmeters for evaluation
 HOD = 12.0
-Day = 15.0
-monthi = 1.0
+Day = 6.0
+monthi = 7.0
 y_angle = 0
 
 
@@ -126,33 +126,53 @@ for x_angle in [0,90]:
         f.write(json.dumps(comb_data))
     
                              
+    ab = [0,1,2,3]
+    aa = [0.5, 0.25, 0]
+    ad = [0,1024, 2048]
+    ar = [8,64,128]
+    aS = [0,256,512]
     
-    
-    gridSize = [400.0, 200.0, 100.0, 50., 25., 12.5] #mm2
+    gridSize = [400.0]#, 200.0, 100.0, 50., 25.] #mm2
    
-                       
+#    
+                   
     for size in gridSize:
+        for abi in ab:
+            for aai in aa:
+                for adi in ad:
+                    for ari in ar:
+                        for aSi in aS:
         
-        print 'size', size
-        toc = time.time() - tic
-        print 'time passed (min): ' + str(toc/60.)
-            
-        with open('illuminance.json','w') as f:
-            f.write(json.dumps(size)) 
-                    
-        #Wait until the radiation_results were created    
-        while not os.path.exists(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv'):
-            time.sleep(3)
-               
-        else:
-            print 'next step'
-            resultsdetected += 1
+                            print 'size', size
+                            toc = time.time() - tic
+                            print 'time passed (min): ' + str(toc/60.)
+                            
+                            illuminance = {
+                            'Size': size,
+                            'ab': abi,
+                            'aa':aai,
+                            'ar':ari,
+                            'ad':adi,
+                            'as':aSi        
+                            }
+                                
+                            with open('illuminance.json','w') as f:
+                                f.write(json.dumps(illuminance)) 
+                                        
+                            #Wait until the radiation_results were created
+                            while not os.path.exists(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_para_'+  str(abi) +'_' +str(aai)+ '_' +str(ari)+ '_' +str(adi) + '_' +str(aSi)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv'):            
+                            #while not os.path.exists(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv'):
+                                time.sleep(3)
+                                   
+                            else:
+                                print 'next step'
+                                resultsdetected += 1
                                     
     
          
 print '\nGrid Size Analysis finished!\n'        
 
-
+"""
 
 illuminance_avg = {}
 illuminance_data = {}
@@ -242,7 +262,7 @@ print "Program Finished"
 
 
 
-
+"""
 
 
 
