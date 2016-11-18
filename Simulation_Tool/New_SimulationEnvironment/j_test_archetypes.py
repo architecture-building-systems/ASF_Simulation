@@ -1,4 +1,3 @@
-%matplotlib inline
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
@@ -10,6 +9,7 @@ import csv
 import os, sys
 from buildingSystem import *  
 from mainSimulation import MainCalculateASF
+from j_build_schedules import build_schedules
 import j_epw_import_tools as epw_tools
 
 
@@ -48,57 +48,20 @@ BuildingData={
 "glazing_percentage_h": 0.97}
 
 ################################################################################################################
-#to replace:
-#Set DEFAULTsimulation Properties
-
-BuildingProperties={
-"glass_solar_transmitance" : 0.687 , 
-"glass_light_transmitance" : 0.744 ,
-#"lighting_load" : 11.74 , 
-"lighting_control" : 300,
-"Lighting_Utilisation_Factor" :  0.45,
-"Lighting_MaintenanceFactor" : 0.9,
-#"U_em" : 0.2, 
-#"U_w" : 1.2,
-#"ACH_vent" : 1.5,
-"ACH_infl" :0.5,
-"ventilation_efficiency" : 0.6 ,
-#"c_m_A_f" : 165 * 10**3,
-#"theta_int_h_set" : 20,
-#"theta_int_c_set" : 26,
-"phi_c_max_A_f": -np.inf,
-"phi_h_max_A_f":np.inf,
-"heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
-"coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
-"heatingEfficiency" : 1,
-"coolingEfficiency" :1,
-}
-#Arbitrary estimates based on ranges in https://www.archtoolbox.com/materials-systems/electrical/recommended-lighting-levels-in-buildings.html
 lighting_ontrol_d ={
-"MULTI_RES":250
-"SINGLE_RES":200
-"HOTEL":300
-"OFFICE":350
-"RETAIL":400
-"FOODSTORE":400
-"RESTAURANT":250
-"INDUSTRIAL":300
-"SCHOOL":350
-"HOSPITAL":400
+"MULTI_RES":250,
+"SINGLE_RES":200,
+"HOTEL":300,
+"OFFICE":350,
+"RETAIL":400,
+"FOODSTORE":400,
+"RESTAURANT":250,
+"INDUSTRIAL":300,
+"SCHOOL":350,
+"HOSPITAL":400,
 "GYM":300
+    
 }
-
-SimulationOptions= {
-'setBackTemp' : 4.,
-'Occupancy' : 'Occupancy_COM.csv',
-'ActuationEnergy' : False}
-
-
-
-
-#ArchT_df = ArchT_build_df(BuildingData)
-#ArchT_dict = At_Dict_Building_properties(ArchT_df)
-#ArchT_typologies = ArchT_df.code1.unique()
 
 def ArchT_build_df(BuildingData):
     arch = pd.read_excel(archetypes_properties_path,sheetname='THERMAL')
@@ -121,23 +84,20 @@ def ArchT_build_df(BuildingData):
 
     T_sp = pd.read_excel(archetypes_properties_path,sheetname='INDOOR_COMFORT')
 
-    b_data = arch.merge(int_loads,how='left', left_on='code1', right_on='Code')
-    b_data = b_data.merge(T_sp,how='left', left_on='code1', right_on='Code')
-    b_data = b_data.drop('Code_y',axis=1)
-    b_data = b_data.drop('Code',axis=1)
-    b_data['Tcs_setb'] = b_data['Tcs_setb_C']-b_data['Tcs_set_C']
-    b_data['Ths_setb'] = b_data['Ths_set_C']-b_data['Ths_setb_C']
-    b_data['lighting_control']
-    b_data['Ths_setb']
-    b_data['Ths_setb']
+    b_props = arch.merge(int_loads,how='left', left_on='code1', right_on='Code')
+    b_props = b_props.merge(T_sp,how='left', left_on='code1', right_on='Code')
+    b_props = b_props.drop('Code_y',axis=1)
+    b_props = b_props.drop('Code',axis=1)
+    b_props['CoolingSetBackTemp'] = b_props['Tcs_setb_C']-b_props['Tcs_set_C']
+    b_props['HeatingSetBackTemp'] = b_props['Ths_set_C']-b_props['Ths_setb_C']
     
     volume = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)*(BuildingData['room_height']/1000)
     area = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)
-    people = 
-    b_data['ACH'] = b_data['Ve_lps']*3.6/volume*(occupancy*area)
+    
+    b_props['ACH'] = b_props['Ve_lps']*3.6/volume
     
     #Assign values for Cm from ISO13790:2008, Table 12, based on archetypes
-    th_mass = b_data['th_mass']
+    th_mass = b_props['th_mass']
     c_m = []
     for i in range(0,len(th_mass)):
         if th_mass[i] == "T1":
@@ -146,24 +106,92 @@ def ArchT_build_df(BuildingData):
             c_m.append(165 * 10**3) #Medium
         elif th_mass[i] == "T3":
             c_m.append(260*10**3) #Heavy
-    b_data['c_m_A_f'] = pd.DataFrame(c_m)
-    return b_data
+    b_props['c_m_A_f'] = pd.DataFrame(c_m)
 
+#declare variables
+    occupancy = []
+    lighting_control = []
+#declare constants
+    glass_solar_transmitance = []
+    glass_light_transmitance = []
+    Lighting_Utilisation_Factor = []
+    Lighting_MaintenanceFactor = [] 
+    ACH_infl = [] 
+    ventilation_efficiency = [] 
+    phi_c_max_A_f = [] 
+    phi_h_max_A_f = [] 
+    heatingSystem = []  
+    coolingSystem = [] 
+    heatingEfficiency = []  
+    coolingEfficiency = [] 
+    ActuationEnergy = []    
+
+    for code in b_props['code1']:
+        #variables
+        occupancy.append('schedules_occ_%s.csv'%code)
+        lighting_control.append(lighting_ontrol_d.get(code))
+        
+        glass_solar_transmitance.append(0.687)
+        glass_light_transmitance.append(0.744)
+        Lighting_Utilisation_Factor.append(0.45) 
+        Lighting_MaintenanceFactor.append(0.9) 
+        ACH_infl.append(0.5) 
+        ventilation_efficiency.append(0.6)
+        phi_c_max_A_f.append(-np.inf)  
+        phi_h_max_A_f.append(np.inf) 
+        heatingSystem.append(DirectHeater) #DirectHeater, #ResistiveHeater #HeatPumpHeater
+        coolingSystem.append(DirectCooler) #DirectCooler, #HeatPumpCooler
+        heatingEfficiency.append(1)
+        coolingEfficiency.append(1)
+        ActuationEnergy.append(False)
+        
+    b_props['lighting_control'] = lighting_control
+    b_props['Occupancy'] = occupancy
+    b_props['ActuationEnergy'] = ActuationEnergy  
+    
+    b_props['glass_solar_transmitance'] = glass_solar_transmitance
+    b_props['glass_light_transmitance'] = glass_light_transmitance
+    b_props['Lighting_Utilisation_Factor'] = Lighting_Utilisation_Factor
+    b_props['Lighting_MaintenanceFactor'] = Lighting_MaintenanceFactor
+    b_props['ACH_infl'] = ACH_infl
+    b_props['ventilation_efficiency'] = ventilation_efficiency
+    b_props['phi_c_max_A_f'] = phi_c_max_A_f
+    b_props['phi_h_max_A_f'] = phi_h_max_A_f
+    b_props['heatingSystem'] = heatingSystem
+    b_props['coolingSystem'] = coolingSystem
+    b_props['heatingEfficiency'] = heatingEfficiency
+    b_props['coolingEfficiency'] = coolingEfficiency
+    return b_props
+
+# For a different set of buildings, set path and call build_schedules(b_props,path_data) here. I still haven't figured out how to set the correct path using simulationFunctions.py.
+# If the set remains the same, the existing scehdules will be sufficient.
 
 #Create dictionaries for Archetypes:
-def At_Dict_Building_properties(b_data):
+def MakeDicts(b_props):
  
-    bp_df = b_data[['Code_x',
+    bp_df = b_props[['Code_x',
                           'El_Wm2',
+                          'lighting_control',
                           'U_wall',
                           'U_win',
                           'Ths_set_C',
-                          'Ths_setb',
                           'Tcs_set_C',
                           'ACH',
-                          'c_m_A_f'
+                          'c_m_A_f',
                           'Qs_Wp',    #[W/p]
-                          'Ea_Wm2']]  #[W/m2]
+                          'Ea_Wm2',    #[W/m2]
+                          'glass_solar_transmitance',
+                          'glass_light_transmitance',
+                          'Lighting_Utilisation_Factor',
+                          'Lighting_MaintenanceFactor',
+                          'ACH_infl',
+                          'ventilation_efficiency',
+                          'phi_c_max_A_f',
+                          'phi_h_max_A_f',
+                          'heatingSystem',
+                          'coolingSystem',
+                          'heatingEfficiency',
+                          'coolingEfficiency']]
     
     bp_df = bp_df.rename(index=str,columns={'Code_x':'Code',
                                                         'El_Wm2':'lighting_load',
@@ -172,23 +200,22 @@ def At_Dict_Building_properties(b_data):
                                                         'U_wall':'U_em',
                                                         'Ths_set_C':'theta_int_h_set',
                                                         'Tcs_set_C':'theta_int_c_set'})
-    bp_df = b_data_dict.set_index(['Code'])
-    BP_dict = b_data_dict.to_dict(orient='index')
-    occupancy = get_occ(occ,b_data)
-    SD_dict = b_data[['Tcs_setb','Ths_setb','code1']]
-    return bp_dict, s_data 
+    bp_df = bp_df.set_index(['Code'])
+    BP_dict = bp_df.to_dict(orient='index')
 
-occ = epw_tools.occupancy(occupancy_path)
-def get_occ(occ,AD):
-    occ_code = AD['code1']
-    building_occ = [] #list of occupancy profiles for each case, to be appended to Simulation_Options
-    for i in occ_code:
-        building_occ.append(occ[i])
-    return building_occ
+    sd_df = b_props[['Code_x','CoolingSetBackTemp','HeatingSetBackTemp','Occupancy','ActuationEnergy']]
+    sd_df = sd_df.set_index(['Code_x'])
+    
+    SD_dict = sd_df.to_dict(orient='index')       
+    return BP_dict, SD_dict
+                      
+b_props = ArchT_build_df(BuildingData)
+BP_dict,SD_dict = MakeDicts(b_props)
 
 ######################################
-BP_dict,SD_dict = At_Dict_Building_properties(b_data)
-
+BP_dict,SD_dict = At_Dict_Building_properties(b_props)
+"""
 for BP,SD in itertools.izip(BP_dict,SD_dict):
 	 ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BD, SD)
-
+"""
+print SD_dict
