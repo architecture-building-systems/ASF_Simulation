@@ -210,12 +210,15 @@ def MakeDicts(b_props):
     return BP_dict, SD_dict
                       
 b_props = ArchT_build_df(BuildingData)
+"""
 BP_dict,SD_dict = MakeDicts(b_props)
 
 ######################################
+
 BP_dict,SD_dict = At_Dict_Building_properties(b_props)
-"""
+
 for BP,SD in itertools.izip(BP_dict,SD_dict):
 	 ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BD, SD)
 """
-print SD_dict
+print b_props
+
