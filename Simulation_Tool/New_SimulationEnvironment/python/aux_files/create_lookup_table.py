@@ -11,6 +11,7 @@ import time
 import sys,os
 
 global diode_equation
+
 def diode_equation(y,Iphi,Io,a,CC,x,AA,BB2):
     return y - Iphi + Io * (np.e**(a/CC*(x + y * AA))-1) + (x + y * AA)/BB2
     

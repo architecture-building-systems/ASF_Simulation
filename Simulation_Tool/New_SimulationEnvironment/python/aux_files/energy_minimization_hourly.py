@@ -23,7 +23,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     
        
     #Temperature value, to start the simulation with
-    T_in = 20
+    T_in = 25
     
     Tmax = BuildingProperties['theta_int_c_set'] 
     Tmin = BuildingProperties['theta_int_h_set']
@@ -53,7 +53,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     
     #initilize uncomftrable hours
     uncomf_hours = 0
-    uncomf_hours_HOY = []
+    uncomf_hours_HOY = {}
     
     #create dicitionary to save relevant hourly data:
     hourlyData = {}
@@ -519,9 +519,13 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
     
         #count uncomfortable hours
-        if (T_in > Tmax or T_in < Tmin) and occupancy['People'][hour_of_year] != 0: 
-            uncomf_hours += 1
-            uncomf_hours_HOY.append(hour_of_year)
+        if (T_in > Tmax or T_in < Tmin):
+            if occupancy['People'][hour_of_year] != 0:               
+                uncomf_hours += 1
+                #if uncomftrable, than set value to true
+                uncomf_hours_HOY[hour_of_year] = True
+        else:
+            uncomf_hours_HOY[hour_of_year] = False
             
         
         #save optimal results in a dictionary and convert to a DataFrame   
@@ -556,6 +560,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
      
     print "\nEnd of RC-Model calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print "uncomfortable Hours: ", uncomf_hours
+    
+    print uncomf_hours_HOY
     
     
     return  hourlyData_df, Building_Simulation_df

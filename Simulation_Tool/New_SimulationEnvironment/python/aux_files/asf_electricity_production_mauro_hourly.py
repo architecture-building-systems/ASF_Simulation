@@ -96,7 +96,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     print "numHours: ", numHours
     
     # find the number of combinations analysed by ladybug:
-    numCombPerHour = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_radiation_path))['allAngles'][0])
+    numCombPerHour = len(XANGLES)*len(YANGLES)
     print "CombPerHour: ", numCombPerHour
     # set numCombPerHour to 1 if it appears to be zero (this is the case for suntracking)
     if numCombPerHour == 0:
@@ -220,15 +220,15 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
         endata = np.genfromtxt(Simulation_Data_Folder + '/' + filenames[SimulationNumber], delimiter=',', skip_header=7) #filenames list of all files, access with indices
         maxRadPoint = np.max(endata)*1000 # Wh/(m2*h)
-        theoreticalMaxRad[SimulationNumber] = maxRadPoint/ days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
+        #theoreticalMaxRad[SimulationNumber] = maxRadPoint/ days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
         
-        #theoreticalMaxRad[SimulationNumber] = maxRadPoint
+        theoreticalMaxRad[SimulationNumber] = maxRadPoint
         
         gridPsize = panellength / nparcell * panelwidth / nparcell# size of each gridpoint
         
         
-        #irr_gridP = endata * gridPsize
-        irr_gridP = endata * gridPsize / days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
+        irr_gridP = endata * gridPsize
+        #irr_gridP = endata * gridPsize / days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
         
         #irr_pan2 = sum(irr_gridP, 1) # Wh/h per panel
     

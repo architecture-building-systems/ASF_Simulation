@@ -48,9 +48,10 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
                         #create json file with the set combination of x-angle,y-angle and HOY
                         with open('comb.json','w') as f:
                             f.write(json.dumps(comb_data))
-                            print HOD, monthi, x_angle, y_angle, resultsdetected
-                            toc = time.time() - tic
-                            print 'time passed (min): ' + str(toc/60.)
+                            
+                        print HOD, monthi, x_angle, y_angle, resultsdetected
+                        toc = time.time() - tic
+                        print 'time passed (min): ' + str(toc/60.)
                         
         #                #write ASFangles for Clusters
         #                with open('outputASFangles.json','w') as f:
