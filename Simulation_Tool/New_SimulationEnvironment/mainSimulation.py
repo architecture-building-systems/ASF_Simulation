@@ -249,3 +249,4 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
 
 if __name__== 'main':
   ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+

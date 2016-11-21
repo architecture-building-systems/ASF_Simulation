@@ -11,6 +11,7 @@ from buildingSystem import *
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))        
 from mainSimulation import MainCalculateASF
+from buildingSystem import *  
 
 
 
@@ -67,6 +68,7 @@ class TestMainSimulation(unittest.TestCase):
         "coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
         "heatingEfficiency" : 1,
         "coolingEfficiency" :1}
+
         
         #Set simulation Properties
         SimulationOptions= {
@@ -81,6 +83,8 @@ class TestMainSimulation(unittest.TestCase):
                                                                               BuildingProperties = BuildingProperties, 
                                                                               SimulationOptions = SimulationOptions)
         
+
+              
         self.assertEqual(round(yearlyData['E_total']['E'],2), 1189.82)
         self.assertEqual(round(yearlyData['E_total']['PV'],2), -707.01)
         #self.assertEqual(round(monthlyData['H'][0],2),3.56)
