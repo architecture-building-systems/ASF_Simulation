@@ -18,8 +18,8 @@ paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 
 # define path of weather file:
-paths['ZH2013'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich-Kloten_2013.epw'
-paths['ZH2005'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich-Kloten_2005.epw'
+paths['ZH2013'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich_Kloten_2013.epw'
+paths['ZH2005'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich_Kloten_2005.epw'
 paths['GE'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\CHE_Geneva.067000_IWEC.epw'
 paths['FR'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\DEU_Frankfurt.am.Main.106370_IWEC.epw'
 

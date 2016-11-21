@@ -55,7 +55,7 @@ def carpetPlot(X, z_min, z_max, title, roomFloorArea):
 #    cbar.set_label('kWh')
         
     #return fig
-    
+  
 def carpetPlotAngles(X, z_min, z_max, title):
     """
     night values are not grey
@@ -102,6 +102,7 @@ def carpetPlotAngles(X, z_min, z_max, title):
     cbar.set_label('[deg]')
         
     return fig
+
     
 def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
     
@@ -125,21 +126,24 @@ def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
     # and the hours with no sun to (False)
     for i in range(24):
        for j in range(1,13):
-           if z3[i][j-1] == np.nan:
-               z3[i,j-1] = False
-               
-           elif i in hour_in_month[j]:
+          
+           if i in hour_in_month[j]:
                #sun                
                z3[i,j-1] = True
            else:
                #no sun
                z3[i,j-1] = False
+    
+    # set values, where radiation is calculated but equals 0, to False
+    for i in range(24):
+       for j in range(1,13):
+           if z[i,j-1] == 0.1111:
+               z3[i,j-1] = False
                
-    # set values to nan wihich are zero:
- 
-#    z3[19][6] = False
-#    z3[19][5] = False    
-#    z3[18][3] = False           
+               
+            
+               
+    # set values to nan wihich are zero (False):         
     z3[z3 == 0] = np.nan
     
 

@@ -11,7 +11,8 @@ import time
 import pandas as pd
 
 
-def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, occupancy, Q_human):
+def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, \
+                    BuildingProperties, setBackTemp, occupancy, Q_human, start, end):
 
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])    
@@ -75,7 +76,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print "\noptimization", optimization_type
     
-    for hour_of_year in range(0,8760):
+    for hour_of_year in range(start, end + 1):
         
         #initilize all dictionaries for the needed data
         E_tot[hour_of_year] = {}
@@ -103,7 +104,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         hourlyData[hour_of_year]['T_out'] = []
         hourlyData[hour_of_year]['T_in'] = []
         hourlyData[hour_of_year]['AngleComb'] = []
-        hourlyData[hour_of_year]['PV'] = PV[hour_of_year]['PV']
+        hourlyData[hour_of_year]['PV'] = PV[hour_of_year]
         
         hourlyData[hour_of_year]['H_elec'] = [] 
         hourlyData[hour_of_year]['C_elec'] = [] 
@@ -131,7 +132,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     
     tic = time.time()
     #run for every hour of year the RC-Model    
-    for hour_of_year in range(0,8760):
+    for hour_of_year in range(start, end + 1):
           
         
         #class Building   
@@ -542,12 +543,11 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
         results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
-             
+        
         #show which HOY is calculated
-        if hour_of_year % 4000 == 0 and hour_of_year != 0:
-            print 'HOY:', hour_of_year
-            toc = time.time() - tic
-            print 'time passed (sec): ' + str(round(toc,2))
+        print 'HOY:', hour_of_year
+        toc = time.time() - tic
+        print 'time passed (sec): ' + str(round(toc,2))
             
     
     #store results of the best angle combinations in DataFrame   

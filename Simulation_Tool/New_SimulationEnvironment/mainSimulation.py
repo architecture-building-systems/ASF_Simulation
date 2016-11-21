@@ -78,11 +78,11 @@ from buildingSystem import *
 
 
 #DefaultValues
-###############################################################################
+############################################################################### 
 
 #Set simulation data
 SimulationData= {
-'optimizationTypes' : ['E_total', 'E_total_elec'], #'Heating','Cooling', 'E_HCL', 'Heating_elec','Cooling_elec', 'E_HCL_elec', 'SolarEnergy', 'Lighting'],
+'optimizationTypes' : ['E_total', 'E_HCL', 'SolarEnergy', 'Lighting','Heating','Cooling'],#'Heating_elec', 'Cooling_elec', 'E_total_elec', 'E_HCL_elec', ],
 'DataName' : 'ZH05_49comb',#'ZH13_49comb', #'ZH05_49comb', #,
 'geoLocation' : 'Zuerich_Kloten_2005', #'Zuerich_Kloten_2013', #'Zuerich_Kloten_2005',
 'Save' : True}
@@ -127,8 +127,7 @@ BuildingProperties={
 "heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
 "coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
 "heatingEfficiency" : 1,
-"coolingEfficiency" :1,
-}
+"coolingEfficiency" :1}
 
 
 #Set simulation Properties
@@ -136,6 +135,8 @@ SimulationOptions= {
 'setBackTemp' : 4.,
 'Occupancy' : 'Occupancy_COM.csv',
 'ActuationEnergy' : False}
+
+
 
 ###############################################################################
 
@@ -149,7 +150,8 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
     PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, createAllPlots, SaveResults 
     
      
-    FolderName = initializeSimulation(SimulationData = SimulationData)
+    FolderName = initializeSimulation(
+                             SimulationData = SimulationData)
                                             
             
     initializeASF(panel_data = PanelData)
@@ -165,9 +167,9 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                     
     
     paths, weatherData, SunTrackingData = setPaths(
-                              geoLocation = SimulationData['geoLocation'], 
-                              Occupancy = SimulationOptions['Occupancy'],
-                              FolderName = FolderName)
+                             geoLocation = SimulationData['geoLocation'], 
+                             Occupancy = SimulationOptions['Occupancy'],
+                             FolderName = FolderName)
     
     
     ANGLES, hour_in_month, NumberCombinations, combinationAngles, daysPerMonth, \
@@ -189,7 +191,7 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             NumberCombinations = NumberCombinations, 
                             createPlots = False, 
                             simulationOption = {'timePeriod' : None})
-     
+          
      
     #rearrange the Radiation Data on PV and Window into HOY form
     PV, BuildingRadiationData_HOY = PrepareRadiationData(
@@ -198,8 +200,8 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             BuildingRadiationData_HOD = BuildingRadiationData_HOD, 
                             PV_electricity_results = PV_electricity_results, 
                             NumberCombinations = NumberCombinations)
-    
-                 
+                            
+                   
     hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, \
     BestKey_df, x_angles, y_angles = runBuildingSimulation(
                             geoLocation = SimulationData['geoLocation'], 
@@ -216,9 +218,9 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             setBackTemp = SimulationOptions['setBackTemp'], 
                             daysPerMonth = daysPerMonth, 
                             ANGLES = ANGLES)
-        
-    fig = createAllPlots(
-                            monthlyData = monthlyData, 
+    
+       
+    fig = createAllPlots(   monthlyData = monthlyData, 
                             roomFloorArea = roomFloorArea, 
                             x_angles = x_angles, 
                             y_angles = y_angles, 
@@ -239,9 +241,11 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             ResultsBuildingSimulation = ResultsBuildingSimulation, 
                             BuildingProperties = BuildingProperties,
                             x_angles = x_angles,
-                            y_angles = y_angles)
+                            y_angles = y_angles,
+                            BestKey_df = BestKey_df)
                             
+
     return ResultsBuildingSimulation, monthlyData, yearlyData, x_angles
 
 if __name__== 'main':
-  ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+  ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)

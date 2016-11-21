@@ -8,52 +8,20 @@ import numpy as np
 import pandas as pd
 
 
-def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
+def prepareAngles(Building_Simulation_df, ANGLES, start, end):
     
-    from calculateHOY import calcHOY
-
+    
     #save keys of best comb
-    BestKey_HOD= {}
-    key_med = {}
-    key_avg = {}
-    key_avg_round = {}
     key_dict = {}
-    
-    #iterate through all months, days and hours
-    for month in range(1,13):
-        BestKey_HOD[month]= {}
-        key_med[month] = {}
-        key_avg[month] = {}
-        key_avg_round[month] = {}
-        key_dict[month] = {}    
-        
-        for hour in range(0,24):
-            BestKey_HOD[month][hour] = np.array([])
-            key_med[month][hour] = {}
-            key_avg[month][hour] = {}
-            key_avg_round[month][hour] = {}
-            key_dict[month][hour] = {}        
-            
-            for day in range(1,daysPerMonth[month-1]+1):
-                #sort keys for every month and hour
-                HOY = calcHOY(month, day, hour)    
-                BestKey_HOD[month][hour]= np.append(BestKey_HOD[month][hour], Building_Simulation_df['BestCombKey'][HOY][0])
-                key_dict[month][hour][day] = Building_Simulation_df['BestCombKey'][HOY][0]
-                
-            
-            #calculate median key for every month and hour
-            key_avg[month][hour] = np.average(BestKey_HOD[month][hour])
-            key_avg_round[month][hour] = np.round(key_avg[month][hour], decimals = 0)
-            key_med[month][hour] = np.median(BestKey_HOD[month][hour])
-    
     key_array = np.array([], dtype = int)
     comb_array = np.array([])
     
-    #create an array with the searched keys        
-    for month in range(1,13):
-        for hour in range(0,24):
-            key_array = np.append(key_array, key_med[month][hour])
-    
+    #iterate through all months, days and hours
+    for HOY in range(start, end+1):
+        
+        key_array = np.append(key_array, Building_Simulation_df['BestCombKey'][HOY][0])
+        key_dict[HOY] = Building_Simulation_df['BestCombKey'][HOY][0]
+        
     #create an comb_array with the combination belonging to the given key
     key_array = np.int_(key_array)
     comb_array= [ANGLES[ii] for ii in key_array]
@@ -66,13 +34,22 @@ def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
             
             x_angle_array = np.append(x_angle_array, comb_array[jj][0])
             y_angle_array = np.append(y_angle_array, comb_array[jj][1])
+            
+    x_angle = {}
+    y_angle = {}        
+            
+    for  jj in range(0,len(comb_array)):
+        
+        x_angle[start + jj] = x_angle_array[jj]
+        y_angle[start + jj] = y_angle_array[jj]
     
     #create DataFrame with the evaluated keys        
-    BestKey_df = pd.DataFrame(key_med)
+    BestKey = key_dict
             
-    return BestKey_df, x_angle_array, y_angle_array
+    return BestKey, x_angle, y_angle
     
-    
+   
+   
     
 def prepareResults (Building_Simulation_df):
     
