@@ -10,6 +10,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))        
 from mainSimulation import MainCalculateASF
+from buildingSystem import *  
 
 
 
@@ -26,7 +27,7 @@ class TestMainSimulation(unittest.TestCase):
         'Save' : False}
         
         #Set panel data
-        panel_data={
+        PanelData={
         "XANGLES": [0, 15, 30, 45, 60, 75, 90],
         "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
         "NoClusters":1,
@@ -37,7 +38,7 @@ class TestMainSimulation(unittest.TestCase):
         "panelSpacing":500}
         
         #Set Building Parameters in [mm]
-        building_data={
+        BuildingData={
         "room_width": 4900,     
         "room_height":3100,
         "room_depth":7000,
@@ -61,7 +62,12 @@ class TestMainSimulation(unittest.TestCase):
         "theta_int_h_set" : 20,
         "theta_int_c_set" : 26,
         "phi_c_max_A_f": -np.inf,
-        "phi_h_max_A_f":np.inf}
+        "phi_h_max_A_f":np.inf,
+        "heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
+        "coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
+        "heatingEfficiency" : 1,
+        "coolingEfficiency" :1,
+        }
         
         #Set simulation Properties
         SimulationProperties= {
@@ -71,10 +77,10 @@ class TestMainSimulation(unittest.TestCase):
         
         
         ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, 
-                                                                              panel_data = panel_data, 
-                                                                              building_data = building_data, 
+                                                                              PanelData = PanelData, 
+                                                                              BuildingData = BuildingData, 
                                                                               BuildingProperties = BuildingProperties, 
-                                                                              SimulationProperties = SimulationProperties)
+                                                                              SimulationOptions = SimulationProperties)
               
         self.assertEqual(round(yearlyData['E_total']['E'],2), 1189.82)
         self.assertEqual(round(yearlyData['E_total']['PV'],2), 707.01)

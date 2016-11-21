@@ -27,7 +27,7 @@ def initializeSimulation(geoLocation, Save, optimization_Types):
     #set optimization type: (Angles plots can only be created, if all types are chosen)
     # 'E_total' is needed, minimize the overall energy consumption
     
-    optimization_Types = ['E_total'] #
+    #optimization_Types = ['E_total'] #
     
     #optimization_Types = ['E_total','Heating']
     #optimization_Types = ['E_total','Cooling']

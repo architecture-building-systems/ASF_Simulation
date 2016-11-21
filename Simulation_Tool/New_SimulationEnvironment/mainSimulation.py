@@ -243,5 +243,7 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
 														
 		return ResultsBuildingSimulation, monthlyData, yearlyData, x_angles
 
+print __name__
 if __name__ == "__main__":
-	ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+	pass
+	#ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
