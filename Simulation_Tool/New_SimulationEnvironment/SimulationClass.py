@@ -509,34 +509,20 @@ class ASF_Simulation(object):
 		
 
 		self.initializeASF()
-
-		self.setBuildingParameters()
-								
-		
+		self.setBuildingParameters()		
 		self.initializeBuildingSimulation()
-						
-		
-		self.setPaths()
-		
-		
+		self.setPaths()				
 		self.CalculateVariables()
-
-		
-		self.runRadiationCalculation()
-			  
-		 
+		self.runRadiationCalculation()		  		 
 		#rearrange the Radiation Data on PV and Window into HOY form
-		self.PrepareRadiationData()
-								
-					   
+		self.PrepareRadiationData()													   
 		self.runBuildingSimulation()
-		
+
 		if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
 			self.createAllPlots()
 		else:
 			fig = None
-		   
-			
+		   			
 		self.SaveResults()
 								
 
