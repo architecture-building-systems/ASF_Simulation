@@ -21,7 +21,7 @@ class ASF_Simulation(object):
 
 		self.SimulationData=SimulationData
 		self.PanelData=PanelData
-		self.building_data=BuildingData
+		self.BuildingData=BuildingData
 		self.BuildingProperties=BuildingProperties
 		self.SimulationOptions=SimulationOptions
 
@@ -29,9 +29,9 @@ class ASF_Simulation(object):
 		self.XANGLES=self.PanelData['XANGLES']
 		self.YANGLES = self.PanelData['YANGLES']		
 		self.createPlots=False
-		self.geoLocation = SimulationData['geoLocation'],
-
+		self.geoLocation = SimulationData['geoLocation']
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+		self.optimization_Types = self.SimulationData['optimizationTypes']
 
 
 		#Set panel data
@@ -50,30 +50,31 @@ class ASF_Simulation(object):
 	  
 		#Save parameters to be imported into grasshopper
 		with open('panel.json','w') as f:
-			f.write(json.dumps(self.panel_data))
+			f.write(json.dumps(self.PanelData))
 			
 
 	def setBuildingParameters(self):
 		
 		#Save parameters to be imported into grasshopper
 		with open('building.json','w') as f:
-			f.write(json.dumps(self.building_data))
+			f.write(json.dumps(self.BuildingData))
 		
-		self.roomFloorArea = self.building_data['room_width']/1000.0 * self.building_data['room_depth']/1000.0 #[m^2] floor area
+		self.roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
 		
 		
 		
 	def initializeBuildingSimulation(self):
 		#set building properties for the RC-Model analysis 
 		self.BuildingProperties.update({
-				"Fenst_A": self.building_data['room_width']/1000.0*self.building_data['room_height']/1000.0*self.building_data['glazing_percentage_h']*self.building_data['glazing_percentage_w'],
-				"Room_Depth": self.building_data['room_depth']/1000.0,
-				"Room_Width": self.building_data['room_width']/1000.0,
-				"Room_Height":self.building_data['room_height']/1000.0})                
+				"Fenst_A": self.BuildingData['room_width']/1000.0*self.BuildingData['room_height']/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
+				"Room_Depth": self.BuildingData['room_depth']/1000.0,
+				"Room_Width": self.BuildingData['room_width']/1000.0,
+				"Room_Height":self.BuildingData['room_height']/1000.0})                
 		
 		
 	def setPaths(self): 
-		Occupancy = self.SimulationOptions['Occupancy'],		
+		Occupancy = self.SimulationOptions['Occupancy']
+
 		# create dictionary to write all paths:
 		self.paths = {}
 		
@@ -208,7 +209,7 @@ class ASF_Simulation(object):
 			
 		
 		#if there are no panels vertical and horizontal
-		if self.panel_data['numberHorizontal'] == 0 and self.panel_data['numberVertical'] == 0:
+		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
 			self.PV_electricity_results = {}
 			
 			self.PV_electricity_results['Pmpp_sum'] = np.array(self.NumberCombinations * len(self.hour_in_month) * [0])
@@ -230,7 +231,7 @@ class ASF_Simulation(object):
 				asf_electricity_production(
 								   createPlots = self.createPlots, 
 								   lb_radiation_path = self.paths['radiation_results'],
-								   panelsize = self.panel_data['panelSize'], 
+								   panelsize = self.PanelData['panelSize'], 
 								   pvSizeOption = 0,
 								   save_results_path = self.paths['PV'], 
 								   lookup_table_path = self.paths['electrical_simulation'], 
@@ -246,7 +247,7 @@ class ASF_Simulation(object):
 				asf_electricity_production(
 								   createPlots = self.createPlots, 
 								   lb_radiation_path = self.paths['radiation_results'],
-								   panelsize = self.panel_data['panelSize'], 
+								   panelsize = self.PanelData['panelSize'], 
 								   pvSizeOption = 0,
 								   save_results_path = self.paths['PV'], 
 								   lookup_table_path = self.paths['electrical_simulation'], 
@@ -322,7 +323,6 @@ class ASF_Simulation(object):
 		
 		
 	def runBuildingSimulation(self):
-		optimization_Types = self.SimulationData['optimizationTypes']
 		setBackTemp = self.SimulationOptions['setBackTemp']
 		# add python_path to system path, so that all files are available:
 		sys.path.insert(0, self.paths['5R1C_ISO_simulator'])     
@@ -345,7 +345,7 @@ class ASF_Simulation(object):
 		
 		#set parameters
 		human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
-		roomFloorArea = building_data['room_width']/1000.0 * building_data['room_depth']/1000.0 #[m^2] floor area
+		roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
 		 
 				
 		#people/m2/h, W    
@@ -353,12 +353,12 @@ class ASF_Simulation(object):
 		
 				
 		#run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
-		for optimizationType in optimization_Types:
+		for optimizationType in self.optimization_Types:
 				
 			self.hourlyData[optimizationType], self.ResultsBuildingSimulation[optimizationType], self.BuildingSimulationELEC[optimizationType] = RC_Model (
 																		  optimization_type = optimizationType, 
 																		  paths = self.paths,
-																		  building_data = building_data, 
+																		  building_data = self.BuildingData, 
 																		  weatherData = self.weatherData, 
 																		  hourRadiation = self.hourRadiation, 
 																		  BuildingRadiationData_HOY = self.BuildingRadiationData_HOY, 
@@ -507,6 +507,9 @@ class ASF_Simulation(object):
 
 	def SolveASF(self):
 		
+
+		self.initializeASF()
+
 		self.setBuildingParameters()
 								
 		
