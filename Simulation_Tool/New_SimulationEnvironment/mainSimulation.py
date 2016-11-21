@@ -75,6 +75,7 @@ import os, sys
 import numpy as np
 import pandas as pd
 from buildingSystem import *  
+from SimulationClass import ASF_Simulation
 
 for ii in range(1,4):
 #ii= 0
@@ -85,9 +86,9 @@ for ii in range(1,4):
     
     SimulationData = {
     'optimizationTypes' : ['E_total'],
-    'DataName' : DataName[ii],
-    'geoLocation' : location[ii],
-    'EPWfile': EPWfile[ii],
+    'DataName' : 'ZH05_49comb',
+    'geoLocation' : 'Zuerich_Kloten_2005',
+    'EPWfile': 'Zuerich_Kloten_2005.epw',
     'Save' : True,
     'ShowFig': True}
     
@@ -269,4 +270,6 @@ for ii in range(1,4):
         
       
     if __name__=='__main__':
-        ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+        ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+        ASFtest.SolveASF()
+        #ResultsBuildingSimulation, monthlyData, yearlyData = NewMainCalculateASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
