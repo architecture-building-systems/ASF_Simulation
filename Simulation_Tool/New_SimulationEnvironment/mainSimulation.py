@@ -242,3 +242,6 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             y_angles = y_angles)
                             
     return ResultsBuildingSimulation, monthlyData, yearlyData, x_angles
+
+if __name__== 'main':
+  ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
