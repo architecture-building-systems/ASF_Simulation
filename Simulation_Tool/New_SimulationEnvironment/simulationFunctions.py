@@ -83,7 +83,7 @@ def setBuildingParameters(room_width, room_height, room_depth, glazing_percentag
 def initializeBuildingSimulation(building_data,glass_solar_transmitance,glass_light_transmitance, \
                             lighting_load,lighting_control,Lighting_Utilisation_Factor, Lighting_MaintenanceFactor,U_em,U_w, \
                             ACH_vent, ACH_infl, ventilation_efficiency, c_m_A_f, theta_int_h_set, theta_int_c_set, phi_c_max_A_f, \
-                            phi_h_max_A_f, setBackTemp, Occupancy):
+                            phi_h_max_A_f, CoolingSetBackTemp, HeatingSetBackTemp, Occupancy):
     #set building properties for the RC-Model analysis 
     BuildingProperties={
             "Fenst_A": building_data['room_width']/1000.0*building_data['room_height']/1000.0*building_data['glazing_percentage_h']*building_data['glazing_percentage_w'],
@@ -115,7 +115,7 @@ def initializeBuildingSimulation(building_data,glass_solar_transmitance,glass_li
        
     #building_stystem = capacitive heating/ cooling  
     
-    return BuildingProperties, setBackTemp, Occupancy
+    return BuildingProperties, CoolingSetBackTemp, CoolingSetBackTemp, Occupancy
     
     
 def setPaths(geoLocation, Occupancy):
@@ -315,7 +315,7 @@ def runRadiationCalculation(paths, XANGLES, YANGLES, daysPerMonth, hour_in_month
     
     return PV_electricity_results, PV_detailed_results, BuildingRadiationData_HOD, now
     
-def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES):
+def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, CoolingSetBackTemp, HeatingSetBackTemp, daysPerMonth, ANGLES):
     
     from energy_minimization import RC_Model
     from prepareDataMain import prepareAngles, prepareResults
@@ -343,7 +343,8 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                                                                       NumberCombinations = NumberCombinations, 
                                                                       combinationAngles = combinationAngles,
                                                                       BuildingProperties = BuildingProperties,
-                                                                      setBackTemp = setBackTemp
+                                                                      CoolingSetBackTemp = CoolingSetBackTemp,
+                                                                      HeatingSetBackTemp = HeatingSetBackTemp,
                                                                       )
         
         #prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  

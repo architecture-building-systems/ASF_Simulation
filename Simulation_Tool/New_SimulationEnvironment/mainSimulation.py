@@ -132,7 +132,8 @@ BuildingProperties={
 
 #Set simulation Properties
 SimulationOptions= {
-'setBackTemp' : 4.,
+'CoolingSetBackTemp' : 4.,
+'HeatingSetBackTemp' : 4.,
 'Occupancy' : 'Occupancy_COM.csv',
 'ActuationEnergy' : False}
 
@@ -215,7 +216,8 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
                             NumberCombinations = NumberCombinations, 
                             combinationAngles = combinationAngles, 
                             BuildingProperties = BuildingProperties, 
-                            setBackTemp = SimulationOptions['setBackTemp'], 
+                            CoolingSetBackTemp = SimulationOptions['CoolingSetBackTemp'], 
+                            HeatingSetBackTemp = SimulationOptions['HeatingSetBackTemp'], 
                             daysPerMonth = daysPerMonth, 
                             ANGLES = ANGLES)
     
@@ -247,6 +249,6 @@ def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties
 
     return ResultsBuildingSimulation, monthlyData, yearlyData, x_angles
 
-if __name__== 'main':
+if __name__== '__main__':
   ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
 
