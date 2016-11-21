@@ -535,13 +535,13 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
         results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
-        
+             
         #show which HOY is calculated
-        if hour_of_year % 1000 == 0 and hour_of_year != 0:
+        if hour_of_year % 4000 == 0 and hour_of_year != 0:
             print 'HOY:', hour_of_year
             toc = time.time() - tic
             print 'time passed (min): ' + str(toc/60.)
-            
+                 
     
     #store results of the best angle combinations in DataFrame   
     Building_Simulation_df= pd.DataFrame(results_building_simulation).T    

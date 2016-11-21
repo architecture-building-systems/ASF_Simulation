@@ -27,7 +27,7 @@ def initializeSimulation(geoLocation, Save, optimization_Types):
     #set optimization type: (Angles plots can only be created, if all types are chosen)
     # 'E_total' is needed, minimize the overall energy consumption
     
-    #optimization_Types = ['E_total'] #
+    optimization_Types = ['E_total'] #
     
     #optimization_Types = ['E_total','Heating']
     #optimization_Types = ['E_total','Cooling']
@@ -327,7 +327,6 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     x_angles = {} #optimized x-angles
     y_angles = {} #optimized y-angles
     BestKey_df = {} #optimized keys of the ANGLES dictionary
-    
     
             
     #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
