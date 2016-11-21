@@ -150,7 +150,7 @@ class TestMainSimulation(unittest.TestCase):
 		'ActuationEnergy' : False}
 		
 		
-		ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, 
+		ResultsBuildingSimulation, monthlyData, yearlyData, hour_in_month, x_angles = MainCalculateASF(SimulationData = SimulationData, 
 																			  PanelData = PanelData, 
 																			  BuildingData = BuildingData, 
 																			  BuildingProperties = BuildingProperties, 

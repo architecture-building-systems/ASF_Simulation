@@ -195,6 +195,7 @@ for ii in range(1,4):
                                 building_data = BuildingData, 
                                 XANGLES = PanelData['XANGLES'], 
                                 YANGLES = PanelData['YANGLES'])
+
         
         PV_electricity_results, PV_detailed_results, \
         BuildingRadiationData_HOD, now = runRadiationCalculation(
@@ -264,7 +265,7 @@ for ii in range(1,4):
                                 BestKey_df = BestKey_df,
                                 BuildingSimulationELEC = BuildingSimulationELEC)
                                 
-        return ResultsBuildingSimulation, monthlyData, yearlyData
+        return ResultsBuildingSimulation, monthlyData, yearlyData, hour_in_month, x_angles
         
       
     if __name__=='__main__':

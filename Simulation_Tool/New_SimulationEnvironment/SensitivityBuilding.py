@@ -73,16 +73,27 @@ INPUT PARAMETER DEFINITION
 
 import os, sys
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 from buildingSystem import *  
 from mainSimulation import MainCalculateASF
+paths={}
+paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+paths['python'] = os.path.join(paths['main'], 'python')
+paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
+sys.path.insert(0, paths['aux_files'])
+
+
+from carpetPlot import carpetPlot, carpetPlotMask
+from createCarpetPlot import createCarpetPlotSensitivityBuilding
 
 SimulationData= {
 'optimizationTypes' : ['E_total'],
 'DataName' : 'ZH05_49comb',
 'geoLocation' : 'Zuerich_Kloten_2005',
 'EPWfile' : 'Zuerich_Kloten_2005.epw',
-'Save' : False}
+'Save' : False,
+'ShowFig': False}
 
 SimulationOptions= {
 'setBackTemp' : 4.,
@@ -132,7 +143,7 @@ BuildingProperties={
 "heatingEfficiency" : 1,
 "coolingEfficiency" :1},
 
-"Resistive Heating":{
+"ResistiveHeating":{
 "glass_solar_transmitance" : 0.687 ,
 "glass_light_transmitance" : 0.744 ,
 "lighting_load" : 11.74 ,
@@ -209,7 +220,7 @@ BuildingProperties={
 "U_w" : 1.2,
 "ACH_vent" : 1.5,
 "ACH_infl" :0.5,
-"ventilation_efficiency" : 0.6 ,
+"ventilation_efficiency" : 0 ,
 "c_m_A_f" : 165 * 10**3,
 "theta_int_h_set" : 20,
 "theta_int_c_set" : 26,
@@ -218,6 +229,28 @@ BuildingProperties={
 "heatingSystem" : DirectHeater, #DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
 "coolingSystem" : DirectCooler, #DirectCooler, #DirectCooler, #HeatPumpCooler
 "heatingEfficiency" : 1,
+"coolingEfficiency" :1},
+
+"Pass":{
+"glass_solar_transmitance" : 0.687 ,
+"glass_light_transmitance" : 0.744 ,
+"lighting_load" : 11.74 ,
+"lighting_control" : 300,
+"Lighting_Utilisation_Factor" :  0.45,
+"Lighting_MaintenanceFactor" : 0.9,
+"U_em" : 0.2, 
+"U_w" : 1.2,
+"ACH_vent" : 1.5,
+"ACH_infl" :0.5,
+"ventilation_efficiency" : 0.6 ,
+"c_m_A_f" : 165 * 10**3,
+"theta_int_h_set" : 20,
+"theta_int_c_set" : 26,
+"phi_c_max_A_f": -np.inf,
+"phi_h_max_A_f":np.inf,
+"heatingSystem" : DirectHeater, #DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
+"coolingSystem" : DirectCooler, #DirectCooler, #DirectCooler, #HeatPumpCooler
+"heatingEfficiency" : 10,
 "coolingEfficiency" :1}
 }
 
@@ -225,13 +258,22 @@ BuildingProperties={
 
 
 
+
 SensitivityResults={}
+SensitivityMonthyData={}
+SensitivityYearlyData={}
+SensitivityXangles={}
 for ii in BuildingProperties:
-	ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, 
+	ResultsBuildingSimulation, monthlyData, yearlyData, hour_in_month, x_angles= MainCalculateASF(SimulationData = SimulationData, 
 																			  PanelData = PanelData, 
 																			  BuildingData = BuildingData, 
 																			  BuildingProperties = BuildingProperties[ii], 
 																			  SimulationOptions = SimulationOptions)
-	SensitivityResults[ii]=ResultsBuildingSimulation
+	SensitivityResults[ii] = ResultsBuildingSimulation
+	monthlyData[ii]=monthlyData
+	yearlyData[ii] = yearlyData
+	SensitivityXangles[ii]=x_angles['E_total']
+
+createCarpetPlotSensitivityBuilding(SensitivityXangles, hour_in_month, 'Baseline', 'ResistiveHeating', 'IncadecentLighting', 'SingleWindow', 'NoHeatRecovery', 'Pass')
 
 
