@@ -22,7 +22,7 @@ def IlluminanceCalculationAnalysis():
     
     
     # set if calculation is need, False = No
-    Calculation = False#True#False
+    Calculation = True#False
     
     
     # create dictionary to write all paths:
@@ -66,9 +66,9 @@ def IlluminanceCalculationAnalysis():
         now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
         print "simulation start: " + now
         #set parmeters for evaluation
-        HOD = 12.0
-        Day = 15.0
-        monthi = 1.0
+        timeRange = range(8,19)
+        Day = 15
+        #monthi = 7.0
         x_angle = 0
         y_angle = 0
         
@@ -100,7 +100,7 @@ def IlluminanceCalculationAnalysis():
                 f.write(json.dumps(panel_data))
             
             for monthi in range(1,13):
-                for HOD in [8,10,12,14,16,18]:
+                for HOD in timeRange:
                     
                     print "Combination number", combination
                     print HOD, monthi, x_angle
@@ -122,7 +122,7 @@ def IlluminanceCalculationAnalysis():
                     
                     
                     #gridSize = [400.0, 200.0, 100.0, 50., 25., 12.5] #mm2
-                    gridSize = [50.0]
+                    gridSize = [200.0]
                     #gridSize = [400.0]
                                        
                     for size in gridSize:
@@ -146,7 +146,8 @@ def IlluminanceCalculationAnalysis():
                  
         print 'illuminance calculation finished!'
     else:
-        pass        
+        pass 
+    """   
     #set path, were the results are stored and shall be loaded
     paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceAnalysis_50mm'
         
@@ -198,8 +199,8 @@ illuLB, illuminance_avg = IlluminanceCalculationAnalysis()
 print "test"
 
 
-
-
+"""
+IlluminanceCalculationAnalysis()
 
 
 

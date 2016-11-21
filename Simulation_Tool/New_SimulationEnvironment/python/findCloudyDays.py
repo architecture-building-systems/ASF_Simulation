@@ -71,6 +71,31 @@ weatherDataZH13 = epw_reader(paths['ZH2013'])
 #plt.show()
 
 
+fig = plt.figure(figsize=(12, 4))
+#plt.title("Linear Correlations for differen Locations", fontsize=16)
+
+#Achtung evt. um eine stunde verschoben
+
+#1
+time = range(4512,4536)
+
+ax1 = fig.add_subplot(131) 
+#ax1.title('Cloudy Day', fontsize=12)
+ax1.title.set_text('08.07.2013')      
+
+with pd.plot_params.use('x_compat', True):
+    weatherDataZH13['dirnorrad_Whm2'][time].plot(color='r')    
+    weatherDataZH13['difhorrad_Whm2'][time].plot(color='b')
+    weatherDataZH13['glohorrad_Whm2'][time].plot(color='g')
+    
+plt.legend(loc=1, fontsize = 10)
+#plt.legend(loc='best')
+plt.xlabel('Hour of Day', fontsize=12)
+plt.ylabel('Radiation [Wh/m2]', fontsize=12)
+
+
+
+
 
 
 
@@ -89,9 +114,9 @@ fig = plt.figure(figsize=(12, 4))
 #1
 a= {'direct': range(0,24) ,'diffuse': range(0,24) , 'global': range(0,24) }
 
-a['direct'][1:25] = weatherDataZH13['dirnorrad_Whm2'][4417:4441]
-a['diffuse'][1:25] = weatherDataZH13['difhorrad_Whm2'][4417:4441]
-a['global'][1:25] = weatherDataZH13['glohorrad_Whm2'][4417:4441]
+a['direct'][1:25] = weatherDataZH13['dirnorrad_Whm2'][4416:4440]
+a['diffuse'][1:25] = weatherDataZH13['difhorrad_Whm2'][4416:4440]
+a['global'][1:25] = weatherDataZH13['glohorrad_Whm2'][4416:4440]
 
 a = pd.DataFrame(a)
 
@@ -114,9 +139,9 @@ plt.ylabel('Radiation [Wh/m2]', fontsize=12)
 #2
 a= {'direct': range(24) ,'diffuse': range(24) , 'global': range(24) }
 
-a['direct'][1:25] = weatherDataZH13['dirnorrad_Whm2'][4465:4489]
-a['diffuse'][1:25] = weatherDataZH13['difhorrad_Whm2'][4465:4489]
-a['global'][1:25] = weatherDataZH13['glohorrad_Whm2'][4465:4489]
+a['direct'][1:25] = weatherDataZH13['dirnorrad_Whm2'][4464:4490]
+a['diffuse'][1:25] = weatherDataZH13['difhorrad_Whm2'][4464:4490]
+a['global'][1:25] = weatherDataZH13['glohorrad_Whm2'][4464:4490]
 
 a = pd.DataFrame(a)
 

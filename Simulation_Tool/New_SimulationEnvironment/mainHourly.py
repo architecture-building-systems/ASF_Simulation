@@ -89,14 +89,15 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
     sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'python'))
     
-    from simulationFunctions_hourly import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables  
-    from simulationFunctions_hourly import PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, SaveResults 
+    from simulationFunctionsHourly import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables  
+    from simulationFunctionsHourly import PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, SaveResults 
     from calculateHOY import calcHOY
     
   
     start =calcHOY(month = SimulationPeriod['FromMonth'], day = SimulationPeriod['FromDay'], hour = SimulationPeriod['FromHour'])
+    start -= 1 #because the calcHOY function: 5 means 4 to 5, but in LB 5 equals 5 to 6
     end = calcHOY(month = SimulationPeriod['ToMonth'], day = SimulationPeriod['ToDay'], hour = SimulationPeriod['ToHour'])
-    
+    end -= 1
     print "\nThe simulation starts at the hour of the year: " + str(start) + " and ends at: " + str(end) + "\n"
     
     
@@ -194,8 +195,8 @@ for ii in [0,1,2]: #[2]
     
     print "start"
     
-    Data = {'Name' : ['ZH13_49comb_cloudy_4_7', 'ZH13_49comb_Notcloudy_6_7', 'ZH13_49comb_Halfcloudy_10_7'],
-            'day' : [4,6,10]}
+    Data = {'Name' : ['ZH13_49comb_cloudy_4_7', 'ZH13_49comb_Notcloudy_6_7', 'ZH13_49comb_Halfcloudy2_8_7'],
+            'day' : [4,6,8]}
     
     
     
@@ -207,7 +208,7 @@ for ii in [0,1,2]: #[2]
     'FromDay': Data['day'][ii],
     'ToDay': Data['day'][ii],
     'FromHour': 5,
-    'ToHour': 19}
+    'ToHour': 20}
     
     
     

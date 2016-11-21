@@ -76,7 +76,7 @@ import numpy as np
 import pandas as pd
 from buildingSystem import *  
 
-for ii in range(4):
+for ii in range(1,4):
 #ii= 0
 
     DataName = ['ZH05_49comb', 'Helsinki_49comb', 'Cairo_49comb', 'Madrid_49comb']

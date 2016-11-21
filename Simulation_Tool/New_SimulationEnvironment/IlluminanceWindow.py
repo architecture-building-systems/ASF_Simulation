@@ -106,7 +106,7 @@ def IlluminanceWindow():
     
         #set parmeters for evaluation
         
-        HOD = 12.0
+        timeRange = range(8,19)
         Day = 15.0
         monthi = 1.0
         x_angle = 0
@@ -140,7 +140,7 @@ def IlluminanceWindow():
                 f.write(json.dumps(panel_data))
             
             for monthi in range(1,13):
-                for HOD in  [8,10,12,14,16,18]:
+                for HOD in timeRange:
                     
                     print "Combination number", combination
                     print HOD, monthi, x_angle
@@ -159,7 +159,7 @@ def IlluminanceWindow():
                         f.write(json.dumps(comb_data))
                              
                     #gridSize = [400.0, 200.0, 100.0, 50., 25., 12.5] #mm2
-                    gridSize = [50.0]
+                    gridSize = [200.0]
                                        
                     for size in gridSize:
                         
@@ -184,51 +184,51 @@ def IlluminanceWindow():
         pass
 
     
-    illuWin_avg = {}
-    illuWin_data = {}
-    
-    illuWin_avg_df= {}
-    
-    Day = 15.0
-    size= 50.0
-    y_angle = 0
-    
-    for x_angle in [0,90]:#[0,90]:
-        illuWin_data[x_angle]= {}                        
-        illuWin_avg[x_angle] = {}
-    
-        for monthi in range(1,13):
-             illuWin_avg[x_angle][monthi] = {}
-             illuWin_data[x_angle][monthi] = {}
-             
-             for HOD in [8,10,12,14,16,18]:  
-                illuWin_avg[x_angle][monthi][HOD] = {}
-                illuWin_data[x_angle][monthi][HOD] = {}    
-                
-                IlluminanceData = np.array([])
-                
-                with open(paths['illuminance']+'\\IlluminanceWindow_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv', 'r') as csvfile:
-                    reader = csv.reader(csvfile)
-                    for idx,line in enumerate(reader):
-                        if idx >= 6:
-                            IlluminanceData = np.append(IlluminanceData, [float(line[0])])
-                illuWin_data[x_angle][monthi][HOD] = IlluminanceData #Window                        
-                illuWin_avg[x_angle][monthi][HOD]= np.average(IlluminanceData) * factor #Floor
-                
-        illuWin_avg_df[x_angle] = pd.DataFrame(illuWin_avg[x_angle])
-    
-    illuWin = {}
-    for x_angle in [0,90]:
-        z = []
-        for monthi in range(1,13):
-            for HOD in [8,10,12,14,16,18]:  
-                z.append(illuWin_avg[x_angle][monthi][HOD])
-        
-        z = np.array(z)
-        
-        illuWin[x_angle]= np.reshape(z,(12,6))    
-    
-    return illuWin, illuWin_avg
+#    illuWin_avg = {}
+#    illuWin_data = {}
+#    
+#    illuWin_avg_df= {}
+#    
+#    Day = 15.0
+#    size= 50.0
+#    y_angle = 0
+#    
+#    for x_angle in [0,90]:#[0,90]:
+#        illuWin_data[x_angle]= {}                        
+#        illuWin_avg[x_angle] = {}
+#    
+#        for monthi in range(1,13):
+#             illuWin_avg[x_angle][monthi] = {}
+#             illuWin_data[x_angle][monthi] = {}
+#             
+#             for HOD in [8,10,12,14,16,18]:  
+#                illuWin_avg[x_angle][monthi][HOD] = {}
+#                illuWin_data[x_angle][monthi][HOD] = {}    
+#                
+#                IlluminanceData = np.array([])
+#                
+#                with open(paths['illuminance']+'\\IlluminanceWindow_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv', 'r') as csvfile:
+#                    reader = csv.reader(csvfile)
+#                    for idx,line in enumerate(reader):
+#                        if idx >= 6:
+#                            IlluminanceData = np.append(IlluminanceData, [float(line[0])])
+#                illuWin_data[x_angle][monthi][HOD] = IlluminanceData #Window                        
+#                illuWin_avg[x_angle][monthi][HOD]= np.average(IlluminanceData) * factor #Floor
+#                
+#        illuWin_avg_df[x_angle] = pd.DataFrame(illuWin_avg[x_angle])
+#    
+#    illuWin = {}
+#    for x_angle in [0,90]:
+#        z = []
+#        for monthi in range(1,13):
+#            for HOD in [8,10,12,14,16,18]:  
+#                z.append(illuWin_avg[x_angle][monthi][HOD])
+#        
+#        z = np.array(z)
+#        
+#        illuWin[x_angle]= np.reshape(z,(12,6))    
+#    
+#    return illuWin, illuWin_avg
     
 illuWin, illuWin_avg = IlluminanceWindow()
 print "test"    
