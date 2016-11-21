@@ -29,19 +29,19 @@ Also the Data of the PV producation and radiation hitting the window will be sav
 
 VARIABLE DEFINITION
 
-	 geoLocation: set the location which should be evaluated, make sure the correspoding .epw file is saved in the WeatherData folder
-	 Save: decide weather you want to save (True) or not save (False) the results
-	 optimization_Types: Decide for which energy demand type, you want to do the optimisation for
-	 DataName: choose the name for the stored data
-	 XANGLES = set the X-Angles of the ASF = [0, 15, 30, 45, 60, 75, 90] , 0 = closed, 90 = open
-	 YANGLES = set the Y-Angles of the ASF = [-45, -30,-15,0, 15, 30, 45] 
-	 NoClusters = option for using different multiple clusters
-	 ActuationEnergy = choose weather you want to include the the needed actuation energy for the ASF adjustment
-	 room_width =     
-	 room_height =
-	 room_depth = 
-	 glazing_percentage_w = perecentage of glazing of the total room width
-	 glazing_percentage_h =  perecentage of glazing of the total room height
+   geoLocation: set the location which should be evaluated, make sure the correspoding .epw file is saved in the WeatherData folder
+   Save: decide weather you want to save (True) or not save (False) the results
+   optimization_Types: Decide for which energy demand type, you want to do the optimisation for
+   DataName: choose the name for the stored data
+   XANGLES = set the X-Angles of the ASF = [0, 15, 30, 45, 60, 75, 90] , 0 = closed, 90 = open
+   YANGLES = set the Y-Angles of the ASF = [-45, -30,-15,0, 15, 30, 45] 
+   NoClusters = option for using different multiple clusters
+   ActuationEnergy = choose weather you want to include the the needed actuation energy for the ASF adjustment
+   room_width =     
+   room_height =
+   room_depth = 
+   glazing_percentage_w = perecentage of glazing of the total room width
+   glazing_percentage_h =  perecentage of glazing of the total room height
 
 
 	
@@ -140,108 +140,105 @@ SimulationOptions= {
 ###############################################################################
 
 def MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions):
-		
-		# add python_path to system path, so that all files are available:
-		sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
-		sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'python'))
-		
-		from simulationFunctions import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables, \
-		PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, createAllPlots, SaveResults 
-		
-		 
-		FolderName = initializeSimulation(SimulationData = SimulationData)
-																						
-						
-		initializeASF(panel_data = PanelData)
-	 
-		
-		roomFloorArea = setBuildingParameters(
-														 building_data = BuildingData)
-														
-		
-		BuildingProperties = initializeBuildingSimulation(
-														 building_data = BuildingData,    
-														 BuildingProperties = BuildingProperties)
-										
-		
-		paths, weatherData, SunTrackingData = setPaths(
-															geoLocation = SimulationData['geoLocation'], 
-															Occupancy = SimulationOptions['Occupancy'],
-															FolderName = FolderName)
-		
-		
-		ANGLES, hour_in_month, NumberCombinations, combinationAngles, daysPerMonth, \
-		hourRadiation, hourRadiation_calculated, sumHours = CalculateVariables(
-														SunTrackingData = SunTrackingData, 
-														building_data = BuildingData, 
-														XANGLES = PanelData['XANGLES'], 
-														YANGLES = PanelData['YANGLES'])
-		
-		PV_electricity_results, PV_detailed_results, \
-		BuildingRadiationData_HOD, now = runRadiationCalculation(
-														paths = paths, 
-														XANGLES = PanelData['XANGLES'], 
-														YANGLES = PanelData['YANGLES'], 
-														daysPerMonth = daysPerMonth, 
-														hour_in_month = hour_in_month, 
-														FolderName = FolderName,
-														panel_data = PanelData, 
-														NumberCombinations = NumberCombinations, 
-														createPlots = False, 
-														simulationOption = {'timePeriod' : None})
-		 
-		 
-		#rearrange the Radiation Data on PV and Window into HOY form
-		PV, BuildingRadiationData_HOY = PrepareRadiationData(
-														hour_in_month = hour_in_month, 
-														daysPerMonth = daysPerMonth, 
-														BuildingRadiationData_HOD = BuildingRadiationData_HOD, 
-														PV_electricity_results = PV_electricity_results, 
-														NumberCombinations = NumberCombinations)
-		
-								 
-		hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, \
-		BestKey_df, x_angles, y_angles = runBuildingSimulation(
-														geoLocation = SimulationData['geoLocation'], 
-														paths = paths, 
-														optimization_Types = SimulationData['optimizationTypes'], 
-														building_data =  BuildingData, 
-														weatherData = weatherData, 
-														hourRadiation = hourRadiation, 
-														BuildingRadiationData_HOY = BuildingRadiationData_HOY, 
-														PV = PV, 
-														NumberCombinations = NumberCombinations, 
-														combinationAngles = combinationAngles, 
-														BuildingProperties = BuildingProperties, 
-														setBackTemp = SimulationOptions['setBackTemp'], 
-														daysPerMonth = daysPerMonth, 
-														ANGLES = ANGLES)
-				
-		fig = createAllPlots(
-														monthlyData = monthlyData, 
-														roomFloorArea = roomFloorArea, 
-														x_angles = x_angles, 
-														y_angles = y_angles, 
-														hour_in_month = hour_in_month, 
-														optimization_Types = SimulationData['optimizationTypes'])
-			 
-				
-		ResultsBuildingSimulation, monthlyData, yearlyData \
-														= SaveResults(
-														now = now, 
-														Save = SimulationData['Save'], 
-														geoLocation = SimulationData['geoLocation'], 
-														paths = paths, 
-														fig = fig, 
-														optimization_Types = SimulationData['optimizationTypes'],  
-														monthlyData = monthlyData, 
-														yearlyData = yearlyData, 
-														ResultsBuildingSimulation = ResultsBuildingSimulation, 
-														BuildingProperties = BuildingProperties,
-														x_angles = x_angles,
-														y_angles = y_angles)
-														
-		return ResultsBuildingSimulation, monthlyData, yearlyData, x_angles
-
-if __name__ == "__main__":
-	ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+    
+    # add python_path to system path, so that all files are available:
+    sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
+    sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'python'))
+    
+    from simulationFunctions import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables, \
+    PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, createAllPlots, SaveResults 
+    
+     
+    FolderName = initializeSimulation(SimulationData = SimulationData)
+                                            
+            
+    initializeASF(panel_data = PanelData)
+   
+    
+    roomFloorArea = setBuildingParameters(
+                             building_data = BuildingData)
+                            
+    
+    BuildingProperties = initializeBuildingSimulation(
+                             building_data = BuildingData,    
+                             BuildingProperties = BuildingProperties)
+                    
+    
+    paths, weatherData, SunTrackingData = setPaths(
+                              geoLocation = SimulationData['geoLocation'], 
+                              Occupancy = SimulationOptions['Occupancy'],
+                              FolderName = FolderName)
+    
+    
+    ANGLES, hour_in_month, NumberCombinations, combinationAngles, daysPerMonth, \
+    hourRadiation, hourRadiation_calculated, sumHours = CalculateVariables(
+                            SunTrackingData = SunTrackingData, 
+                            building_data = BuildingData, 
+                            XANGLES = PanelData['XANGLES'], 
+                            YANGLES = PanelData['YANGLES'])
+    
+    PV_electricity_results, PV_detailed_results, \
+    BuildingRadiationData_HOD, now = runRadiationCalculation(
+                            paths = paths, 
+                            XANGLES = PanelData['XANGLES'], 
+                            YANGLES = PanelData['YANGLES'], 
+                            daysPerMonth = daysPerMonth, 
+                            hour_in_month = hour_in_month, 
+                            FolderName = FolderName,
+                            panel_data = PanelData, 
+                            NumberCombinations = NumberCombinations, 
+                            createPlots = False, 
+                            simulationOption = {'timePeriod' : None})
+     
+     
+    #rearrange the Radiation Data on PV and Window into HOY form
+    PV, BuildingRadiationData_HOY = PrepareRadiationData(
+                            hour_in_month = hour_in_month, 
+                            daysPerMonth = daysPerMonth, 
+                            BuildingRadiationData_HOD = BuildingRadiationData_HOD, 
+                            PV_electricity_results = PV_electricity_results, 
+                            NumberCombinations = NumberCombinations)
+    
+                 
+    hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, \
+    BestKey_df, x_angles, y_angles = runBuildingSimulation(
+                            geoLocation = SimulationData['geoLocation'], 
+                            paths = paths, 
+                            optimization_Types = SimulationData['optimizationTypes'], 
+                            building_data =  BuildingData, 
+                            weatherData = weatherData, 
+                            hourRadiation = hourRadiation, 
+                            BuildingRadiationData_HOY = BuildingRadiationData_HOY, 
+                            PV = PV, 
+                            NumberCombinations = NumberCombinations, 
+                            combinationAngles = combinationAngles, 
+                            BuildingProperties = BuildingProperties, 
+                            setBackTemp = SimulationOptions['setBackTemp'], 
+                            daysPerMonth = daysPerMonth, 
+                            ANGLES = ANGLES)
+        
+    fig = createAllPlots(
+                            monthlyData = monthlyData, 
+                            roomFloorArea = roomFloorArea, 
+                            x_angles = x_angles, 
+                            y_angles = y_angles, 
+                            hour_in_month = hour_in_month, 
+                            optimization_Types = SimulationData['optimizationTypes'])
+       
+        
+    ResultsBuildingSimulation, monthlyData, yearlyData \
+                            = SaveResults(
+                            now = now, 
+                            Save = SimulationData['Save'], 
+                            geoLocation = SimulationData['geoLocation'], 
+                            paths = paths, 
+                            fig = fig, 
+                            optimization_Types = SimulationData['optimizationTypes'],  
+                            monthlyData = monthlyData, 
+                            yearlyData = yearlyData, 
+                            ResultsBuildingSimulation = ResultsBuildingSimulation, 
+                            BuildingProperties = BuildingProperties,
+                            x_angles = x_angles,
+                            y_angles = y_angles)
+                            
+    return ResultsBuildingSimulation, monthlyData, yearlyData, x_angles

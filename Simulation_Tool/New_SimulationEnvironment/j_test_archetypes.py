@@ -23,7 +23,7 @@ occ_path = 'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semsete
 ##Constants
 
 SimulationData= {
-'optimizationTypes' : ['E_total', 'E_total_elec'], #'Heating','Cooling', 'E_HCL', 'Heating_elec','Cooling_elec', 'E_HCL_elec', 'SolarEnergy', 'Lighting'],
+'optimizationTypes' : ['E_total'], #'Heating','Cooling', 'E_HCL', 'Heating_elec','Cooling_elec', 'E_HCL_elec', 'SolarEnergy', 'Lighting'],
 'DataName' : 'ZH05_49comb',#'ZH13_49comb', #'ZH05_49comb', #,
 'geoLocation' : 'Zuerich_Kloten_2005', #'Zuerich_Kloten_2013', #'Zuerich_Kloten_2005',
 'Save' : True}
@@ -221,7 +221,9 @@ resultsYD = []
 print BP_dict['GYM1']
 print SD_dict['GYM1']
 
-#ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BP_dict["GYM1"], SD_dict["GYM1"])
+ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BP_dict["GYM1"], SD_dict["GYM1"])
+
+
 #print yearlyData
 """
 for key in BP_dict.iterkeys():
