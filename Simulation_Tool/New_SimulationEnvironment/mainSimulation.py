@@ -88,7 +88,8 @@ for ii in range(1,4):
     'DataName' : DataName[ii],
     'geoLocation' : location[ii],
     'EPWfile': EPWfile[ii],
-    'Save' : True}
+    'Save' : True,
+    'ShowFig': True}
     
     
     #DefaultValues
@@ -235,13 +236,15 @@ for ii in range(1,4):
                                 daysPerMonth = daysPerMonth, 
                                 ANGLES = ANGLES)
         
-           
-        fig = createAllPlots(   monthlyData = monthlyData, 
-                                roomFloorArea = roomFloorArea, 
-                                x_angles = x_angles, 
-                                y_angles = y_angles, 
-                                hour_in_month = hour_in_month, 
-                                optimization_Types = SimulationData['optimizationTypes'])
+        if SimulationData['ShowFig'] or SimulationData['Save']:   
+            fig = createAllPlots(   monthlyData = monthlyData, 
+                                    roomFloorArea = roomFloorArea, 
+                                    x_angles = x_angles, 
+                                    y_angles = y_angles, 
+                                    hour_in_month = hour_in_month, 
+                                    optimization_Types = SimulationData['optimizationTypes'])
+        else:
+            fig = None
            
             
         ResultsBuildingSimulation, monthlyData, yearlyData \

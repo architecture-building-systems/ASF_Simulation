@@ -26,7 +26,8 @@ class TestMainSimulation(unittest.TestCase):
 		'DataName' : 'ZH05_49comb',
 		'geoLocation' : 'Zuerich_Kloten_2005',
 		'EPWfile' : 'Zuerich_Kloten_2005.epw',
-		'Save' : False}
+		'Save' : True,
+		'ShowFig': False}
 		
 		#Set panel data
 		PanelData={
@@ -89,7 +90,7 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(ResultsBuildingSimulation['E_total']['BestCombKey'][38],[5])
 		
 		
-	def test_ELEC2013(self):
+	def atest_ELEC2013(self):
 		#Set simulation data
 		print 'running elec test'
 		SimulationData= {
@@ -97,7 +98,8 @@ class TestMainSimulation(unittest.TestCase):
 		'DataName' : 'ZH13_49comb',
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
-		'Save' : False}
+		'Save' : False,
+		'ShowFig': True}
 		
 		#Set panel data
 		PanelData={
