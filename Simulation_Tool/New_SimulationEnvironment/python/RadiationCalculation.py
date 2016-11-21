@@ -11,12 +11,11 @@ import csv
 import numpy as np
 
 def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month, DataNamePV, DataNameWin):
-    
                    
     if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results_' + DataNamePV + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'BuildingRadiationData_HOD_' + DataNameWin + '.npy')):    
         if not os.path.isdir(paths['PV']):
             os.makedirs(paths['PV'])
-    
+
         # create dicitionary to save optimal angles:
         BuildingRadiationData_HOD = {}
         
