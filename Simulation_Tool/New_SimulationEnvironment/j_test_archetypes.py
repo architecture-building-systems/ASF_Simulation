@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
-import cdecimal as dec
+#import cdecimal as dec
 import re as re
 import itertools
 import csv
@@ -220,7 +220,8 @@ resultsYD = []
 
 print BP_dict['GYM1']
 print SD_dict['GYM1']
-ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BP_dict["GYM1"], SD_dict["GYM1"])
+
+#ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BP_dict["GYM1"], SD_dict["GYM1"])
 #print yearlyData
 """
 for key in BP_dict.iterkeys():

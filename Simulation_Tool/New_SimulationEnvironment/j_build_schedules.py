@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
-import cdecimal as dec
+#import cdecimal as dec
 import re as re
 import csv
 import os, sys

@@ -417,5 +417,4 @@ def SaveResults(now, Save, geoLocation, paths, fig0, fig1, fig2, optimization_Ty
     print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
     return ResultsBuildingSimulation['E_total'], monthlyData, yearlyData
-
-        
+  
