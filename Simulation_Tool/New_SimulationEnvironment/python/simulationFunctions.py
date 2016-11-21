@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 def initializeSimulation(SimulationData):
-           
+    print 'I am running this file'  
 #    #check if E_total is selcted
 #    count = 0
 #    for ii in SimulationData['optimizationTypes']:  
@@ -45,7 +45,7 @@ def initializeSimulation(SimulationData):
     return FolderName
 
 def initializeASF(panel_data):
-  
+    
     #Save parameters to be imported into grasshopper
     with open('panel.json','w') as f:
         f.write(json.dumps(panel_data))
@@ -331,7 +331,7 @@ def PrepareRadiationData(hour_in_month, daysPerMonth, BuildingRadiationData_HOD,
 
 
     
-def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES):
+def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, CoolingSetBackTemp, HeatingSetBackTemp, daysPerMonth, ANGLES):
     
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])     
@@ -374,7 +374,8 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                                                                       NumberCombinations = NumberCombinations, 
                                                                       combinationAngles = combinationAngles,
                                                                       BuildingProperties = BuildingProperties,
-                                                                      setBackTemp = setBackTemp, 
+                                                                      CoolingSetBackTemp = CoolingSetBackTemp, 
+                                                                      HeatingSetBackTemp = HeatingSetBackTemp,
                                                                       occupancy = occupancy,
                                                                       Q_human = Q_human
                                                                       )

@@ -12,13 +12,18 @@ from mainSimulation import MainCalculateASF
 from j_build_schedules import build_schedules
 import j_epw_import_tools as epw_tools
 
-
+paths = {}
+paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+paths['CEA_folder'] = os.path.join(paths['main'], 'CEA_Archetypes_CH') 
+paths['Archetypes'] = os.path.join(paths['CEA_folder'], 'Archetypes') 
+paths['Archetypes_properties'] = os.path.join(paths['Archetypes'],'Archetypes_properties.xlsx')
+paths['Archetypes_schedules'] = os.path.join(paths['Archetypes'],'Archetypes_schedules.xlsx')
 #weather_path = 'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\Zurich-Kloten_2013.epw'
 #occupancy_path = 'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\Occupancy_COM.csv'
 #radiation_path = r'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\radiation_Building_Zh.csv'
-archetypes_properties_path = "C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\CH\Archetypes\Archetypes_properties.xlsx"
-archetypes_schedules_path = "C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\CH\Archetypes\Archetypes_schedules.xlsx"
-occ_path = 'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\schedules_occ.csv'
+#archetypes_properties_path = "C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\CH\Archetypes\Archetypes_properties.xlsx"
+#archetypes_schedules_path = "C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\CH\Archetypes\Archetypes_schedules.xlsx"
+#occ_path = 'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\schedules_occ.csv'
 
 ##Constants
 
@@ -26,7 +31,7 @@ SimulationData= {
 'optimizationTypes' : ['E_total'], #'Heating','Cooling', 'E_HCL', 'Heating_elec','Cooling_elec', 'E_HCL_elec', 'SolarEnergy', 'Lighting'],
 'DataName' : 'ZH05_49comb',#'ZH13_49comb', #'ZH05_49comb', #,
 'geoLocation' : 'Zuerich_Kloten_2005', #'Zuerich_Kloten_2013', #'Zuerich_Kloten_2005',
-'Save' : True}
+'Save' : False}
 
 #Set panel data
 PanelData={
@@ -64,7 +69,7 @@ lighting_ontrol_d ={
 }
 
 def ArchT_build_df(BuildingData):
-	arch = pd.read_excel(archetypes_properties_path,sheetname='THERMAL')
+	arch = pd.read_excel(paths['Archetypes_properties'],sheetname='THERMAL')
 	r = re.compile("([a-zA-Z_]+)")
 	m = r.match(arch["Code"][1])
 	
@@ -77,12 +82,12 @@ def ArchT_build_df(BuildingData):
 	arch = arch.drop('U_roof',axis=1)
 	arch = arch.drop('U_base',axis=1)
 	
-	int_loads = pd.read_excel(archetypes_properties_path,sheetname='INTERNAL_LOADS')
+	int_loads = pd.read_excel(paths['Archetypes_properties'],sheetname='INTERNAL_LOADS')
 	int_loads = int_loads.set_index(['Code'])
 	int_loads = int_loads[['Qs_Wp','Ea_Wm2','El_Wm2']]
 	int_loads = int_loads.reset_index(drop=False)
 
-	T_sp = pd.read_excel(archetypes_properties_path,sheetname='INDOOR_COMFORT')
+	T_sp = pd.read_excel(paths['Archetypes_properties'],sheetname='INDOOR_COMFORT')
 
 	b_props = arch.merge(int_loads,how='left', left_on='code1', right_on='Code')
 	b_props = b_props.merge(T_sp,how='left', left_on='code1', right_on='Code')
@@ -163,7 +168,7 @@ def ArchT_build_df(BuildingData):
 	b_props['coolingEfficiency'] = coolingEfficiency
 	return b_props
 
-# For a different set of buildings, set path and call build_schedules(b_props,path_data) here. I still haven't figured out how to set the correct path using simulationFunctions.py.
+# j_build_schedules(b_props,paths['Archetypes_schedules'])
 # If the set remains the same, the existing scehdules will be sufficient.
 
 #Create dictionaries for Archetypes:

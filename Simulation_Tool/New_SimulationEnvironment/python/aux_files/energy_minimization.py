@@ -11,7 +11,7 @@ import time
 import pandas as pd
 
 
-def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties,  CoolingSetBackTemp, HeatingSetbackTemp, occupancy, Q_human):
+def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties,  CoolingSetBackTemp, HeatingSetBackTemp, occupancy, Q_human):
 
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])    
@@ -162,10 +162,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                         coolingEfficiency = BuildingProperties["coolingEfficiency"]
                         )         
                                
-        if occupancy['People'][hour_of_year] == 0
-             Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - HeatingSetbackTemp
-             Office.theta_int_c_set = BuildingProperties['theta_int_c_set'] + CoolingSetbackTemp
-        elif  
+        if occupancy['People'][hour_of_year] == 0:
+             Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - HeatingSetBackTemp
+             Office.theta_int_c_set = BuildingProperties['theta_int_c_set'] + CoolingSetBackTemp
         else:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set']
              Office.theta_int_c_set = BuildingProperties['theta_int_c_set']                   
