@@ -89,8 +89,8 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
     sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'python'))
     
-    from simulationFunctionsHourly import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables  
-    from simulationFunctionsHourly import PrepareRadiationData, runRadiationCalculation, runBuildingSimulation, SaveResults 
+    from simulationFunctionsHourly import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables, runRadiationCalculation  
+    #from simulationFunctionsHourly import PrepareRadiationData, , runBuildingSimulation, SaveResults 
     from calculateHOY import calcHOY
     
   
@@ -129,7 +129,8 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             XANGLES = PanelData['XANGLES'], 
                             YANGLES = PanelData['YANGLES'])
     
-    PV_electricity_results, PV_detailed_results, HourlyRadiation, now = runRadiationCalculation(
+    #PV_electricity_results, PV_detailed_results, HourlyRadiation, now = 
+    runRadiationCalculation(
                             SimulationPeriode = SimulationPeriod,
                             paths = paths, 
                             XANGLES = PanelData['XANGLES'], 
@@ -142,74 +143,77 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             start = start, end = end)
                     
 
-    #rearrange the Radiation Data on PV and Window into HOY form
-    PV_Data, BuildingRadiationHOY = PrepareRadiationData(
-                            HourlyRadiation = HourlyRadiation, 
-                            PV_electricity_results = PV_electricity_results, 
-                            NumberCombinations = NumberCombinations,
-                            SimulationPeriode = SimulationPeriod,
-                            start = start, end = end)
-                            
-    #return PV_Data, BuildingRadiationHOY, PV_electricity_results
-               
-    hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles = runBuildingSimulation(
-                            geoLocation = SimulationData['geoLocation'], 
-                            paths = paths, 
-                            optimization_Types = SimulationData['optimizationTypes'], 
-                            building_data =  BuildingData, 
-                            weatherData = weatherData, 
-                            hourRadiation = hourRadiation, 
-                            BuildingRadiationData_HOY = BuildingRadiationHOY, 
-                            PV = PV_Data, 
-                            NumberCombinations = NumberCombinations, 
-                            combinationAngles = combinationAngles, 
-                            BuildingProperties = BuildingProperties, 
-                            setBackTemp = SimulationOptions['setBackTemp'], 
-                            daysPerMonth = daysPerMonth, 
-                            ANGLES = ANGLES,
-                            start = start,
-                            end = end)
-    
-    #print "calucation is finished"
-                               
-        
-    ResultsBuildingSimulation, angles_df, anglesHOY, rbsELEC = SaveResults(
-                            now = now, 
-                            Save = SimulationData['Save'], 
-                            geoLocation = SimulationData['geoLocation'], 
-                            paths = paths, 
-                            optimization_Types = SimulationData['optimizationTypes'],  
-                            ResultsBuildingSimulation = ResultsBuildingSimulation, 
-                            BuildingProperties = BuildingProperties,
-                            x_angles = x_angles,
-                            y_angles = y_angles,
-                            SimulationData = SimulationData,
-                            start = start, end = end)
-    print "calucation is finished"
-                    
-    return ResultsBuildingSimulation, angles_df, anglesHOY, rbsELEC 
+#    #rearrange the Radiation Data on PV and Window into HOY form
+#    PV_Data, BuildingRadiationHOY = PrepareRadiationData(
+#                            HourlyRadiation = HourlyRadiation, 
+#                            PV_electricity_results = PV_electricity_results, 
+#                            NumberCombinations = NumberCombinations,
+#                            SimulationPeriode = SimulationPeriod,
+#                            start = start, end = end)
+#                            
+#    #return PV_Data, BuildingRadiationHOY, PV_electricity_results
+#               
+#    hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles = runBuildingSimulation(
+#                            geoLocation = SimulationData['geoLocation'], 
+#                            paths = paths, 
+#                            optimization_Types = SimulationData['optimizationTypes'], 
+#                            building_data =  BuildingData, 
+#                            weatherData = weatherData, 
+#                            hourRadiation = hourRadiation, 
+#                            BuildingRadiationData_HOY = BuildingRadiationHOY, 
+#                            PV = PV_Data, 
+#                            NumberCombinations = NumberCombinations, 
+#                            combinationAngles = combinationAngles, 
+#                            BuildingProperties = BuildingProperties, 
+#                            setBackTemp = SimulationOptions['setBackTemp'], 
+#                            daysPerMonth = daysPerMonth, 
+#                            ANGLES = ANGLES,
+#                            start = start,
+#                            end = end)
+#    
+#    #print "calucation is finished"
+#                               
+#        
+#    ResultsBuildingSimulation, angles_df, anglesHOY, rbsELEC = SaveResults(
+#                            now = now, 
+#                            Save = SimulationData['Save'], 
+#                            geoLocation = SimulationData['geoLocation'], 
+#                            paths = paths, 
+#                            optimization_Types = SimulationData['optimizationTypes'],  
+#                            ResultsBuildingSimulation = ResultsBuildingSimulation, 
+#                            BuildingProperties = BuildingProperties,
+#                            x_angles = x_angles,
+#                            y_angles = y_angles,
+#                            SimulationData = SimulationData,
+#                            start = start, end = end)
+#    print "calucation is finished"
+#                    
+#    return ResultsBuildingSimulation, angles_df, anglesHOY, rbsELEC 
 
                       
 
-for ii in [0]: #[2]
-
+for month in range(1,13): #[2]
+    ii = 0
     
     print "start"
     
-    Data = {'Name' : ['ZH13_49comb_cloudy_4_7', 'ZH13_49comb_Notcloudy_6_7', 'ZH13_49comb_Halfcloudy2_8_7'],
-            'day' : [4,6,8]}
+#    Data = {'Name' : ['ZH13_49comb_cloudy_4_7', 'ZH13_49comb_Notcloudy_6_7', 'ZH13_49comb_Halfcloudy2_8_7'],
+#            'day' : [4,6,8]}
+            
+    Data = {'Name' : ['ZH13_Illuminance'],
+            'day' : [15]}        
     
     
     
     #DefaultValues
     ###############################################################################
     SimulationPeriod = {
-    'FromMonth': 7,
-    'ToMonth':7,
+    'FromMonth': month,
+    'ToMonth':month,
     'FromDay': Data['day'][ii],
     'ToDay': Data['day'][ii],
-    'FromHour': 5,
-    'ToHour': 20}
+    'FromHour': 8,#5
+    'ToHour': 18}#20
     
     
     
@@ -222,8 +226,8 @@ for ii in [0]: #[2]
     
     #Set panel data
     PanelData={
-    "XANGLES": [0, 15, 30, 45, 60, 75, 90],
-    "YANGLES" : [-45,-30,-15, 0, 15, 30, 45],
+    "XANGLES": [0, 90],
+    "YANGLES" : [0],
     "NoClusters":1,
     "numberHorizontal":6,
     "numberVertical":9,
@@ -270,7 +274,7 @@ for ii in [0]: #[2]
     
    
 
-    ResultsBuildingSimulation, angles_df, anglesHOY, RBS_ELEC = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
-    
+    #ResultsBuildingSimulation, angles_df, anglesHOY, RBS_ELEC = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+    MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
     
     

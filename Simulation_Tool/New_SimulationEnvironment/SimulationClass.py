@@ -31,7 +31,7 @@ class ASF_Simulation(object):
             "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.2,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 20,\
             "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1},
             SimulationOptions= 
-            {'setBackTemp' : 4.,'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
+            {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
                             
                             
 
@@ -340,39 +340,41 @@ class ASF_Simulation(object):
 		
 	def runBuildingSimulation(self):
 
-		CoolingSetBackTemp = self.SimulationOptions['CoolingSetBackTemp']
-		HeatingSetBackTemp = self.SimulationOptions['HeatingSetBackTemp']
+           
+           
+            # add python_path to system path, so that all files are available:
+            sys.path.insert(0, self.paths['5R1C_ISO_simulator'])
+            self.setBackTempH = self.SimulationOptions['setBackTempH']
+            self.setBackTempC = self.SimulationOptions['setBackTempC']     
+            		
+            from energy_minimization import RC_Model
+            from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC
+            from read_occupancy import read_occupancy
+            		
+            #create dicitionaries to save the results
+            self.hourlyData = {}
+            self.monthlyData = {}
+            self.yearlyData = {}
+            self.ResultsBuildingSimulation = {}
+            self.BuildingSimulationELEC = {}
+            			
+            self.x_angles = {} #optimized x-angles
+            self.y_angles = {} #optimized y-angles
+            self.BestKey_df = {} #optimized keys of the ANGLES dictionary
+            		
+            		
+            #set parameters
+            human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
+            roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
+            		 
+            				
+            #people/m2/h, W    
+            occupancy, Q_human = read_occupancy(myfilename = self.paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)    
+            		
+            				
+            #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
+            for optimizationType in self.optimization_Types:
 
-		# add python_path to system path, so that all files are available:
-		sys.path.insert(0, self.paths['5R1C_ISO_simulator'])     
-		
-		from energy_minimization import RC_Model
-		from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC
-		from read_occupancy import read_occupancy
-		
-		#create dicitionaries to save the results
-		self.hourlyData = {}
-		self.monthlyData = {}
-		self.yearlyData = {}
-		self.ResultsBuildingSimulation = {}
-		self.BuildingSimulationELEC = {}
-			
-		self.x_angles = {} #optimized x-angles
-		self.y_angles = {} #optimized y-angles
-		self.BestKey_df = {} #optimized keys of the ANGLES dictionary
-		
-		
-		#set parameters
-		human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
-		roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
-		 
-				
-		#people/m2/h, W    
-		occupancy, Q_human = read_occupancy(myfilename = self.paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)    
-		
-				
-		#run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
-		for optimizationType in self.optimization_Types:
 				
 
 			self.hourlyData[optimizationType], self.ResultsBuildingSimulation[optimizationType], \
@@ -387,8 +389,10 @@ class ASF_Simulation(object):
                                                                          NumberCombinations = self.NumberCombinations, 
                                                                          combinationAngles = self.combinationAngles,
                                                                          BuildingProperties = self.BuildingProperties,
-                                                                         CoolingSetBackTemp = self.CoolingSetBackTemp,
-                                                                         HeatingSetBackTemp = self.HeatingSetBackTemp, 
+
+                                                                         setBackTempH = self.setBackTempH,
+                                                                         setBackTempC = self.setBackTempC,
+
                                                                          occupancy = occupancy,
                                                                          Q_human = Q_human
                                                                          )

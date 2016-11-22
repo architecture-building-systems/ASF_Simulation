@@ -211,7 +211,7 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
     
     
 #    
-    
+""" 
     #if there are no panels vertical and horizontal
     if panel_data['numberHorizontal'] == 0 and panel_data['numberVertical'] == 0:
         PV_electricity_results = {}
@@ -272,7 +272,7 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
     
     return PV_electricity_results, PV_detailed_results, HourlyRadiation, now,  
    
-   
+"""   
  
 def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinations, SimulationPeriode, start, end):
     
@@ -506,4 +506,4 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
     
     return ResultsBuildingSimulation, angles_df,anglesHOY, RBS_ELEC
 
-        
+     

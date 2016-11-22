@@ -133,7 +133,8 @@ from SimulationClass import ASF_Simulation
 #
 ##Set simulation Properties
 #SimulationOptions= {
-#'setBackTemp' : 4.,
+#'setBackTempH' : 4.,
+#'setBackTempC' : 4.,
 #'Occupancy' : 'Occupancy_COM.csv',
 #'ActuationEnergy' : False}
 
