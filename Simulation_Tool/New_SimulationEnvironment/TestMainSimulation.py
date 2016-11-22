@@ -8,10 +8,10 @@ import unittest
 import sys,os
 import numpy as np
 from buildingSystem import *  
+from SimulationClass import ASF_Simulation
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))        
 from mainSimulation import MainCalculateASF
-from buildingSystem import *  
 
 
 
@@ -19,7 +19,7 @@ class TestMainSimulation(unittest.TestCase):
 	
 		
 
-    def test_Standard(self):
+	def test_Standard(self):
 		#Set simulation data
 		print 'running standard test'
 		SimulationData= {
@@ -79,16 +79,13 @@ class TestMainSimulation(unittest.TestCase):
 		'ActuationEnergy' : False}
 		
 		
-		ResultsBuildingSimulation, monthlyData, yearlyData = MainCalculateASF(SimulationData = SimulationData, 
-																			  PanelData = PanelData, 
-																			  BuildingData = BuildingData, 
-																			  BuildingProperties = BuildingProperties, 
-																			  SimulationOptions = SimulationOptions)
+		ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+		ASFtest.SolveASF()
 		
-		self.assertEqual(round(yearlyData['E_total']['E'],2), 1189.82)
-		self.assertEqual(round(yearlyData['E_total']['PV'],2), -707.01)
+		self.assertEqual(round(ASFtest.yearlyData['E_total']['E'],2), 1189.82)
+		self.assertEqual(round(ASFtest.yearlyData['E_total']['PV'],2), -707.01)
 		#self.assertEqual(round(monthlyData['H'][0],2),3.56)
-		self.assertEqual(ResultsBuildingSimulation['E_total']['BestCombKey'][38],[5])
+		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'][38],[5])
 		
 		
 	def atest_ELEC2013(self):
@@ -161,7 +158,6 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(yearlyData['E_total_elec']['PV'],2), -727.06)
 		self.assertEqual(ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[45])
 	
-
 
 
 if __name__ == '__main__':
