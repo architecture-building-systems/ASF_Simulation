@@ -51,10 +51,14 @@ def build_schedules(BuildingData,path):
 
   os.mkdir(paths['data'])
   for column in occ_df:
-      occ_df[column].to_csv('schedules_occ_%s.csv'%column, header='people')
-      el_df[column].to_csv('schedules_el%s.csv'%column, header='people')
+    occ1 = pd.concat([occ_df[column]],axis=1, keys=['People'])
+    occ1['People'].to_csv('schedules_occ_%s.csv'%column,header=True)
 
+    el1 =pd.concat([el_df[column]],axis=1, keys=['People'])
+    el1['People'].to_csv('schedules_el_%s.csv'%column, header=True)
+    
 
+    
 """
 occ_df.to_csv('schedules_occ.csv')
 el_df.to_csv('schedules_el.csv')     

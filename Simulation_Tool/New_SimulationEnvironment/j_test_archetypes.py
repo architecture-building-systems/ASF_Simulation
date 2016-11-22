@@ -225,19 +225,3 @@ print SD_dict['GYM1']
 
 ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BP_dict["GYM1"], SD_dict["GYM1"])
 
-
-#print yearlyData
-"""
-for key in BP_dict.iterkeys():
-	print key
-	ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BP_dict["GYM1"], SD_dict["GYM1"])
-	resultsYD.append(yearlyData)
-
-#for BP,SD in itertools.izip(BP_dict,SD_dict):
-	print BP[key]
-#	ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BD, SD)
-	#resultsBS.append(ResultsBuildingSimulation)
-#	resultsYD.append(yearlyData)
-print resultsBS
-print resultsYD
-"""
