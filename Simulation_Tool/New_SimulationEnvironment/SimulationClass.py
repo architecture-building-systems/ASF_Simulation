@@ -15,9 +15,25 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from buildingSystem import *  
+
 class ASF_Simulation(object):
 
-	def __init__(self,SimulationData,PanelData, BuildingData, BuildingProperties, SimulationOptions):
+	def __init__(self,
+            SimulationData = 
+            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : False, 'ShowFig': False},
+            PanelData = 
+            {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500},
+            BuildingData = 
+            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 150},
+            BuildingProperties = 
+            {"glass_solar_transmitance" : 0.687,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
+            "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.2,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 20,\
+            "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1},
+            SimulationOptions= 
+            {'setBackTemp' : 4.,'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
+                            
+                            
 
 		self.SimulationData=SimulationData
 		self.PanelData=PanelData
@@ -199,13 +215,13 @@ class ASF_Simulation(object):
 				
 		
 		#Calculate the Radiation on the solar panels and window with ladybug
-		self.BuildingRadiationData_HOD = CalculateRadiationData( XANGLES = self.XANGLES, 
-															YANGLES = self.YANGLES, 
-															paths = self.paths, 
-															daysPerMonth = self.daysPerMonth, 
-															hour_in_month = self.hour_in_month,
-															DataNamePV = self.FolderName['DataName'],
-															DataNameWin = self.FolderName['DataName'])
+		self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
+                                                                    YANGLES = self.YANGLES, 
+												paths = self.paths, 
+												daysPerMonth = self.daysPerMonth, 
+												hour_in_month = self.hour_in_month,
+												DataNamePV = self.FolderName['DataName'],
+												DataNameWin = self.FolderName['DataName'])
 			
 		
 		#if there are no panels vertical and horizontal
@@ -323,6 +339,7 @@ class ASF_Simulation(object):
 		
 		
 	def runBuildingSimulation(self):
+
 		CoolingSetBackTemp = self.SimulationOptions['CoolingSetBackTemp']
 		HeatingSetBackTemp = self.SimulationOptions['HeatingSetBackTemp']
 
@@ -357,22 +374,23 @@ class ASF_Simulation(object):
 		#run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
 		for optimizationType in self.optimization_Types:
 				
-			self.hourlyData[optimizationType], self.ResultsBuildingSimulation[optimizationType], self.BuildingSimulationELEC[optimizationType] = RC_Model (
-																		  optimization_type = optimizationType, 
-																		  paths = self.paths,
-																		  building_data = self.BuildingData, 
-																		  weatherData = self.weatherData, 
-																		  hourRadiation = self.hourRadiation, 
-																		  BuildingRadiationData_HOY = self.BuildingRadiationData_HOY, 
-																		  PV = self.PV, 
-																		  NumberCombinations = self.NumberCombinations, 
-																		  combinationAngles = self.combinationAngles,
-																		  BuildingProperties = self.BuildingProperties,
-																		  CoolingSetBackTemp = CoolingSetBackTemp, 
-																		  HeatingSetBackTemp = HeatingSetBackTemp,
-																		  occupancy = occupancy,
-																		  Q_human = Q_human
-																		  )
+
+			self.hourlyData[optimizationType], self.ResultsBuildingSimulation[optimizationType], \
+                 self.BuildingSimulationELEC[optimizationType] = RC_Model (
+                                                                         optimization_type = optimizationType, 
+                                                                         paths = self.paths,
+                                                                         building_data = self.BuildingData, 
+                                                                         weatherData = self.weatherData, 
+                                                                         hourRadiation = self.hourRadiation, 
+                                                                         BuildingRadiationData_HOY = self.BuildingRadiationData_HOY, 
+                                                                         PV = self.PV, 
+                                                                         NumberCombinations = self.NumberCombinations, 
+                                                                         combinationAngles = self.combinationAngles,
+                                                                         BuildingProperties = self.BuildingProperties,
+                                                                         setBackTemp = setBackTemp, 
+                                                                         occupancy = occupancy,
+                                                                         Q_human = Q_human
+                                                                         )
 			
 			#prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  
 			self.BestKey_df[optimizationType], self.x_angles[optimizationType], self.y_angles[optimizationType] = prepareAngles(
@@ -524,7 +542,9 @@ class ASF_Simulation(object):
 		if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
 			self.createAllPlots()
 		else:
-			fig = None
+
+			self.fig = None #?
+
 		   			
 		self.SaveResults()
 								

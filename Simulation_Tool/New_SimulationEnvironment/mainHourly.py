@@ -173,7 +173,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     #print "calucation is finished"
                                
         
-    ResultsBuildingSimulation, angles_df, anglesHOY = SaveResults(
+    ResultsBuildingSimulation, angles_df, anglesHOY, rbsELEC = SaveResults(
                             now = now, 
                             Save = SimulationData['Save'], 
                             geoLocation = SimulationData['geoLocation'], 
@@ -183,14 +183,15 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             BuildingProperties = BuildingProperties,
                             x_angles = x_angles,
                             y_angles = y_angles,
-                            SimulationData = SimulationData)
+                            SimulationData = SimulationData,
+                            start = start, end = end)
     print "calucation is finished"
                     
-    return ResultsBuildingSimulation, angles_df, anglesHOY 
+    return ResultsBuildingSimulation, angles_df, anglesHOY, rbsELEC 
 
                       
 
-for ii in [0,1,2]: #[2]
+for ii in [0]: #[2]
 
     
     print "start"
@@ -217,7 +218,7 @@ for ii in [0,1,2]: #[2]
     'optimizationTypes' : ['E_total'],# 'Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
     'DataName' : Data['Name'][ii],
     'geoLocation' : 'Zuerich_Kloten_2013',
-    'Save' : False}
+    'Save' : True}
     
     #Set panel data
     PanelData={
@@ -269,7 +270,7 @@ for ii in [0,1,2]: #[2]
     
    
 
-    ResultsBuildingSimulation, angles_df,anglesHOY = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+    ResultsBuildingSimulation, angles_df, anglesHOY, RBS_ELEC = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
     
     
     

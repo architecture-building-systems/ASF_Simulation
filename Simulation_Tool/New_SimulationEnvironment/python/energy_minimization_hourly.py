@@ -520,6 +520,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     
         #count uncomfortable hours
         if (T_in > Tmax or T_in < Tmin):
+            print 'occupancy', occupancy['People'][hour_of_year]
             if occupancy['People'][hour_of_year] != 0:               
                 uncomf_hours += 1
                 #if uncomftrable, than set value to true
@@ -549,9 +550,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
         
         #show which HOY is calculated
-        print 'HOY:', hour_of_year
-        toc = time.time() - tic
-        print 'time passed (sec): ' + str(round(toc,2))
+        if hour_of_year % 5 == 0:
+            print 'HOY:', hour_of_year
+            toc = time.time() - tic
+            print 'time passed (sec): ' + str(round(toc,2))
             
     
     #store results of the best angle combinations in DataFrame   

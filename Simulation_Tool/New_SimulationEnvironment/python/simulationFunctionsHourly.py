@@ -291,7 +291,7 @@ def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinat
                 HOY = start + passedHours
                 BuildingRadiationHOY[HOY] = HourlyRadiation[monthi][day][hour] #W
                 
-                print 'HOY: ' + str(HOY) + ' of ' + str(end)
+                #print 'HOY: ' + str(HOY) + ' of ' + str(end)
 
                 PV[HOY] = PV_electricity_results['Pmpp_sum'][count:count+NumberCombinations] #Watts
                 count +=NumberCombinations               
@@ -386,7 +386,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 
 
 
-def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData):
+def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end):
     
     angles = {}
     
@@ -399,8 +399,7 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
     anglesHOY = angles_df
     
     
-    ResultsBuildingSimulation['E_total']['PV'] = ResultsBuildingSimulation['E_total']['PV']*-1    
-    
+
     plt.style.use('ggplot')
     fig = plt.figure(figsize=(6, 3))
     
@@ -413,30 +412,26 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
     with pd.plot_params.use('x_compat', True):
         ResultsBuildingSimulation['E_total']['E_tot'].plot(color='r', label = 'E')    
         ResultsBuildingSimulation['E_total']['C'].plot(color='b', label = 'C')
-        lns1 = ResultsBuildingSimulation['E_total']['H'].plot(color='g', label = 'H')
-        lns2 = ResultsBuildingSimulation['E_total']['PV'].plot(color='y', label = 'PV')
-        lns3 = ResultsBuildingSimulation['E_total']['L'].plot(color='m', label = 'L')    
+        ResultsBuildingSimulation['E_total']['H'].plot(color='g', label = 'H')
+        ResultsBuildingSimulation['E_total']['PV'].plot(color='y', label = 'PV')
+        ResultsBuildingSimulation['E_total']['L'].plot(color='m', label = 'L')    
         
    
-#    lns = lns1+lns2+lns3
-#    labs = [l.get_label() for l in lns]
-#
-#    lgd=ax1.legend(lns, labs, loc=4,bbox_to_anchor=(0.9,-4.5), ncol=3)       
+  
         
     plt.legend(loc='best', fontsize = 6)
     #plt.legend(loc='center right', bbox_to_anchor=(1.3, 0.5))
 
     plt.ylabel('Net Energy [kWh]', fontsize=12)
     plt.yticks([-400,0,400,800,1200])
-    plt.xlabel('Hour of Day', fontsize=12)   
+    #plt.xticks(range(start,end+1))
+    plt.xlabel('Hour of Day: 5 to 20', fontsize=12)   
     
     with pd.plot_params.use('x_compat', True):        
         angles_df['X_Angles'].plot(color='c',style='--', secondary_y=True) 
         angles_df['Y_Angles'].plot(color='k', style='--',secondary_y=True) 
         
-    #ax1.set_yticklabels([20,100])
-    #ax.set_xticklabels([])    
-    
+   
     plt.legend(loc=4, fontsize = 10)
     #plt.legend(loc='best')
     
@@ -444,39 +439,33 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
     plt.yticks([-90,-45,0,45,90])
     
     plt.tight_layout()
-    
-#    fig = plt.figure(figsize=(4, 4))
-#    plt.style.use('ggplot')
-    
-        
-#    ax2 = fig.add_subplot(111) 
-#    #ax2.title('Cloudy Day', fontsize=12)
-#    ax2.title.set_text('title')  
-#    
-#    with pd.plot_params.use('x_compat', True):         
-#        angles_df['X_ANGLES1'].plot(color='c', secondary_y=True) 
-#        angles_df['Y_ANGLES1'].plot(color='k', secondary_y=True) 
-#        
-#    plt.legend(loc=1, fontsize = 10)
-#    #plt.legend(loc='best')
-#    plt.xlabel('Energy', fontsize=12)
-#    plt.ylabel('Radiation [Wh/m2]', fontsize=12)    
-        
-
-    
-    
-#    df = pd.DataFrame(ResultsBuildingSimulation['E_total'], columns= ['E_tot','C'])
-##    angles_df['X_ANGLES1'].plot(color='m', secondary_y=True) 
-###        angles_df['Y_ANGLES1'].plot(color='k', secondary_y=True)    
-#    
-#    df.plot(style='k--', label='Series')    
-#    angles_df.plot(color='m', secondary_y= ['X_ANGLES1', 'Y_ANGLES1'], label='Series')       
-    
+       
+   
+   
+   
     angles_df = angles_df.T
     angles_df.columns = range(5,21)
     
-
-     
+    
+    ResultsBuildingSimulation['E_total']['PV'] = ResultsBuildingSimulation['E_total']['PV']*-1
+    
+    RBS_ELEC = {}
+    
+    #rearrange dataframes and split them
+    for ii in optimization_Types:    
+    
+        ResultsBuildingSimulation[ii]  = ResultsBuildingSimulation[ii].T   
+        
+        ELEC_df = pd.DataFrame(ResultsBuildingSimulation[ii], index = ['PV', 'L','C_elec', 'H_elec', 'E_HCL_elec', 'E_tot_elec']  ,columns= range(start,end+1))
+    
+        RBS_ELEC[ii] = ELEC_df.T
+        
+        ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T 
+        del ResultsBuildingSimulation[ii]['C_elec']
+        del ResultsBuildingSimulation[ii]['H_elec']
+        del ResultsBuildingSimulation[ii]['E_tot_elec']
+        del ResultsBuildingSimulation[ii]['E_HCL_elec']
+    
     
     if Save == True: 
         
@@ -490,8 +479,10 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
        
         for ii in optimization_Types:
             # save results 
-            ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T
-            ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'Building_Simulation_'+ ii + '.csv'))
+            #ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T
+            ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
+            RBS_ELEC[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
+            
         
         #change name of the columns
         
@@ -513,6 +504,6 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
     
     print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
-    return ResultsBuildingSimulation, angles_df,anglesHOY
+    return ResultsBuildingSimulation, angles_df,anglesHOY, RBS_ELEC
 
         
