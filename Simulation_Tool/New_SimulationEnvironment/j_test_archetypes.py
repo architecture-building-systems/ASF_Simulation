@@ -178,8 +178,8 @@ def MakeDicts(b_props):
 						  'Tcs_set_C',
 						  'ACH',
 						  'c_m_A_f',
-						  'Qs_Wp',    #[W/p]
-						  'Ea_Wm2',    #[W/m2]
+						  'Qs_Wp',    #Sensible heat gain due to occupancy [W/p]
+						  'Ea_Wm2',    #Maximum electrical consumption due to appliances per unit of gross floor area [W/m2]
 						  'glass_solar_transmitance',
 						  'glass_light_transmitance',
 						  'Lighting_Utilisation_Factor',
@@ -218,11 +218,19 @@ b_props = ArchT_build_df(BuildingData)
 
 BP_dict, SO_dict = MakeDicts(b_props)
 
+keylist = []
+for key,item in BP_dict.iteritems():
+	keylist.append(key)
+
 ######################################
+runlist = keylist[:2]
 
+#tech_names = { 'AAPL', 'IBM', 'HPQ', 'MSFT' }
+p2 = { key:value for key,value in BP_dict.items() if key in runlist }
 
-print BP_dict['GYM1']
-print SO_dict['GYM1']
+#print BP_dict['GYM1']
+#print SO_dict['GYM1']
+print p2
 
-ASF_archetypes=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict['GYM1'], SimulationOptions = SO_dict['GYM1'])
-ASF_archetypes.SolveASF()
+#ASF_archetypes=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict[runlist], SimulationOptions = SO_dict[runlist])
+#ASF_archetypes.SolveASF()
