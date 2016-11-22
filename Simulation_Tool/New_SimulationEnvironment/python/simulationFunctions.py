@@ -14,6 +14,7 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 def initializeSimulation(SimulationData):
     print 'I am running this file'  
 #    #check if E_total is selcted
@@ -33,8 +34,8 @@ def initializeSimulation(SimulationData):
     
     #Set panel data
     FolderName={
-    "DataNamePV": SimulationData['DataName'],
-    "DataNameWin": SimulationData['DataName']  
+    "DataName": SimulationData['DataName'],
+    "EPW" : SimulationData['EPWfile']  
     }
     
     #Save parameters to be imported into grasshopper
@@ -86,8 +87,8 @@ def setPaths(geoLocation, Occupancy, FolderName):
     paths['python'] = os.path.join(paths['main'], 'python')
     paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
     
-    paths['radiation_results'] = os.path.join(paths['main'],'radiation_results_' + FolderName['DataNamePV'])
-    paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_' + FolderName['DataNamePV'])
+    paths['radiation_results'] = os.path.join(paths['main'],'radiation_results_' + FolderName['DataName'])
+    paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_' + FolderName['DataName'])
     paths['PV'] = os.path.join(paths['main'], 'PV_results')
 
     paths['save_results_path'] = paths['PV']
@@ -209,8 +210,8 @@ def runRadiationCalculation(paths, XANGLES, YANGLES, daysPerMonth, hour_in_month
                                                         paths = paths, 
                                                         daysPerMonth = daysPerMonth, 
                                                         hour_in_month = hour_in_month,
-                                                        DataNamePV = FolderName['DataNamePV'],
-                                                        DataNameWin = FolderName['DataNameWin'])
+                                                        DataNamePV = FolderName['DataName'],
+                                                        DataNameWin = FolderName['DataName'])
         
     
     #if there are no panels vertical and horizontal
@@ -222,7 +223,7 @@ def runRadiationCalculation(paths, XANGLES, YANGLES, daysPerMonth, hour_in_month
         
     
     #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
-    if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results_' + FolderName['DataNamePV'] + '.npy')): 
+    if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results_' + FolderName['DataName'] + '.npy')): 
         if not os.path.isdir(paths['PV']):
             os.makedirs(paths['PV'])
             
@@ -245,7 +246,7 @@ def runRadiationCalculation(paths, XANGLES, YANGLES, daysPerMonth, hour_in_month
                                simulationOption = simulationOption,
                                XANGLES = XANGLES, YANGLES= YANGLES, 
                                hour_in_month = hour_in_month, 
-                               paths = paths, DataNamePV = FolderName['DataNamePV'])
+                               paths = paths, DataNamePV = FolderName['DataName'])
                                
         else:
             PV_electricity_results, PV_detailed_results = \
@@ -261,13 +262,13 @@ def runRadiationCalculation(paths, XANGLES, YANGLES, daysPerMonth, hour_in_month
                                simulationOption = simulationOption,
                                XANGLES = XANGLES, YANGLES= YANGLES, 
                                hour_in_month = hour_in_month,
-                               paths = paths, DataNamePV = FolderName['DataNamePV'])
+                               paths = paths, DataNamePV = FolderName['DataName'])
     
     else: 
-        PV_electricity_results = np.load(os.path.join(paths['PV'], 'PV_electricity_results_' + FolderName['DataNamePV'] + '.npy')).item()
-        PV_detailed_results = np.load(os.path.join(paths['PV'], 'PV_detailed_results_' + FolderName['DataNamePV'] + '.npy')).item()
+        PV_electricity_results = np.load(os.path.join(paths['PV'], 'PV_electricity_results_' + FolderName['DataName'] + '.npy')).item()
+        PV_detailed_results = np.load(os.path.join(paths['PV'], 'PV_detailed_results_' + FolderName['DataName'] + '.npy')).item()
         print '\nLadyBug data loaded from Folder:'
-        print 'radiation_results_' + FolderName['DataNamePV']  
+        print 'radiation_results_' + FolderName['DataName']  
         
     return PV_electricity_results, PV_detailed_results, BuildingRadiationData_HOD, now
    
@@ -337,7 +338,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     sys.path.insert(0, paths['5R1C_ISO_simulator'])     
     
     from energy_minimization import RC_Model
-    from prepareDataMain import prepareAngles, prepareResults
+    from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC
     from read_occupancy import read_occupancy
     
     #create dicitionaries to save the results
@@ -345,6 +346,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     monthlyData = {}
     yearlyData = {}
     ResultsBuildingSimulation = {}
+    BuildingSimulationELEC = {}
         
     x_angles = {} #optimized x-angles
     y_angles = {} #optimized y-angles
@@ -363,7 +365,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
     for optimizationType in optimization_Types:
             
-        hourlyData[optimizationType], ResultsBuildingSimulation[optimizationType] = RC_Model (
+        hourlyData[optimizationType], ResultsBuildingSimulation[optimizationType], BuildingSimulationELEC[optimizationType] = RC_Model (
                                                                       optimization_type = optimizationType, 
                                                                       paths = paths,
                                                                       building_data = building_data, 
@@ -388,13 +390,14 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
        
         
     
-    
-        # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
-        monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType])
-                                                                      
-    
+        if optimizationType == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):
+            # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
+            monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType])
         
-    return hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, BestKey_df, x_angles, y_angles
+        elif optimizationType == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):                                                           
+            monthlyData[optimizationType], yearlyData[optimizationType] = prepareResultsELEC(Building_Simulation_df = BuildingSimulationELEC[optimizationType])
+        
+    return hourlyData, monthlyData, yearlyData, ResultsBuildingSimulation, BuildingSimulationELEC, BestKey_df, x_angles, y_angles
     
     
  
@@ -444,7 +447,7 @@ def createAllPlots(monthlyData, roomFloorArea, x_angles, y_angles, hour_in_month
 
 
 
-def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, BestKey_df):
+def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthlyData, yearlyData, ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, BestKey_df, BuildingSimulationELEC):
     
     monthlyData = pd.DataFrame(monthlyData)
     yearlyData = pd.DataFrame(yearlyData)
@@ -486,8 +489,11 @@ def SaveResults(now, Save, geoLocation, paths, fig, optimization_Types,  monthly
                 
 
         for ii in optimization_Types:
-            # save results 
-            ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'Building_Simulation_'+ ii + '.csv'))
+            if ii == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):
+                # save results 
+                ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
+            elif ii == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):
+                BuildingSimulationELEC[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
         
         x_angles_df = pd.DataFrame(x_angles)
         y_angles_df = pd.DataFrame(y_angles)           

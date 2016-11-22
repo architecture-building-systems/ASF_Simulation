@@ -6,17 +6,15 @@ Created on Mon Nov 14 15:13:44 2016
 """
 
 import numpy as np
-
+import sys
 from calculateHOY import calcHOY 
 
-HOY2= calcHOY(7,10,1)
-HOY3= calcHOY(7,10,24)
 
-print HOY2
-print HOY3
 
 HOY = 5000
 
+print HOY
+#print (HOY)
 #hour = 24  #hour of the day (i.e between 0:00 and 1:00 corresponds to value 1)
 #HOY = 1
 #HOY = 8760
@@ -25,49 +23,53 @@ HOY = 5000
 
 def HOYtoMonthDayHour(HOY):
     
-    from hourRadiation import sumHours    
+    if HOY == 0:
+        print HOY, 'does not exist, choose 1 instead'
+        sys.exit()
+    
+    elif HOY > 8760:
+        print HOY, 'exceeded possible range of hours per year, try again'
+        sys.exit()
     #calculate the month, day and hour from given hour of the year
-    daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
-                 
-    sumHours = sumHours(daysPerMonth)  
-    sumHours = [0, 744. , 1416. , 2160. , 2880. , 3624. , 4344. , 5088. , 5832. , 6552. , 7296. , 8016. , 8760.]
+    #daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
+                         
+    # sum of passed days for each month in year
+    sumDays = {1:0 , 2: 31, 3: 59, 4: 90, 5: 120, 6: 151, 7: 181, 8: 212, 9: 243, 10: 273, 11: 304, 12: 334}#, 12: 365}
     
-    sumDays = {}    
-    sumDays = {1: 31, 2: 59, 3: 90, 4: 120, 5: 151, 6: 181, 7: 212, 8: 243, 9: 273, 10: 304, 11: 334, 12: 365}
-    
-    for ii in range(1,13):
-        if ii == 1:
-            sumDays[ii] =daysPerMonth[0]
-        else:
-            sumDays[ii] = sumDays[ii-1] + daysPerMonth[ii-1]
-     
-       
-    print sumHours
-    print sumDays
-    
-    
-    
-    if HOY <= sumHours[1]:
+    #calculate the number of days
+    H = HOY /24.
+        
+    if H <= sumDays[2]:
         month = 1
-    
-    elif HOY > sumHours[1] and HOY < sumHours[11]:
-        for ii in range(1,11):
-            if HOY > sumHours[ii] and HOY < sumHours[ii+1]:
-                month = ii-1
-                break
-    else:
+    elif H > sumDays[12]:
         month = 12
-
-
-    print HOY
-    print sumHours[5]
+    else:
+        for ii in range(2,12):
+            if H > sumDays[ii] and H <= sumDays[ii+1]:
+                month = ii
+                break
+            else:
+                pass
     
-    day = int((HOY-sumHours[month])/24.)
+    #calculate the corresponding day    
+    day = int(H-sumDays[month])
     
-    hour = int((HOY- (sumHours[month] + (day)*24))) 
+    #calculate the corresponding hour
+    hour = int(24*(H - sumDays[month] - day))
     
+    if hour == 0:
+        hour = 24
+        day -= 1        
+        
+    day += 1
     
-    
+       
     return month, day, hour
 
 month, day, hour = HOYtoMonthDayHour(HOY = HOY)
+
+HOY2= calcHOY(month,day,hour)
+#HOY3= calcHOY(7,4,24)
+
+#print HOY2
+print HOY2

@@ -71,6 +71,10 @@ gridConvergenceBox = []
 for i in range(6):
     gridConvergenceBox.append([])
     gridConvergenceBox[i]=gridConvergenceRad2[i]/gridConvergenceRad2[5]
+
+
+
+
         
 fig = plt.figure(figsize=(16, 12))
 plt.suptitle("Grid Convergence", size=16)
