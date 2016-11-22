@@ -31,12 +31,12 @@ def IlluminanceFunction():
     # define paths of subfolders:
     paths['data'] =os.path.join(paths['main'], 'data')
     paths['python'] = os.path.join(paths['main'], 'python')
-    paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
-    paths['radiation_wall'] = os.path.join(paths['main'], 'radiation_wall_7_11')
-    #paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall')
+    #paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
+    #paths['radiation_wall'] = os.path.join(paths['main'], 'radiation_wall_7_11')
+    paths['radiation_wall'] = os.path.join(paths['main'], 'radiation_wall')
     
     # add python_path to system path, so that all files are available:
-    sys.path.insert(0, paths['python'] + '\\aux_files')
+    #sys.path.insert(0, paths['python'] + '\\aux_files')
     sys.path.insert(0, paths['python'])
     
     from epwreader import epw_reader
@@ -49,12 +49,14 @@ def IlluminanceFunction():
     y_angle = 0
     RadiationData = {}
     
+    timeRange = range(8,19)
+    
     for x_angle in [0,90]:
         RadiationData[x_angle]= {}
         
         for monthi in range(1,13):
             RadiationData[x_angle][monthi] = {}
-            for HOD in  [8,10,12,14,16,18]:
+            for HOD in  timeRange:
                 RadiationData[x_angle][monthi][HOD] = {}        
          
                              
@@ -72,73 +74,75 @@ def IlluminanceFunction():
     
     
       
-    glbRad = weatherData['glohorrad_Whm2']
-    glbIll = weatherData['glohorillum_lux']
-    #Measured data for plotting
-    X=glbRad
-    Y=glbIll
-    
-    #Aquire best fit vector of coefficients. 1st order
-    Ill_Eq = np.polyfit(X,Y,1)
-    
-    if Plot == True:
-        x,y = [],[]
-        
-        x.append (weatherData['glohorrad_Whm2'])
-        y.append (weatherData['glohorillum_lux'])
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(x,y,'o-')
-        
-        plt.xlabel('global horizontal Radiation [Wh/m2]', fontsize=12)
-        plt.ylabel('global horizontal illuminance [lux]', fontsize=12)
-        plt.show()
-    else:
-        pass
-    
-    fenstIll = {}
-    TransIll = {}
-    
-    glass_light_transmittance = 0.744 # visible light transmittance window
-    
-    y_angle = 0
-   
-       
-    for x_angle in [0,90]:
-        fenstIll[x_angle] = {}
-        TransIll[x_angle] = {}
-        
-        for monthi in range(1,13):
-            fenstIll[x_angle][monthi] = {}
-            TransIll[x_angle][monthi] = {}
-    
-            for HOD in [8,10,12,14,16,18]:
-                fenstIll[x_angle][monthi][HOD] = {}
-                TransIll[x_angle][monthi][HOD] = {}
-            
-                #Calculate Illuminance in the room. 
-                fenstIll[x_angle][monthi][HOD] =RadiationData[x_angle][monthi][HOD]*Ill_Eq[0]/roomFloorArea #Lux.  Note that the constant has been ignored because it should be 0
-                
-                #Illuminance after transmitting through the window 
-                TransIll[x_angle][monthi][HOD] = fenstIll[x_angle][monthi][HOD]*glass_light_transmittance
-    
-        
-    
-    illuFun = {}
-    for x_angle in [0,90]:
-        z = []
-        for monthi in range(1,13):
-            for HOD in [8,10,12,14,16,18]:  
-                z.append(TransIll[x_angle][monthi][HOD])
-        
-        z = np.array(z)
-        
-        illuFun[x_angle]= np.reshape(z,(12,6))        
-    
-        
-    return illuFun, TransIll, RadiationData
+#    glbRad = weatherData['glohorrad_Whm2']
+#    glbIll = weatherData['glohorillum_lux']
+#    #Measured data for plotting
+#    X=glbRad
+#    Y=glbIll
+#    
+#    #Aquire best fit vector of coefficients. 1st order
+#    Ill_Eq = np.polyfit(X,Y,1)
+#    
+#    if Plot == True:
+#        x,y = [],[]
+#        
+#        x.append (weatherData['glohorrad_Whm2'])
+#        y.append (weatherData['glohorillum_lux'])
+#        fig = plt.figure()
+#        ax = fig.add_subplot(111)
+#        ax.plot(x,y,'o-')
+#        
+#        plt.xlabel('global horizontal Radiation [Wh/m2]', fontsize=12)
+#        plt.ylabel('global horizontal illuminance [lux]', fontsize=12)
+#        plt.show()
+#    else:
+#        pass
+#    
+#    fenstIll = {}
+#    TransIll = {}
+#    
+#    glass_light_transmittance = 0.744 # visible light transmittance window
+#    
+#    y_angle = 0
+#   
+#       
+#    for x_angle in [0,90]:
+#        fenstIll[x_angle] = {}
+#        TransIll[x_angle] = {}
+#        
+#        for monthi in range(1,13):
+#            fenstIll[x_angle][monthi] = {}
+#            TransIll[x_angle][monthi] = {}
+#    
+#            for HOD in [8,10,12,14,16,18]:
+#                fenstIll[x_angle][monthi][HOD] = {}
+#                TransIll[x_angle][monthi][HOD] = {}
+#            
+#                #Calculate Illuminance in the room. 
+#                fenstIll[x_angle][monthi][HOD] =RadiationData[x_angle][monthi][HOD]*Ill_Eq[0]/roomFloorArea #Lux.  Note that the constant has been ignored because it should be 0
+#                
+#                #Illuminance after transmitting through the window 
+#                TransIll[x_angle][monthi][HOD] = fenstIll[x_angle][monthi][HOD]*glass_light_transmittance
+#    
+#        
+#    
+#    illuFun = {}
+#    for x_angle in [0,90]:
+#        z = []
+#        for monthi in range(1,13):
+#            for HOD in [8,10,12,14,16,18]:  
+#                z.append(TransIll[x_angle][monthi][HOD])
+#        
+#        z = np.array(z)
+#        
+#        illuFun[x_angle]= np.reshape(z,(12,6))        
+#    
+#        
+#    return illuFun, TransIll, RadiationData
 
-illuFun, TransIll, RadiationData = IlluminanceFunction()
+#illuFun, TransIll, RadiationData = IlluminanceFunction()
+
+IlluminanceFunction()
 #print "test"
 
 
