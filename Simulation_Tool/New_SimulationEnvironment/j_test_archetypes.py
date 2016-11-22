@@ -6,18 +6,13 @@ import numpy as np
 import re as re
 import itertools
 import csv
-import os, sys
+from j_paths import PATHS
 from buildingSystem import *  
 from mainSimulation import MainCalculateASF
 from j_build_schedules import build_schedules
 import j_epw_import_tools as epw_tools
 
-paths = {}
-paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
-paths['CEA_folder'] = os.path.join(paths['main'], 'CEA_Archetypes_CH') 
-paths['Archetypes'] = os.path.join(paths['CEA_folder'], 'Archetypes') 
-paths['Archetypes_properties'] = os.path.join(paths['Archetypes'],'Archetypes_properties.xlsx')
-paths['Archetypes_schedules'] = os.path.join(paths['Archetypes'],'Archetypes_schedules.xlsx')
+
 #weather_path = 'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\Zurich-Kloten_2013.epw'
 #occupancy_path = 'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\Occupancy_COM.csv'
 #radiation_path = r'C:\Users\Zghiru\Documents\GitHub\RC_BuildingSimulator\Justin_Semseter_Project\data\radiation_Building_Zh.csv'
@@ -168,9 +163,6 @@ def ArchT_build_df(BuildingData):
 	b_props['coolingEfficiency'] = coolingEfficiency
 	return b_props
 
-# j_build_schedules(b_props,paths['Archetypes_schedules'])
-# If the set remains the same, the existing scehdules will be sufficient.
-
 #Create dictionaries for Archetypes:
 def MakeDicts(b_props):
  
@@ -204,7 +196,8 @@ def MakeDicts(b_props):
 														'c_m_A_f':'c_m_A_f',
 														'U_wall':'U_em',
 														'Ths_set_C':'theta_int_h_set',
-														'Tcs_set_C':'theta_int_c_set'})
+														'Tcs_set_C':'theta_int_c_set',
+														'ACH':'ACH_vent'})
 	bp_df = bp_df.set_index(['Code'])
 	BP_dict = bp_df.to_dict(orient='index')
 
@@ -213,8 +206,12 @@ def MakeDicts(b_props):
 	
 	SD_dict = sd_df.to_dict(orient='index')       
 	return BP_dict, SD_dict
-					  
+	
+paths = PATHS()
+
 b_props = ArchT_build_df(BuildingData)
+#build_schedules(b_props,paths['Archetypes_schedules']) Still broken: currently generating schedules using notebooks
+# If the set remains the same, the existing scehdules will be sufficient.
 
 BP_dict,SD_dict = MakeDicts(b_props)
 
@@ -235,8 +232,6 @@ for key in BP_dict.iterkeys():
 	print key
 	ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BP_dict["GYM1"], SD_dict["GYM1"])
 	resultsYD.append(yearlyData)
-
-
 
 #for BP,SD in itertools.izip(BP_dict,SD_dict):
 	print BP[key]

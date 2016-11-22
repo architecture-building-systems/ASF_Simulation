@@ -20,7 +20,7 @@ def read_occupancy(myfilename, human_heat_emission, floor_area):
 	#tintC_set: Temperature set point for cooling season. Error: When does this turn on and off
 	occupancy=pd.read_csv(myfilename, nrows=8760)
 	#print occupancy['tintH_set'].iat[100]
-	Q_human=occupancy['People']*human_heat_emission*floor_area*1000 #W
+	Q_human=occupancy*human_heat_emission*floor_area*1000 #W
 	return occupancy, Q_human.transpose()
  
  

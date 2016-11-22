@@ -2,19 +2,25 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
-#import cdecimal as dec
+from j_paths import PATHS
 import re as re
 import csv
 import os, sys
 from j_schedulemaker import*
 from j_epw_import_tools import*
 
+paths = PATHS()
+
+def full_date(weather_path,month,day):
+    year = pd.read_csv(weather_path, skiprows=8, header=None, names=epw_labels)['year']
+    return pd.datetime(year[1],month,day)
+
 ########################################################Build occupancy schedules from CEA databases and export as .csv
 def build_schedules(BuildingData,path):
   start = full_date(weather_path,1,1)
   date = pd.date_range(start, periods=8760, freq='H')
 
-  ArchT_df = ArchT_build_df(BuildingData)
+  ArchT_df = BuildingData
   ArchT_typologies = ArchT_df.code1.unique()
 
   list_uses = ArchT_typologies
@@ -43,9 +49,10 @@ def build_schedules(BuildingData,path):
   dhw_df = dhw_df.set_index('0',drop=True)
   pro_df = pro_df.set_index('0',drop=True)
 
+  os.mkdir(paths['data'])
   for column in occ_df:
-      occ_df[column].to_csv('schedules_occ_%s.csv'%column)
-      el_df[column].to_csv('schedules_el%s.csv'%column)
+      occ_df[column].to_csv('schedules_occ_%s.csv'%column, header='people')
+      el_df[column].to_csv('schedules_el%s.csv'%column, header='people')
 
 
 """

@@ -1,3 +1,4 @@
+
 """
 ===========================
 Query schedules according to database
@@ -7,6 +8,7 @@ D. Thomas   documentation               10.08.2016
 """
 
 from __future__ import division
+from j_paths import PATHS
 import pandas as pd
 import numpy as np
 
@@ -24,6 +26,7 @@ __status__ = "Production"
 Occupancy
 =========================================
 """
+paths = PATHS()
 
 def schedule_maker(dates, list_uses):
     def get_yearly_vectors(dates, occ_schedules, el_schedules, dhw_schedules, pro_schedules, month_schedule):
@@ -69,7 +72,7 @@ def schedule_maker(dates, list_uses):
     schedules = []
     for use in list_uses:
         # Read from archetypes_schedules
-        x = pd.read_excel(archetypes_schedules_path, use).T
+        x = pd.read_excel(paths['Archetypes_schedules'], use).T
 
         # read lists of every daily profile
         occ_schedules, el_schedules, dhw_schedules, pro_schedules, month_schedule = read_schedules(use, x)

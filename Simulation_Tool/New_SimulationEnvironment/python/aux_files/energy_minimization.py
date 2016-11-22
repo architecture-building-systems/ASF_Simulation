@@ -162,7 +162,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                         coolingEfficiency = BuildingProperties["coolingEfficiency"]
                         )         
                                
-        if occupancy['People'][hour_of_year] == 0:
+        if occupancy[hour_of_year] == 0:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - HeatingSetBackTemp
              Office.theta_int_c_set = BuildingProperties['theta_int_c_set'] + CoolingSetBackTemp
         else:
@@ -198,7 +198,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             
            
             Office.solve_building_lighting(ill = TransIll, 
-                                           occupancy = occupancy['People'][hour_of_year])
+                                           occupancy = occupancy[hour_of_year])
     
             
             
@@ -518,7 +518,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
     
         #count uncomfortable hours
-        if (T_in > Tmax or T_in < Tmin) and occupancy['People'][hour_of_year] != 0: 
+        if (T_in > Tmax or T_in < Tmin) and occupancy[hour_of_year] != 0: 
             uncomf_hours += 1
             uncomf_hours_HOY.append(hour_of_year)
             
