@@ -14,7 +14,7 @@ import numpy as np
 #floor_area=30 #[m^2] floor area
 
 def read_occupancy(myfilename, human_heat_emission, floor_area):
-    
+	
 	#People: Average number of people per hour per m2
 	#tintH_set: Temperature set point of the heating season, if negative then heating is disabled
 	#tintC_set: Temperature set point for cooling season. Error: When does this turn on and off
@@ -26,34 +26,34 @@ def read_occupancy(myfilename, human_heat_emission, floor_area):
  
 
 def Equate_Ill(weatherData):
-    ''' 
-    Equation relating elluminance to irradiation.
-    Input: epw weather file
-    Output: eq, a vector of coefficients for a linear polynomial 
-    '''
-    glbRad = weatherData['glohorrad_Whm2']
-    glbIll = weatherData['glohorillum_lux']
-    #Measured data for plotting
-    X=glbRad
-    Y=glbIll
+	''' 
+	Equation relating elluminance to irradiation.
+	Input: epw weather file
+	Output: eq, a vector of coefficients for a linear polynomial 
+	'''
+	glbRad = weatherData['glohorrad_Whm2']
+	glbIll = weatherData['glohorillum_lux']
+	#Measured data for plotting
+	X=glbRad
+	Y=glbIll
 
-    #Aquire best fit vector of coefficients. 1st order
-    eq = np.polyfit(X,Y,1)
+	#Aquire best fit vector of coefficients. 1st order
+	eq = np.polyfit(X,Y,1)
 
-    #Vector for plotting the best fit
-    x=np.arange(0,1000)
+	#Vector for plotting the best fit
+	x=np.arange(0,1000)
 
-    return eq
-    
+	return eq
+	
 def BuildingData(R_extWall, R_window, FreshAir,People, roomFloorArea, roomVolume):
-      
-    U_exWall = 1/R_extWall #W/(m2*K)
-    U_window = 1/R_window #W/(m2*K)        
-    
-    Ventilation = FreshAir * People *3600 * roomFloorArea #m3/h 
-    Ventilation_per_hour = Ventilation/roomVolume # 1/m3
-    
-    return U_exWall,U_window, Ventilation_per_hour  
+	  
+	U_exWall = 1/R_extWall #W/(m2*K)
+	U_window = 1/R_window #W/(m2*K)        
+	
+	Ventilation = FreshAir * People *3600 * roomFloorArea #m3/h 
+	Ventilation_per_hour = Ventilation/roomVolume # 1/m3
+	
+	return U_exWall,U_window, Ventilation_per_hour  
   
  
 

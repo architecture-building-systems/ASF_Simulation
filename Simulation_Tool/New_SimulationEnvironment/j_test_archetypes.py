@@ -91,8 +91,8 @@ def ArchT_build_df(BuildingData):
 	b_props = b_props.merge(T_sp,how='left', left_on='code1', right_on='Code')
 	b_props = b_props.drop('Code_y',axis=1)
 	b_props = b_props.drop('Code',axis=1)
-	b_props['CoolingSetBackTemp'] = b_props['Tcs_setb_C']-b_props['Tcs_set_C']
-	b_props['HeatingSetBackTemp'] = b_props['Ths_set_C']-b_props['Ths_setb_C']
+	b_props['setBackTempC'] = b_props['Tcs_setb_C']-b_props['Tcs_set_C']
+	b_props['setBackTempH'] = b_props['Ths_set_C']-b_props['Ths_setb_C']
 	
 	volume = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)*(BuildingData['room_height']/1000)
 	area = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)
@@ -204,10 +204,10 @@ def MakeDicts(b_props):
 	bp_df = bp_df.set_index(['Code'])
 	BP_dict = bp_df.to_dict(orient='index')
 
-	so_df = b_props[['Code_x','CoolingSetBackTemp','HeatingSetBackTemp','Occupancy','ActuationEnergy']]
+	so_df = b_props[['Code_x','setBackTempC','setBackTempH','Occupancy','ActuationEnergy']]
 	so_df = so_df.set_index(['Code_x'])
 	
- 	SO_dict = so_df.to_dict(orient='index')       
+	SO_dict = so_df.to_dict(orient='index')       
 	return BP_dict, SO_dict
 	
 paths = PATHS()

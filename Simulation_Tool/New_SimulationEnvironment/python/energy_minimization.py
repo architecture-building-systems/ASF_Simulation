@@ -161,10 +161,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                         coolingSystem = BuildingProperties["coolingSystem"], 
                         heatingEfficiency = BuildingProperties["heatingEfficiency"],
                         coolingEfficiency = BuildingProperties["coolingEfficiency"]
-                        )         
-                               
+                        )      
 
-        if occupancy['People'][hour_of_year] == 0:
+        print occupancy[hour_of_year]
+        if occupancy[hour_of_year] == 0:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - setBackTempH
              Office.theta_int_c_set = BuildingProperties['theta_int_c_set'] + setBackTempC
 
