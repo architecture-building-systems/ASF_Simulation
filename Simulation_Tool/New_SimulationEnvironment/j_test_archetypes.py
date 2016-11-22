@@ -9,7 +9,7 @@ import csv
 
 from j_paths import PATHS
 from buildingSystem import *  
-from SimulationClass import ASF_Simulation
+from SimulationClass import ASF_Simulation as ASF
 from j_build_schedules import build_schedules
 import j_epw_import_tools as epw_tools
 
@@ -223,14 +223,11 @@ for key,item in BP_dict.iteritems():
 	keylist.append(key)
 
 ######################################
-runlist = keylist[:2]
-
-#tech_names = { 'AAPL', 'IBM', 'HPQ', 'MSFT' }
-p2 = { key:value for key,value in BP_dict.items() if key in runlist }
-
+runlist = keylist[0:1]
+BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
+SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
 #print BP_dict['GYM1']
-#print SO_dict['GYM1']
-print p2
+print SO_dict_run
 
-#ASF_archetypes=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict[runlist], SimulationOptions = SO_dict[runlist])
-#ASF_archetypes.SolveASF()
+ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict['GYM1'], SimulationOptions = SO_dict['GYM1'])
+ASF_archetypes.SolveASF()

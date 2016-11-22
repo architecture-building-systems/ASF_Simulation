@@ -387,7 +387,8 @@ class ASF_Simulation(object):
                                                                          NumberCombinations = self.NumberCombinations, 
                                                                          combinationAngles = self.combinationAngles,
                                                                          BuildingProperties = self.BuildingProperties,
-                                                                         setBackTemp = setBackTemp, 
+                                                                         CoolingSetBackTemp = self.CoolingSetBackTemp,
+                                                                         HeatingSetBackTemp = self.HeatingSetBackTemp, 
                                                                          occupancy = occupancy,
                                                                          Q_human = Q_human
                                                                          )
