@@ -323,7 +323,9 @@ class ASF_Simulation(object):
 		
 		
 	def runBuildingSimulation(self):
-		setBackTemp = self.SimulationOptions['setBackTemp']
+		CoolingSetBackTemp = self.SimulationOptions['CoolingSetBackTemp']
+		HeatingSetBackTemp = self.SimulationOptions['HeatingSetBackTemp']
+
 		# add python_path to system path, so that all files are available:
 		sys.path.insert(0, self.paths['5R1C_ISO_simulator'])     
 		
@@ -366,7 +368,8 @@ class ASF_Simulation(object):
 																		  NumberCombinations = self.NumberCombinations, 
 																		  combinationAngles = self.combinationAngles,
 																		  BuildingProperties = self.BuildingProperties,
-																		  setBackTemp = setBackTemp, 
+																		  CoolingSetBackTemp = CoolingSetBackTemp, 
+																		  HeatingSetBackTemp = HeatingSetBackTemp,
 																		  occupancy = occupancy,
 																		  Q_human = Q_human
 																		  )

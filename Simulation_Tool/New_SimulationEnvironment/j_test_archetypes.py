@@ -2,13 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
-#import cdecimal as dec
 import re as re
 import itertools
 import csv
+
+
 from j_paths import PATHS
 from buildingSystem import *  
-from mainSimulation import MainCalculateASF
+from SimulationClass import ASF_Simulation
 from j_build_schedules import build_schedules
 import j_epw_import_tools as epw_tools
 
@@ -23,29 +24,31 @@ import j_epw_import_tools as epw_tools
 ##Constants
 
 SimulationData= {
-'optimizationTypes' : ['E_total'], #'Heating','Cooling', 'E_HCL', 'Heating_elec','Cooling_elec', 'E_HCL_elec', 'SolarEnergy', 'Lighting'],
-'DataName' : 'ZH05_49comb',#'ZH13_49comb', #'ZH05_49comb', #,
-'geoLocation' : 'Zuerich_Kloten_2005', #'Zuerich_Kloten_2013', #'Zuerich_Kloten_2005',
-'Save' : False}
+	'optimizationTypes' : ['E_total'],
+	'DataName' : 'ZH05_49comb',
+	'geoLocation' : 'Zuerich_Kloten_2005',
+	'EPWfile' : 'Zuerich_Kloten_2005.epw',
+	'Save' : True,
+	'ShowFig': False}
 
 #Set panel data
 PanelData={
-"XANGLES": [0, 15, 30, 45, 60, 75, 90],
-"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
-"NoClusters":1,
-"numberHorizontal":6,
-"numberVertical":9,
-"panelOffset":400,
-"panelSize":400,
-"panelSpacing":500}
-
-#Set Building Parameters in [mm]
+	"XANGLES": [0, 15, 30, 45, 60, 75, 90],
+	"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
+	"NoClusters":1,
+	"numberHorizontal":6,
+	"numberVertical":9,
+	"panelOffset":400,
+	"panelSize":400,
+	"panelSpacing":500}
+		
+		#Set Building Parameters in [mm]
 BuildingData={
-"room_width": 4900,     
-"room_height":3100,
-"room_depth":7000,
-"glazing_percentage_w": 0.92,
-"glazing_percentage_h": 0.97}
+	"room_width": 4900,     
+	"room_height":3100,
+	"room_depth":7000,
+	"glazing_percentage_w": 0.92,
+	"glazing_percentage_h": 0.97}
 
 ################################################################################################################
 lighting_ontrol_d ={
@@ -201,11 +204,11 @@ def MakeDicts(b_props):
 	bp_df = bp_df.set_index(['Code'])
 	BP_dict = bp_df.to_dict(orient='index')
 
-	sd_df = b_props[['Code_x','CoolingSetBackTemp','HeatingSetBackTemp','Occupancy','ActuationEnergy']]
-	sd_df = sd_df.set_index(['Code_x'])
+	so_df = b_props[['Code_x','CoolingSetBackTemp','HeatingSetBackTemp','Occupancy','ActuationEnergy']]
+	so_df = so_df.set_index(['Code_x'])
 	
-	SD_dict = sd_df.to_dict(orient='index')       
-	return BP_dict, SD_dict
+ 	SO_dict = so_df.to_dict(orient='index')       
+	return BP_dict, SO_dict
 	
 paths = PATHS()
 
@@ -213,15 +216,13 @@ b_props = ArchT_build_df(BuildingData)
 #build_schedules(b_props,paths['Archetypes_schedules']) Still broken: currently generating schedules using notebooks
 # If the set remains the same, the existing scehdules will be sufficient.
 
-BP_dict,SD_dict = MakeDicts(b_props)
+BP_dict, SO_dict = MakeDicts(b_props)
 
 ######################################
 
-resultsBS = []
-resultsYD = []
 
 print BP_dict['GYM1']
-print SD_dict['GYM1']
+print SO_dict['GYM1']
 
-ResultsBuildingSimulation, monthlyData, yearlyData, x_angles = MainCalculateASF(SimulationData, PanelData, BuildingData, BP_dict["GYM1"], SD_dict["GYM1"])
-
+ASF_archetypes=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict['GYM1'], SimulationOptions = SO_dict['GYM1'])
+ASF_archetypes.SolveASF()
