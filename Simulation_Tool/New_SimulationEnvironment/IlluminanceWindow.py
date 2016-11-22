@@ -21,7 +21,7 @@ import pandas as pd
 def IlluminanceWindow():
 
     # set if calculation is need, False = No
-    Calculation = False
+    Calculation = True
     
     
     # E = illuminance on work plane (lux)
@@ -102,7 +102,7 @@ def IlluminanceWindow():
         now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
         print "simulation start: " + now
         
-        paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults'
+        paths['illuminance'] = paths['main'] + '\IlluminanceResults'
     
         #set parmeters for evaluation
         
@@ -158,7 +158,7 @@ def IlluminanceWindow():
                     with open('comb.json','w') as f:
                         f.write(json.dumps(comb_data))
                              
-                    #gridSize = [400.0, 200.0, 100.0, 50., 25., 12.5] #mm2
+                    #gridSize = [800.0] #mm2
                     gridSize = [200.0]
                                        
                     for size in gridSize:
@@ -172,7 +172,7 @@ def IlluminanceWindow():
                                     
                         #Wait until the radiation_results were created    
                         while not os.path.exists(paths['illuminance']+'\\IlluminanceWindow_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv'):
-                            time.sleep(3)
+                            time.sleep(10)
                                
                         else:
                             print 'next step'
@@ -230,7 +230,8 @@ def IlluminanceWindow():
 #    
 #    return illuWin, illuWin_avg
     
-illuWin, illuWin_avg = IlluminanceWindow()
+#illuWin, illuWin_avg = IlluminanceWindow()
+IlluminanceWindow()
 print "test"    
  
 

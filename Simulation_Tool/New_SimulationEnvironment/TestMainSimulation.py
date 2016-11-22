@@ -24,6 +24,7 @@ class TestMainSimulation(unittest.TestCase):
         'optimizationTypes' : ['E_total'],
         'DataName' : 'ZH05_49comb',
         'geoLocation' : 'Zuerich_Kloten_2005',
+        'EPWfile': 'Zuerich_Kloten_2005.epw',
         'Save' : False}
         
         #Set panel data
@@ -81,10 +82,10 @@ class TestMainSimulation(unittest.TestCase):
                                                                               BuildingProperties = BuildingProperties, 
                                                                               SimulationOptions = SimulationOptions)
         
-        self.assertEqual(round(yearlyData['E_total']['E'],2), 1189.82)
-        self.assertEqual(round(yearlyData['E_total']['PV'],2), -707.01)
+        self.assertEqual(round(yearlyData['E_total']['E'],2), 1182.15)
+        self.assertEqual(round(yearlyData['E_total']['PV'],2), -709.19)
         #self.assertEqual(round(monthlyData['H'][0],2),3.56)
-        self.assertEqual(ResultsBuildingSimulation['E_total']['BestCombKey'][38],[5])
+        self.assertEqual(ResultsBuildingSimulation['E_total']['BestCombKey'][38],[39])
         
         
     def test_ELEC2013(self):
@@ -93,6 +94,7 @@ class TestMainSimulation(unittest.TestCase):
         'optimizationTypes' : ['E_total_elec'],
         'DataName' : 'ZH13_49comb',
         'geoLocation' : 'Zuerich_Kloten_2013',
+        'EPWfile': 'Zuerich_Kloten_2013.epw',
         'Save' : False}
         
         #Set panel data
@@ -150,9 +152,9 @@ class TestMainSimulation(unittest.TestCase):
                                                                               BuildingProperties = BuildingProperties, 
                                                                               SimulationOptions = SimulationOptions)
         
-        self.assertEqual(round(yearlyData['E_total_elec']['E_elec'],2), 1408.88)
-        self.assertEqual(round(yearlyData['E_total_elec']['PV'],2), -727.06)
-        self.assertEqual(ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[45])
+        self.assertEqual(round(yearlyData['E_total_elec']['E_elec'],2), 1419.44)
+        self.assertEqual(round(yearlyData['E_total_elec']['PV'],2), -723.97)
+        self.assertEqual(ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[46])
     
 
 

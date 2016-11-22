@@ -59,11 +59,7 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
                                 toc = time.time() - tic
                                 print 'time passed (min): ' + str(toc/60.)
                             
-            #                #write ASFangles for Clusters
-            #                with open('outputASFangles.json','w') as f:
-            #                    f.write(json.dumps(ASFangles[index]))
-            #                    print "index:", index
-            #                      
+                           
                             #Wait until the radiation_results were created    
                             while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_' +  str(hour) + '_' + str(day) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                                 time.sleep(1)
