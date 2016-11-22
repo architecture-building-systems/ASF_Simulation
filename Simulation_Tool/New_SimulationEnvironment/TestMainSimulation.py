@@ -10,8 +10,8 @@ import numpy as np
 from buildingSystem import *  
 from SimulationClass import ASF_Simulation
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))        
-from mainSimulation import MainCalculateASF
+#sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))        
+#from mainSimulation import MainCalculateASF
 
 
 
@@ -28,8 +28,8 @@ class TestMainSimulation(unittest.TestCase):
 		'DataName' : 'ZH05_49comb',
 		'geoLocation' : 'Zuerich_Kloten_2005',
 		'EPWfile' : 'Zuerich_Kloten_2005.epw',
-		'Save' : True,
-		'ShowFig': False}
+		'Save' : False,
+		'ShowFig': True}
 		
 		#Set panel data
 		PanelData={
@@ -149,15 +149,13 @@ class TestMainSimulation(unittest.TestCase):
 		'ActuationEnergy' : False}
 		
 		
-		ResultsBuildingSimulation, monthlyData, yearlyData, hour_in_month, x_angles = MainCalculateASF(SimulationData = SimulationData, 
-																			  PanelData = PanelData, 
-																			  BuildingData = BuildingData, 
-																			  BuildingProperties = BuildingProperties, 
-																			  SimulationOptions = SimulationOptions)
+		ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+		ASFtest.SolveASF()
 		
-		self.assertEqual(round(yearlyData['E_total_elec']['E_elec'],2), 1419.44)
-		self.assertEqual(round(yearlyData['E_total_elec']['PV'],2), -723.97)
-		self.assertEqual(ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[46])
+																					 
+		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['E_elec'],2), 1419.44)
+		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['PV'],2), -723.97)
+		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[46])
 	
 
 
