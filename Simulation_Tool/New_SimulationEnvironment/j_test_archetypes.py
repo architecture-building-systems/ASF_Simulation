@@ -5,6 +5,7 @@ import numpy as np
 import re as re
 import itertools
 import csv
+import os,sys
 
 
 from j_paths import PATHS
@@ -28,7 +29,7 @@ SimulationData= {
 	'DataName' : 'ZH05_49comb',
 	'geoLocation' : 'Zuerich_Kloten_2005',
 	'EPWfile' : 'Zuerich_Kloten_2005.epw',
-	'Save' : True,
+	'Save' : False,
 	'ShowFig': False}
 
 #Set panel data
@@ -220,14 +221,34 @@ BP_dict, SO_dict = MakeDicts(b_props)
 
 keylist = []
 for key,item in BP_dict.iteritems():
-	keylist.append(key)
+	k = """%s"""%key
+	keylist.append(k)
 
 ######################################
-runlist = keylist[0:1]
+runlist = keylist[0:10]
 BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
 SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
-#print BP_dict['GYM1']
-print BP_dict_run
 
-ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict['GYM10'], SimulationOptions = SO_dict['GYM10'])
-ASF_archetypes.SolveASF()
+for i in range(0,len(runlist)):
+
+	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict_run[runlist[i]], SimulationOptions = SO_dict_run[runlist[i]])
+	ASF_archetypes.SolveASF()
+	current_result = ASF_archetypes.yearlyData.T
+	current_result['Name'] = runlist[i]
+	current_result = current_result.set_index(['Name'])
+	if i == 0:
+		all_results = current_result
+	else:
+		temp_list = [all_results,current_result]
+		all_results = pd.concat(temp_list)
+	"""
+	yearlyData = pd.DataFrame({runlist[i]:range(2)})
+
+	if i == 0:
+		yearlyData1 = yearlyData.T
+	else:
+		lists = [yearlyData1,yearlyData.T]
+		yearlyData1 = pd.concat(lists)
+	"""
+print '--simulations complete--'
+all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))
