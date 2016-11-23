@@ -227,7 +227,7 @@ runlist = keylist[0:1]
 BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
 SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
 #print BP_dict['GYM1']
-print SO_dict_run
+print BP_dict_run
 
-ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict['GYM1'], SimulationOptions = SO_dict['GYM1'])
+ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict['GYM10'], SimulationOptions = SO_dict['GYM10'])
 ASF_archetypes.SolveASF()

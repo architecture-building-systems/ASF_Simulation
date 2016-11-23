@@ -162,8 +162,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                         heatingEfficiency = BuildingProperties["heatingEfficiency"],
                         coolingEfficiency = BuildingProperties["coolingEfficiency"]
                         )      
-
-        print occupancy[hour_of_year]
         if occupancy[hour_of_year] == 0:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - setBackTempH
              Office.theta_int_c_set = BuildingProperties['theta_int_c_set'] + setBackTempC
@@ -547,8 +545,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
              
         #show which HOY is calculated
-        if hour_of_year % 4000 == 0 and hour_of_year != 0:
-            print 'HOY:', hour_of_year
+        if hour_of_year % 4380 == 0 and hour_of_year != 0:
+            print '50%% done'
             toc = time.time() - tic
             print 'time passed (sec): ' + str(round(toc,2))
             

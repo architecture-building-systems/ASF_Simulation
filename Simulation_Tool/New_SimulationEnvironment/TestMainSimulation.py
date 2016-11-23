@@ -87,7 +87,7 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(ASFtest.yearlyData['E_total']['PV'],2), -709.19)
 		#self.assertEqual(round(monthlyData['H'][0],2),3.56)
 		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'][38],[39])
->>>>>>> origin/master
+
 		
 		
 	def test_ELEC2013(self):
@@ -145,7 +145,8 @@ class TestMainSimulation(unittest.TestCase):
 		
 		#Set simulation Properties
 		SimulationOptions= {
-		'setBackTemp' : 4.,
+		'setBackTempH' : 4.,
+		'setBackTempC' : 4.,
 		'Occupancy' : 'Occupancy_COM.csv',
 		'ActuationEnergy' : False}
 		
@@ -158,8 +159,5 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['PV'],2), -723.97)
 		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[46])
 	
-
-
-
 if __name__ == '__main__':
 	unittest.main()
