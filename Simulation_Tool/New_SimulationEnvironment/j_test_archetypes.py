@@ -98,7 +98,7 @@ def ArchT_build_df(BuildingData):
 	volume = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)*(BuildingData['room_height']/1000)
 	area = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)
 	
-	b_props['ACH'] = b_props['Ve_lps']*3.6/volume
+	b_props['ACH_vent_p'] = b_props['Ve_lps']*3.6/volume
 	
 	#Assign values for Cm from ISO13790:2008, Table 12, based on archetypes
 	th_mass = b_props['th_mass']
@@ -120,6 +120,7 @@ def ArchT_build_df(BuildingData):
 	glass_light_transmitance = []
 	Lighting_Utilisation_Factor = []
 	Lighting_MaintenanceFactor = [] 
+	ACH_vent = []
 	ACH_infl = [] 
 	ventilation_efficiency = [] 
 	phi_c_max_A_f = [] 
@@ -139,6 +140,7 @@ def ArchT_build_df(BuildingData):
 		glass_light_transmitance.append(0.744)
 		Lighting_Utilisation_Factor.append(0.45) 
 		Lighting_MaintenanceFactor.append(0.9) 
+		ACH_vent.append(1.5)
 		ACH_infl.append(0.5) 
 		ventilation_efficiency.append(0.6)
 		phi_c_max_A_f.append(-np.inf)  
@@ -152,11 +154,11 @@ def ArchT_build_df(BuildingData):
 	b_props['lighting_control'] = lighting_control
 	b_props['Occupancy'] = occupancy
 	b_props['ActuationEnergy'] = ActuationEnergy  
-	
 	b_props['glass_solar_transmitance'] = glass_solar_transmitance
 	b_props['glass_light_transmitance'] = glass_light_transmitance
 	b_props['Lighting_Utilisation_Factor'] = Lighting_Utilisation_Factor
 	b_props['Lighting_MaintenanceFactor'] = Lighting_MaintenanceFactor
+	b_props['ACH_vent'] = ACH_vent
 	b_props['ACH_infl'] = ACH_infl
 	b_props['ventilation_efficiency'] = ventilation_efficiency
 	b_props['phi_c_max_A_f'] = phi_c_max_A_f
@@ -177,7 +179,6 @@ def MakeDicts(b_props):
 						  'U_win',
 						  'Ths_set_C',
 						  'Tcs_set_C',
-						  'ACH',
 						  'c_m_A_f',
 						  'Qs_Wp',    #Sensible heat gain due to occupancy [W/p]
 						  'Ea_Wm2',    #Maximum electrical consumption due to appliances per unit of gross floor area [W/m2]
@@ -185,6 +186,7 @@ def MakeDicts(b_props):
 						  'glass_light_transmitance',
 						  'Lighting_Utilisation_Factor',
 						  'Lighting_MaintenanceFactor',
+						  'ACH_vent',
 						  'ACH_infl',
 						  'ventilation_efficiency',
 						  'phi_c_max_A_f',
@@ -201,7 +203,7 @@ def MakeDicts(b_props):
 														'U_wall':'U_em',
 														'Ths_set_C':'theta_int_h_set',
 														'Tcs_set_C':'theta_int_c_set',
-														'ACH':'ACH_vent'})
+														})
 	bp_df = bp_df.set_index(['Code'])
 	BP_dict = bp_df.to_dict(orient='index')
 
@@ -225,12 +227,35 @@ for key,item in BP_dict.iteritems():
 	keylist.append(k)
 
 ######################################
-runlist = keylist[0:10]
+runlist = keylist[0:2]
 BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
 SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
 
-for i in range(0,len(runlist)):
+def sort_dicts(to_sort,sorted_d):
+	new_dict = {}
+	for k in sorted_d:
+		key = frozenset(k.items())
+		new_dict[key] = to_sort[k]
+	return new_dict
 
+print runlist[1]
+
+BuildingProperties_default = {"glass_solar_transmitance" : 0.687,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
+			"Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.2,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 20,\
+			"theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1},
+ddd = BP_dict_run[runlist[1]]
+print sort_dicts(ddd,BuildingProperties_default)
+
+
+"""
+
+SimulationOptions_default = {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'schedules_occ_OFFICE.csv','ActuationEnergy' : False}
+print SimulationOptions_default
+print sort_dicts(SO_dict_run[runlist[1]],BuildingProperties_default)
+
+
+
+for i in range(0,len(runlist)):
 	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP_dict_run[runlist[i]], SimulationOptions = SO_dict_run[runlist[i]])
 	ASF_archetypes.SolveASF()
 	current_result = ASF_archetypes.yearlyData.T
@@ -241,14 +266,7 @@ for i in range(0,len(runlist)):
 	else:
 		temp_list = [all_results,current_result]
 		all_results = pd.concat(temp_list)
-	"""
-	yearlyData = pd.DataFrame({runlist[i]:range(2)})
 
-	if i == 0:
-		yearlyData1 = yearlyData.T
-	else:
-		lists = [yearlyData1,yearlyData.T]
-		yearlyData1 = pd.concat(lists)
-	"""
 print '--simulations complete--'
 all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))
+"""
