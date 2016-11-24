@@ -6,7 +6,6 @@ def PATHS():
 	paths['Simulation_Tool'] =  os.path.dirname(os.path.dirname(paths['main']))
 	paths['WeatherData'] = os.path.join(paths['Simulation_Tool'], 'CEA_Archetypes_CH')  
 	paths['Weatherfile'] = os.path.join(paths['WeatherData'], 'Zuerich_Kloten_2013') 
-
 	paths['CEA_folder'] = os.path.join(paths['main'], 'CEA_Archetypes_CH') 
 	paths['Archetypes'] = os.path.join(paths['CEA_folder'], 'Archetypes') 
 	paths['Archetypes_properties'] = os.path.join(paths['Archetypes'],'Archetypes_properties.xlsx')

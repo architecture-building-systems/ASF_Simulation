@@ -202,7 +202,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             
            
             Office.solve_building_lighting(ill = TransIll, 
-                                           occupancy = occupancy[hour_of_year])
+                                           occupancy = occupancy['People'][hour_of_year])
     
             
             
@@ -522,7 +522,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
     
         #count uncomfortable hours
-        if (T_in > Tmax or T_in < Tmin) and occupancy[hour_of_year] != 0: 
+        if (T_in > Tmax or T_in < Tmin) and occupancy['People'][hour_of_year] != 0: 
             uncomf_hours += 1
             uncomf_hours_HOY.append(hour_of_year)
             

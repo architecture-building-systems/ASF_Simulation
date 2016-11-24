@@ -541,19 +541,16 @@ class ASF_Simulation(object):
 		self.CalculateVariables()
 		self.runRadiationCalculation()		  		 
 		#rearrange the Radiation Data on PV and Window into HOY form
-		self.PrepareRadiationData()		
-		print 'running building simulation'											   
+		self.PrepareRadiationData()													   
 		self.runBuildingSimulation()
 
-		print 'saving plots'
 		if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
 			self.createAllPlots()
-			print 'plots saved'
 		else:
-			print 'no plots saved'
+
 			self.fig = None #?
 
-		print 'saving results'		   			
+		   			
 		self.SaveResults()
 								
 
