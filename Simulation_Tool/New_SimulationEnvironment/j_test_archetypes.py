@@ -97,7 +97,7 @@ def ArchT_build_df(BuildingData):
 	volume = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)*(BuildingData['room_height']/1000)
 	area = (BuildingData['room_width']/1000)*(BuildingData['room_depth']/1000)
 	
-	b_props['ACH'] = b_props['Ve_lps']*3.6/volume
+	b_props['ACH_vent_p'] = b_props['Ve_lps']*3.6/volume
 	
 	#Assign values for Cm from ISO13790:2008, Table 12, based on archetypes
 	th_mass = b_props['th_mass']
@@ -120,6 +120,7 @@ def ArchT_build_df(BuildingData):
 	Lighting_Utilisation_Factor = []
 	Lighting_MaintenanceFactor = [] 
 	ACH_infl = [] 
+	ACH_vent = []
 	ventilation_efficiency = [] 
 	phi_c_max_A_f = [] 
 	phi_h_max_A_f = [] 
@@ -138,6 +139,7 @@ def ArchT_build_df(BuildingData):
 		glass_light_transmitance.append(0.744)
 		Lighting_Utilisation_Factor.append(0.45) 
 		Lighting_MaintenanceFactor.append(0.9) 
+		ACH_vent.append(1.5)
 		ACH_infl.append(0.5) 
 		ventilation_efficiency.append(0.6)
 		phi_c_max_A_f.append(-np.inf)  
@@ -156,6 +158,7 @@ def ArchT_build_df(BuildingData):
 	b_props['glass_light_transmitance'] = glass_light_transmitance
 	b_props['Lighting_Utilisation_Factor'] = Lighting_Utilisation_Factor
 	b_props['Lighting_MaintenanceFactor'] = Lighting_MaintenanceFactor
+	b_props['ACH_vent'] = ACH_vent
 	b_props['ACH_infl'] = ACH_infl
 	b_props['ventilation_efficiency'] = ventilation_efficiency
 	b_props['phi_c_max_A_f'] = phi_c_max_A_f
@@ -176,7 +179,6 @@ def MakeDicts(b_props):
 						  'U_win',
 						  'Ths_set_C',
 						  'Tcs_set_C',
-						  'ACH',
 						  'c_m_A_f',
 						  'Qs_Wp',    #Sensible heat gain due to occupancy [W/p]
 						  'Ea_Wm2',    #Maximum electrical consumption due to appliances per unit of gross floor area [W/m2]
@@ -184,6 +186,7 @@ def MakeDicts(b_props):
 						  'glass_light_transmitance',
 						  'Lighting_Utilisation_Factor',
 						  'Lighting_MaintenanceFactor',
+						  'ACH_vent',
 						  'ACH_infl',
 						  'ventilation_efficiency',
 						  'phi_c_max_A_f',
@@ -200,7 +203,7 @@ def MakeDicts(b_props):
 														'U_wall':'U_em',
 														'Ths_set_C':'theta_int_h_set',
 														'Tcs_set_C':'theta_int_c_set',
-														'ACH':'ACH_vent'})
+														})
 	bp_df = bp_df.set_index(['Code'])
 	BP_dict = bp_df.to_dict(orient='index')
 
