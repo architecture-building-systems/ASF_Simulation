@@ -50,8 +50,7 @@ def ArchT_build_df(BuildingData):
 	b_props = b_props.merge(T_sp,how='left', left_on='code1', right_on='Code')
 	b_props = b_props.drop('Code_y',axis=1)
 	b_props = b_props.drop('Code',axis=1)
-	b_props['Tcs_setb_C'] = b_props['Tcs_setb_C']*1.0
-	b_props['Ths_set_C'] = b_props['Ths_set_C']*1.0
+	
 	b_props['setBackTempC'] = b_props['Tcs_setb_C']-b_props['Tcs_set_C']
 	b_props['setBackTempH'] = b_props['Ths_set_C']-b_props['Ths_setb_C']
 	

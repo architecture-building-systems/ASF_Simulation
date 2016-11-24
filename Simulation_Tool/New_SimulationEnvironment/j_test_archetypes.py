@@ -83,7 +83,6 @@ b_props = b_props[b_props.interval =='2005-2020']
 b_props = b_props[b_props.type == 'construction']
 BP_dict, SO_dict = MakeDicts(b_props)
 
-print b_props.Ths_set_C
 #Generate list of building names for iteration:
 keylist = []
 for key,item in BP_dict.iteritems():
@@ -93,11 +92,8 @@ for key,item in BP_dict.iteritems():
 runlist = keylist
 
 #Create new dictionary as subsets of BP_dict and SO_dict with runlist as keys:
-
 BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
 SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
-#print BP_dict['GYM1']
-print BP_dict_run
 
 #Run for default values
 """
@@ -107,13 +103,14 @@ all_results = ASF_archetypes.yearlyData.T
 all_results['Name'] = 'Default'
 all_results = all_results.set_index(['Name'])
 """
-print BuildingProperties_default
+
 #loop through building properties and simulation options dictionaries:
 for i in range(0,len(runlist)):
 	BP = sort_dicts(BP_dict_run[runlist[i]],BuildingProperties_default)
 	SO = sort_dicts(SO_dict_run[runlist[i]],SimulationOptions_default)
-	print BP
-	"""ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP, SimulationOptions = SO)
+	BP['theta_int_c_set'] = float(BP['theta_int_c_set'])
+	BP['theta_int_h_set'] = float(BP['theta_int_h_set'])
+	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP, SimulationOptions = SO)
 	ASF_archetypes.SolveASF()
 	current_result = ASF_archetypes.yearlyData.T
 	current_result['Name'] = runlist[i]
@@ -126,4 +123,4 @@ for i in range(0,len(runlist)):
 print '--simulations complete--'
 
 #write results to csv:
-all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))"""
+all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))
