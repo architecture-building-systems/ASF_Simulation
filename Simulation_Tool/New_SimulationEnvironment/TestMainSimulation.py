@@ -75,7 +75,8 @@ class TestMainSimulation(unittest.TestCase):
 		
 		#Set simulation Properties
 		SimulationOptions= {
-		'setBackTemp' : 4.,
+		'setBackTempH' : 4.,
+		'setBackTempC': 4,
 		'Occupancy' : 'Occupancy_COM.csv',
 		'ActuationEnergy' : False}
 		
@@ -144,7 +145,8 @@ class TestMainSimulation(unittest.TestCase):
 		
 		#Set simulation Properties
 		SimulationOptions= {
-		'setBackTemp' : 4.,
+		'setBackTempH' : 4.,
+		'setBackTempC': 4,
 		'Occupancy' : 'Occupancy_COM.csv',
 		'ActuationEnergy' : False}
 		

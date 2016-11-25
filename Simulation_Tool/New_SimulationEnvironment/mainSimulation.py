@@ -142,7 +142,8 @@ from SimulationClass import ASF_Simulation
 	
   
 if __name__=='__main__':
-	ASFtest=ASF_Simulation()
+	ASFtest=ASF_Simulation(SimulationData = 
+            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False})
 	ASFtest.SolveASF()
 
 #print ASFtest.yearlyData
