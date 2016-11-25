@@ -132,6 +132,7 @@ sympy-plots-for-*.tex/
 !Occupancy_COM.csv
 !Temperature.csv
 !SunPosition.csv
+!/Simulation_Tool/New_SimulationEnvironment/5R1C_ISO_simulator/data/*
 *.json
 *.npy
 
