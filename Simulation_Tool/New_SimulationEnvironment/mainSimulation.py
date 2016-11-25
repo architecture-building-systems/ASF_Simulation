@@ -138,3 +138,8 @@ from SimulationClass import ASF_Simulation
 #'Occupancy' : 'Occupancy_COM.csv',
 #'ActuationEnergy' : False}
 
+if __name__=='__main__':
+	ASFtest=ASF_Simulation(SimulationData = 
+            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False})
+	ASFtest.SolveASF()
+
