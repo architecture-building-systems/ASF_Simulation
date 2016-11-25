@@ -90,7 +90,7 @@ for key,item in BP_dict.iteritems():
 	keylist.append(key)
 
 #Runlist can be a subset of keylist:
-runlist = keylist[0:1]
+runlist = keylist
 
 #Create new dictionary as subsets of BP_dict and SO_dict with runlist as keys:
 BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
@@ -100,38 +100,16 @@ SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
 
 bp_list=[]
 so_list=[]
-#loop through building properties and simulation options dictionaries:
-for i in range(0,len(runlist)):
-	print 'simulation %i/%i:' %(i,len(runlist))
-	#preprocessing 1: sort dictionaries to match defaults. Not sure if this makes any difference but it makes things more legible.
-	BP = sort_dicts(BP_dict_run[runlist[i]],BuildingProperties_default)
-	SO = sort_dicts(SO_dict_run[runlist[i]],SimulationOptions_default)
-	#preprocessing 2: convert setpoints to float. Doing this here avoids loops in other parts of the program
-	BP['theta_int_c_set'] = float(BP['theta_int_c_set'])
-	BP['theta_int_h_set'] = float(BP['theta_int_h_set'])
-	bp_list.append(BP)
-	so_list.append(SO)
-	
-	#Run ASF simulation
-	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, SimulationOptions = SO)
-	ASF_archetypes.SolveASF()
-	#Add building name to dataframe and append subsequent iterations:
-	current_result = ASF_archetypes.yearlyData.T
-	current_result['Name'] = runlist[i]
-	current_result = current_result.set_index(['Name'])
-	if i == 0:
-		all_results = current_result
-	else:
-		temp_list = [all_results,current_result]
-		all_results = pd.concat(temp_list)
-	print ASF_archetypes.yearlyData
-print '--simulations complete--'
+
+#Run for default values:
+
+ASF_archetypes=ASF(SimulationData)
+ASF_archetypes.SolveASF()
+
+print ASF_archetypes.yearlyData
+all_results = ASF_archetypes.yearlyData.T
+all_results['Name'] = 'Default'
+all_results = all_results.set_index(['Name'])
 
 #write results to csv:
 all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))
-
-#convert simulation parameters to dataframe and write to csv (ovrrides previous simulation)
-bp_f = pd.DataFrame(bp_list)
-so_f = pd.DataFrame(so_list)
-bp_f.to_csv(os.path.join(paths['Archetypes'],'BP.csv'))
-so_f.to_csv(os.path.join(paths['Archetypes'],'SO.csv'))
