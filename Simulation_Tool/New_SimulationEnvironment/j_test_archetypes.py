@@ -104,16 +104,20 @@ all_results = ASF_archetypes.yearlyData.T
 all_results['Name'] = 'Default'
 all_results = all_results.set_index(['Name'])
 """
-
+bp_list=[]
+so_list=[]
 #loop through building properties and simulation options dictionaries:
 for i in range(0,len(runlist)):
-	print 'simulation %i/%i:' %(i,len(runlist))
+	#print 'simulation %i/%i:' %(i,len(runlist))
 	#preprocessing 1: sort dictionaries to match defaults. Not sure if this makes any difference but it makes things more legible.
 	BP = sort_dicts(BP_dict_run[runlist[i]],BuildingProperties_default)
 	SO = sort_dicts(SO_dict_run[runlist[i]],SimulationOptions_default)
 	#preprocessing 2: convert setpoints to float. Doing this here avoids loops in other parts of the program
 	BP['theta_int_c_set'] = float(BP['theta_int_c_set'])
 	BP['theta_int_h_set'] = float(BP['theta_int_h_set'])
+	bp_list.append(BP)
+	so_list.append(SO)
+	"""
 	#Run ASF simulation
 	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP, SimulationOptions = SO)
 	ASF_archetypes.SolveASF()
@@ -130,3 +134,8 @@ print '--simulations complete--'
 
 #write results to csv:
 all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))
+"""
+bp_f = pd.DataFrame(bp_list)
+so_f = pd.DataFrame(so_list)
+bp_f.to_csv(os.path.join(paths['Archetypes'],'BP.csv'))
+so_f.to_csv(os.path.join(paths['Archetypes'],'SO.csv'))
