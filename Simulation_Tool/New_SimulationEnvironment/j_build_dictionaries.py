@@ -5,6 +5,7 @@ import numpy as np
 import re as re
 import itertools
 import csv
+import os,sys
 
 from j_paths import PATHS
 from buildingSystem import *  
@@ -50,7 +51,7 @@ def ArchT_build_df(BuildingData):
 	b_props = b_props.merge(T_sp,how='left', left_on='code1', right_on='Code')
 	b_props = b_props.drop('Code_y',axis=1)
 	b_props = b_props.drop('Code',axis=1)
-	
+
 	b_props['setBackTempC'] = b_props['Tcs_setb_C']-b_props['Tcs_set_C']
 	b_props['setBackTempH'] = b_props['Ths_set_C']-b_props['Ths_setb_C']
 	
@@ -63,12 +64,13 @@ def ArchT_build_df(BuildingData):
 	th_mass = b_props['th_mass']
 	c_m = []
 	for i in range(0,len(th_mass)):
+		#c_m.append(165.0*10**3)
 		if th_mass[i] == "T1":
 			c_m.append(110.0*10**3) #Light
 		elif th_mass[i] == "T2":
 			c_m.append(165.0*10**3) #Medium
 		elif th_mass[i] == "T3":
-			c_m.append(260.0*10**3) #Heavy
+			c_m.append(260.0*10**3) #Heavy"""
 	b_props['c_m_A_f'] = pd.DataFrame(c_m)
 
 #declare variables
