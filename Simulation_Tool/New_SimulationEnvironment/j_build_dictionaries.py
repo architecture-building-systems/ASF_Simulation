@@ -1,9 +1,7 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import datetime
 import numpy as np
 import re as re
-import itertools
 import csv
 import os,sys
 
@@ -64,7 +62,7 @@ def ArchT_build_df(BuildingData):
 	th_mass = b_props['th_mass']
 	c_m = []
 	for i in range(0,len(th_mass)):
-		#c_m.append(165.0*10**3)
+		#c_m.append(165.0*10**3) just testing default value
 		if th_mass[i] == "T1":
 			c_m.append(110.0*10**3) #Light
 		elif th_mass[i] == "T2":

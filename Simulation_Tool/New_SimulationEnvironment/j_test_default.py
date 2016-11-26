@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import datetime
+from datetime import datetime 
 import numpy as np
 import re as re
 import itertools
@@ -75,33 +75,6 @@ SimulationOptions_default = {
 	'Occupancy' : 'schedules_occ_OFFICE.csv',
 	'ActuationEnergy' : False}
  
-b_props = ArchT_build_df(BuildingData)
-
-#build_schedules(b_props,paths['Archetypes_schedules']) goes here. Currently still broken, schedules were generated using jupyter notebooks code. If the set remains the same, the existing scehdules will be sufficient.
-
-#Select subset of b_props:
-b_props = b_props[b_props.interval =='2005-2020']
-b_props = b_props[b_props.type == 'construction']
-BP_dict, SO_dict = MakeDicts(b_props)
-
-#Generate list of building names for iteration:
-keylist = []
-for key,item in BP_dict.iteritems():
-	keylist.append(key)
-
-#Runlist can be a subset of keylist:
-runlist = keylist
-
-#Create new dictionary as subsets of BP_dict and SO_dict with runlist as keys:
-BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
-SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
-
-#Run for default values:
-
-bp_list=[]
-so_list=[]
-
-#Run for default values:
 
 ASF_archetypes=ASF(SimulationData)
 ASF_archetypes.SolveASF()
@@ -112,4 +85,5 @@ all_results['Name'] = 'Default'
 all_results = all_results.set_index(['Name'])
 
 #write results to csv:
-all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))
+datestamp = str(datetime.now())[0:16]
+all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results_%.csv'%datestamp))

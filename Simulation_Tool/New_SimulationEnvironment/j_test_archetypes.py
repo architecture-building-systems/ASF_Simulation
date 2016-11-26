@@ -1,9 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import datetime
+from datetime import datetime 
 import numpy as np
-import re as re
-import itertools
 import csv
 import os,sys
 
@@ -77,11 +75,13 @@ SimulationOptions_default = {
  
 b_props = ArchT_build_df(BuildingData)
 
-#build_schedules(b_props,paths['Archetypes_schedules']) goes here. Currently still broken, schedules were generated using jupyter notebooks code. If the set remains the same, the existing scehdules will be sufficient.
+#build_schedules(b_props) goes here. Currently still broken, schedules were generated using jupyter notebooks code. If the set remains the same, the existing scehdules will be sufficient.
 
 #Select subset of b_props:
-b_props = b_props[b_props.interval =='2005-2020']
-b_props = b_props[b_props.type == 'construction']
+#b_props = b_props[b_props.interval =='2005-2020']
+#b_props = b_props[b_props.type == 'construction']
+
+#Generate dictionaries from dataframes
 BP_dict, SO_dict = MakeDicts(b_props)
 
 #Generate list of building names for iteration:
@@ -90,16 +90,16 @@ for key,item in BP_dict.iteritems():
 	keylist.append(key)
 
 #Runlist can be a subset of keylist:
-runlist = keylist[0:1]
+runlist = keylist
 
 #Create new dictionary as subsets of BP_dict and SO_dict with runlist as keys:
 BP_dict_run = { key:value for key,value in BP_dict.items() if key in runlist }
 SO_dict_run = { key:value for key,value in SO_dict.items() if key in runlist }
 
-#Run for default values:
-
+#Empty lists for recording BP and SO dictionaries
 bp_list=[]
 so_list=[]
+
 #loop through building properties and simulation options dictionaries:
 for i in range(0,len(runlist)):
 	print 'simulation %i/%i:' %(i,len(runlist))
@@ -109,11 +109,13 @@ for i in range(0,len(runlist)):
 	#preprocessing 2: convert setpoints to float. Doing this here avoids loops in other parts of the program
 	BP['theta_int_c_set'] = float(BP['theta_int_c_set'])
 	BP['theta_int_h_set'] = float(BP['theta_int_h_set'])
+	
+	#append this iteration's dictionaries to the dictionary list
 	bp_list.append(BP)
 	so_list.append(SO)
 	
 	#Run ASF simulation
-	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, SimulationOptions = SO)
+	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP, SimulationOptions = SO)
 	ASF_archetypes.SolveASF()
 	#Add building name to dataframe and append subsequent iterations:
 	current_result = ASF_archetypes.yearlyData.T
@@ -128,10 +130,11 @@ for i in range(0,len(runlist)):
 print '--simulations complete--'
 
 #write results to csv:
-all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results.csv'))
+datestamp = str(datetime.now())[0:16]
+all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results_%s.csv'%datestamp))
 
 #convert simulation parameters to dataframe and write to csv (ovrrides previous simulation)
 bp_f = pd.DataFrame(bp_list)
 so_f = pd.DataFrame(so_list)
-bp_f.to_csv(os.path.join(paths['Archetypes'],'BP.csv'))
-so_f.to_csv(os.path.join(paths['Archetypes'],'SO.csv'))
+bp_f.to_csv(os.path.join(paths['Archetypes'],'BP_%s.csv'%datestamp))
+so_f.to_csv(os.path.join(paths['Archetypes'],'SO_%s.csv'%datestamp))
