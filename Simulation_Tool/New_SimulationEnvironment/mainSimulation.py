@@ -78,36 +78,61 @@ from buildingSystem import *
 from SimulationClass import ASF_Simulation
 #
 #
-#	
-#SimulationData = {
-#'optimizationTypes' : ['E_total'],
-#'DataName' : 'ZH05_49comb',
-#'geoLocation' : 'Zuerich_Kloten_2005',
-#'EPWfile': 'Zuerich_Kloten_2005.epw',
-#'Save' : True,
-#'ShowFig': True}
-#	
-#	
-##Set panel data
-#PanelData={
-#"XANGLES": [0, 15, 30, 45, 60, 75, 90],
-#"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
-#"NoClusters":1,
-#"numberHorizontal":6,
-#"numberVertical":9,
-#"panelOffset":400,
-#"panelSize":400,
-#"panelSpacing":500}
-#
-##Set Building Parameters in [mm]
-#BuildingData={
-#"room_width": 4900,     
-#"room_height":3100,
-#"room_depth":7000,
-#"glazing_percentage_w": 0.92,
-#"glazing_percentage_h": 0.97,
-#"WindowGridSize": 150}
-#
+##
+
+for ii in range(3):
+    
+    if ii == 0:
+        SimulationData = {
+        'optimizationTypes' : ['E_total'],
+        'DataName' : 'Madrid_49comb',
+        'geoLocation' : 'ESP_Madrid.082210_IWEC',
+        'EPWfile': 'ESP_Madrid.082210_IWEC.epw',
+        'Save' : True,
+        'ShowFig': True,
+        'timePeriod': None}
+    
+    elif ii == 1:
+         SimulationData = {
+        'optimizationTypes' : ['E_total'],
+        'DataName' : 'Helsinki_49comb',
+        'geoLocation' : 'FIN_Helsinki.029740_IWEC',
+        'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',
+        'Save' : True,
+        'ShowFig': True,
+        'timePeriod': None}
+    elif ii == 2:
+        SimulationData = {
+        'optimizationTypes' : ['E_total'],
+        'DataName' : 'Cairo_49comb',
+        'geoLocation' : 'EGY_Cairo.623660_IWEC',
+        'EPWfile': 'EGY_Cairo.623660_IWEC.epw',
+        'Save' : True,
+        'ShowFig': True,
+        'timePeriod': None}
+    
+    ##	
+    #	
+    ##Set panel data
+    #PanelData={
+    #"XANGLES": [0, 15, 30, 45, 60, 75, 90],
+    #"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
+    #"NoClusters":1,
+    #"numberHorizontal":6,
+    #"numberVertical":9,
+    #"panelOffset":400,
+    #"panelSize":400,
+    #"panelSpacing":500}
+    #
+    #Set Building Parameters in [mm]
+    BuildingData={
+    "room_width": 4900,     
+    "room_height":3100,
+    "room_depth":7000,
+    "glazing_percentage_w": 0.92,
+    "glazing_percentage_h": 0.97,
+    "WindowGridSize": 200}
+
 ##Set building properties for RC-Model simulator
 #BuildingProperties={
 #"glass_solar_transmitance" : 0.687 ,
@@ -141,8 +166,8 @@ from SimulationClass import ASF_Simulation
 
 	
   
-if __name__=='__main__':
-	ASFtest=ASF_Simulation()
+    if __name__=='__main__':
+	ASFtest=ASF_Simulation(SimulationData)
 	ASFtest.SolveASF()
 
 #print ASFtest.yearlyData

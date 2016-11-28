@@ -21,7 +21,7 @@ import pandas as pd
 def IlluminanceWindow():
 
     # set if calculation is need, False = No
-    Calculation = True
+    Calculation = False
     
     
     # E = illuminance on work plane (lux)
@@ -93,7 +93,13 @@ def IlluminanceWindow():
     with open('building.json','w') as f:
         f.write(json.dumps(building_data))
     
-    paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceResultsWindowData'
+    paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceResultsWindow'
+    
+    timeRange = range(8,19)
+    Day = 15.0
+    monthi = 1.0
+    x_angle = 0
+    y_angle = 0    
     
     
     if Calculation == True:
@@ -105,15 +111,7 @@ def IlluminanceWindow():
         paths['illuminance'] = paths['main'] + '\IlluminanceResults'
     
         #set parmeters for evaluation
-        
-        timeRange = range(8,19)
-        Day = 15.0
-        monthi = 1.0
-        x_angle = 0
-        y_angle = 0
-        
-        #gridSize = [50.]
-        
+
         combination = 0
         
         tic = time.time()
@@ -159,7 +157,7 @@ def IlluminanceWindow():
                         f.write(json.dumps(comb_data))
                              
                     #gridSize = [800.0] #mm2
-                    gridSize = [200.0]
+                    gridSize = [125.0]
                                        
                     for size in gridSize:
                         
@@ -172,7 +170,7 @@ def IlluminanceWindow():
                                     
                         #Wait until the radiation_results were created    
                         while not os.path.exists(paths['illuminance']+'\\IlluminanceWindow_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv'):
-                            time.sleep(10)
+                            time.sleep(20)
                                
                         else:
                             print 'next step'
@@ -183,55 +181,62 @@ def IlluminanceWindow():
     else:
         pass
 
+    paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceWindow'
     
-#    illuWin_avg = {}
-#    illuWin_data = {}
-#    
-#    illuWin_avg_df= {}
-#    
-#    Day = 15.0
-#    size= 50.0
-#    y_angle = 0
-#    
-#    for x_angle in [0,90]:#[0,90]:
-#        illuWin_data[x_angle]= {}                        
-#        illuWin_avg[x_angle] = {}
-#    
-#        for monthi in range(1,13):
-#             illuWin_avg[x_angle][monthi] = {}
-#             illuWin_data[x_angle][monthi] = {}
-#             
-#             for HOD in [8,10,12,14,16,18]:  
-#                illuWin_avg[x_angle][monthi][HOD] = {}
-#                illuWin_data[x_angle][monthi][HOD] = {}    
-#                
-#                IlluminanceData = np.array([])
-#                
-#                with open(paths['illuminance']+'\\IlluminanceWindow_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv', 'r') as csvfile:
-#                    reader = csv.reader(csvfile)
-#                    for idx,line in enumerate(reader):
-#                        if idx >= 6:
-#                            IlluminanceData = np.append(IlluminanceData, [float(line[0])])
-#                illuWin_data[x_angle][monthi][HOD] = IlluminanceData #Window                        
-#                illuWin_avg[x_angle][monthi][HOD]= np.average(IlluminanceData) * factor #Floor
-#                
-#        illuWin_avg_df[x_angle] = pd.DataFrame(illuWin_avg[x_angle])
-#    
-#    illuWin = {}
-#    for x_angle in [0,90]:
-#        z = []
-#        for monthi in range(1,13):
-#            for HOD in [8,10,12,14,16,18]:  
-#                z.append(illuWin_avg[x_angle][monthi][HOD])
-#        
-#        z = np.array(z)
-#        
-#        illuWin[x_angle]= np.reshape(z,(12,6))    
-#    
-#    return illuWin, illuWin_avg
     
-#illuWin, illuWin_avg = IlluminanceWindow()
-IlluminanceWindow()
+    illuWin_avg = {}
+    illuWin_data = {}
+    
+    illuWin_avg_df= {}
+    
+    Day = 15.0
+    size= 125.0
+    y_angle = 0
+    
+    for x_angle in [0,90]:
+        illuWin_data[x_angle]= {}                        
+        illuWin_avg[x_angle] = {}
+    
+        for monthi in range(1,13):
+             illuWin_avg[x_angle][monthi] = {}
+             illuWin_data[x_angle][monthi] = {}
+             
+             for HOD in timeRange:  
+                illuWin_avg[x_angle][monthi][HOD] = {}
+                illuWin_data[x_angle][monthi][HOD] = {}    
+                
+                IlluminanceData = np.array([])
+                
+                with open(paths['illuminance']+'\\IlluminanceWindow_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv', 'r') as csvfile:
+                    reader = csv.reader(csvfile)
+                    for idx,line in enumerate(reader):
+                        if idx >= 6:
+                            IlluminanceData = np.append(IlluminanceData, [float(line[0])])
+                illuWin_data[x_angle][monthi][HOD] = IlluminanceData #Window                        
+                illuWin_avg[x_angle][monthi][HOD]= np.average(IlluminanceData) * factor #Floor
+                
+        illuWin_avg_df[x_angle] = pd.DataFrame(illuWin_avg[x_angle])
+    
+    illuWin = {}
+    for x_angle in [0,90]:
+        z = []
+        for monthi in range(1,13):
+            for HOD in timeRange:  
+                z.append(illuWin_avg[x_angle][monthi][HOD])
+        
+        z = np.array(z)
+        
+        illuWin[x_angle]= np.reshape(z,(12,11))
+
+    paths['save_results_path'] = paths['main'] + '\IlluminanceResults\Data'    
+    np.save(os.path.join(paths['save_results_path'],'IlluminanceWindow.npy'), illuWin)
+    np.save(os.path.join(paths['save_results_path'],'IlluminanceWindowDict.npy'), illuWin_avg)  
+
+    
+    return illuWin, illuWin_avg
+    
+illuWin, illuWin_avg = IlluminanceWindow()
+#IlluminanceWindow()
 print "test"    
  
 

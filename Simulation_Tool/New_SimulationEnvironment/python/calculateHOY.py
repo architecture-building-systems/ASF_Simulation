@@ -10,7 +10,7 @@ Calculate hour of the year based on date input
 import numpy as np
 
 
-month = 7
+month = 1
 day = 8
 hour = 0  #hour of the day (i.e between 0:00 and 1:00 corresponds to value 1)
 

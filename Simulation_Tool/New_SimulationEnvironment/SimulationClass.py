@@ -20,11 +20,11 @@ class ASF_Simulation(object):
 
 	def __init__(self,
             SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : False, 'ShowFig': False},
+            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : False, 'ShowFig': False, 'timePeriod':None},
             PanelData = 
             {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500},
             BuildingData = 
-            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 150},
+            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200},
             BuildingProperties = 
             {"glass_solar_transmitance" : 0.687,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
             "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.2,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 20,\
@@ -100,10 +100,10 @@ class ASF_Simulation(object):
 		# define self.paths of subfolders:
 		self.paths['data'] =os.path.join(self.paths['main'], 'data')
 		self.paths['python'] = os.path.join(self.paths['main'], 'python')
-		self.paths['aux_files'] = os.path.join(self.paths['python'], 'aux_files')
-		
-		self.paths['radiation_results'] = os.path.join(self.paths['main'],'radiation_results_' + self.FolderName['DataName'])
-		self.paths['radiation_wall'] = os.path.join(self.paths['main'],  'radiation_wall_' + self.FolderName['DataName'])
+		self.paths['RadiationData'] = os.path.join(self.paths['main'], 'RadiationData')
+          		
+		self.paths['radiation_results'] = os.path.join(self.paths['RadiationData'],'radiation_results_' + self.FolderName['DataName'])
+		self.paths['radiation_wall'] = os.path.join(self.paths['RadiationData'],  'radiation_wall_' + self.FolderName['DataName'])
 		self.paths['PV'] = os.path.join(self.paths['main'], 'PV_results')
 
 		self.paths['save_results_path'] = self.paths['PV']
@@ -116,7 +116,7 @@ class ASF_Simulation(object):
 		self.paths['weather'] = os.path.join(self.paths['weather_folder'], self.geoLocation + '.epw')
 		
 		# add python_path to system path, so that all files are available:
-		sys.path.insert(0, self.paths['aux_files'])
+		
 		sys.path.insert(0, self.paths['python'])
 		
 		
@@ -124,7 +124,9 @@ class ASF_Simulation(object):
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
 		
-		
+		if not os.path.isdir(self.paths['RadiationData']):
+				os.makedirs(self.paths['RadiationData'])
+  
 		#radiation subfolder is created, there the radiation_results are saved
 		if not os.path.isdir(self.paths['radiation_results']):
 				os.makedirs(self.paths['radiation_results'])
@@ -144,8 +146,8 @@ class ASF_Simulation(object):
 		from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature
 		# create sun data based on grasshopper file, this is only possible with the ladybug component SunPath
 		self.SunTrackingData = SunAnglesTackingAndTemperature(paths = self.paths,
-														 weatherData = self.weatherData)    
-		#execfile(os.path.join(self.paths['aux_files'], 'SunAngles_Tracking_and_temperature.py'))
+												weatherData = self.weatherData)    
+		
 		
 		# calculate and save lookup table if it does not yet exist:
 		self.paths['data_python'] = os.path.join(self.paths['data'], 'python')
@@ -155,7 +157,7 @@ class ASF_Simulation(object):
 		if not os.path.isfile(os.path.join(self.paths['electrical_simulation'], 'curr_model_submod_lookup.npy')): 
 			if not os.path.isdir(self.paths['electrical_simulation']):
 				os.makedirs(self.paths['electrical_simulation'])
-			execfile(os.path.join(self.paths['aux_files'], 'create_lookup_table.py'))
+			execfile(os.path.join(self.paths['python'], 'create_lookup_table.py'))
 		else:
 			print 'lookup table not created as it already exists'
 		
@@ -253,7 +255,7 @@ class ASF_Simulation(object):
 								   lookup_table_path = self.paths['electrical_simulation'], 
 								   geo_path = self.paths['geo'],
 								   flipOrientation= False, 
-								   simulationOption = self.simulationOption,
+								   SimulationData = self.SimulationData,
 								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
 								   hour_in_month = self.hour_in_month, 
 								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
@@ -269,7 +271,7 @@ class ASF_Simulation(object):
 								   lookup_table_path = self.paths['electrical_simulation'], 
 								   geo_path = self.paths['geo'],
 								   flipOrientation= False, 
-								   simulationOption = self.simulationOption,
+								   SimulationData = self.SimulationData,
 								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
 								   hour_in_month = self.hour_in_month,
 								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
@@ -454,13 +456,16 @@ class ASF_Simulation(object):
 
 
 	def SaveResults(self):
-		
-		Save = self.SimulationData['Save']
-		self.monthlyData = pd.DataFrame(self.monthlyData)
-		self.yearlyData = pd.DataFrame(self.yearlyData)
+            
+            Save = self.SimulationData['Save']
+  
+               
+  
+            self.monthlyData = pd.DataFrame(self.monthlyData)
+            self.yearlyData = pd.DataFrame(self.yearlyData)
 		#BestKeyDF = pd.DataFrame(self.BestKey_df)    
 		
-		if Save == True: 
+            if Save == True: 
 			
 			# create folder where results will be saved:
 			self.paths['result_folder'] = os.path.join(self.paths['main'], 'Results') 
@@ -506,7 +511,7 @@ class ASF_Simulation(object):
 			y_angles_df = pd.DataFrame(self.y_angles)           
 			
 			#hourlyData['E_total'].to_csv(os.path.join(self.paths['result'], 'hourlyData.csv'))
-			#BestKeyDF.to_csv(os.path.join(self.paths['result'], 'BestKeys.csv'))
+			np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
 			self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
 			self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
 			x_angles_df.to_csv(os.path.join(self.paths['result'], 'X-Angles.csv'))
@@ -523,7 +528,7 @@ class ASF_Simulation(object):
 		
 			print '\nResults are saved!'    
 		
-		print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+        print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		
 
 	def SolveASF(self):

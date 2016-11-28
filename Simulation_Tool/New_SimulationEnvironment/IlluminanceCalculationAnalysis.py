@@ -22,7 +22,7 @@ def IlluminanceCalculationAnalysis():
     
     
     # set if calculation is need, False = No
-    Calculation = True#False
+    Calculation = True
     
     
     # create dictionary to write all paths:
@@ -60,13 +60,16 @@ def IlluminanceCalculationAnalysis():
     #paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResultsAnalysis'
     paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults'
     
+    timeRange = range(8,19)
+    gridSize = [200.0]
+    
     if Calculation == True:
         
         # get current time
         now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
         print "simulation start: " + now
         #set parmeters for evaluation
-        timeRange = range(8,19)
+       
         Day = 15
         #monthi = 7.0
         x_angle = 0
@@ -122,7 +125,7 @@ def IlluminanceCalculationAnalysis():
                     
                     
                     #gridSize = [400.0, 200.0, 100.0, 50., 25., 12.5] #mm2
-                    gridSize = [200.0]
+                    
                     #gridSize = [400.0]
                                        
                     for size in gridSize:
@@ -147,17 +150,18 @@ def IlluminanceCalculationAnalysis():
         print 'illuminance calculation finished!'
     else:
         pass 
-    """   
+    
+    #C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceGH
     #set path, were the results are stored and shall be loaded
-    paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceAnalysis_50mm'
-        
+    #paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceAnalysis_50mm'
+    paths['illuminance'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\IlluminanceGH'    
     
     illuminance_avg = {}
     illuminance_data = {}
         
     y_angle = 0
     Day = 15.0
-    size= 50.0
+    size= gridSize[0]
     
     for x_angle in [0,90]:
         illuminance_avg[x_angle] = {}
@@ -167,13 +171,13 @@ def IlluminanceCalculationAnalysis():
              illuminance_avg[x_angle][monthi] = {}
              illuminance_data[x_angle][monthi] = {}
              
-             for HOD in [8,10,12,14,16,18]:  
+             for HOD in timeRange:  
                 illuminance_avg[x_angle][monthi][HOD] = {}
                 illuminance_data[x_angle][monthi][HOD] = {}    
                 
                 IlluminanceData = np.array([])
                 
-                with open(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(Day)  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv', 'r') as csvfile:
+                with open(paths['illuminance']+'\\Illuminance_gridSize_' + str(size) +'_month_'+  str(monthi) + '_day_' + str(int(Day))  + '_hour_' + str(HOD) + '_xangle_'+ str(x_angle) + '_yangle_' + str(y_angle)+ '_.csv', 'r') as csvfile:
                     reader = csv.reader(csvfile)
                     for idx,line in enumerate(reader):
                         if idx >= 6:
@@ -182,26 +186,30 @@ def IlluminanceCalculationAnalysis():
                 illuminance_avg[x_angle][monthi][HOD]= np.average(IlluminanceData)
                 
         
-    illuLB = {}
+    illuGH = {}
     for x_angle in [0,90]:
             z = []
             for monthi in range(1,13):
-                for HOD in [8,10,12,14,16,18]:  
+                for HOD in timeRange:  
                     z.append(illuminance_avg[x_angle][monthi][HOD])
             
             z = np.array(z)
             
-            illuLB[x_angle]= np.reshape(z,(12,6))    
+            illuGH[x_angle]= np.reshape(z,(12,11))
+    
+    paths['save_results_path'] = paths['main'] + '\IlluminanceResults\Data'    
+    np.save(os.path.join(paths['save_results_path'],'IlluminanceGH.npy'), illuGH)
+    np.save(os.path.join(paths['save_results_path'],'IlluminanceGHDict.npy'), illuminance_avg)
         
-    return illuLB, illuminance_avg
+    return illuGH, illuminance_avg
 
-illuLB, illuminance_avg = IlluminanceCalculationAnalysis()
+illuGH, illuminance_avg = IlluminanceCalculationAnalysis()
 print "test"
 
 
 """
 IlluminanceCalculationAnalysis()
-
+"""
 
 
 

@@ -12,13 +12,13 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                                save_results_path = None, 
                                lookup_table_path = None, 
                                geo_path = None, flipOrientation = False, 
-                               simulationOption = None,
+                               SimulationData = None,
                                XANGLES = [], YANGLES = [], 
                                hour_in_month = None, paths = None, DataNamePV = None):
                                    
     import sys,os                               
     # add python_path to system path, so that all files are available:
-    sys.path.insert(0, paths['aux_files'])                               
+    sys.path.insert(0, paths['python'])                               
   
     import json
     import numpy as np
@@ -56,7 +56,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         fp.close()
         
     # find the number of hours analysed by ladybug:
-    if simulationOption['timePeriod'] == '4months':
+    if SimulationData['timePeriod'] == '4months':
         MonthTracking = SunTrackingData['MonthTracking']
         numHours = 0
         for i in range(len(MonthTracking)):
@@ -64,7 +64,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                 numHours += 1
         month_eval = [3,6,9,12]
         
-    elif simulationOption['timePeriod'] == '3month':
+    elif SimulationData['timePeriod'] == '3month':
         MonthTracking = SunTrackingData['MonthTracking']
         numHours = 0
         for i in range(len(MonthTracking)):
@@ -73,7 +73,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         print numHours
         month_eval = [1,2,3]
         
-    elif simulationOption['timePeriod'] == '1month':
+    elif SimulationData['timePeriod'] == '1month':
         MonthTracking = SunTrackingData['MonthTracking']
         numHours = 0
         for i in range(len(MonthTracking)):
@@ -81,12 +81,12 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                 numHours += 1  
         month_eval = [7]
             
-    elif simulationOption['timePeriod'] == None:
+    elif SimulationData['timePeriod'] == None:
         numHours = np.shape(SunTrackingData['HOY'])[0]
         print "numHours", numHours
         month_eval = range(1,13)
         
-    elif simulationOption['timePeriod'] == '1hour':
+    elif SimulationData['timePeriod'] == '1hour':
         #simulation for 1 hour
         numHours = 1
     

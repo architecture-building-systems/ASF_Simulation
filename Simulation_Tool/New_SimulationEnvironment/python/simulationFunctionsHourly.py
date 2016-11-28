@@ -210,8 +210,7 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
                                             DataNameWin = FolderName['DataNameWin'])
     
     
-#    
-""" 
+    
     #if there are no panels vertical and horizontal
     if panel_data['numberHorizontal'] == 0 and panel_data['numberVertical'] == 0:
         PV_electricity_results = {}
@@ -271,8 +270,8 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
     
     
     return PV_electricity_results, PV_detailed_results, HourlyRadiation, now,  
-   
-"""   
+  
+  
  
 def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinations, SimulationPeriode, start, end):
     
@@ -305,7 +304,7 @@ def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinat
     
 def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, \
                             NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES,\
-                            start, end):
+                            start, end, Temp_start):
     
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])     
@@ -346,7 +345,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                                                                       setBackTemp = setBackTemp,
                                                                       occupancy = occupancy,
                                                                       Q_human = Q_human, 
-                                                                      start = start, end = end                                                                      
+                                                                      start = start, end = end, Temp_start = Temp_start                                                                      
                                                                       )
         
         
@@ -386,7 +385,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 
 
 
-def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end):
+def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end):
     
     angles = {}
     
@@ -398,7 +397,7 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
     
     anglesHOY = angles_df
     
-    
+    #ResultsBuildingSimulation['E_total']['PV'] = ResultsBuildingSimulation['E_total']['PV']*-1
 
     plt.style.use('ggplot')
     fig = plt.figure(figsize=(6, 3))
@@ -411,7 +410,7 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
   
     with pd.plot_params.use('x_compat', True):
         ResultsBuildingSimulation['E_total']['E_tot'].plot(color='r', label = 'E')    
-        ResultsBuildingSimulation['E_total']['C'].plot(color='b', label = 'C')
+        #ResultsBuildingSimulation['E_total']['C'].plot(color='b', label = 'C')
         ResultsBuildingSimulation['E_total']['H'].plot(color='g', label = 'H')
         ResultsBuildingSimulation['E_total']['PV'].plot(color='y', label = 'PV')
         ResultsBuildingSimulation['E_total']['L'].plot(color='m', label = 'L')    
@@ -419,11 +418,11 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
    
   
         
-    plt.legend(loc='best', fontsize = 6)
+    plt.legend(loc=2, fontsize = 6)
     #plt.legend(loc='center right', bbox_to_anchor=(1.3, 0.5))
 
     plt.ylabel('Net Energy [kWh]', fontsize=12)
-    plt.yticks([-400,0,400,800,1200])
+    #plt.yticks([-400,0,400,800,1200])
     #plt.xticks(range(start,end+1))
     plt.xlabel('Hour of Day: 5 to 20', fontsize=12)   
     
@@ -439,15 +438,34 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
     plt.yticks([-90,-45,0,45,90])
     
     plt.tight_layout()
+    
+    
        
-   
+#    plt.style.use('ggplot')
+#    fig = plt.figure(figsize=(6, 3))
+#    
+#    
+#    ax1 = fig.add_subplot(111) 
+#    #ax1.title('Cloudy Day', fontsize=12)
+#    ax1.title.set_text(SimulationData['DataName']) 
+#
+#    y1 = ResultsBuildingSimulation['E_total']['E_tot']      
+#    y2 = ResultsBuildingSimulation['E_total']['PV']    
+#    
+#    x1 = range(start, end+1)    
+#    x2 = x1
+#    
+#    lines = ax1.plot(x1, y1, x2, y2)
+#    # use keyword args
+#    #plt.setp(lines, color=['r','b'], linewidth=2.0)   
+#    plt.plot(x1, y1, 'r', x2, y2,  'b')
    
    
     angles_df = angles_df.T
     angles_df.columns = range(5,21)
     
     
-    ResultsBuildingSimulation['E_total']['PV'] = ResultsBuildingSimulation['E_total']['PV']*-1
+    
     
     RBS_ELEC = {}
     
@@ -482,8 +500,9 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
             #ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T
             ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
             RBS_ELEC[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
-            
-        
+            ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
+            np.save(os.path.join(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.npy')), ResultsBuildingSimulation[ii])
+            np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
         #change name of the columns
         
        
@@ -500,7 +519,8 @@ def SaveResults(now, Save, geoLocation, paths, optimization_Types,  ResultsBuild
             f.write(json.dumps(BuildingProperties))
         
     
-        print '\nResults are saved!'    
+        print '\nResults are saved!'
+    
     
     print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
