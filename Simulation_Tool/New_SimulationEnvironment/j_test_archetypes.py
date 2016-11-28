@@ -130,11 +130,12 @@ for i in range(0,len(runlist)):
 print '--simulations complete--'
 
 #write results to csv:
-datestamp = str(datetime.now())[0:16]
-all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results_%s.csv'%datestamp))
+#still not working: datestamp = str(datetime.now())[0:9]+'_'+str(datetime.now())[11:16]
+name = 'all_results.csv'
+all_results.to_csv(os.path.join(paths['CEA_folder'],name))
 
 #convert simulation parameters to dataframe and write to csv (ovrrides previous simulation)
 bp_f = pd.DataFrame(bp_list)
 so_f = pd.DataFrame(so_list)
-bp_f.to_csv(os.path.join(paths['Archetypes'],'BP_%s.csv'%datestamp))
-so_f.to_csv(os.path.join(paths['Archetypes'],'SO_%s.csv'%datestamp))
+bp_f.to_csv(os.path.join(paths['Archetypes'],'BP_%s.csv'))
+so_f.to_csv(os.path.join(paths['Archetypes'],'SO_%s.csv'))

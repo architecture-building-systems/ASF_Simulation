@@ -24,6 +24,20 @@ lighting_ontrol_d ={
 "GYM":300.	
 }
 
+mean_occupancy_d = {
+"MULTI_RES": 0.014355,
+"SINGLE_RES": 0.009570,
+"HOTEL": 0.034377,
+"OFFICE": 0.009951,
+"RETAIL": 0.033507,
+"FOODSTORE": 0.055845,
+"RESTAURANT": 0.072592,
+"INDUSTRIAL": 0.030994,
+"SCHOOL": 0.010913,
+"HOSPITAL": 0.073750,
+"GYM": 0.070977,
+}
+
 def ArchT_build_df(BuildingData):
 	arch = pd.read_excel(paths['Archetypes_properties'],sheetname='THERMAL')
 	r = re.compile("([a-zA-Z_]+)")
@@ -74,6 +88,7 @@ def ArchT_build_df(BuildingData):
 #declare variables
 	occupancy = []
 	lighting_control = []
+	mean_occupancy = []
 #declare constants
 	glass_solar_transmitance = []
 	glass_light_transmitance = []
@@ -94,7 +109,7 @@ def ArchT_build_df(BuildingData):
 		#variables
 		occupancy.append('schedules_occ_%s.csv'%code)
 		lighting_control.append(lighting_ontrol_d.get(code))
-		
+		mean_occupancy.append(mean_occupancy_d.get(code))
 		glass_solar_transmitance.append(0.687)
 		glass_light_transmitance.append(0.744)
 		Lighting_Utilisation_Factor.append(0.45) 
@@ -111,6 +126,8 @@ def ArchT_build_df(BuildingData):
 		ActuationEnergy.append(False)
 		
 	b_props['lighting_control'] = lighting_control
+	b_props['mean_occupancy'] = mean_occupancy
+	b_props['Qs_Wm2'] = b_props['mean_occupancy']*b_props['Qs_Wp'] # occupancy: p/m2, qs_wp: W/p 
 	b_props['Occupancy'] = occupancy
 	b_props['ActuationEnergy'] = ActuationEnergy  
 	b_props['glass_solar_transmitance'] = glass_solar_transmitance
@@ -178,3 +195,13 @@ def sort_dicts(to_sort,sorted):
 		newdict[key] = to_sort[key]
 	return newdict
 
+##test
+BuildingData={
+	"room_width": 4900,     
+	"room_height":3100,
+	"room_depth":7000,
+	"glazing_percentage_w": 0.92,
+	"glazing_percentage_h": 0.97}
+
+b_data = ArchT_build_df(BuildingData).Qs_Wm2
+print b_data

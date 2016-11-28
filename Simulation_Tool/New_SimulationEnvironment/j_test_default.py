@@ -18,7 +18,6 @@ paths = PATHS()
 
 #Constants
 #---------
-
 SimulationData= {
 	'optimizationTypes' : ['E_total'],
 	'DataName' : 'ZH05_49comb',
@@ -86,4 +85,4 @@ all_results = all_results.set_index(['Name'])
 
 #write results to csv:
 datestamp = str(datetime.now())[0:16]
-all_results.to_csv(os.path.join(paths['CEA_folder'],'all_results_%.csv'%datestamp))
+all_results.to_csv(os.path.join(paths['CEA_folder'],'results_%s.csv'%datestamp))
