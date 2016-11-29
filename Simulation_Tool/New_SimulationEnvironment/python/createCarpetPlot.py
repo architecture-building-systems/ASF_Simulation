@@ -11,8 +11,8 @@ from carpetPlot import carpetPlot, carpetPlotMask
 
 def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     
-    z_max = 51./roomFloorArea
-    z_min = -13./roomFloorArea
+    z_max = max(monthlyData[E])/roomFloorArea
+    z_min = min(monthlyData[E])/roomFloorArea
    
     fig = plt.figure(figsize=(16, 8))
     #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
@@ -41,7 +41,7 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
 
 
     #space between the y-axes of the plots
-    #fig.tight_layout()
+    fig.tight_layout()
     fig.subplots_adjust(right = 0.8)
     
     #setting for the legend
@@ -54,6 +54,7 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
     
+    #plt.tight_layout()
     plt.show()       
     
                 
@@ -90,7 +91,7 @@ def createCarpetPlotXAngles(x_angle_array, hour_in_month, H, C, E, E_HCL):
 
 
     #space between the y-axes of the plots
-    #fig.tight_layout()
+    fig.tight_layout()
     fig.subplots_adjust(right = 0.8)
     
     #setting for the legend
@@ -103,6 +104,7 @@ def createCarpetPlotXAngles(x_angle_array, hour_in_month, H, C, E, E_HCL):
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
+    #plt.tight_layout()
     plt.show()       
     
                 
@@ -186,7 +188,7 @@ def createCarpetPlotYAngles(y_angle_array, hour_in_month, H, C, E, E_HCL):
 
 
     #space between the y-axes of the plots
-    #fig.tight_layout()
+    fig.tight_layout()
     fig.subplots_adjust(right = 0.8)
     
     #setting for the legend
@@ -199,6 +201,7 @@ def createCarpetPlotYAngles(y_angle_array, hour_in_month, H, C, E, E_HCL):
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
+    #plt.tight_layout()
     plt.show()       
     
                 
@@ -281,7 +284,7 @@ def createCarpetPlotSensitivityBuilding(x_angle_array, hour_in_month, a, b, c, d
 
 
     #space between the y-axes of the plots
-    #fig.tight_layout()
+    fig.tight_layout()
     fig.subplots_adjust(right = 0.8)
     
     #setting for the legend
@@ -294,6 +297,7 @@ def createCarpetPlotSensitivityBuilding(x_angle_array, hour_in_month, a, b, c, d
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
         #cbar.ax.set_yticklabels(AnglesString)
     cbar.ax.tick_params(labelsize=14)
+    #plt.tight_layout()
     plt.show()       
     
                 

@@ -83,6 +83,10 @@ def IlluminanceFunction():
     #Aquire best fit vector of coefficients. 1st order
     Ill_Eq = np.polyfit(X,Y,1)
     
+    print 'equation:', Ill_Eq
+    
+    Plot = True
+    
     if Plot == True:
         x,y = [],[]
         
@@ -92,9 +96,19 @@ def IlluminanceFunction():
         ax = fig.add_subplot(111)
         ax.plot(x,y,'o-')
         
+        #plt.title('Zurich 2013')
+        
         plt.xlabel('global horizontal Radiation [Wh/m2]', fontsize=12)
         plt.ylabel('global horizontal illuminance [lux]', fontsize=12)
-        plt.show()
+        plt.tight_layout()
+                
+        save = True
+    
+        if save == True:
+            path = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\PlotMidTerm'
+            fig.savefig(path + '\\IlluminanceFunction' + '.pdf')
+            fig.savefig(path + '\\IlluminanceFunction' + '.png')
+            print 'saved!'
     else:
         pass
     

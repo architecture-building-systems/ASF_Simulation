@@ -258,7 +258,7 @@ fig1.tight_layout()
 
 #create Plot if set to True
 Plot = True
-Save = False
+Save = True
 
 
 if Plot == True:

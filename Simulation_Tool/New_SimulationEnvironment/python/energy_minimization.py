@@ -20,7 +20,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     from read_occupancy import Equate_Ill, BuildingData
     from optimzeTemperatureFunction import optimzeTemp, checkEqual
     
-       
+    print 'H', BuildingProperties['COP_H']
+    print 'C', BuildingProperties['COP_C']
+    #print PV
+    
     #Temperature value, to start the simulation with
     T_in = 20
     
@@ -214,11 +217,11 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             Data_C_elec[hour_of_year][comb] = Office.coolingElectricity
             
             if Office.phi_hc_nd_ac > 0:
-                Data_Heating_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac
+                Data_Heating_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac/BuildingProperties['COP_H']
                 Data_Cooling_HOY[hour_of_year][comb] = 0
             elif Office.phi_hc_nd_ac < 0:
                 Data_Heating_HOY[hour_of_year][comb] = 0
-                Data_Cooling_HOY[hour_of_year][comb] = -Office.phi_hc_nd_ac
+                Data_Cooling_HOY[hour_of_year][comb] = -Office.phi_hc_nd_ac/BuildingProperties['COP_C']
             else:
                 Data_Heating_HOY[hour_of_year][comb] = 0
                 Data_Cooling_HOY[hour_of_year][comb] = 0
