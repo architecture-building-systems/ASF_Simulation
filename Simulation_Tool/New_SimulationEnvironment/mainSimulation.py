@@ -87,9 +87,9 @@ from SimulationClass import ASF_Simulation
 #    if ii == 0:
 SimulationData = {
 'optimizationTypes' : ['E_total'],
-'DataName' : 'ZH05_49comb',
-'geoLocation' : 'Zuerich_Kloten_2005',
-'EPWfile': 'Zuerich_Kloten_2005.epw',
+'DataName' : 'ZH13_49comb',
+'geoLocation' : 'Zuerich_Kloten_2013',
+'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
 'ShowFig': True,
 'timePeriod': None}
@@ -182,6 +182,7 @@ BuildingProperties={
 if __name__=='__main__':
 	ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties)
 	ASFtest.SolveASF()
+	print ASFtest.yearlyData
 
 
  

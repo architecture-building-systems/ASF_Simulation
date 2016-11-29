@@ -316,20 +316,22 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
         elif optimization_type == 'Lighting':
             
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if BuildingRadiationData_HOY[hour_of_year][0] != 0:
                 #get key with max building radiaiton value
                 BestComb =BuildingRadiationData_HOY[hour_of_year].argmax(axis=0)
                 BestCombKey = BestComb
               
         
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif BuildingRadiationData_HOY[hour_of_year][0] == 0:
                 #Check if there is no PV-value (no radiation)
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
                 if equal == False:
+                    #not needed
                     #if temperatures are not the same, take temp which is closest to average temperature
                     BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)           
                     BestCombKey = BestComb
+                    
                     
                 elif equal == True: #PV = 0, Temp are equal
                     BestComb = 0 #chose random Temp
@@ -348,9 +350,11 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
                 if equal == False:
+                    # PV production is very small and not big enough for the threshold, thefore it will result in zero PV, but in slightly different Temperatures
                     #if temperatures are not the same, take temp which is closest to average temperature
                     BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)           
                     BestCombKey = BestComb
+                    
                     
                 elif equal == True: #PV = 0, Temp are equal
                     BestComb = 0 #chose random Temp

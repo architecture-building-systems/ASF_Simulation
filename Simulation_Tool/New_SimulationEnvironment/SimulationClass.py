@@ -538,7 +538,7 @@ class ASF_Simulation(object):
                 		
                 print '\nResults are saved!'    
 		
-        print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+          print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		
 
 	def SolveASF(self):

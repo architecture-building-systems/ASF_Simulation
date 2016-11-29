@@ -71,7 +71,9 @@ class TestMainSimulation(unittest.TestCase):
 		"heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
 		"coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
 		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1}
+		"coolingEfficiency" :1,
+           "COP_H": 1,
+           "COP_C":1}
 		
 		#Set simulation Properties
 		SimulationOptions= {
@@ -138,10 +140,12 @@ class TestMainSimulation(unittest.TestCase):
 		"theta_int_c_set" : 26,
 		"phi_c_max_A_f": -np.inf,
 		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
-		"coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
+		"heatingSystem" : DirectHeater, 
+		"coolingSystem" : DirectCooler, 
 		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1}
+		"coolingEfficiency" :1,
+           "COP_H": 1,
+           "COP_C":1}
 		
 		#Set simulation Properties
 		SimulationOptions= {
@@ -158,6 +162,102 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['E_elec'],2), 1419.44)
 		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['PV'],2), -723.97)
 		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[46])
+  
+	def test_COPHeating(self):
+		#Set simulation data
+		print 'running COP H test'
+		SimulationData= {
+		'optimizationTypes' : ['E_total'],
+		'DataName' : 'ZH13_49comb',
+		'geoLocation' : 'Zuerich_Kloten_2013',
+		'EPWfile' : 'Zuerich_Kloten_2013.epw',
+		'Save' : False,
+		'ShowFig': True}
+		
+				
+		#Set building properties for RC-Model simulator
+		BuildingProperties={
+		"glass_solar_transmitance" : 0.687 ,
+		"glass_light_transmitance" : 0.744 ,
+		"lighting_load" : 11.74 ,
+		"lighting_control" : 300,
+		"Lighting_Utilisation_Factor" :  0.45,
+		"Lighting_MaintenanceFactor" : 0.9,
+		"U_em" : 0.2, 
+		"U_w" : 1.2,
+		"ACH_vent" : 1.5,
+		"ACH_infl" :0.5,
+		"ventilation_efficiency" : 0.6 ,
+		"c_m_A_f" : 165 * 10**3,
+		"theta_int_h_set" : 20,
+		"theta_int_c_set" : 26,
+		"phi_c_max_A_f": -np.inf,
+		"phi_h_max_A_f": np.inf,
+		"heatingSystem" : DirectHeater, 
+		"coolingSystem" : DirectCooler, 
+		"heatingEfficiency" : 1,
+		"coolingEfficiency" :1,
+           "COP_H": 4,
+           "COP_C":1}
+		
+
+		
+		ASFtest=ASF_Simulation(SimulationData = SimulationData,BuildingProperties = BuildingProperties)
+		ASFtest.SolveASF()
+		
+																					 
+		self.assertEqual(round(ASFtest.yearlyData['E_total']['E'],2), 1049.13)
+		self.assertEqual(round(ASFtest.yearlyData['E_total']['H'],2), 315.12)
+		
+  
+	def test_COPCooling(self):
+          
+		#Set simulation data
+		print 'running COP C test'
+		SimulationData= {
+		'optimizationTypes' : ['E_total'],
+		'DataName' : 'ZH13_49comb',
+		'geoLocation' : 'Zuerich_Kloten_2013',
+		'EPWfile' : 'Zuerich_Kloten_2013.epw',
+		'Save' : False,
+		'ShowFig': True}
+		
+				
+		#Set building properties for RC-Model simulator
+		BuildingProperties={
+		"glass_solar_transmitance" : 0.687 ,
+		"glass_light_transmitance" : 0.744 ,
+		"lighting_load" : 11.74 ,
+		"lighting_control" : 300,
+		"Lighting_Utilisation_Factor" :  0.45,
+		"Lighting_MaintenanceFactor" : 0.9,
+		"U_em" : 0.2, 
+		"U_w" : 1.2,
+		"ACH_vent" : 1.5,
+		"ACH_infl" :0.5,
+		"ventilation_efficiency" : 0.6 ,
+		"c_m_A_f" : 165 * 10**3,
+		"theta_int_h_set" : 20,
+		"theta_int_c_set" : 26,
+		"phi_c_max_A_f": -np.inf,
+		"phi_h_max_A_f": np.inf,
+		"heatingSystem" : DirectHeater, 
+		"coolingSystem" : DirectCooler, 
+		"heatingEfficiency" : 1,
+		"coolingEfficiency" :1,
+           "COP_H": 1,
+           "COP_C":3}
+		
+		
+		
+		
+		ASF_COP_C=ASF_Simulation(SimulationData = SimulationData,BuildingProperties = BuildingProperties)
+		ASF_COP_C.SolveASF()
+		
+																					 
+		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['E'],2), 681.31)
+		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['C'],2), 376.68)
+		
 	
 
 

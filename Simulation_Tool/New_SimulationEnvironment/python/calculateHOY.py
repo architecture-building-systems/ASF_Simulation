@@ -25,8 +25,6 @@ def calcHOY(month, day, hour):
     HOY +=(day-1)*24+hour
     return HOY
     
-HOY = calcHOY(month, day, hour)
-print HOY
-HOY += 24
-print HOY
+#HOY = calcHOY(month, day, hour)
+
 #    
