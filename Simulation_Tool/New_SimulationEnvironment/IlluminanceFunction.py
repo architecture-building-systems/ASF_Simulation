@@ -85,7 +85,7 @@ def IlluminanceFunction():
     
     print 'equation:', Ill_Eq
     
-    Plot = True
+    Plot = False
     
     if Plot == True:
         x,y = [],[]
@@ -136,7 +136,9 @@ def IlluminanceFunction():
                 fenstIll[x_angle][monthi][HOD] =RadiationData[x_angle][monthi][HOD]*Ill_Eq[0]/roomFloorArea #Lux.  Note that the constant has been ignored because it should be 0
                 
                 #Illuminance after transmitting through the window 
-                TransIll[x_angle][monthi][HOD] = fenstIll[x_angle][monthi][HOD]*glass_light_transmittance
+                Lighting_Utilisation_Factor=0.64
+                
+                TransIll[x_angle][monthi][HOD] = fenstIll[x_angle][monthi][HOD]*glass_light_transmittance * Lighting_Utilisation_Factor
     
         
     

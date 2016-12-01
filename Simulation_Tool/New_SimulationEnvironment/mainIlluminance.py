@@ -202,11 +202,11 @@ x= Fun[0]
 y = GH[0]
 plt.title('Closed ASF Configuration')
 plt.plot(x, y, "ro")
-plt.xlabel('Linear Regression Method [Lux]')
+plt.xlabel('Total Flux Method Method [Lux]')
 plt.ylabel('HoneyBee [Lux]')
 #plt.xticks([0,4000,8000,12000])
-plt.xticks([0,3000,6000,9000,12000,15000])
-plt.yticks([0,3000,6000,9000,12000,15000])
+plt.xticks([0,3000,6000,9000,12000])
+plt.yticks([0,3000,6000,9000,12000])
 
 plt.subplot(1,2,2)
 
@@ -215,9 +215,9 @@ y1 = GH[90]
 
 plt.title('Open ASF Configuration')
 plt.plot(x1, y1, "ko")
-plt.xlabel('Linear Regression Method [Lux]')
-plt.xticks([0,3000,6000,9000,12000,15000])
-plt.yticks([0,3000,6000,9000,12000,15000])
+plt.xlabel('Total Flux Method Method [Lux]')
+plt.xticks([0,3000,6000,9000,12000])
+plt.yticks([0,3000,6000,9000,12000])
 #plt.ylabel('HoneyBee [Lux]')
 fig2.tight_layout()
 
@@ -232,7 +232,7 @@ x= Fun[0]
 y = GH[0]
 plt.title('Closed ASF Configuration')
 plt.plot(x, y, "ro")
-plt.xlabel('Linear Regression Method [Lux]')
+plt.xlabel('Total Flux Method Method [Lux]')
 plt.ylabel('HoneyBee [Lux]')
 plt.ylim(0,1500)
 plt.xlim(0,1500)
@@ -247,7 +247,7 @@ y1 = GH[90]
 
 plt.title('Open ASF Configuration')
 plt.plot(x1, y1, "ko")
-plt.xlabel('Linear Regression Method [Lux]')
+plt.xlabel('Total Flux Method Method [Lux]')
 plt.ylim(0,1500)
 plt.xlim(0,1500)
 plt.xticks([0,300,600,900,1200,1500])
@@ -266,35 +266,35 @@ if Plot == True:
     z_min = 0
     z_max = 6000 #300
    
-    fig = plt.figure(figsize=(16, 8))
+    fig = plt.figure(figsize=(12, 8))
     
     plt.style.use('ggplot')    
     
-    plt.subplot(2,3,1)
+    plt.subplot(2,2,1)
     
     carpetPlotIlluminance(z =illuGH[0], z_min = z_min, z_max= z_max, title = '(a) HoneyBee (closed)')
     plt.ylabel("Hour of the Day",size=14)
     
-    plt.subplot(2,3,2)
-    carpetPlotIlluminance(z = illuWin[0], z_min = z_min, z_max= z_max, title = "(b) Total Flux Method (closed)")
+#    plt.subplot(2,2,2)
+#    carpetPlotIlluminance(z = illuWin[0], z_min = z_min, z_max= z_max, title = "(b) Total Flux Method (closed)")
     
     
-    plt.subplot(2,3,3)
-    carpetPlotIlluminance(z = illuFun[0], z_min = z_min, z_max= z_max, title = "(c) Linear Regression Method (closed)")
+    plt.subplot(2,2,2)
+    carpetPlotIlluminance(z = illuFun[0], z_min = z_min, z_max= z_max, title = "(b) Total Flux Method (closed)")
     
     
-    plt.subplot(2,3,4)
-    carpetPlotIlluminance(z = illuGH[90],  z_min = z_min, z_max= z_max, title = "(d) HoneyBee (open)")
+    plt.subplot(2,2,3)
+    carpetPlotIlluminance(z = illuGH[90],  z_min = z_min, z_max= z_max, title = "(c) HoneyBee (open)")
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     
-    plt.subplot(2,3,5)
-    carpetPlotIlluminance(z = illuWin[90],  z_min = z_min, z_max= z_max, title = "(e) Total Flux Method (open)")
-    plt.xlabel("Month of the Year",size=14)
+#    plt.subplot(2,3,5)
+#    carpetPlotIlluminance(z = illuWin[90],  z_min = z_min, z_max= z_max, title = "(e) Total Flux Method (open)")
+#    plt.xlabel("Month of the Year",size=14)
+#    
     
-    
-    plt.subplot(2,3,6)
-    carpetPlotIlluminance(z = illuFun[90], z_min = z_min, z_max= z_max, title = "(f) Linear Regression Method (open)")
+    plt.subplot(2,2,4)
+    carpetPlotIlluminance(z = illuFun[90], z_min = z_min, z_max= z_max, title = "(d) Total Flux Method (open)")
     plt.xlabel("Month of the Year",size=14)    
     
     

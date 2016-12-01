@@ -398,7 +398,7 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     anglesHOY = angles_df
     
     #ResultsBuildingSimulation['E_total']['PV'] = ResultsBuildingSimulation['E_total']['PV']*-1
-
+    """
     plt.style.use('ggplot')
     fig = plt.figure(figsize=(6, 3))
     
@@ -439,7 +439,10 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     
     plt.tight_layout()
     
+    angles_df = angles_df.T
+    angles_df.columns = range(5,21)
     
+    """
        
 #    plt.style.use('ggplot')
 #    fig = plt.figure(figsize=(6, 3))
@@ -461,8 +464,7 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
 #    plt.plot(x1, y1, 'r', x2, y2,  'b')
    
    
-    angles_df = angles_df.T
-    angles_df.columns = range(5,21)
+    
     
     
     
@@ -508,7 +510,7 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
        
         angles_df.to_csv(os.path.join(paths['result'], 'Angles.csv'))
         
-        fig.savefig(os.path.join(paths['result'],'BuildingSimulation.pdf'), format='pdf')       
+        #fig.savefig(os.path.join(paths['result'],'BuildingSimulation.pdf'), format='pdf')       
         
         BuildingProperties["heatingSystem"] = str(BuildingProperties["heatingSystem"])
         BuildingProperties["coolingSystem"] = str(BuildingProperties["coolingSystem"])

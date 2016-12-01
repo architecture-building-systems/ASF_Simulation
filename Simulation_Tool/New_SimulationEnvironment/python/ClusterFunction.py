@@ -13,7 +13,7 @@
 
 
 
-def NoClusters_mauro(XANGLES,YANGLES,NoClusters, paths):
+def NoClusters(XANGLES,YANGLES,NoClusters, paths):
 
 
     from prepareData import readLayoutAndCombinations
@@ -166,10 +166,17 @@ def NoClusters_mauro(XANGLES,YANGLES,NoClusters, paths):
 
 
 
-output = NoClusters_mauro(XANGLES= [0,30],YANGLES = [45] , NoClusters = 3, paths = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_49comb_test')
+output = NoClusters(XANGLES= [0,30],YANGLES = [45] , NoClusters = 3, paths = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_49comb_test')
+
+import json
+
+path_main = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment'
 
 for ii in range(8):
     print output[ii]
+    
+    with open(path_main + '\\Cluster.json','w') as f:
+        f.write(json.dumps(output[5]))
 
 """
 for index in range(0,maxcomb):

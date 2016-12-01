@@ -90,7 +90,7 @@ SimulationData = {
 'DataName' : 'ZH13_49comb',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
-'Save' : True,
+'Save' : False,
 'ShowFig': True,
 'timePeriod': None}
 
@@ -179,23 +179,141 @@ BuildingProperties={
 #'ActuationEnergy' : False}
 
 	
-if __name__=='__main__':
-    ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties)
-    ASFtest.SolveASF()
-    print ASFtest.yearlyData
-    print ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey']  
+#if __name__=='__main__':
+#    ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties)
+#    ASFtest.SolveASF()
+#    print ASFtest.yearlyData
+#    #print ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey']  
     
-    x,y = [],[]
+    
+import os, sys
+import numpy as np
+import csv
+import matplotlib.pyplot as plt
+
+x,y = [],[]
+x2,y2 = [],[]
+    
+x = range(0,8760)
+y.append (ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'])
+y = y[0]
+
+for ii in x:
+    if y[ii] != 49:
         
-    x = range(0,8760)
-    y.append (ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'])
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(x,y,'o-')
-    
-    #plt.title('Zurich 2013')
-    
-    plt.xlabel('Hour of year', fontsize=12)
-    plt.ylabel('Angle Key', fontsize=12)
-    plt.tight_layout()
+        x2.append(ii)
+        y2.append(y[ii])
+        
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(x2,y2,'o')
+
+#plt.title('Zurich 2013')
+
+plt.xlabel('Hour of year', fontsize=12)
+plt.ylabel('Angle Key', fontsize=12)
+plt.tight_layout()
  
+
+
+print ASFtest.ResultsBuildingSimulation['E_total']['OptAngles'][0][0]
+print ASFtest.ResultsBuildingSimulation['E_total']['OptAngles'][0][1]
+
+Xangle = []
+Yangle = []
+
+for ii in x2:      
+    Xangle.append(ASFtest.ResultsBuildingSimulation['E_total']['OptAngles'][ii][0])
+    Yangle.append(ASFtest.ResultsBuildingSimulation['E_total']['OptAngles'][ii][1])
+
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(x2,Xangle,'o')
+
+#plt.title('Zurich 2013')
+
+plt.xlabel('Hour of year', fontsize=12)
+plt.ylabel('XAngle', fontsize=12)
+plt.yticks(range(0,105,15))
+plt.xticks(range(0,10000,2000))
+plt.tight_layout()
+
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(x2,Yangle,'o')
+
+#plt.title('Zurich 2013')
+
+plt.xlabel('Hour of year', fontsize=12)
+plt.ylabel('YAngle', fontsize=12)
+plt.yticks(range(-45,60,15))
+plt.xticks(range(0,10000,2000))
+plt.tight_layout()
+
+Yangle_Count = {}
+Xangle_Count = {}
+Yangle_List = []
+Xangle_List = []
+sumX = 0
+sumY = 0
+
+xAngle = range(0,105,15)
+yAngle = range(-45,60,15)
+
+for jj in yAngle:
+    count = 0
+    for ii in range(len(x2)):
+        if Yangle[ii] == jj:
+            count += 1
+    Yangle_Count[jj] = count
+    Yangle_List.append(count)
+    sumY += count
+    
+
+
+for jj in xAngle:
+    count = 0
+    for ii in range(len(x2)):
+        if Xangle[ii] == jj:
+            count += 1
+    Xangle_Count[jj] = count
+    Xangle_List.append(count)
+    sumX += count
+    
+print sumX
+print sumY 
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+
+#ax1.set_title('(d) Summer Cooling Optimization', fontsize = 18)
+
+ax1.plot(xAngle, Xangle_List, 'm-')
+ax1.plot(yAngle, Yangle_List, 'c--')
+ax1.set_xlabel('Angle degree', fontsize = 16)
+ax1.set_ylabel('Counts per Year', fontsize = 16)
+#ax1.set_yticks([-800,-400,0,400,800])
+#ax1.set_xticks(range(6,24,3))
+
+plt.legend(['Xangle', 'Yangle'], loc = 2)
+
+
+#ax2 = ax1.twinx()
+#
+#ax2.plot(yAngle, Yangle_List, 'c--')
+#
+##ax2.set_ylabel('[deg]', fontsize = 16)
+##ax2.set_yticks([-90,-45,0,45,90])
+#plt.legend(['Yangle'], loc = 3)
+
+plt.tight_layout()
+plt.show()
+ 
+
+percX = round(np.array(Xangle_List) /float(sumX) *100,2)
+percY = round(np.array(Yangle_List) /float(sumY) *100,2)
+

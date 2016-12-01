@@ -91,9 +91,9 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     
   
     start =calcHOY(month = SimulationPeriod['FromMonth'], day = SimulationPeriod['FromDay'], hour = SimulationPeriod['FromHour'])
-    start -= 1 #because the calcHOY function: 5 means 4 to 5, but in LB 5 equals 5 to 6
+    
     end = calcHOY(month = SimulationPeriod['ToMonth'], day = SimulationPeriod['ToDay'], hour = SimulationPeriod['ToHour'])
-    end -= 1
+    
     print "\nThe simulation starts at the hour of the year: " + str(start) + " and ends at: " + str(end) + "\n"
     
     
@@ -190,7 +190,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                       
 
  
-season = 'winter'
+season = 'weekSummer'
    #'summer'#
 #DefaultValues
 ###############################################################################
@@ -208,7 +208,7 @@ if season == 'winter':
     #Set simulation data
     SimulationData= {
     'optimizationTypes' : ['E_total', 'SolarEnergy', 'Heating'],#'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
-    'DataName' : 'ZH13_49comb_WinterSunnyDay',#
+    'DataName' : 'Test',#'ZH13_49comb_WinterSunnyDay',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : True}    
     
@@ -230,7 +230,22 @@ elif season == 'summer':
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : True}
 
-
+elif season == 'weekSummer':    
+    SimulationPeriod = {
+    'FromMonth': 7,#7, #1,
+    'ToMonth': 7,#7, #1,
+    'FromDay': 4,#6, #8,
+    'ToDay': 11, #8,
+    'FromHour': 0,#5
+    'ToHour': 24,
+    'Temp_start' : 22}#20
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],#'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
+    'DataName' : 'ZH13_49comb_weekAnalysis',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : True}
 
 #Set panel data
 PanelData={
