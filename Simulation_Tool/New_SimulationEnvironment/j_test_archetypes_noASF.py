@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import time
+from datetime import datetime 
 import numpy as np
 import csv
 import os,sys
@@ -30,8 +30,8 @@ PanelData={
 	"XANGLES": [0, 15, 30, 45, 60, 75, 90],
 	"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
 	"NoClusters":1,
-	"numberHorizontal":6,
-	"numberVertical":9,
+	"numberHorizontal":0,
+	"numberVertical":0,
 	"panelOffset":400,
 	"panelSize":400,
 	"panelSpacing":500}
@@ -115,10 +115,8 @@ for i in range(0,len(runlist)):
 	so_list.append(SO)
 	
 	#Run ASF simulation
-	
 	ASF_archetypes=ASF(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP, SimulationOptions = SO)
 	ASF_archetypes.SolveASF()
-
 	#Add building name to dataframe and append subsequent iterations:
 	current_result = ASF_archetypes.yearlyData.T
 	current_result['Name'] = runlist[i]
@@ -129,16 +127,15 @@ for i in range(0,len(runlist)):
 		temp_list = [all_results,current_result]
 		all_results = pd.concat(temp_list)
 	print ASF_archetypes.yearlyData
-	
 print '--simulations complete--'
 
 #write results to csv:
-timestr = time.strftime("%d%m%Y_%H%M")
-name = timestr+'_results.csv'
+#still not working: datestamp = str(datetime.now())[0:9]+'_'+str(datetime.now())[11:16]
+name = 'all_results.csv'
 all_results.to_csv(os.path.join(paths['CEA_folder'],name))
 
 #convert simulation parameters to dataframe and write to csv (ovrrides previous simulation)
 bp_f = pd.DataFrame(bp_list)
 so_f = pd.DataFrame(so_list)
-bp_f.to_csv(os.path.join(paths['CEA_folder'],timestr+'_BP.csv'))
-so_f.to_csv(os.path.join(paths['CEA_folder'],timestr+'_SO.csv'))
+bp_f.to_csv(os.path.join(paths['Archetypes'],'BP_%s.csv'))
+so_f.to_csv(os.path.join(paths['Archetypes'],'SO_%s.csv'))
