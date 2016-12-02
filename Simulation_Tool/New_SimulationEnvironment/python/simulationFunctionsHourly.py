@@ -316,6 +316,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     #create dicitionaries to save the results
     hourlyData = {}
     ResultsBuildingSimulation = {}
+    UncomfortableH = {}    
     
     x_angles = {} #optimized x-angles
     y_angles = {} #optimized y-angles
@@ -331,7 +332,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
     for optimizationType in optimization_Types:
             
-        hourlyData[optimizationType], ResultsBuildingSimulation[optimizationType] = RC_Model (
+        hourlyData[optimizationType], ResultsBuildingSimulation[optimizationType], UncomfortableH[optimizationType] = RC_Model (
                                                                       optimization_type = optimizationType, 
                                                                       paths = paths,
                                                                       building_data = building_data, 
@@ -358,7 +359,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 #        # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
 #        monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType])
 #        
-    return hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles
+    return hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles, UncomfortableH
     
     
     
@@ -387,87 +388,36 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 
 def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end):
     
+    from hourlyPlotFunction import PlotHour 
+    from Function3dPlot import create3Dplot    
+    from SubPlot3D import SubPlotFunction    
+    
     angles = {}
-    
-    angles['X_Angles']= x_angles['E_total']
-    angles['Y_Angles'] = y_angles['E_total']
-    angles['Temperature']= ResultsBuildingSimulation['E_total']['T_in']
-    
-    angles_df = pd.DataFrame(angles)
-    
-    anglesHOY = angles_df
-    
-    #ResultsBuildingSimulation['E_total']['PV'] = ResultsBuildingSimulation['E_total']['PV']*-1
-    """
-    plt.style.use('ggplot')
-    fig = plt.figure(figsize=(6, 3))
+    fig = {}
+      
+    anglesHOY = pd.DataFrame(angles)
     
     
-    ax1 = fig.add_subplot(111) 
-    #ax1.title('Cloudy Day', fontsize=12)
-    ax1.title.set_text(SimulationData['DataName'])      
+    for ii in optimization_Types:
     
-  
-    with pd.plot_params.use('x_compat', True):
-        ResultsBuildingSimulation['E_total']['E_tot'].plot(color='r', label = 'E')    
-        #ResultsBuildingSimulation['E_total']['C'].plot(color='b', label = 'C')
-        ResultsBuildingSimulation['E_total']['H'].plot(color='g', label = 'H')
-        ResultsBuildingSimulation['E_total']['PV'].plot(color='y', label = 'PV')
-        ResultsBuildingSimulation['E_total']['L'].plot(color='m', label = 'L')    
-        
-   
-  
-        
-    plt.legend(loc=2, fontsize = 6)
-    #plt.legend(loc='center right', bbox_to_anchor=(1.3, 0.5))
-
-    plt.ylabel('Net Energy [kWh]', fontsize=12)
-    #plt.yticks([-400,0,400,800,1200])
-    #plt.xticks(range(start,end+1))
-    plt.xlabel('Hour of Day: 5 to 20', fontsize=12)   
+        fig[ii] = PlotHour(E = ResultsBuildingSimulation[ii]['E_tot'], PV = ResultsBuildingSimulation[ii]['PV'], L = ResultsBuildingSimulation[ii]['L'], 
+                       H = ResultsBuildingSimulation[ii]['H'], C = ResultsBuildingSimulation[ii]['C'], x_angle = x_angles[ii], y_angle = y_angles[ii], start = start, end = end, title = ii)
     
-    with pd.plot_params.use('x_compat', True):        
-        angles_df['X_Angles'].plot(color='c',style='--', secondary_y=True) 
-        angles_df['Y_Angles'].plot(color='k', style='--',secondary_y=True) 
-        
-   
-    plt.legend(loc=4, fontsize = 10)
-    #plt.legend(loc='best')
-    
-    plt.ylabel('Angles [deg]', fontsize=12)    
-    plt.yticks([-90,-45,0,45,90])
-    
-    plt.tight_layout()
-    
-    angles_df = angles_df.T
-    angles_df.columns = range(5,21)
     
     """
-       
-#    plt.style.use('ggplot')
-#    fig = plt.figure(figsize=(6, 3))
-#    
-#    
-#    ax1 = fig.add_subplot(111) 
-#    #ax1.title('Cloudy Day', fontsize=12)
-#    ax1.title.set_text(SimulationData['DataName']) 
-#
-#    y1 = ResultsBuildingSimulation['E_total']['E_tot']      
-#    y2 = ResultsBuildingSimulation['E_total']['PV']    
-#    
-#    x1 = range(start, end+1)    
-#    x2 = x1
-#    
-#    lines = ax1.plot(x1, y1, x2, y2)
-#    # use keyword args
-#    #plt.setp(lines, color=['r','b'], linewidth=2.0)   
-#    plt.plot(x1, y1, 'r', x2, y2,  'b')
-   
-   
+    figA = {}
+    figB = {}
     
+    count = 1
     
+    for jj in range(start,end+1):
+        
+        figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
+        #figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
+    """
+    #fig3D = SubPlotFunction(figures = figA, start = start, end = end)
     
-    
+      
     
     RBS_ELEC = {}
     
@@ -493,10 +443,13 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
         paths['result_folder'] = os.path.join(paths['main'], 'Results') 
         paths['result']= os.path.join(paths['result_folder'], 'Results_' + geoLocation + '_date_' + now + '_name_' + SimulationData['DataName'])
         
+        
+        
         if not os.path.isdir(paths['result']):
             os.makedirs(paths['result'])    
         
-       
+        
+        
         for ii in optimization_Types:
             # save results 
             #ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T
@@ -505,10 +458,13 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
             ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
             np.save(os.path.join(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.npy')), ResultsBuildingSimulation[ii])
             np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
-        #change name of the columns
+            
+            fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii + '.pdf'))
+            #fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii +  '.png'))
+        
         
        
-        angles_df.to_csv(os.path.join(paths['result'], 'Angles.csv'))
+        anglesHOY.to_csv(os.path.join(paths['result'], 'Angles.csv'))
         
         #fig.savefig(os.path.join(paths['result'],'BuildingSimulation.pdf'), format='pdf')       
         
@@ -526,6 +482,6 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     
     print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
-    return ResultsBuildingSimulation, angles_df,anglesHOY, RBS_ELEC
+    return ResultsBuildingSimulation, anglesHOY,anglesHOY, RBS_ELEC
 
      

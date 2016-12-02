@@ -78,13 +78,8 @@ import numpy as np
 import pandas as pd
 from buildingSystem import *  
 from SimulationClass import ASF_Simulation
-#
-#
-##
-#
-#for ii in range(3):
-#    
-#    if ii == 0:
+
+
 SimulationData = {
 'optimizationTypes' : ['E_total'],
 'DataName' : 'ZH13_49comb',
@@ -136,14 +131,14 @@ SimulationData = {
 #"panelSize":400,
 #"panelSpacing":500}
 
-    #Set Building Parameters in [mm]
-#    BuildingData={
-#    "room_width": 4900,     
-#    "room_height":3100,
-#    "room_depth":7000,
-#    "glazing_percentage_w": 0.92,
-#    "glazing_percentage_h": 0.97,
-#    "WindowGridSize": 200}
+#Set Building Parameters in [mm]
+#BuildingData={
+#"room_width": 4900,     
+#"room_height":3100,
+#"room_depth":7000,
+#"glazing_percentage_w": 0.92,
+#"glazing_percentage_h": 0.97,
+#"WindowGridSize": 200}
 
 ##Set building properties for RC-Model simulator
 BuildingProperties={
@@ -151,8 +146,8 @@ BuildingProperties={
 "glass_light_transmitance" : 0.744 ,
 "lighting_load" : 11.74 ,
 "lighting_control" : 300,
-"Lighting_Utilisation_Factor" :  0.45,
-"Lighting_MaintenanceFactor" : 0.9,
+"Lighting_Utilisation_Factor" :  0.45,#0.64
+"Lighting_MaintenanceFactor" : 0.9, #1
 "U_em" : 0.2, 
 "U_w" : 1.2,
 "ACH_vent" : 1.5,
@@ -169,7 +164,7 @@ BuildingProperties={
 "coolingEfficiency" :1,
 'COP_H': 1,
 'COP_C':1}
-#
+
 #
 ##Set simulation Properties
 #SimulationOptions= {
@@ -182,20 +177,5 @@ BuildingProperties={
 if __name__=='__main__':
     ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties)
     ASFtest.SolveASF()
-    print ASFtest.yearlyData
-    print ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey']  
     
-    x,y = [],[]
-        
-    x = range(0,8760)
-    y.append (ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'])
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(x,y,'o-')
-    
-    #plt.title('Zurich 2013')
-    
-    plt.xlabel('Hour of year', fontsize=12)
-    plt.ylabel('Angle Key', fontsize=12)
-    plt.tight_layout()
  

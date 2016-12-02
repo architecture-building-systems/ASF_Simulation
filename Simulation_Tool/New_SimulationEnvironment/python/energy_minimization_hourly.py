@@ -526,7 +526,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
     
         #count uncomfortable hours
-        if (T_in > Tmax or T_in < Tmin):
+        if (T_in > (Tmax + 0.1) or T_in < (Tmin + 0.1)):
             print 'occupancy', occupancy['People'][hour_of_year]
             if occupancy['People'][hour_of_year] != 0:               
                 uncomf_hours += 1
@@ -569,10 +569,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
      
     print "\nEnd of RC-Model calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print "uncomfortable Hours: ", uncomf_hours
+       
     
-    print uncomf_hours_HOY
-    
-    
-    return  hourlyData_df, Building_Simulation_df
+    return  hourlyData_df, Building_Simulation_df, uncomf_hours_HOY
     
     

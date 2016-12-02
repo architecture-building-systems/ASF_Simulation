@@ -148,7 +148,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             
     
                
-    hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles = runBuildingSimulation(
+    hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles, UncomfortableH = runBuildingSimulation(
                             geoLocation = SimulationData['geoLocation'], 
                             paths = paths, 
                             optimization_Types = SimulationData['optimizationTypes'], 
@@ -185,7 +185,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             start = start, end = end)
     print "calucation is finished"
                     
-    return ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData 
+    return ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH 
 
                       
 
@@ -207,10 +207,10 @@ if season == 'winter':
     
     #Set simulation data
     SimulationData= {
-    'optimizationTypes' : ['E_total', 'SolarEnergy', 'Heating'],#'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
-    'DataName' : 'Test',#'ZH13_49comb_WinterSunnyDay',#
+    'optimizationTypes' : ['E_total', 'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting', 'Heating'],
+    'DataName' : 'ZH13_49comb_WinterSunnyDay',#
     'geoLocation' : 'Zuerich_Kloten_2013',
-    'Save' : True}    
+    'Save' : False}    
     
 ###############################################################################
 elif season == 'summer':    
@@ -225,7 +225,7 @@ elif season == 'summer':
     
     #Set simulation data
     SimulationData= {
-    'optimizationTypes' : ['E_total', 'SolarEnergy', 'Cooling'],#'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
+    'optimizationTypes' : ['E_total'],#'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
     'DataName' : 'ZH13_49comb_Notcloudy_6_7',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : True}
@@ -236,7 +236,7 @@ elif season == 'weekSummer':
     'ToMonth': 7,#7, #1,
     'FromDay': 4,#6, #8,
     'ToDay': 11, #8,
-    'FromHour': 0,#5
+    'FromHour': 1,#5
     'ToHour': 24,
     'Temp_start' : 22}#20
     
@@ -265,7 +265,7 @@ BuildingData={
 "room_depth":7000,
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97,
-'GridSizeWindow' : 100}
+'GridSizeWindow' : 200}
 
 #Set building properties for RC-Model simulator
 BuildingProperties={
@@ -282,7 +282,7 @@ BuildingProperties={
 "ventilation_efficiency" : 0.6 ,
 "c_m_A_f" : 165 * 10**3,
 "theta_int_h_set" : 22,
-"theta_int_c_set" : 24,
+"theta_int_c_set" : 26,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
 "heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
@@ -291,6 +291,7 @@ BuildingProperties={
 "coolingEfficiency" :1,
 'COP_H': 4,
 'COP_C':3}
+#add utilisation factor
 
 #Set simulation Properties
 SimulationOptions= {
@@ -300,7 +301,7 @@ SimulationOptions= {
 
    
 
-ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
 #MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
     
     

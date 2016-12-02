@@ -314,6 +314,6 @@ plt.tight_layout()
 plt.show()
  
 
-percX = round(np.array(Xangle_List) /float(sumX) *100,2)
-percY = round(np.array(Yangle_List) /float(sumY) *100,2)
+percX = np.array(Xangle_List) /float(sumX) *100
+percY = np.array(Yangle_List) /float(sumY) *100
 
