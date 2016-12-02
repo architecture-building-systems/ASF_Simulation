@@ -212,7 +212,7 @@ class ASF_Simulation(object):
 		 
 		from RadiationCalculation import CalculateRadiationData     
 				
-				
+		
 		
 		#Calculate the Radiation on the solar panels and window with ladybug
 		self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
@@ -253,7 +253,7 @@ class ASF_Simulation(object):
 								   lookup_table_path = self.paths['electrical_simulation'], 
 								   geo_path = self.paths['geo'],
 								   flipOrientation= False, 
-								   simulationOption = self.simulationOption,
+								   simulationOption =None,
 								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
 								   hour_in_month = self.hour_in_month, 
 								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
@@ -269,7 +269,7 @@ class ASF_Simulation(object):
 								   lookup_table_path = self.paths['electrical_simulation'], 
 								   geo_path = self.paths['geo'],
 								   flipOrientation= False, 
-								   simulationOption = self.simulationOption,
+								   simulationOption =None,
 								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
 								   hour_in_month = self.hour_in_month,
 								   paths = self.paths, DataNamePV = self.FolderName['DataName'])

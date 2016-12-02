@@ -19,9 +19,9 @@ paths = PATHS()
 
 SimulationData= {
 	'optimizationTypes' : ['E_total'],
-	'DataName' : 'ZH05_49comb',
-	'geoLocation' : 'Zuerich_Kloten_2005',
-	'EPWfile' : 'Zuerich_Kloten_2005.epw',
+	'DataName' : 'Cairo_49_west_comb',
+	'geoLocation' : 'EGY_Cairo.623660_IWEC',
+	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
 	'Save' : False,
 	'ShowFig': False}
 
@@ -134,11 +134,11 @@ print '--simulations complete--'
 
 #write results to csv:
 timestr = time.strftime("%d%m%Y_%H%M")
-name = timestr+'_results.csv'
+name = 'Archetypes_'+SimulationData.get('DataName')+'_'+timestr+'.csv'
 all_results.to_csv(os.path.join(paths['CEA_folder'],name))
 
 #convert simulation parameters to dataframe and write to csv (ovrrides previous simulation)
 bp_f = pd.DataFrame(bp_list)
 so_f = pd.DataFrame(so_list)
-bp_f.to_csv(os.path.join(paths['CEA_folder'],timestr+'_BP.csv'))
-so_f.to_csv(os.path.join(paths['CEA_folder'],timestr+'_SO.csv'))
+#bp_f.to_csv(os.path.join(paths['CEA_folder'],timestr+'_BP.csv'))
+#so_f.to_csv(os.path.join(paths['CEA_folder'],timestr+'_SO.csv'))

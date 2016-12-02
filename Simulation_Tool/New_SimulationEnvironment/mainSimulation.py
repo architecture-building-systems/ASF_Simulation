@@ -140,6 +140,15 @@ from SimulationClass import ASF_Simulation
 
 if __name__=='__main__':
 	ASFtest=ASF_Simulation(SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH05_49comb','geoLocation' : 'Zuerich_Kloten_2005', 'EPWfile': 'Zuerich_Kloten_2005.epw','Save' : False, 'ShowFig': False})
+            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb_noASF','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : False, 'ShowFig': False},
+            PanelData={
+			"XANGLES": [0],
+			"YANGLES" : [0],
+			"NoClusters":1,
+			"numberHorizontal":0,
+			"numberVertical":0,
+			"panelOffset":400,
+			"panelSize":400,
+			"panelSpacing":500})
 	ASFtest.SolveASF()
 	print ASFtest.yearlyData

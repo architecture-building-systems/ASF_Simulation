@@ -56,37 +56,14 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         fp.close()
         
     # find the number of hours analysed by ladybug:
-    if simulationOption['timePeriod'] == '4months':
-        MonthTracking = SunTrackingData['MonthTracking']
-        numHours = 0
-        for i in range(len(MonthTracking)):
-            if MonthTracking[i]==3 or MonthTracking[i]==6 or MonthTracking[i]==9 or MonthTracking[i]==12: 
-                numHours += 1
-        month_eval = [3,6,9,12]
-        
-    elif simulationOption['timePeriod'] == '3month':
-        MonthTracking = SunTrackingData['MonthTracking']
-        numHours = 0
-        for i in range(len(MonthTracking)):
-            if MonthTracking[i]==1 or MonthTracking[i]==2 or MonthTracking[i]==3: 
-                numHours += 1 
-        print numHours
-        month_eval = [1,2,3]
-        
-    elif simulationOption['timePeriod'] == '1month':
-        MonthTracking = SunTrackingData['MonthTracking']
-        numHours = 0
-        for i in range(len(MonthTracking)):
-            if MonthTracking[i]==7: 
-                numHours += 1  
-        month_eval = [7]
+
             
-    elif simulationOption['timePeriod'] == None:
+    if simulationOption == None:
         numHours = np.shape(SunTrackingData['HOY'])[0]
         print "numHours", numHours
         month_eval = range(1,13)
         
-    elif simulationOption['timePeriod'] == '1hour':
+    elif simulationOption== '1hour':
         #simulation for 1 hour
         numHours = 1
     
