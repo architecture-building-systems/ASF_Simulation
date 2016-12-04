@@ -19,9 +19,9 @@ paths = PATHS()
 
 SimulationData= {
 	'optimizationTypes' : ['E_total'],
-	'DataName' : 'Cairo_49_west_comb',
-	'geoLocation' : 'EGY_Cairo.623660_IWEC',
-	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
+	'DataName' : 'ZH13_49comb',
+	'geoLocation' : 'Zuerich_Kloten_2013',
+	'EPWfile' : 'Zuerich_Kloten_2013.epw',
 	'Save' : False,
 	'ShowFig': False}
 

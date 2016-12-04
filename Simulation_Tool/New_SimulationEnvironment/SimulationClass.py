@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Created on Tue Nov 08 11:42:45 2016
-
 @author: PJ
 @credits: Mauro
 """
@@ -14,22 +12,22 @@ import warnings
 import csv
 import matplotlib.pyplot as plt
 import pandas as pd
-
 from buildingSystem import *  
 
 class ASF_Simulation(object):
 
 	def __init__(self,
             SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : False, 'ShowFig': False},
+            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod':None},
             PanelData = 
             {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500},
             BuildingData = 
-            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 150},
+            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200},
             BuildingProperties = 
             {"glass_solar_transmitance" : 0.687,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
             "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.2,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 20,\
-            "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1},
+            "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1,
+            'COP_H': 1, 'COP_C':1},
             SimulationOptions= 
             {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
                             
@@ -89,6 +87,7 @@ class ASF_Simulation(object):
 		
 		
 	def setPaths(self): 
+     
 		Occupancy = self.SimulationOptions['Occupancy']
 
 		# create dictionary to write all paths:
@@ -100,10 +99,10 @@ class ASF_Simulation(object):
 		# define self.paths of subfolders:
 		self.paths['data'] =os.path.join(self.paths['main'], 'data')
 		self.paths['python'] = os.path.join(self.paths['main'], 'python')
-		self.paths['aux_files'] = os.path.join(self.paths['python'], 'aux_files')
-		
-		self.paths['radiation_results'] = os.path.join(self.paths['main'],'radiation_results_' + self.FolderName['DataName'])
-		self.paths['radiation_wall'] = os.path.join(self.paths['main'],  'radiation_wall_' + self.FolderName['DataName'])
+		self.paths['RadiationData'] = os.path.join(self.paths['main'], 'RadiationData')
+          		
+		self.paths['radiation_results'] = os.path.join(self.paths['RadiationData'],'radiation_results_' + self.FolderName['DataName'])
+		self.paths['radiation_wall'] = os.path.join(self.paths['RadiationData'],  'radiation_wall_' + self.FolderName['DataName'])
 		self.paths['PV'] = os.path.join(self.paths['main'], 'PV_results')
 
 		self.paths['save_results_path'] = self.paths['PV']
@@ -116,7 +115,7 @@ class ASF_Simulation(object):
 		self.paths['weather'] = os.path.join(self.paths['weather_folder'], self.geoLocation + '.epw')
 		
 		# add python_path to system path, so that all files are available:
-		sys.path.insert(0, self.paths['aux_files'])
+		
 		sys.path.insert(0, self.paths['python'])
 		
 		
@@ -124,7 +123,9 @@ class ASF_Simulation(object):
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
 		
-		
+		if not os.path.isdir(self.paths['RadiationData']):
+				os.makedirs(self.paths['RadiationData'])
+  
 		#radiation subfolder is created, there the radiation_results are saved
 		if not os.path.isdir(self.paths['radiation_results']):
 				os.makedirs(self.paths['radiation_results'])
@@ -144,9 +145,10 @@ class ASF_Simulation(object):
 		from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature
 		# create sun data based on grasshopper file, this is only possible with the ladybug component SunPath
 		self.SunTrackingData = SunAnglesTackingAndTemperature(paths = self.paths,
-														 weatherData = self.weatherData)    
-		#execfile(os.path.join(self.paths['aux_files'], 'SunAngles_Tracking_and_temperature.py'))
+												weatherData = self.weatherData)    
 		
+		from create_lookup_table import lookUpTableFunction
+  
 		# calculate and save lookup table if it does not yet exist:
 		self.paths['data_python'] = os.path.join(self.paths['data'], 'python')
 		self.paths['electrical_simulation'] = os.path.join(self.paths['data_python'], 'electrical_simulation') 
@@ -155,7 +157,7 @@ class ASF_Simulation(object):
 		if not os.path.isfile(os.path.join(self.paths['electrical_simulation'], 'curr_model_submod_lookup.npy')): 
 			if not os.path.isdir(self.paths['electrical_simulation']):
 				os.makedirs(self.paths['electrical_simulation'])
-			execfile(os.path.join(self.paths['aux_files'], 'create_lookup_table.py'))
+			lookUpTableFunction(self.paths)
 		else:
 			print 'lookup table not created as it already exists'
 		
@@ -210,12 +212,10 @@ class ASF_Simulation(object):
 		
 	def runRadiationCalculation(self):
 		 
-		from RadiationCalculation import CalculateRadiationData     
-				
-		
-		
-		#Calculate the Radiation on the solar panels and window with ladybug
-		self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
+         from RadiationCalculation import CalculateRadiationData     
+
+	   #Calculate the Radiation on the solar panels and window with ladybug
+         self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
                                                                     YANGLES = self.YANGLES, 
 												paths = self.paths, 
 												daysPerMonth = self.daysPerMonth, 
@@ -224,62 +224,63 @@ class ASF_Simulation(object):
 												DataNameWin = self.FolderName['DataName'])
 			
 		
-		#if there are no panels vertical and horizontal
-		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
+	   #if there are no panels vertical and horizontal
+         if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
 			self.PV_electricity_results = {}
 			
 			self.PV_electricity_results['Pmpp_sum'] = np.array(self.NumberCombinations * len(self.hour_in_month) * [0])
 			print "PV_electricity_results is zero"
 			
 		
-		#with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
-		if not os.path.isfile(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.FolderName['DataName'] + '.npy')): 
-			if not os.path.isdir(self.paths['PV']):
-				os.makedirs(self.paths['PV'])
-				
-			from asf_electricity_production_mauro_3 import asf_electricity_production
-			
-			print '\nCalculating PV electricity production'     
-			
-			
-			if self.createPlots:
-				self.PV_electricity_results, self.PV_detailed_results, fig1, fig2 = \
-				asf_electricity_production(
-								   createPlots = self.createPlots, 
-								   lb_radiation_path = self.paths['radiation_results'],
-								   panelsize = self.PanelData['panelSize'], 
-								   pvSizeOption = 0,
-								   save_results_path = self.paths['PV'], 
-								   lookup_table_path = self.paths['electrical_simulation'], 
-								   geo_path = self.paths['geo'],
-								   flipOrientation= False, 
-								   simulationOption =None,
-								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
-								   hour_in_month = self.hour_in_month, 
-								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
-								   
-			else:
-				self.PV_electricity_results, self.PV_detailed_results = \
-				asf_electricity_production(
-								   createPlots = self.createPlots, 
-								   lb_radiation_path = self.paths['radiation_results'],
-								   panelsize = self.PanelData['panelSize'], 
-								   pvSizeOption = 0,
-								   save_results_path = self.paths['PV'], 
-								   lookup_table_path = self.paths['electrical_simulation'], 
-								   geo_path = self.paths['geo'],
-								   flipOrientation= False, 
-								   simulationOption =None,
-								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
-								   hour_in_month = self.hour_in_month,
-								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
-		
-		else: 
-			self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.FolderName['DataName'] + '.npy')).item()
-			self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'PV_detailed_results_' + self.FolderName['DataName'] + '.npy')).item()
-			print '\nLadyBug data loaded from Folder:'
-			print 'radiation_results_' + self.FolderName['DataName']  
-			
+	   #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
+         else:
+        		if not os.path.isfile(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.FolderName['DataName'] + '.npy')): 
+        			if not os.path.isdir(self.paths['PV']):
+        				os.makedirs(self.paths['PV'])
+        				
+        			from asf_electricity_production_mauro_3 import asf_electricity_production
+        			
+        			print '\nCalculating PV electricity production'     
+        			
+        			
+        			if self.createPlots:
+        				self.PV_electricity_results, self.PV_detailed_results, fig1, fig2 = \
+        				asf_electricity_production(
+        								   createPlots = self.createPlots, 
+        								   lb_radiation_path = self.paths['radiation_results'],
+        								   panelsize = self.PanelData['panelSize'], 
+        								   pvSizeOption = 0,
+        								   save_results_path = self.paths['PV'], 
+        								   lookup_table_path = self.paths['electrical_simulation'], 
+        								   geo_path = self.paths['geo'],
+        								   flipOrientation= False, 
+        								   SimulationData = self.SimulationData,
+        								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
+        								   hour_in_month = self.hour_in_month, 
+        								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
+        								   
+        			else:
+        				self.PV_electricity_results, self.PV_detailed_results = \
+        				asf_electricity_production(
+        								   createPlots = self.createPlots, 
+        								   lb_radiation_path = self.paths['radiation_results'],
+        								   panelsize = self.PanelData['panelSize'], 
+        								   pvSizeOption = 0,
+        								   save_results_path = self.paths['PV'], 
+        								   lookup_table_path = self.paths['electrical_simulation'], 
+        								   geo_path = self.paths['geo'],
+        								   flipOrientation= False, 
+        								   SimulationData = self.SimulationData,
+        								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
+        								   hour_in_month = self.hour_in_month,
+        								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
+        		
+        		else: 
+        			self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.FolderName['DataName'] + '.npy')).item()
+        			self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'PV_detailed_results_' + self.FolderName['DataName'] + '.npy')).item()
+        			print '\nLadyBug data loaded from Folder:'
+        			print 'radiation_results_' + self.FolderName['DataName']  
+        			
    
 	   
 	 
@@ -318,18 +319,22 @@ class ASF_Simulation(object):
 			  
 		count = 0
 		DAY = 0
-		
-		for monthi in range(1,13):
-			if monthi == 1:
-				passedHours = 0
-			else:
-				passedHours = sumHours[monthi-2]
-				
-			for HOD in self.hour_in_month[monthi]:
-					for jj in range(0,self.daysPerMonth[monthi-1]):
-						DAY = jj*24 + HOD     
-						self.PV[passedHours + DAY]['PV'] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
-					count +=self.NumberCombinations
+		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
+               
+                 for hour_of_year in range(0,8760):
+                     self.PV[int(hour_of_year)]['PV']= [0]
+		else:		
+        		for monthi in range(1,13):
+        			if monthi == 1:
+        				passedHours = 0
+        			else:
+        				passedHours = sumHours[monthi-2]
+        				
+        			for HOD in self.hour_in_month[monthi]:
+        					for jj in range(0,self.daysPerMonth[monthi-1]):
+        						DAY = jj*24 + HOD     
+        						self.PV[passedHours + DAY]['PV'] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
+        					count +=self.NumberCombinations
 					
 		for hour_of_year in range(0,8760):
 			if hour_of_year not in hourRadiation:
@@ -339,7 +344,6 @@ class ASF_Simulation(object):
 		
 		
 	def runBuildingSimulation(self):
-
            
            
             # add python_path to system path, so that all files are available:
@@ -374,9 +378,7 @@ class ASF_Simulation(object):
             				
             #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
             for optimizationType in self.optimization_Types:
-
 				
-
 			self.hourlyData[optimizationType], self.ResultsBuildingSimulation[optimizationType], \
                  self.BuildingSimulationELEC[optimizationType] = RC_Model (
                                                                          optimization_type = optimizationType, 
@@ -389,10 +391,8 @@ class ASF_Simulation(object):
                                                                          NumberCombinations = self.NumberCombinations, 
                                                                          combinationAngles = self.combinationAngles,
                                                                          BuildingProperties = self.BuildingProperties,
-
                                                                          setBackTempH = self.setBackTempH,
                                                                          setBackTempC = self.setBackTempC,
-
                                                                          occupancy = occupancy,
                                                                          Q_human = Q_human
                                                                          )
@@ -459,99 +459,103 @@ class ASF_Simulation(object):
 
 
 	def SaveResults(self):
+            
+              
+          self.monthlyData = pd.DataFrame(self.monthlyData)
+          self.yearlyData = pd.DataFrame(self.yearlyData)
+            		#BestKeyDF = pd.DataFrame(self.BestKey_df)    
 		
-		Save = self.SimulationData['Save']
-		self.monthlyData = pd.DataFrame(self.monthlyData)
-		self.yearlyData = pd.DataFrame(self.yearlyData)
-		#BestKeyDF = pd.DataFrame(self.BestKey_df)    
-		
-		if Save == True: 
+          if self.SimulationData['Save']: 
 			
 			# create folder where results will be saved:
-			self.paths['result_folder'] = os.path.join(self.paths['main'], 'Results') 
-			self.paths['result']= os.path.join(self.paths['result_folder'], 'Results_' + self.geoLocation + '_date_' + self.now)
-			
-			if not os.path.isdir(self.paths['result']):
-				os.makedirs(self.paths['result'])    
-			
-			#create folder to save figures as svg and png:
-			self.paths['pdf'] = os.path.join(self.paths['result'], 'png')
-			
-			os.makedirs(self.paths['pdf'])
+                self.paths['result_folder'] = os.path.join(self.paths['main'], 'Results') 
+                self.paths['result']= os.path.join(self.paths['result_folder'], 'Results_' + self.SimulationData['DataName'] + '_date_' + self.now)
+        			
+                if not os.path.isdir(self.paths['result']):
+    				os.makedirs(self.paths['result'])    
+        			
+        			#create folder to save figures as svg and png:
+                self.paths['pdf'] = os.path.join(self.paths['result'], 'Figures')
+                os.makedirs(self.paths['pdf'])
 			
 			 
-			self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
+                self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
+                self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
 			
-			if ('E_total_elec') in self.optimization_Types:
-				self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.pdf'))        
+                if ('E_total_elec') in self.optimization_Types:
+                    self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.pdf'))
+                    self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.png'))
+                else:
+                    pass
 			
 			
-			if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
-				if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
+                if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
+                    if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
 					#save figures
-					self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.pdf'))
-					self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.pdf'))
-				
-				
-			if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
+                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.pdf'))
+                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.pdf'))
+                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.png'))
+                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.png'))
+                else:
+                    pass
+                
+                if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
 				if ('SolarEnergy' and 'Lighting') in self.optimization_Types:           
 					#save figures
 					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.pdf'))
 					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.pdf'))
-					
-
-			for ii in self.optimization_Types:
+					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.png'))
+					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.png'))
+                else:
+                     pass
+                 
+                for ii in self.optimization_Types:
 				if ii == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):
 					# save results 
 					self.ResultsBuildingSimulation[ii].to_csv(os.path.join(self.paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
 				elif ii == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):
 					self.BuildingSimulationELEC[ii].to_csv(os.path.join(self.paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
-			
-			x_angles_df = pd.DataFrame(self.x_angles)
-			y_angles_df = pd.DataFrame(self.y_angles)           
+                x_angles_df = pd.DataFrame(self.x_angles)
+                y_angles_df = pd.DataFrame(self.y_angles)           
 			
 			#hourlyData['E_total'].to_csv(os.path.join(self.paths['result'], 'hourlyData.csv'))
-			#BestKeyDF.to_csv(os.path.join(self.paths['result'], 'BestKeys.csv'))
-			self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
-			self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
-			x_angles_df.to_csv(os.path.join(self.paths['result'], 'X-Angles.csv'))
-			y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))
-			
-			
-			self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
-			self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
-			
-				 
-			#save building properties
-			with open(os.path.join(self.paths['result'], 'BuildingProperties.json'), 'w') as f:
-				f.write(json.dumps(self.BuildingProperties))
+                np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
+                self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
+                self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
+                x_angles_df.to_csv(os.path.join(self.paths['result'], 'X-Angles.csv'))
+                y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))
+                			
+                			
+                self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
+                self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
+                			
+                				 
+                			#save building properties
+                with open(os.path.join(self.paths['result'], 'BuildingProperties.json'), 'w') as f:
+                				f.write(json.dumps(self.BuildingProperties))
+                		
+                print '\nResults are saved!'    
 		
-			print '\nResults are saved!'    
-		
-		print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+          print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		
 
 	def SolveASF(self):
 		
 
-		self.initializeASF()
-		self.setBuildingParameters()		
-		self.initializeBuildingSimulation()
-		self.setPaths()				
-		self.CalculateVariables()
-		self.runRadiationCalculation()		  		 
-		#rearrange the Radiation Data on PV and Window into HOY form
-		self.PrepareRadiationData()													   
-		self.runBuildingSimulation()
-
-		if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
-			self.createAllPlots()
-		else:
-
-			self.fig = None #?
-
-		   			
-		self.SaveResults()
-								
-
-			
+            self.initializeASF()
+            self.setBuildingParameters()		
+            self.initializeBuildingSimulation()
+            self.setPaths()				
+            self.CalculateVariables()
+            self.runRadiationCalculation()		  		 
+            #rearrange the Radiation Data on PV and Window into HOY form
+            self.PrepareRadiationData()													   
+            self.runBuildingSimulation()
+            
+            if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
+            	self.createAllPlots()
+            else:
+            	self.fig = None 
+               
+               			
+            self.SaveResults()
