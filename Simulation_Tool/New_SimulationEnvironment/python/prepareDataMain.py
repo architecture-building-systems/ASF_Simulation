@@ -37,8 +37,8 @@ def prepareAngles(Building_Simulation_df, daysPerMonth, ANGLES):
             for day in range(1,daysPerMonth[month-1]+1):
                 #sort keys for every month and hour
                 HOY = calcHOY(month, day, hour)    
-                BestKey_HOD[month][hour]= np.append(BestKey_HOD[month][hour], Building_Simulation_df['BestCombKey'][HOY][0])
-                key_dict[month][hour][day] = Building_Simulation_df['BestCombKey'][HOY][0]
+                BestKey_HOD[month][hour]= np.append(BestKey_HOD[month][hour], Building_Simulation_df['BestCombKey'][HOY])
+                key_dict[month][hour][day] = Building_Simulation_df['BestCombKey'][HOY]
                 
             
             #calculate median key for every month and hour

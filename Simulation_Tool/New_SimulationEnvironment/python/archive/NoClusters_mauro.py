@@ -165,6 +165,12 @@ def NoClusters_mauro(XANGLES,YANGLES,NoClusters, paths):
     return output                 
 
 
+
+output = NoClusters_mauro(XANGLES= [0,30],YANGLES = [45] , NoClusters = 3, paths = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_49comb_test')
+
+for ii in range(8):
+    print output[ii]
+
 """
 for index in range(0,maxcomb):
     ANGLES = total[index]

@@ -13,23 +13,27 @@ import matplotlib.cm as cm
 
 def carpetPlotIlluminance(z, z_min, z_max, title):
     
-    y = [8,10,12,14,16,18,20]
+    y = range(8,19)
     x = range(0,13)
 
                    
-#    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'white'),
-#                                                    (0.33, 'yellow'),
-#                                                    (0.66, 'olive'),
-#                                                    (1,'green')])
+    #cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'white'),(0.33, 'yellow'),(0.66, 'olive'),(1,'green')])
 
     #cmap = plt.cm.autumn
-    cmap = plt.cm.afmhot_r
+    #cmap = plt.cm.afmhot_r
+    cmap = plt.cm.afmhot
     
-    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'grey'), (1,'yellow')])
+    #cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'grey'), (1,'yellow')])
+    
+    cmap = cm.get_cmap('afmhot', 20)    # 11 discrete colors
+
+
+
+    
     
     yy, xx = np.meshgrid(y,x)
     
-           
+    plt.style.use('ggplot')       
     # create the carpet plot:
     plt.pcolormesh(xx, yy, z, cmap=cmap, vmin=z_min, vmax=z_max)
     
