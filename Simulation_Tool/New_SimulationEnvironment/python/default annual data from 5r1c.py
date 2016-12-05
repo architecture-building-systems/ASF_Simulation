@@ -570,9 +570,61 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     print "\nEnd of RC-Model calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print "uncomfortable Hours: ", uncomf_hours
        
-    hourlyData_df.to_csv('hourlydata.csv')
-    Building_Simulation_df.to_csv('buildingsimulation.csv')
-    uncomf_hours.to_csv('uncomfhours.csv')
+    
     return  hourlyData_df, Building_Simulation_df, uncomf_hours_HOY
+
+#############################################333run dat shit
+from prepareDataMain_hourly import prepareAngles
+from read_occupancy import read_occupancy     
+
+hourlyData = {}
+ResultsBuildingSimulation = {}
+UncomfortableH = {}    
+
+x_angles = {} #optimized x-angles
+y_angles = {} #optimized y-angles
+BestKey = {} #optimized keys of the ANGLES dictionary
     
+#set parameters
+human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
+roomFloorArea = building_data['room_width']/1000.0 * building_data['room_depth']/1000.0 #[m^2] floor area
+   
+#people/m2/h, W    
+occupancy, Q_human = read_occupancy(myfilename = paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea) 
+
+
+def read_EWP(epw_name='data/Zurich-Kloten_2013.epw'):
+    #Should be done later with Pandas, but for some reason I'ts not working
+
     
+    T_out=[] #Open empty matrix for storing dry bulb temperature values
+    glbRad=[] #Global radiation values
+    glbIll=[]
+    with open(epw_name, 'rb') as csvfile:
+        weatherfile = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in weatherfile:
+            if row[0].isdigit():
+                T_out.append(row[6])
+                glbRad.append(float(row[13]))
+                glbIll.append(float(row[16]))
+    return np.asarray(T_out),np.asarray(glbRad), np.asarray(glbIll)
+
+
+T_out,glbRad, glbIll= f.read_EWP(epw_name='data/Zurich-Kloten_2013.epw') #C, W, lx
+
+hourlyData[optimizationType], ResultsBuildingSimulation[optimizationType], UncomfortableH[optimizationType] = RC_Model (
+                                                                      optimization_type = optimizationType, 
+                                                                      paths = paths,
+                                                                      building_data = building_data, 
+                                                                      weatherData = weatherData, 
+                                                                      hourRadiation = glbRad, 
+                                                                      BuildingRadiationData_HOY = BuildingRadiationData_HOY, 
+                                                                      PV = PV, 
+                                                                      NumberCombinations = NumberCombinations, 
+                                                                      combinationAngles = combinationAngles,
+                                                                      BuildingProperties = BuildingProperties,
+                                                                      setBackTemp = setBackTemp,
+                                                                      occupancy = occupancy,
+                                                                      Q_human = Q_human, 
+                                                                      start = start, end = end, Temp_start = Temp_start                                                                      
+                                                                      )
