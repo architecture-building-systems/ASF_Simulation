@@ -79,6 +79,34 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print "\noptimization", optimization_type
     
+    #class Building   
+    Office=Building (
+                    Fenst_A = BuildingProperties['Fenst_A'],
+                    Room_Depth = BuildingProperties['Room_Depth'],
+                    Room_Width = BuildingProperties['Room_Width'],
+            	   Room_Height = BuildingProperties['Room_Height'],              
+                    lighting_load= BuildingProperties['lighting_load'],
+                    lighting_control = BuildingProperties["lighting_control"],
+                    Lighting_Utilisation_Factor = BuildingProperties["Lighting_Utilisation_Factor"],
+                    Lighting_MaintenanceFactor = BuildingProperties["Lighting_MaintenanceFactor"], 
+                    c_m_A_f = BuildingProperties["c_m_A_f"],
+                    ACH_vent = BuildingProperties["ACH_vent"],
+                    ACH_infl = BuildingProperties["ACH_infl"],
+                    ventilation_efficiency = BuildingProperties["ventilation_efficiency"],                   
+                    phi_c_max_A_f= -np.inf,
+                    phi_h_max_A_f= np.inf,
+                    U_em= BuildingProperties["U_em"], 
+                    U_w = BuildingProperties["U_w"],
+                    glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
+                    glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
+                    theta_int_h_set = BuildingProperties['theta_int_h_set'],
+                    theta_int_c_set = BuildingProperties['theta_int_c_set'],
+                    heatingSystem = BuildingProperties["heatingSystem"],
+                    coolingSystem = BuildingProperties["coolingSystem"], 
+                    heatingEfficiency = BuildingProperties["heatingEfficiency"],
+                    coolingEfficiency = BuildingProperties["coolingEfficiency"]
+                    )         
+    
     for hour_of_year in range(0,8760):
         
         #initilize all dictionaries for the needed data
@@ -140,43 +168,12 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     for hour_of_year in range(0,8760):
           
         
-        #class Building   
-        Office=Building (
-                        Fenst_A = BuildingProperties['Fenst_A'],
-                        Room_Depth = BuildingProperties['Room_Depth'],
-                        Room_Width = BuildingProperties['Room_Width'],
-            		 Room_Height = BuildingProperties['Room_Height'],              
-                        lighting_load= BuildingProperties['lighting_load'],
-                        lighting_control = BuildingProperties["lighting_control"],
-                        Lighting_Utilisation_Factor = BuildingProperties["Lighting_Utilisation_Factor"],
-                        Lighting_MaintenanceFactor = BuildingProperties["Lighting_MaintenanceFactor"], 
-                        c_m_A_f = BuildingProperties["c_m_A_f"],
-                        ACH_vent = BuildingProperties["ACH_vent"],
-                        ACH_infl = BuildingProperties["ACH_infl"],
-                        ventilation_efficiency = BuildingProperties["ventilation_efficiency"],                   
-                        phi_c_max_A_f= -np.inf,
-                        phi_h_max_A_f= np.inf,
-                        U_em= BuildingProperties["U_em"], 
-                        U_w = BuildingProperties["U_w"],
-                        glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
-                        glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
-                        theta_int_h_set = BuildingProperties['theta_int_h_set'],
-                        theta_int_c_set = BuildingProperties['theta_int_c_set'],
-                        heatingSystem = BuildingProperties["heatingSystem"],
-                        coolingSystem = BuildingProperties["coolingSystem"], 
-                        heatingEfficiency = BuildingProperties["heatingEfficiency"],
-                        coolingEfficiency = BuildingProperties["coolingEfficiency"]
-                        )         
-                               
         if occupancy['People'][hour_of_year] == 0:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - setBackTempH
              Office.theta_int_c_set = BuildingProperties['theta_int_c_set'] + setBackTempC
         else:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set']
              Office.theta_int_c_set = BuildingProperties['theta_int_c_set']                   
-        
-        
-       
         
         
         #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))

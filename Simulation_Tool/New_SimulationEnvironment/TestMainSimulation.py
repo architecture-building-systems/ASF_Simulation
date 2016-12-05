@@ -89,7 +89,7 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(ASFtest.yearlyData['E_total']['E'],2), 1182.15)
 		self.assertEqual(round(ASFtest.yearlyData['E_total']['PV'],2), -709.19)
 		#self.assertEqual(round(monthlyData['H'][0],2),3.56)
-		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'][38],[39])
+		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'][38],39)
 		
 		
 	def test_ELEC2013(self):
@@ -101,7 +101,7 @@ class TestMainSimulation(unittest.TestCase):
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
 		'Save' : False,
-		'ShowFig': True}
+		'ShowFig': False}
 		
 		#Set panel data
 		PanelData={
@@ -161,7 +161,7 @@ class TestMainSimulation(unittest.TestCase):
 																					 
 		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['E_elec'],2), 1419.44)
 		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['PV'],2), -723.97)
-		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],[46])
+		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],46)
   
 	def test_COPHeating(self):
 		#Set simulation data
@@ -172,9 +172,8 @@ class TestMainSimulation(unittest.TestCase):
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
 		'Save' : False,
-		'ShowFig': True}
+		'ShowFig': False}
 		
-				
 		#Set building properties for RC-Model simulator
 		BuildingProperties={
 		"glass_solar_transmitance" : 0.687 ,
@@ -198,7 +197,8 @@ class TestMainSimulation(unittest.TestCase):
 		"heatingEfficiency" : 1,
 		"coolingEfficiency" :1,
            "COP_H": 4,
-           "COP_C":1}
+           "COP_C":1}		
+
 		
 
 		
@@ -220,7 +220,7 @@ class TestMainSimulation(unittest.TestCase):
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
 		'Save' : False,
-		'ShowFig': True}
+		'ShowFig': False}
 		
 				
 		#Set building properties for RC-Model simulator
@@ -258,9 +258,40 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['E'],2), 681.31)
 		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['C'],2), 376.68)
 		
-	
-
-
+	def test_NoASF(self):
+          
+		#Set simulation data
+		print 'test NoASF'
+		SimulationData= {
+		'optimizationTypes' : ['E_total'],
+		'DataName' : 'ZH13_NoASF',
+		'geoLocation' : 'Zuerich_Kloten_2013',
+		'EPWfile' : 'Zuerich_Kloten_2013.epw',
+		'Save' : False,
+		'ShowFig': False}
+		
+				
+		PanelData={
+            "XANGLES": [0],
+            "YANGLES" : [0],
+            "NoClusters":1,
+            "numberHorizontal":0,
+            "numberVertical":0,
+            "panelOffset":400,
+            "panelSize":400,
+            "panelSpacing":500}
+		
+		
+		
+		
+		NoASF=ASF_Simulation(SimulationData = SimulationData,PanelData = PanelData)
+		NoASF.SolveASF()
+		
+																					 
+		self.assertEqual(round(NoASF.yearlyData['E_total']['E'],2), 5147.59)
+		self.assertEqual(round(NoASF.yearlyData['E_total']['PV'],2), 0.00)
+		self.assertEqual(NoASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],1)
+		self.assertEqual(NoASF.ResultsBuildingSimulation['E_total']['BestCombKey'][4000],1)
 
 if __name__ == '__main__':
 	unittest.main()
