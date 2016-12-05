@@ -172,7 +172,9 @@ BuildingProperties_default = {
 	"heatingSystem" : DirectHeater,
 	"coolingSystem" : DirectCooler, 
 	"heatingEfficiency" : 1,
-	"coolingEfficiency" :1
+	"coolingEfficiency" :1,
+	"COP_H": 1,
+	"COP_C":1
 	}
 
 SimulationOptions_default = {

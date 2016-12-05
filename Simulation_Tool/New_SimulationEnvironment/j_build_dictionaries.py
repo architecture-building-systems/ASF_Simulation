@@ -103,7 +103,9 @@ def ArchT_build_df(BuildingData):
 	coolingSystem = [] 
 	heatingEfficiency = []  
 	coolingEfficiency = [] 
-	ActuationEnergy = []    
+	ActuationEnergy = []   
+	COP_H = []
+	COP_C = []
 
 	for code in b_props['code1']:
 		#variables
@@ -124,6 +126,8 @@ def ArchT_build_df(BuildingData):
 		heatingEfficiency.append(1.0)
 		coolingEfficiency.append(1.0)
 		ActuationEnergy.append(False)
+		COP_H.append(1.0)
+		COP_C.append(1.0)
 		
 	b_props['lighting_control'] = lighting_control
 	b_props['mean_occupancy'] = mean_occupancy
@@ -143,6 +147,8 @@ def ArchT_build_df(BuildingData):
 	b_props['coolingSystem'] = coolingSystem
 	b_props['heatingEfficiency'] = heatingEfficiency
 	b_props['coolingEfficiency'] = coolingEfficiency
+	b_props['COP_H'] = COP_H
+	b_props['COP_C'] = COP_C
 	return b_props
 
 #Create dictionaries for Archetypes:
@@ -170,7 +176,9 @@ def MakeDicts(b_props):
 						  'heatingSystem',
 						  'coolingSystem',
 						  'heatingEfficiency',
-						  'coolingEfficiency']]
+						  'coolingEfficiency',
+						  'COP_H',
+						  'COP_C']]
 	
 	bp_df = bp_df.rename(index=str,columns={'Code_x':'Code',
 														'El_Wm2':'lighting_load',
