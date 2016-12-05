@@ -17,100 +17,13 @@ paths = PATHS()
 #Constants
 #---------
 ###Zurich South##########################################
-# SimulationData_ZS= {
-# 	'optimizationTypes' : ['E_total'],
-# 	'DataName' : 'ZH13_49comb',
-# 	'geoLocation' : 'Zuerich_Kloten_2013',
-# 	'EPWfile' : 'Zuerich_Kloten_2013.epw',
-# 	'Save' : False,
-# 	'ShowFig': False}
-SimulationData_ZS_90= {
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'ZH13_SOUTH_49comb_90',
-	'geoLocation' : 'Zuerich_Kloten_2013',
-	'EPWfile' : 'Zuerich_Kloten_2013.epw',
-	'Save' : False,
-	'ShowFig': False}
-SimulationData_ZS_NOASF= { #radiation_results_ZH13_SOUTH_49comb_NOASF
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'ZH13_SOUTH_49comb_NOASF',
-	'geoLocation' : 'Zuerich_Kloten_2013',
-	'EPWfile' : 'Zuerich_Kloten_2013.epw',
-	'Save' : False,
-	'ShowFig': False}
-
-###Zurich West##########################################
 SimulationData_ZW= {
 	'optimizationTypes' : ['E_total'],
-	'DataName' : 'ZH13_49comb_west',
+	'DataName' : 'ZH13WEST_49comb',
 	'geoLocation' : 'Zuerich_Kloten_2013',
 	'EPWfile' : 'Zuerich_Kloten_2013.epw',
 	'Save' : False,
 	'ShowFig': False}
-SimulationData_ZW_90= {
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'ZH13_49comb_west_90',
-	'geoLocation' : 'Zuerich_Kloten_2013',
-	'EPWfile' : 'Zuerich_Kloten_2013.epw',
-	'Save' : False,
-	'ShowFig': False}
-SimulationData_ZW_NOASF= {
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'ZH13_49comb_west_NOASF',
-	'geoLocation' : 'Zuerich_Kloten_2013',
-	'EPWfile' : 'Zuerich_Kloten_2013.epw',
-	'Save' : False,
-	'ShowFig': False}
-
-###Cairo South##########################################
-# SimulationData_CS= {
-# 	'optimizationTypes' : ['E_total'],
-# 	'DataName' : 'Cairo_49comb',
-# 	'geoLocation' : 'EGY_Cairo.623660_IWEC',
-# 	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
-# 	'Save' : False,
-# 	'ShowFig': False}
-
-SimulationData_CS_90= {
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'Cairo_49comb',
-	'geoLocation' : 'EGY_Cairo.623660_IWEC',
-	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
-	'Save' : False,
-	'ShowFig': False}
-SimulationData_CS_NOASF= {
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'Cairo_49comb',
-	'geoLocation' : 'EGY_Cairo.623660_IWEC',
-	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
-	'Save' : False,
-	'ShowFig': False}
-
-###Cairo West##########################################
-# SimulationData_CW= {
-# 	'optimizationTypes' : ['E_total'],
-# 	'DataName' : 'Cairo_49_west_comb',
-# 	'geoLocation' : 'EGY_Cairo.623660_IWEC',
-# 	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
-# 	'Save' : False,
-# 	'ShowFig': False}
-
-SimulationData_CW_90= {
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'Cairo_49_west_comb',
-	'geoLocation' : 'EGY_Cairo.623660_IWEC',
-	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
-	'Save' : False,
-	'ShowFig': False}
-
-SimulationData_CW_NOASF= {
-	'optimizationTypes' : ['E_total'],
-	'DataName' : 'Cairo_49_west_comb',
-	'geoLocation' : 'EGY_Cairo.623660_IWEC',
-	'EPWfile' : 'EGY_Cairo.623660_IWEC.epw',
-	'Save' : False,
-	'ShowFig': False}
-
 
 PanelData={
 	"XANGLES": [0, 15, 30, 45, 60, 75, 90],
@@ -122,28 +35,6 @@ PanelData={
 	"panelSize":400,
 	"panelSpacing":500}
 
-PanelData_90={
-	"XANGLES": [90],
-	"YANGLES" : [0],
-	"NoClusters":1,
-	"numberHorizontal":6,
-	"numberVertical":9,
-	"panelOffset":400,
-	"panelSize":400,
-	"panelSpacing":500}
-
-PanelData_NOASF={
-	"XANGLES": [0],
-	"YANGLES" : [0],
-	"NoClusters":1,
-	"numberHorizontal":0,
-	"numberVertical":0,
-	"panelOffset":400,
-	"panelSize":400,
-	"panelSpacing":500}
-
-
-		
 		#Set Building Parameters in [mm]
 BuildingData={
 	"room_width": 4900,     
@@ -225,7 +116,7 @@ for i in range(0,len(runlist)):
 	so_list.append(SO)
 	
 	#Run ASF simulation
-	ASF_archetypes=ASF(SimulationData = SimulationData_ZS_NOASF, PanelData = PanelData_NOASF, BuildingData = BuildingData, BuildingProperties = BP, SimulationOptions = SO)
+	ASF_archetypes=ASF(SimulationData = SimulationData_ZW, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BP, SimulationOptions = SO)
 	ASF_archetypes.SolveASF()
 
 	#Add building name to dataframe and append subsequent iterations:
@@ -243,7 +134,7 @@ print '--simulations complete--'
 
 #write results to csv:
 timestr = time.strftime("%d%m%Y_%H%M")
-name = 'Archetypes_'+SimulationData.get('DataName')+'_'+timestr+'.csv'
+name = 'Archetypes_'+SimulationData_ZW.get('DataName')+'_'+timestr+'.csv'
 all_results.to_csv(os.path.join(paths['CEA_folder'],name))
 
 #convert simulation parameters to dataframe and write to csv (ovrrides previous simulation)
