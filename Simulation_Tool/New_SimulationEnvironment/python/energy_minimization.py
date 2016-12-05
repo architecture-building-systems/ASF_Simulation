@@ -11,7 +11,7 @@ import time
 import pandas as pd
 
 
-def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTempH, setBackTempC, occupancy, Q_human):
+def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, BuildingProperties, setBackTempH, setBackTempC, occupancy, Q_human, CombinationNumber):
 
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])    
@@ -180,7 +180,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
         
         #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))
-        for comb in range(0, NumberCombinations):
+        for comb in range(CombinationNumber,CombinationNumber+1): #range(0, NumberCombinations):
             
             
             #print "Rad", BuildingRadiationData_HOY[hour_of_year][comb]
@@ -264,10 +264,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                 #get key with min value from the E_tot dictionary
                 BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
                 
-                equal = checkEqual(Data = E_tot[hour_of_year])
+                equal=False #equal = checkEqual(Data = E_tot[hour_of_year])
                 
                 if equal == True:
-                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year],Tmax = Tmax, Tmin = Tmin)
+                    BestComb = CombinationNumber #optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year],Tmax = Tmax, Tmin = Tmin)
                 else:
                     pass
                 
@@ -275,11 +275,11 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                
             elif hourlyData[hour_of_year]['PV'][0] == 0:
                 #Check if there is no PV-value (no radiation)
-                equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
+                equal=False #equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
                 if equal == False:
                     #if temperatures are not the same, take temp which is closest to average temperature
-                    BestComb = optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)           
+                    BestComb = CombinationNumber#optimzeTemp(DataTemp = Data_T_in_HOY[hour_of_year], Tmax = Tmax, Tmin = Tmin)           
                     BestCombKey = BestComb
                     
                 elif equal == True: #PV = 0, Temp are equal

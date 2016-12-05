@@ -49,6 +49,7 @@ class ASF_Simulation(object):
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		self.optimization_Types = self.SimulationData['optimizationTypes']
 
+		self.CombinationNumber=SimulationData['CombinationNumber']
 
 		#Set panel data
 		self.FolderName={
@@ -396,7 +397,8 @@ class ASF_Simulation(object):
                                                                          setBackTempH = self.setBackTempH,
                                                                          setBackTempC = self.setBackTempC,
                                                                          occupancy = occupancy,
-                                                                         Q_human = Q_human
+                                                                         Q_human = Q_human,
+                                                                         CombinationNumber=self.CombinationNumber
                                                                          )
 			
 			#prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  

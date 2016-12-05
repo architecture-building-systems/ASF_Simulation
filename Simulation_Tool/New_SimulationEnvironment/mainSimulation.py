@@ -86,8 +86,12 @@ SimulationData = {
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
-'ShowFig': True,
-'timePeriod': None}
+'ShowFig': False,
+'timePeriod': None,
+'CombinationNumber':24} #Combiantion Number is the single parameter that determines the combination. 
+#Note that 0 referes to 0,-15 angle
+#45 refers to 90,0 angle I think (open position)
+#24 refers to 45,0 I think(optimal shading and solar generation position)
 
 
 #SimulationData = {

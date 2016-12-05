@@ -27,7 +27,7 @@ def optimzeTemp(DataTemp, Tmax, Tmin):
 
 def checkEqual(Data):
 
-    equal = None    
+    equal = None 
     
     for ii in range(len(Data)):
         for jj in range(len(Data)):
