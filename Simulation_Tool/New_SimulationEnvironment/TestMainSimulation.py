@@ -25,7 +25,8 @@ class TestMainSimulation(unittest.TestCase):
 		print 'running standard test'
 		SimulationData= {
 		'optimizationTypes' : ['E_total'],
-		'DataName' : 'ZH05_49comb',
+		'DataFolderName' : 'ZH05_49comb',
+		'FileName': 'ZH05_49comb',
 		'geoLocation' : 'Zuerich_Kloten_2005',
 		'EPWfile' : 'Zuerich_Kloten_2005.epw',
 		'Save' : False,
@@ -97,7 +98,8 @@ class TestMainSimulation(unittest.TestCase):
 		print 'running elec test'
 		SimulationData= {
 		'optimizationTypes' : ['E_total_elec'],
-		'DataName' : 'ZH13_49comb',
+		'DataFolderName' : 'ZH13_49comb',
+		'FileName': 'ZH13_49comb',
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
 		'Save' : False,
@@ -168,7 +170,8 @@ class TestMainSimulation(unittest.TestCase):
 		print 'running COP H test'
 		SimulationData= {
 		'optimizationTypes' : ['E_total'],
-		'DataName' : 'ZH13_49comb',
+		'DataFolderName' : 'ZH13_49comb',
+		'FileName': 'ZH13_49comb',
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
 		'Save' : False,
@@ -216,7 +219,8 @@ class TestMainSimulation(unittest.TestCase):
 		print 'running COP C test'
 		SimulationData= {
 		'optimizationTypes' : ['E_total'],
-		'DataName' : 'ZH13_49comb',
+		'DataFolderName' : 'ZH13_49comb',
+		'FileName': 'ZH13_49comb',
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
 		'Save' : False,
@@ -264,7 +268,8 @@ class TestMainSimulation(unittest.TestCase):
 		print 'test NoASF'
 		SimulationData= {
 		'optimizationTypes' : ['E_total'],
-		'DataName' : 'ZH13_NoASF',
+  		'DataFolderName' : 'ZH13_NoASF',
+		'FileName': 'ZH13_NoASF',
 		'geoLocation' : 'Zuerich_Kloten_2013',
 		'EPWfile' : 'Zuerich_Kloten_2013.epw',
 		'Save' : False,
@@ -292,6 +297,44 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(NoASF.yearlyData['E_total']['PV'],2), 0.00)
 		self.assertEqual(NoASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],1)
 		self.assertEqual(NoASF.ResultsBuildingSimulation['E_total']['BestCombKey'][4000],1)
+  
+	def test_1comb(self):
+          
+		#Set simulation data
+		print 'test 1 combination'
+		SimulationData= {
+		'optimizationTypes' : ['E_total'],
+  		'DataFolderName' : 'ZH13_49comb',
+		'FileName': 'ZH13_1comb_0_0',
+		'geoLocation' : 'Zuerich_Kloten_2013',
+		'EPWfile' : 'Zuerich_Kloten_2013.epw',
+		'Save' : False,
+		'ShowFig': False}
+		
+				
+		PanelData={
+            "XANGLES": [0],
+            "YANGLES" : [0],
+            "NoClusters":1,
+            "numberHorizontal":6,
+            "numberVertical":9,
+            "panelOffset":400,
+            "panelSize":400,
+            "panelSpacing":500}
+		
+		
+		
+		
+		OneASF=ASF_Simulation(SimulationData = SimulationData,PanelData = PanelData)
+		OneASF.SolveASF()
+		
+																					 
+		self.assertEqual(round(OneASF.yearlyData['E_total']['E'],2), 2601.4)
+		self.assertEqual(round(OneASF.yearlyData['E_total']['PV'],2),-658.0)
+		self.assertEqual(OneASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],0)
+		
+  
+  
 
 if __name__ == '__main__':
 	unittest.main()

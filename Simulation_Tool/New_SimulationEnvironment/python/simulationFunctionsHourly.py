@@ -389,8 +389,8 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end):
     
     from hourlyPlotFunction import PlotHour 
-    from Function3dPlot import create3Dplot    
-    from SubPlot3D import SubPlotFunction    
+    from Function3dPlot import create3Dplot, create3Dplot2    
+    
     
     angles = {}
     fig = {}
@@ -404,20 +404,20 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
                        H = ResultsBuildingSimulation[ii]['H'], C = ResultsBuildingSimulation[ii]['C'], x_angle = x_angles[ii], y_angle = y_angles[ii], start = start, end = end, title = ii)
     
     
-    """
+    
     figA = {}
     figB = {}
     
-    count = 1
-    
+   
+    """
     for jj in range(start,end+1):
         
         figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
         #figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
     """
-    #fig3D = SubPlotFunction(figures = figA, start = start, end = end)
     
-      
+    
+    figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = start, end  = end)  
     
     RBS_ELEC = {}
     

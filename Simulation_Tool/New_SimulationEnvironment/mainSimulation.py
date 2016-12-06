@@ -82,9 +82,10 @@ from SimulationClass import ASF_Simulation
 
 SimulationData = {
 'optimizationTypes' : ['E_total'],
-'DataName' : 'ZH13_49comb',
-'geoLocation' : 'Zuerich_Kloten_2013',
-'EPWfile': 'Zuerich_Kloten_2013.epw',
+'DataFolderName' : 'ZH13_49comb',
+'FileName': 'ZH13_Check_NoASF',
+'geoLocation' : 'Zuerich_Kloten_2005',
+'EPWfile': 'Zuerich_Kloten_2005.epw',
 'Save' : True,
 'ShowFig': True,
 'timePeriod': None}
@@ -121,15 +122,15 @@ SimulationData = {
 #	
 	
 #Set panel data
-#PanelData={
-#"XANGLES": [0],
-#"YANGLES" : [0],
-#"NoClusters":1,
-#"numberHorizontal":0,
-#"numberVertical":0,
-#"panelOffset":400,
-#"panelSize":400,
-#"panelSpacing":500}
+PanelData={
+"XANGLES": [0],
+"YANGLES" : [0],
+"NoClusters":1,
+"numberHorizontal":0,
+"numberVertical":0,
+"panelOffset":400,
+"panelSize":400,
+"panelSpacing":500}
 
 #Set Building Parameters in [mm]
 #BuildingData={
@@ -175,7 +176,7 @@ BuildingProperties={
 
 	
 if __name__=='__main__':
-    ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties)
+    ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData)
     ASFtest.SolveASF()
     
  

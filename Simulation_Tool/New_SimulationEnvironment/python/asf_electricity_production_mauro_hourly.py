@@ -45,8 +45,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     curr_model_submod_lookup = np.load(os.path.join(lookup_table_path, 'curr_model_submod_lookup.npy'),'r')
     pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
     #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
-    
-    
+    print 'points', pointsPerLookupCurve
+    print curr_model_submod_lookup   
 #    #simulation for 1 hour
 #    numHours = 1
     
@@ -266,6 +266,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
             # preallocate data for currents at each gridpoint:
             curr_model_submod = np.empty((len(irr_mod_mat_rnd),len(irr_mod_mat_rnd),pointsPerLookupCurve))*np.nan
+                     
             
             # lookup current for each gridpoint:     
             for i in range(np.shape(irr_mod_mat_rnd)[0]):

@@ -20,7 +20,7 @@ class ASF_Simulation(object):
 
 	def __init__(self,
             SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataName' : 'ZH13_49comb','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod':None},
+            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod':None},
             PanelData = 
             {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500},
             BuildingData = 
@@ -52,7 +52,7 @@ class ASF_Simulation(object):
 
 		#Set panel data
 		self.FolderName={
-		"DataName": SimulationData['DataName'],
+		"DataFolderName": SimulationData['DataFolderName'],
 		"EPW" : SimulationData['EPWfile']  
 		}
 		
@@ -103,8 +103,8 @@ class ASF_Simulation(object):
 		self.paths['python'] = os.path.join(self.paths['main'], 'python')
 		self.paths['RadiationData'] = os.path.join(self.paths['main'], 'RadiationData')
           		
-		self.paths['radiation_results'] = os.path.join(self.paths['RadiationData'],'radiation_results_' + self.FolderName['DataName'])
-		self.paths['radiation_wall'] = os.path.join(self.paths['RadiationData'],  'radiation_wall_' + self.FolderName['DataName'])
+		self.paths['radiation_results'] = os.path.join(self.paths['RadiationData'],'radiation_results_' + self.FolderName['DataFolderName'])
+		self.paths['radiation_wall'] = os.path.join(self.paths['RadiationData'],  'radiation_wall_' + self.FolderName['DataFolderName'])
 		self.paths['PV'] = os.path.join(self.paths['main'], 'PV_results')
 
 		self.paths['save_results_path'] = self.paths['PV']
@@ -222,8 +222,8 @@ class ASF_Simulation(object):
 												paths = self.paths, 
 												daysPerMonth = self.daysPerMonth, 
 												hour_in_month = self.hour_in_month,
-												DataNamePV = self.FolderName['DataName'],
-												DataNameWin = self.FolderName['DataName'])
+												DataFolderName = self.FolderName['DataFolderName'],
+												FileName = self.SimulationData['FileName'])
 			
 		
 	   #if there are no panels vertical and horizontal
@@ -236,7 +236,7 @@ class ASF_Simulation(object):
 		
 	   #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
          else:
-        		if not os.path.isfile(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.FolderName['DataName'] + '.npy')): 
+        		if not os.path.isfile(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
         			if not os.path.isdir(self.paths['PV']):
         				os.makedirs(self.paths['PV'])
         				
@@ -259,7 +259,7 @@ class ASF_Simulation(object):
         								   SimulationData = self.SimulationData,
         								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
         								   hour_in_month = self.hour_in_month, 
-        								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
+        								   paths = self.paths, DataNamePV = self.SimulationData['FileName'])
         								   
         			else:
         				self.PV_electricity_results, self.PV_detailed_results = \
@@ -275,14 +275,14 @@ class ASF_Simulation(object):
         								   SimulationData = self.SimulationData,
         								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
         								   hour_in_month = self.hour_in_month,
-        								   paths = self.paths, DataNamePV = self.FolderName['DataName'])
+        								   paths = self.paths, DataNamePV = self.SimulationData['FileName'])
         		
         		else: 
-        			self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.FolderName['DataName'] + '.npy')).item()
-        			self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'PV_detailed_results_' + self.FolderName['DataName'] + '.npy')).item()
+        			self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.SimulationData['FileName'] + '.npy')).item()
+        			self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'PV_detailed_results_' + self.SimulationData['FileName'] + '.npy')).item()
         			print '\nLadyBug data loaded from Folder:'
-        			print 'radiation_results_' + self.FolderName['DataName']  
-        			
+        			print 'radiation_results_' + self.FolderName['DataFolderName']  
+        			print 'File: ', self.SimulationData['FileName']
    
 	   
 	 
@@ -471,7 +471,7 @@ class ASF_Simulation(object):
 			
 			# create folder where results will be saved:
                 self.paths['result_folder'] = os.path.join(self.paths['main'], 'Results') 
-                self.paths['result']= os.path.join(self.paths['result_folder'], 'Results_' + self.SimulationData['DataName'] + '_date_' + self.now)
+                self.paths['result']= os.path.join(self.paths['result_folder'], 'Results_' + self.SimulationData['FileName'] + '_date_' + self.now)
         			
                 if not os.path.isdir(self.paths['result']):
     				os.makedirs(self.paths['result'])    

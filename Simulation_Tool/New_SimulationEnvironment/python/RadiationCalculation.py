@@ -10,9 +10,9 @@ import json
 import csv
 import numpy as np
 
-def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month, DataNamePV, DataNameWin):
+def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month, DataFolderName, FileName):
                    
-    if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results_' + DataNamePV + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'BuildingRadiationData_HOD_' + DataNameWin + '.npy')):    
+    if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results_' + FileName + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'BuildingRadiationData_' + FileName + '.npy')):    
         if not os.path.isdir(paths['PV']):
             os.makedirs(paths['PV'])
 
@@ -85,13 +85,14 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
                     BuildingRadiationData_HOD[monthi][HOD+24*jj]= BuildingRadiationData * 1/daysPerMonth[monthi-1] *1000. #W/h
                     
         
-        np.save(os.path.join(paths['save_results_path'],'BuildingRadiationData_HOD_' + DataNameWin + '.npy'),BuildingRadiationData_HOD)
+        np.save(os.path.join(paths['save_results_path'],'BuildingRadiationData_' + FileName + '.npy'),BuildingRadiationData_HOD)
         print "\nEnd of radiation calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
     else:
-        BuildingRadiationData_HOD = np.load(os.path.join(paths['PV'], 'BuildingRadiationData_HOD_' + DataNameWin + '.npy')).item()
+        BuildingRadiationData_HOD = np.load(os.path.join(paths['PV'], 'BuildingRadiationData_' + FileName + '.npy')).item()
         print '\nLadyBug data loaded from Folder:'
-        print 'radiation_wall_'+ DataNameWin
+        print 'radiation_wall_'+ DataFolderName
+        print 'File: ', FileName
      
     
     

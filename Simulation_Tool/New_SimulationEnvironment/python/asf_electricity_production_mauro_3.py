@@ -91,7 +91,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         numHours = 1
     
     # find the number of combinations analysed by ladybug:
-    numCombPerHour = len(CalcXYAnglesAndLocation(readLayoutAndCombinations(lb_radiation_path))['allAngles'][0])
+    numCombPerHour = len(XANGLES) * len(YANGLES)
     print "CombPerHour", numCombPerHour
     # set numCombPerHour to 1 if it appears to be zero (this is the case for suntracking)
     if numCombPerHour == 0:
