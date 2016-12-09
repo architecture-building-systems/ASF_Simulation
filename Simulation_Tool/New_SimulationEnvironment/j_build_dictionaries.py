@@ -10,7 +10,7 @@ from buildingSystem import *
 
 paths = PATHS()
 
-lighting_ontrol_d ={
+lighting_ontrol_d ={ #arbitrary, since online sources only provide ranges
 "MULTI_RES":250.,
 "SINGLE_RES":200.,
 "HOTEL":300.,
@@ -24,7 +24,7 @@ lighting_ontrol_d ={
 "GYM":300.	
 }
 
-mean_occupancy_d = {
+mean_occupancy_d = { #calculated  from the occupancy files 
 "MULTI_RES": 0.014355,
 "SINGLE_RES": 0.009570,
 "HOTEL": 0.034377,
@@ -82,7 +82,7 @@ def ArchT_build_df(BuildingData):
 		elif th_mass[i] == "T2":
 			c_m.append(165.0*10**3) #Medium
 		elif th_mass[i] == "T3":
-			c_m.append(260.0*10**3) #Heavy"""
+			c_m.append(260.0*10**3) #Heavy
 	b_props['c_m_A_f'] = pd.DataFrame(c_m)
 
 #declare variables

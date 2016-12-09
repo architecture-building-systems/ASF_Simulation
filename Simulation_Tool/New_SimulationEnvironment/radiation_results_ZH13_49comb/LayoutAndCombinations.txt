@@ -1,8 +1,0 @@
-XANGLES = [0]
-YANGLES = [0]
-NoClusters = 1
-panelSize = 400
-panelSpacing = 500
-ASFarray = []
-desiredGridPointSize = 25.0
-buildingOrientation = 0.0
