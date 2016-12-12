@@ -8,9 +8,9 @@ room_depth = 7000.
 room_width = 4900.
 
 
-S1 = [-4000,4000,0]
-S2 = [40000,5000,0]
-S3 = [-4000,4000,5000]
+S1 = [-2500,0,0]
+S2 = [4000,10,0]
+S3 = [-2500,0,5000]
 
 S4 = np.array(S2) - (np.array(S1)-np.array(S3))
 
@@ -26,8 +26,8 @@ xAngle = np.deg2rad(xAngle)
 yAngle = np.deg2rad(yAngle)
 
 
-xR = 0 + 15000
-yR = 0
+xR = 0
+yR = 0 - 4000
 zR = 0
 room= [[xR, yR, zR],
         [xR + room_width, yR, zR],
@@ -48,21 +48,22 @@ ASF_dict = {}
 
 for jj in range(4):
     
-    xR = [-room_width/4 + 15000, room_width * 1/4. + 15000 , -room_width/4. + 15000, room_width * 1/4. + 15000]
-    yR = [DistWindow]* 4
-    zR = [room_height/4. ,room_height/4., -room_height/4. , -room_height/4.]
+    xR1 = [-room_width/4 + xR, room_width * 1/4. + xR , -room_width/4. + xR, room_width * 1/4. + xR]
+    yR1 = [DistWindow + yR]* 4 
+    zR1 = [room_height/4. + zR ,room_height/4. + zR, -room_height/4. + zR, -room_height/4. + zR]
     
     # 2   
     #1 3   
     # 4   
-    ASF_dict[jj] = [[xR[jj] + room_width/2 - np.sqrt(2)/2*PanelSize + (Hyp- np.cos(yAngle)*Hyp),    yR[jj] + np.sin(yAngle)* Hyp ,     zR[jj] + room_height/2], #1
-                    [xR[jj] + room_width/2 ,                            yR[jj] - np.sin(xAngle)*Hyp,                            zR[jj] + room_height/2 + np.sqrt(2)/2*PanelSize - (Hyp- np.cos(xAngle)*Hyp)],#2
-                    [xR[jj] + room_width/2 + np.sqrt(2)/2*PanelSize - (Hyp- np.cos(yAngle)*Hyp),    yR[jj] - np.sin(yAngle)* Hyp ,      zR[jj] + room_height/2], #3
-                    [xR[jj] + room_width/2 ,                            yR[jj] + np.sin(xAngle)*Hyp,                            zR[jj] + room_height/2 - np.sqrt(2)/2*PanelSize + (Hyp- np.cos(xAngle)*Hyp)]] #4
+    ASF_dict[jj] = [[xR1[jj] + room_width/2 - np.sqrt(2)/2*PanelSize + (Hyp- np.cos(yAngle)*Hyp),    yR1[jj] + np.sin(yAngle)* Hyp ,     zR1[jj] + room_height/2], #1
+                    [xR1[jj] + room_width/2 ,                            yR1[jj] - np.sin(xAngle)*Hyp,                            zR1[jj] + room_height/2 + np.sqrt(2)/2*PanelSize - (Hyp- np.cos(xAngle)*Hyp)],#2
+                    [xR1[jj] + room_width/2 + np.sqrt(2)/2*PanelSize - (Hyp- np.cos(yAngle)*Hyp),    yR1[jj] - np.sin(yAngle)* Hyp ,      zR1[jj] + room_height/2], #3
+                    [xR1[jj] + room_width/2 ,                            yR1[jj] + np.sin(xAngle)*Hyp,                            zR1[jj] + room_height/2 - np.sqrt(2)/2*PanelSize + (Hyp- np.cos(xAngle)*Hyp)]] #4
 
 
 
-SunVec = [0.92 *1000, -0.35 *1000,-0.2*1000]
+SunVec = np.array([0.92, -0.35 ,-0.2])*10000
+
 
 
 def PointPro(S1, S2, S3, A, SunVec):
