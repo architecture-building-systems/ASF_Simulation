@@ -81,81 +81,41 @@ from SimulationClass import ASF_Simulation
 
 
 SimulationData = {
-'optimizationTypes' : ['E_total'],
-'DataFolderName' : 'ZH13_49comb',
-'FileName': 'ZH13_Check_NoASF',
-'geoLocation' : 'Zuerich_Kloten_2005',
-'EPWfile': 'Zuerich_Kloten_2005.epw',
+'optimizationTypes' : ['E_total', 'Lighting','SolarEnergy','Heating', 'Cooling', 'E_HCL'],
+'DataFolderName' : 'ZH13_49combHorizont',
+'FileName': 'ZH13_49combMitHorizont',
+'geoLocation' : 'Zuerich_Kloten_2013',
+'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
 'ShowFig': True,
 'timePeriod': None}
 
-
 #SimulationData = {
 #'optimizationTypes' : ['E_total'],
-#'DataName' : 'Helsinki_49comb',
-#'geoLocation' : 'FIN_Helsinki.029740_IWEC',
-#'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',
+#'DataFolderName' : 'ZH05_49comb',
+#'FileName': 'ZH05_49comb',
+#'geoLocation' : 'Zuerich_Kloten_2005',
+#'EPWfile': 'Zuerich_Kloten_2005.epw',
 #'Save' : True,
 #'ShowFig': True,
 #'timePeriod': None}
-    
-#    elif ii == 1:
-#         SimulationData = {
-#        'optimizationTypes' : ['E_total'],
-#        'DataName' : 'Helsinki_49comb',
-#        'geoLocation' : 'FIN_Helsinki.029740_IWEC',
-#        'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',
-#        'Save' : True,
-#        'ShowFig': True,
-#        'timePeriod': None}
-#    elif ii == 2:
-#        SimulationData = {
-#        'optimizationTypes' : ['E_total'],
-#        'DataName' : 'Cairo_49comb',
-#        'geoLocation' : 'EGY_Cairo.623660_IWEC',
-#        'EPWfile': 'EGY_Cairo.623660_IWEC.epw',
-#        'Save' : True,
-#        'ShowFig': True,
-#        'timePeriod': None}
-    
-#	
-	
-#Set panel data
-PanelData={
-"XANGLES": [0],
-"YANGLES" : [0],
-"NoClusters":1,
-"numberHorizontal":0,
-"numberVertical":0,
-"panelOffset":400,
-"panelSize":400,
-"panelSpacing":500}
 
-#Set Building Parameters in [mm]
-#BuildingData={
-#"room_width": 4900,     
-#"room_height":3100,
-#"room_depth":7000,
-#"glazing_percentage_w": 0.92,
-#"glazing_percentage_h": 0.97,
-#"WindowGridSize": 200}
 
 ##Set building properties for RC-Model simulator
 BuildingProperties={
-"glass_solar_transmitance" : 0.687 ,
+"glass_solar_transmitance" : 0.691 ,
 "glass_light_transmitance" : 0.744 ,
 "lighting_load" : 11.74 ,
 "lighting_control" : 300,
-"Lighting_Utilisation_Factor" :  0.45,#0.64
-"Lighting_MaintenanceFactor" : 0.9, #1
-"U_em" : 0.2, 
-"U_w" : 1.2,
+"Lighting_Utilisation_Factor" :  0.64,
+"Lighting_MaintenanceFactor" : 1,
+"U_em" : 0.277, 
+"U_w" : 1.71,
 "ACH_vent" : 1.5,
-"ACH_infl" :0.5,
-"ventilation_efficiency" : 0.6 ,
+"ACH_infl" : 0.5,
+"ventilation_efficiency" : 0.6 ,#0.6
 "c_m_A_f" : 165 * 10**3,
-"theta_int_h_set" : 20,
+"theta_int_h_set" : 22,
 "theta_int_c_set" : 26,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
@@ -163,20 +123,21 @@ BuildingProperties={
 "coolingSystem" : DirectCooler, #DirectCooler, #DirectCooler, #HeatPumpCooler
 "heatingEfficiency" : 1,
 "coolingEfficiency" :1,
-'COP_H': 1,
-'COP_C':1}
+'COP_H': 3,
+'COP_C':3}
 
 #
-##Set simulation Properties
-#SimulationOptions= {
-#'setBackTempH' : 4.,
-#'setBackTempC' : 4.,
-#'Occupancy' : 'Occupancy_COM.csv',
-#'ActuationEnergy' : False}
+#Set simulation Properties
+SimulationOptions= {
+'setBackTempH' : 4.,
+'setBackTempC' : 4.,
+'Occupancy' : 'Occupancy_COM.csv',
+'ActuationEnergy' : False}
 
 	
 if __name__=='__main__':
-    ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData)
+    ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
     ASFtest.SolveASF()
+    print ASFtest.yearlyData
     
  

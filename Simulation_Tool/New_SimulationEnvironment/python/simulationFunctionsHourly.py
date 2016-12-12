@@ -409,12 +409,12 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     figB = {}
     
    
-    """
+    
     for jj in range(start,end+1):
         
-        figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
-        #figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
-    """
+        #figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
+        figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
+    
     
     
     figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = start, end  = end)  
