@@ -190,7 +190,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                       
 
  
-season = 'summer'
+season = 'winter2'
    #'summer'#
 #DefaultValues
 ###############################################################################
@@ -248,13 +248,31 @@ elif season == 'weekSummer':
         'DataName' : 'ZH13_49comb_weekAnalysis',#
         'geoLocation' : 'Zuerich_Kloten_2013',
         'Save' : False}
+
+if season == 'winter2':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 1,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 31, #8,
+    'FromHour': 6,#5
+    'ToHour': 20,
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH05_1comb_Winter',#
+    'geoLocation' : 'Zuerich_Kloten_2005',
+    'Save' : False}    
 else:
     pass   
  
 #Set panel data
 PanelData={
-"XANGLES": [0,15,30,45,60,75,90], 
-"YANGLES" : [-45,-30,-15,0,15,30,45],
+"XANGLES": [45], 
+"YANGLES" : [0],
 "NoClusters":1,
 "numberHorizontal":6,
 "numberVertical":9,

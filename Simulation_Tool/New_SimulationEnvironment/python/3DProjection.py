@@ -18,12 +18,12 @@ room_width = 4900.
 
 
 
-SunVec = np.array([-0.92, 0.35 ,-0.2])*10000
+SunVec = np.array([2000, 2000 ,2000])
 #SunVec = np.array([0.92, -35 ,2])*1000
 
 PanelNum = 4
 
-PanelSize = 1100. #mm
+PanelSize = 800. #mm
 
 Hyp = np.sin(np.deg2rad((45)))*PanelSize
 DistWindow = 500. # distance of panels from Window surface
@@ -35,7 +35,7 @@ xAngle = np.deg2rad(xAngle)
 yAngle = np.deg2rad(yAngle)
 
 
-xR = 0 + 20000
+xR = 0 
 yR = 0 
 zR = 0
 room= [[xR, yR, zR],
@@ -75,7 +75,7 @@ def ProjPlane(S1, n):
         F = np.empty((3))
         F[0] = np.sqrt(pow(x-S1[0],2)+pow(y-S1[1],2) + pow(z-S1[2],2))-size
         F[1] = n[0]*x + n[1]*y + n[2]*z - 0
-        F[2] = x-1
+        F[2] = z-1
         return F
     
     def FuSo2(w, S):
@@ -102,9 +102,13 @@ def ProjPlane(S1, n):
     
     return w, q
 
-S1 = [1,0,0]
+S1 = [10,10,10]
+S2 = [10,10,5010]
+S3, PointA = ProjPlane(S1 = S1, n = SunVec)
+S3 = [5010,10,10]
 
-S2, S3 = ProjPlane(S1 = S1, n = SunVec)
+
+print "S3", S3
 
 #S4 = np.array(S2) - (np.array(S1)-np.array(S3))
 
@@ -251,10 +255,6 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 
-fig = pylab.figure()
-ax = Axes3D(fig)
-
-
 
 x_vals = ASFX + ListX + [SunVec[0]] #[S1[0], S2[0], S3[0], S4[0],
 y_vals = ASFY + ListY + [SunVec[1]] #S1[1], S2[1], S3[1], S4[1], 
@@ -264,7 +264,7 @@ for nn in range(len(room)):
     x_vals.append(room[nn][0])
     y_vals.append(room[nn][1])
     z_vals.append(room[nn][2])
-    
+   
 #for nn in range(len(ASF)):
 #    x_vals.append(ASF[nn][0])
 #    y_vals.append(ASF[nn][1])
@@ -274,6 +274,33 @@ for nn in range(len(room)):
 #x_vals = np.append(roomX[0], np.array(ListX, dtype = np.float64), np.array([S1[0], S2[0], S3[0], S4[0], C[0]]))
 #y_vals = np.append(roomY[0], np.array(ListY, dtype = np.float64), np.array([S1[1], S2[1], S3[1], S4[1], C[1]]))
 #z_vals = np.append(roomZ[0], np.array(ListZ, dtype = np.float64), np.array([S1[2], S2[2], S3[2], S4[2], C[2]]))
+
+"""
+
+# figure 1
+fig = pylab.figure()
+ax = Axes3D(fig)
+
+ax.scatter(x_vals, y_vals, z_vals, s=3)
+#ax.scatter(ListX, ListY, ListZ)
+
+ax.set_xlabel('X Label')
+ax.set_ylabel('Y Label')
+ax.set_zlabel('Z Label')
+#ax.view_init(45,60)
+ax.view_init(0,90)
+#ax.view_init(45,60)
+pyplot.show()
+"""
+
+# figure 2
+fig = pylab.figure()
+ax = Axes3D(fig)
+
+
+x_vals = ASFX 
+y_vals = ASFY 
+z_vals = ASFZ 
 
 
 ax.scatter(x_vals, y_vals, z_vals, s=3)
@@ -288,11 +315,13 @@ ax.view_init(0,90)
 pyplot.show()
 
 
+
+
 def AreaCalc(poly):
     #calculate area of 3D polygon
     #determinant of matrix a
     def det(a):
-        return a[0][0]*a[1][1]*a[2][2] + a[0][1]*a[1][2]*a[2][0] + a[0][2]*a[1][0]*a[2][1] - a[0][2]*a[1][1]*a[2][0] - a[0][1]*a[1][0]*a[2][2] - a[0][0]*a[1][2]*a[2][1]
+        return np.linalg.det(a)
     
     #unit normal vector of plane defined by points a, b, and c
     def unit_normal(a, b, c):
@@ -420,29 +449,38 @@ print "Area Projection: ", areaPro
 test = [[1,0,1], [2,0,1.5], [1,0,2], [0.75,0,0.75], [0.5,0,1.5], [0.75, 0, 0.25]]    
 
 result1 = AreaCalc(poly = test)
-print "ASF", result1 *10**6    
+print "ASF", result1 *10**6
+print "\ntest"   
+
+test = [[1,0,2], [0.75,0,0.75], [0.5,0,1.5], [0.75, 0, 0.25]]    
+
+result2 = AreaCalc(poly = test)
+print "ASF", result2 *10**6
+print "test\n\n"   
 
 
 
 def PointInPlane(P, n, a):
     #Test if Point is placed on Plane
     result = n[0]*P[0] + n[1]*P[1] + n[2]*P[2]
-    if a == result:
+    #print "res",result/a
+    
+    if a == result or abs(1-result/a) < 0.02: # because of rounding errors
         return True
     else:
         return False
 
 
-print PointInPlane(P = S1, n = n, a= a)
+#print PointInPlane(P = S1, n = n, a= a)
 
 def LineInter(C1,C2,C3,C4):
     #create lines from two points c1 and c2 / c3 and c4
     #find intersection of lines
-    R1 = [C2[0]- C1[0], C2[1]- C1[1], C2[2]- C1[2]] # C1 + lambda * R1
-    R2 = [C4[0]- C3[0], C4[1]- C3[1], C4[2]- C3[2]] # C3 + lambda * R2
+    R1 = [round(C2[0]- C1[0],2), round(C2[1]- C1[1],2), round(C2[2]- C1[2],2)] # C1 + lambda * R1
+    R2 = [round(C4[0]- C3[0],2), round(C4[1]- C3[1],2), round(C4[2]- C3[2],2)] # C3 + lambda * R2
     
-    print R1
-    print R2
+#    print R1
+#    print R2
     
 #    if R1[0]/R2[0] != R1[1]/R2[1]:
 #        
@@ -463,20 +501,131 @@ def LineInter(C1,C2,C3,C4):
 
     zGuess = np.array([1,1])
     w = fsolve(SolveLine, zGuess)
-    InterPoint = [C1[0] + w[0] * R1[0], C1[1] + w[0] * R1[1], C1[2] + w[0] * R1[2]]
+    InterPoint = [round(C1[0] + w[0] * R1[0],2), round(C1[1] + w[0] * R1[1],2), round(C1[2] + w[0] * R1[2],2)]
     
     
     return InterPoint
 
+# test if all points of projection are placed on projection plane    
+n, a = createPlane(S1,S2,S3)
+TestDict = {}
+
+for ii in range(PanelNum):
+    TestDict[ii] = []
+    for jj in range(4):
+        TestDict[ii].append(PointInPlane(ASF_dict_prime[ii][jj], n, a))
+        
+#print TestDict
+
+# create Plane of projected planes
+PlaneDictPro = {}
+for ii in range(PanelNum):
+    n, a = createPlane(ASF_dict_prime[ii][0],ASF_dict_prime[ii][1],ASF_dict_prime[ii][2])
+    PlaneDictPro[ii]= n,a
+
+#print PlaneDictPro
+
+#test if far right point of asf porjection lies in plane of right asf projection plane
+
+result1 = AreaCalc(poly = ASF_dict_prime[0])
+print "\nASF: 0"
+print "no" 
+print "Area", result1    
+print "\n"
+
+def PointInFinitPlane(P1,P2,P3,P4,TestPoint):
     
+    #check if point is in rectangle
+    #http://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
+    
+    P1_TP = [TestPoint[0]-P1[0], TestPoint[1]-P1[1], TestPoint[2]-P1[2]]
+    P1_P2 = [P2[0]-P1[0], P2[1]-P1[1], P2[2]-P1[2]]
+    P1_P4 = [P4[0]-P1[0], P4[1]-P1[1], P4[2]-P1[2]]
+    res1 = np.dot(P1_TP,P1_P2)
+    res2 = np.dot(P1_P2,P1_P2)
+    res3 = np.dot(P1_TP,P1_P4)
+    res4 = np.dot(P1_P4,P1_P4)
+    
+    print res1,res2,res3,res4
+    
+    if (0 <= res1 <= res2) and (0 <= res3 <= res4):
+        #True point inside rectangel        
+        Inter = True
+    else:
+        #False Point is outside
+        Inter = False
+    
+    return Inter
+
+
+for ii in range(1,PanelNum):
+    
+    
+    
+    if PointInFinitPlane(P1 = ASF_dict_prime[ii][0],P2 = ASF_dict_prime[ii][1],P3 = ASF_dict_prime[ii][2],P4 = ASF_dict_prime[ii][3],TestPoint= ASF_dict_prime[ii-1][2]):
+        
+        #PointInPlane(P = ASF_dict_prime[ii][2], n = PlaneDictPro[ii+1][0], a = PlaneDictPro[ii+1][1]):
+        #doesnt work, all points are in projection Plane        
+        
+        #Calculate Intersection        
+        SP1 = LineInter(ASF_dict_prime[ii-1][2],ASF_dict_prime[ii-1][1],ASF_dict_prime[ii][0],ASF_dict_prime[ii][1])
+        SP2 = LineInter(ASF_dict_prime[ii-1][2],ASF_dict_prime[ii-1][3],ASF_dict_prime[ii][0],ASF_dict_prime[ii][3])
+        #Calculate Area of ASF
+        print "test"
+#        print ASF_dict_prime[ii][2]
+#        print ASF_dict_prime[ii+1][0]        
+        
+        
+        poly = [ASF_dict_prime[ii-1][2], ASF_dict_prime[ii][1],ASF_dict_prime[ii][2], ASF_dict_prime[ii][3], SP1, SP2] 
+        #poly = [ASF_dict_prime[ii-1][2], ASF_dict_prime[ii][1],ASF_dict_prime[ii][2], ASF_dict_prime[ii][3], SP1, SP2]         
+        #print poly
+        
+        result1 = AreaCalc(poly = poly)
+        print "ASF: ", ii + 1
+        print "yes"
+        print "Area", result1    
+        print "\n"
+        
+    else:
+        poly = ASF_dict_prime[ii]
+        #print poly
+        result1 = AreaCalc(poly = poly)
+        print "ASF: ", ii + 1
+        print "no"
+        print "Area", result1    
+        print "\n"
 
 
 
-S1 = [-2500,1,2]
-S2 = [4000,1,2]
-S3 = [-2500,1,5000]
-S4 = [4000,1,5000]
+TestPoint = [4910,10,3111]
+Inter = PointInFinitPlane(P1 = RoomPrime[0],P2 = RoomPrime[1],P3 = RoomPrime[2],P4 = RoomPrime[3],TestPoint= TestPoint)
 
-IP = LineInter(S1,S3,S2,S4)
+print Inter
+"""
 
-print IP    
+
+#Based on http://geomalgorithms.com/a05-_intersect-1.html
+
+import numpy as np
+
+epsilon=1e-6
+
+#Define plane
+planeNormal = np.array([0, 0, 1])
+planePoint = np.array([0, 0, 5]) #Any point on the plane
+
+#Define ray
+rayDirection = np.array([0, -1, -1])
+rayPoint = np.array([0, 0, 10]) #Any point along the ray
+
+ndotu = planeNormal.dot(rayDirection) 
+
+if abs(ndotu) < epsilon:
+    print ("no intersection or line is within plane")
+
+w = rayPoint - planePoint
+si = -planeNormal.dot(w) / ndotu
+Psi = w + si * rayDirection + planePoint
+
+print "intersection at", Psi
+"""
