@@ -12,7 +12,7 @@ import pandas as pd
 
 
 def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, NumberCombinations, combinationAngles, \
-                    BuildingProperties, setBackTemp, occupancy, Q_human, start, end, Temp_start):
+                    BuildingProperties, setBackTemp, occupancy, Q_human, start, end, Temp_start, SimulationPeriod):
 
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])    
@@ -20,7 +20,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     from buildingPhysics import Building #Importing Building Class
     from read_occupancy import Equate_Ill, BuildingData
     from optimzeTemperatureFunction import optimzeTemp, checkEqual
-    
+    from calculateHOY import calcHOY 
        
     #Temperature value, to start the simulation with
     
@@ -74,12 +74,19 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     E_tot_elec = {}
     E_HCL_elec = {}
     
+    TotalHOY = []
     
     print '\nStart RC-Model calculation'
     print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print "\noptimization", optimization_type
     
-    for hour_of_year in range(start, end + 1):
+    for monthi in range(SimulationPeriod['FromMonth'], SimulationPeriod['ToMonth'] + 1):
+       for day in range(SimulationPeriod['FromDay'], SimulationPeriod['ToDay'] + 1):
+            for hour in range(SimulationPeriod['FromHour'], SimulationPeriod['ToHour'] + 1): 
+                HOY = calcHOY(month=monthi,day = day, hour = hour)
+                TotalHOY.append(HOY)
+    
+    for hour_of_year in TotalHOY:
         
         #initilize all dictionaries for the needed data
         E_tot[hour_of_year] = {}
@@ -135,7 +142,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     
     tic = time.time()
     #run for every hour of year the RC-Model    
-    for hour_of_year in range(start, end + 1):
+    for hour_of_year in TotalHOY:
           
         
         #class Building   
@@ -569,8 +576,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
      
     print "\nEnd of RC-Model calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print "uncomfortable Hours: ", uncomf_hours
-       
+   
     
-    return  hourlyData_df, Building_Simulation_df, uncomf_hours_HOY
+    return  hourlyData_df, Building_Simulation_df, uncomf_hours_HOY, TotalHOY
     
     

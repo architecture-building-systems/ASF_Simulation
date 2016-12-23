@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-def prepareAngles(Building_Simulation_df, ANGLES, start, end):
+def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
     
     
     #save keys of best comb
@@ -17,7 +17,7 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end):
     comb_array = np.array([])
     
     #iterate through all months, days and hours
-    for HOY in range(start, end+1):
+    for HOY in TotalHOY:
         
         key_array = np.append(key_array, Building_Simulation_df['BestCombKey'][HOY][0])
         key_dict[HOY] = Building_Simulation_df['BestCombKey'][HOY][0]
@@ -35,18 +35,22 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end):
             x_angle_array = np.append(x_angle_array, comb_array[jj][0])
             y_angle_array = np.append(y_angle_array, comb_array[jj][1])
             
-    x_angle = {}
-    y_angle = {}        
-            
-    for  jj in range(0,len(comb_array)):
-        
-        x_angle[start + jj] = x_angle_array[jj]
-        y_angle[start + jj] = y_angle_array[jj]
+#    x_angle = {}
+#    y_angle = {}        
+#    
+#    for HOY in TotalHOY:    
+#        for  jj in range(0,len(comb_array)):
+#        
+#            x_angle[HOY + jj] = x_angle_array[jj]
+#            y_angle[HOY + jj] = y_angle_array[jj]
     
     #create DataFrame with the evaluated keys        
     BestKey = key_dict
+    
+    
+    
             
-    return BestKey, x_angle, y_angle
+    return BestKey, x_angle_array, y_angle_array
     
    
    

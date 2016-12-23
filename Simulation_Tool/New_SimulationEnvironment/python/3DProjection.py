@@ -4,11 +4,12 @@ import numpy as np
 
 from sympy.solvers import solve
 from sympy import Symbol
+from sympy import Point, Polygon, pi
 
 #http://math.stackexchange.com/questions/164700/how-to-transform-a-set-of-3d-vectors-into-a-2d-plane-from-a-view-point-of-anoth
 room_height = 3100.
 room_depth = 7000.
-room_width = 4900.
+room_width = 4900./20
 
 
 #S1 = [-2500,0,0]
@@ -18,18 +19,18 @@ room_width = 4900.
 
 
 
-SunVec = np.array([2000, 2000 ,2000])
+SunVec = np.array([-2000, 2000 ,2000])
 #SunVec = np.array([0.92, -35 ,2])*1000
 
 PanelNum = 4
 
-PanelSize = 800. #mm
+PanelSize = 400. #mm
 
 Hyp = np.sin(np.deg2rad((45)))*PanelSize
 DistWindow = 500. # distance of panels from Window surface
 
 xAngle = 0
-yAngle = 0
+yAngle = 30
 
 xAngle = np.deg2rad(xAngle)
 yAngle = np.deg2rad(yAngle)
@@ -182,18 +183,18 @@ def PointPro(S1, S2, S3, A, SunVec):
     
    
     
-    n2 = (W* np.sqrt( int((APrime[0]-S1[0])**2 + (APrime[1]-S1[1])**2 + (APrime[2]-S1[2])**2)))
+#    n2 = (W* np.sqrt( int((APrime[0]-S1[0])**2 + (APrime[1]-S1[1])**2 + (APrime[2]-S1[2])**2)))
+#    
+#    #cos(u)
+#    n3 = ((S2[0]-S1[0])*(APrime[0]-S1[0]) + (S2[1]-S1[1])*(APrime[1]-S1[1])+ (S2[2]-S1[2])*(APrime[2]-S1[2]))/n2
+#    
+#    u = np.arccos(round(n3,4))
+#    
+#    m = np.sqrt(round((APrime[0]-S1[0])**2 + (APrime[1]-S1[1])**2 + (APrime[2]-S1[2])**2, 4)) * n3
+#    
+#    n = np.sqrt(round((APrime[0]-S1[0])**2 + (APrime[1]-S1[1])**2 + (APrime[2]-S1[2])**2, 4)) * np.sin(u)
     
-    #cos(u)
-    n3 = ((S2[0]-S1[0])*(APrime[0]-S1[0]) + (S2[1]-S1[1])*(APrime[1]-S1[1])+ (S2[2]-S1[2])*(APrime[2]-S1[2]))/n2
-    
-    u = np.arccos(round(n3,4))
-    
-    m = np.sqrt(round((APrime[0]-S1[0])**2 + (APrime[1]-S1[1])**2 + (APrime[2]-S1[2])**2, 4)) * n3
-    
-    n = np.sqrt(round((APrime[0]-S1[0])**2 + (APrime[1]-S1[1])**2 + (APrime[2]-S1[2])**2, 4)) * np.sin(u)
-    
-    #APrime = ((k*(C[0]-A[0])+ A[0]), (k*(C[1]-A[1])+ A[1]), (k*(C[2]-A[2])+ A[2]))
+   
     
     
     return APrime
@@ -291,29 +292,8 @@ ax.set_zlabel('Z Label')
 ax.view_init(0,90)
 #ax.view_init(45,60)
 pyplot.show()
+
 """
-
-# figure 2
-fig = pylab.figure()
-ax = Axes3D(fig)
-
-
-x_vals = ASFX 
-y_vals = ASFY 
-z_vals = ASFZ 
-
-
-ax.scatter(x_vals, y_vals, z_vals, s=3)
-#ax.scatter(ListX, ListY, ListZ)
-
-ax.set_xlabel('X Label')
-ax.set_ylabel('Y Label')
-ax.set_zlabel('Z Label')
-#ax.view_init(45,60)
-ax.view_init(0,90)
-#ax.view_init(45,60)
-pyplot.show()
-
 
 
 
@@ -460,15 +440,15 @@ print "test\n\n"
 
 
 
-def PointInPlane(P, n, a):
-    #Test if Point is placed on Plane
-    result = n[0]*P[0] + n[1]*P[1] + n[2]*P[2]
-    #print "res",result/a
-    
-    if a == result or abs(1-result/a) < 0.02: # because of rounding errors
-        return True
-    else:
-        return False
+#def PointInPlane(P, n, a):
+#    #Test if Point is placed on Plane
+#    result = n[0]*P[0] + n[1]*P[1] + n[2]*P[2]
+#    #print "res",result/a
+#    
+#    if a == result or abs(1-result/a) < 0.02: # because of rounding errors
+#        return True
+#    else:
+#        return False
 
 
 #print PointInPlane(P = S1, n = n, a= a)
@@ -506,14 +486,30 @@ def LineInter(C1,C2,C3,C4):
     
     return InterPoint
 
-# test if all points of projection are placed on projection plane    
-n, a = createPlane(S1,S2,S3)
-TestDict = {}
+def PointInFinitPlane(P1,P2,P3,P4,TestPoint):
+    
+    #check if point is in rectangle
+    #http://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
+    
+    P1_TP = [TestPoint[0]-P1[0], TestPoint[1]-P1[1], TestPoint[2]-P1[2]]
+    P1_P2 = [P2[0]-P1[0], P2[1]-P1[1], P2[2]-P1[2]]
+    P1_P4 = [P4[0]-P1[0], P4[1]-P1[1], P4[2]-P1[2]]
+    res1 = np.dot(P1_TP,P1_P2)
+    res2 = np.dot(P1_P2,P1_P2)
+    res3 = np.dot(P1_TP,P1_P4)
+    res4 = np.dot(P1_P4,P1_P4)
+    
+    print res1,res2,res3,res4    
+    
+    if (res1 <= res2) and (res3 <= res4):
+        #True point inside rectangel        
+        Inter = True
+    else:
+        #False Point is outside
+        Inter = False
+    
+    return Inter
 
-for ii in range(PanelNum):
-    TestDict[ii] = []
-    for jj in range(4):
-        TestDict[ii].append(PointInPlane(ASF_dict_prime[ii][jj], n, a))
         
 #print TestDict
 
@@ -530,37 +526,10 @@ for ii in range(PanelNum):
 result1 = AreaCalc(poly = ASF_dict_prime[0])
 print "\nASF: 0"
 print "no" 
-print "Area", result1    
-print "\n"
-
-def PointInFinitPlane(P1,P2,P3,P4,TestPoint):
-    
-    #check if point is in rectangle
-    #http://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
-    
-    P1_TP = [TestPoint[0]-P1[0], TestPoint[1]-P1[1], TestPoint[2]-P1[2]]
-    P1_P2 = [P2[0]-P1[0], P2[1]-P1[1], P2[2]-P1[2]]
-    P1_P4 = [P4[0]-P1[0], P4[1]-P1[1], P4[2]-P1[2]]
-    res1 = np.dot(P1_TP,P1_P2)
-    res2 = np.dot(P1_P2,P1_P2)
-    res3 = np.dot(P1_TP,P1_P4)
-    res4 = np.dot(P1_P4,P1_P4)
-    
-    print res1,res2,res3,res4
-    
-    if (0 <= res1 <= res2) and (0 <= res3 <= res4):
-        #True point inside rectangel        
-        Inter = True
-    else:
-        #False Point is outside
-        Inter = False
-    
-    return Inter
+print "Area", round(result1,3)    
 
 
 for ii in range(1,PanelNum):
-    
-    
     
     if PointInFinitPlane(P1 = ASF_dict_prime[ii][0],P2 = ASF_dict_prime[ii][1],P3 = ASF_dict_prime[ii][2],P4 = ASF_dict_prime[ii][3],TestPoint= ASF_dict_prime[ii-1][2]):
         
@@ -568,23 +537,37 @@ for ii in range(1,PanelNum):
         #doesnt work, all points are in projection Plane        
         
         #Calculate Intersection        
-        SP1 = LineInter(ASF_dict_prime[ii-1][2],ASF_dict_prime[ii-1][1],ASF_dict_prime[ii][0],ASF_dict_prime[ii][1])
-        SP2 = LineInter(ASF_dict_prime[ii-1][2],ASF_dict_prime[ii-1][3],ASF_dict_prime[ii][0],ASF_dict_prime[ii][3])
+        SP1 = LineInter(ASF_dict_prime[ii-1][1],ASF_dict_prime[ii-1][2],ASF_dict_prime[ii][1],ASF_dict_prime[ii][0])
+        SP2 = LineInter(ASF_dict_prime[ii-1][3],ASF_dict_prime[ii-1][2],ASF_dict_prime[ii][0],ASF_dict_prime[ii][3])
         #Calculate Area of ASF
-        print "test"
-#        print ASF_dict_prime[ii][2]
-#        print ASF_dict_prime[ii+1][0]        
+        
+        print SP1
+        print SP2
+        
+        x_vals.append(SP1[0])
+        x_vals.append(SP2[0])
+    
+        y_vals.append(SP1[1])
+        y_vals.append(SP2[1])
+    
+        z_vals.append(SP1[2])
+        z_vals.append(SP2[2])
+        
         
         
         poly = [ASF_dict_prime[ii-1][2], ASF_dict_prime[ii][1],ASF_dict_prime[ii][2], ASF_dict_prime[ii][3], SP1, SP2] 
         #poly = [ASF_dict_prime[ii-1][2], ASF_dict_prime[ii][1],ASF_dict_prime[ii][2], ASF_dict_prime[ii][3], SP1, SP2]         
         #print poly
         
-        result1 = AreaCalc(poly = poly)
+        result2 = abs(10**(-6)* Polygon((SP2[0],SP2[2]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2]),\
+                    (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]),(ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (SP1[0],SP1[2])).area)
         print "ASF: ", ii + 1
         print "yes"
-        print "Area", result1    
-        print "\n"
+        #print "Area", result1
+        #print Polygon((SP2[0],SP2[2]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (SP1[0],SP1[2]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2])).area
+        print "Area", round(result2,3)
+              
+       
         
     else:
         poly = ASF_dict_prime[ii]
@@ -592,16 +575,80 @@ for ii in range(1,PanelNum):
         result1 = AreaCalc(poly = poly)
         print "ASF: ", ii + 1
         print "no"
-        print "Area", result1    
-        print "\n"
+        print "Area", round(result1,3)    
+        
 
 
+# figure 2
+fig = pylab.figure()
+ax = Axes3D(fig)
+
+
+x_vals = ASFX 
+y_vals = ASFY 
+z_vals = ASFZ 
+
+
+
+ax.scatter(x_vals, y_vals, z_vals, s=4)
+#ax.scatter(ListX, ListY, ListZ)
+
+ax.set_xlabel('X Label')
+ax.set_ylabel('Y Label')
+ax.set_zlabel('Z Label')
+#ax.view_init(45,60)
+ax.view_init(0,90)
+#ax.view_init(45,60)
+pyplot.show()
+
+
+
+ii = 1
+
+p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][0]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][0]), 
+                             (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][0]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][0])])
+
+poly1 = Polygon(p1, p2, p3, p4)
+
+
+p5, p6, p7 = map(Point, [(ASF_dict_prime[ii-1][1][0], ASF_dict_prime[ii-1][1][2]), 
+                             (ASF_dict_prime[ii-1][3][0], ASF_dict_prime[ii-1][3][2]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2])])
+
+
+poly2 = Polygon(p5, p6, p7)
+
+print poly1.intersection(poly2)
+
+
+
+"""
 
 TestPoint = [4910,10,3111]
 Inter = PointInFinitPlane(P1 = RoomPrime[0],P2 = RoomPrime[1],P3 = RoomPrime[2],P4 = RoomPrime[3],TestPoint= TestPoint)
 
 print Inter
-"""
+
+# 2D area Function
+
+
+
+room = [[0, 0, 0], [4900.0, 0, 0], [0, 0, 3100.0], [4900.0, 0, 3100.0]]
+
+mid = Point(24.5, 15.5)
+
+print Polygon((RoomPrime[0][0], RoomPrime[0][2]), (RoomPrime[1][0], RoomPrime[1][2]), (RoomPrime[3][0], RoomPrime[3][2]), (RoomPrime[2][0], RoomPrime[2][2])).area
+
+#P1 = RoomPrime[0],P2 = RoomPrime[1],P3 = RoomPrime[2],P4 = RoomPrime[3],TestPoint= TestPoint
+
+print Polygon((TestPoint[0], TestPoint[2]), (RoomPrime[1][0], RoomPrime[1][2]), (RoomPrime[3][0], RoomPrime[3][2]), (RoomPrime[2][0], RoomPrime[2][2])).area
+
+
+p1, p2, p3, p4, p5, p6 = map(Point, [(1, 0), (49, 0), (10,10), (49, 31), (0, 31), (-1,49)])
+poly = Polygon(p1, p2, p3, p4, p5, p6)
+#print poly.area
+
+
+
 
 
 #Based on http://geomalgorithms.com/a05-_intersect-1.html

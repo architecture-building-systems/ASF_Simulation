@@ -15,7 +15,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                                XANGLES = [], YANGLES = [], 
                                hour_in_month = None, paths = None, 
                                DataNamePV = None, SimulationPeriode = None,
-                               start = 0, end = 0):
+                               weatherData = None):
                                    
     import sys,os                               
     # add python_path to system path, so that all files are available:
@@ -30,6 +30,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     from average_monthly import daysPassedMonth
     from prepareData_mauro import readLayoutAndCombinations, CalcXYAnglesAndLocation
     from auxFunctions import flatten
+    from calculateHOY import calcHOY    
     
     create_plots_flag = createPlots
     Simulation_Data_Folder = lb_radiation_path
@@ -45,10 +46,9 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     curr_model_submod_lookup = np.load(os.path.join(lookup_table_path, 'curr_model_submod_lookup.npy'),'r')
     pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
     #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
-    print 'points', pointsPerLookupCurve
-    print curr_model_submod_lookup   
-#    #simulation for 1 hour
-#    numHours = 1
+    #print 'points', pointsPerLookupCurve
+    #print curr_model_submod_lookup   
+
     
     
     # load weather file data corresponding to Simulation Data:
@@ -56,44 +56,11 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         SunTrackingData = json.load(fp)
         fp.close()
         
-#    # find the number of hours analysed by ladybug:
-#    if simulationOption['timePeriod'] == '4months':
-#        MonthTracking = SunTrackingData['MonthTracking']
-#        numHours = 0
-#        for i in range(len(MonthTracking)):
-#            if MonthTracking[i]==3 or MonthTracking[i]==6 or MonthTracking[i]==9 or MonthTracking[i]==12: 
-#                numHours += 1
-#        month_eval = [3,6,9,12]
-#        
-#    elif simulationOption['timePeriod'] == '3month':
-#        MonthTracking = SunTrackingData['MonthTracking']
-#        numHours = 0
-#        for i in range(len(MonthTracking)):
-#            if MonthTracking[i]==1 or MonthTracking[i]==2 or MonthTracking[i]==3: 
-#                numHours += 1 
-#        print numHours
-#        month_eval = [1,2,3]
-#        
-#    elif simulationOption['timePeriod'] == '1month':
-#        MonthTracking = SunTrackingData['MonthTracking']
-#        numHours = 0
-#        for i in range(len(MonthTracking)):
-#            if MonthTracking[i]==7: 
-#                numHours += 1  
-#        month_eval = [7]
-#        
-#        
-#            
-#    elif simulationOption['timePeriod'] == None:
-#        numHours = np.shape(SunTrackingData['HOY'])[0]
-#        print "numHours", numHours
-#        month_eval = range(1,13)
-#        
-#    elif simulationOption['timePeriod'] == 'hourly':
         
     #simulation for 1 hour
-    numHours = (end-start) + 1
-    print "numHours: ", numHours
+    
+    #numHours = (end-start) + 1
+    numHours = 0
     
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(XANGLES)*len(YANGLES)
@@ -103,21 +70,29 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         numCombPerHour = 1
     
    
-    numASFit = numHours*numCombPerHour
+    print weatherData['drybulb_C'][2]
     
+    temp_amb= []
     
     filenames = []
     for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth'] + 1):
        for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
             for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):    
                 
+                HOY = calcHOY(month=monthi,day = day, hour = hour)
+                numHours += 1
                 for x_angle in XANGLES:
                     for y_angle in YANGLES:
                         # filenames.append(filename + str(i) + filetype)
                         filenames.append(filename + '_' + str(int(hour)) + '_' + str(day) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
-    #print filenames
+                        
+                        
+                        
+                        temp_amb.append(weatherData['drybulb_C'][HOY])
     
+    print "numHours: ", numHours
     
+    numASFit = numHours*numCombPerHour
     
     # module and cell dimensions:
     
@@ -174,7 +149,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     currscale = modmpprating / modmppsim
     
         
-    temp_amb = SunTrackingData['TempTracking']
+    #temp_amb = SunTrackingData['TempTracking']
+    print len(temp_amb)
     
     # load days per month
     days_passed_month, days_per_month =  daysPassedMonth()
@@ -353,8 +329,9 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         effmod_arr[SimulationNumber] = Pmpp_sum[SimulationNumber] / Ins_sum[SimulationNumber]* 100* apertscale 
         
         #add total energy (radiation and pv) and multiply by days in month
-        radiationYear += Ins_sum[SimulationNumber]/1000.* days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] #kWh
-        pvYear += Pmpp_sum[SimulationNumber]/1000.*days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] #kWh
+        
+        #radiationYear += Ins_sum[SimulationNumber]/1000.* days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] #kWh
+        #pvYear += Pmpp_sum[SimulationNumber]/1000.*days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] #kWh
         
         
         toc = time.time() - tic

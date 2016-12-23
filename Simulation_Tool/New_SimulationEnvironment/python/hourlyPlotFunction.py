@@ -21,18 +21,14 @@ mpl.rcParams['xtick.labelsize'] = label_size
 mpl.rcParams['ytick.labelsize'] = label_size 
 
 
-def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title):
-
+def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title, TotalHOY):
+  
+   
     
-    xAngle = []
-    yAngle = []
-    
-    for ii in range(start,end+ 1):
-       xAngle.append(x_angle[ii])
-       yAngle.append(y_angle[ii])    
-    
-    
-    x = range(start, end+1)
+    #x = range(start, end+1)
+      
+    x= TotalHOY
+   
     
     fig = plt.figure(figsize=(8, 4))
     
@@ -58,8 +54,10 @@ def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title):
     
     ax2 = ax1.twinx()
     
-    ax2.plot(x, xAngle, 'c--')
-    ax2.plot(x, yAngle, 'k--')
+    
+    
+    ax2.plot(x, x_angle, 'c--')
+    ax2.plot(x, y_angle, 'k--')
     #ax2.set_ylabel('[deg]', fontsize = 16)
     ax2.set_yticks([-90,-45,0,45,90])
     

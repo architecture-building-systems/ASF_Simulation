@@ -191,7 +191,7 @@ def CalculateVariables(SunTrackingData, building_data, XANGLES, YANGLES):
     
 
     
-def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_month, FolderName, panel_data, NumberCombinations, createPlots, start, end):
+def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_month, FolderName, panel_data, NumberCombinations, createPlots, start, end, weatherData):
      # Start the simulation
     
     now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
@@ -242,7 +242,7 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
                                XANGLES = XANGLES, YANGLES= YANGLES, 
                                hour_in_month = hour_in_month, 
                                paths = paths, DataNamePV = FolderName['DataNamePV'],
-                               SimulationPeriode = SimulationPeriode, start = start, end = end)
+                               SimulationPeriode = SimulationPeriode, weatherData = weatherData)
                                
         else:
             PV_electricity_results, PV_detailed_results = \
@@ -258,7 +258,7 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
                                XANGLES = XANGLES, YANGLES= YANGLES, 
                                hour_in_month = hour_in_month,
                                paths = paths, DataNamePV = FolderName['DataNamePV'],
-                               SimulationPeriode = SimulationPeriode, start = start, end = end)
+                               SimulationPeriode = SimulationPeriode, weatherData = weatherData)
     
     else: 
         PV_electricity_results = np.load(os.path.join(paths['PV'], 'HourlyPV_electricity_results_' + FolderName['DataNamePV'] + '.npy')).item()
@@ -273,8 +273,9 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
   
   
  
-def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinations, SimulationPeriode, start, end):
+def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinations, SimulationPeriod, start, end):
     
+    from calculateHOY import calcHOY
     
     print '\n'          
     #add the radiation data to the specific HOY
@@ -283,11 +284,12 @@ def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinat
     passedHours = 0
     count = 0
     
-    for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth'] + 1):
-       for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
-            for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):        
+    for monthi in range(SimulationPeriod['FromMonth'], SimulationPeriod['ToMonth'] + 1):
+       for day in range(SimulationPeriod['FromDay'], SimulationPeriod['ToDay'] + 1):
+            for hour in range(SimulationPeriod['FromHour'], SimulationPeriod['ToHour'] + 1):        
                 
-                HOY = start + passedHours
+                #HOY = start + passedHours
+                HOY = calcHOY(month= monthi,day = day, hour=hour)
                 BuildingRadiationHOY[HOY] = HourlyRadiation[monthi][day][hour] #W
                 
                 #print 'HOY: ' + str(HOY) + ' of ' + str(end)
@@ -296,7 +298,6 @@ def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinat
                 count +=NumberCombinations               
                
                 passedHours += 1
-                         
     
     return PV, BuildingRadiationHOY
 
@@ -304,7 +305,7 @@ def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinat
     
 def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, \
                             NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES,\
-                            start, end, Temp_start):
+                            start, end, Temp_start, SimulationPeriod):
     
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])     
@@ -332,7 +333,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
     for optimizationType in optimization_Types:
             
-        hourlyData[optimizationType], ResultsBuildingSimulation[optimizationType], UncomfortableH[optimizationType] = RC_Model (
+        hourlyData[optimizationType], ResultsBuildingSimulation[optimizationType], UncomfortableH[optimizationType], TotalHOY = RC_Model (
                                                                       optimization_type = optimizationType, 
                                                                       paths = paths,
                                                                       building_data = building_data, 
@@ -346,20 +347,24 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                                                                       setBackTemp = setBackTemp,
                                                                       occupancy = occupancy,
                                                                       Q_human = Q_human, 
-                                                                      start = start, end = end, Temp_start = Temp_start                                                                      
+                                                                      start = start, end = end, Temp_start = Temp_start,
+                                                                      SimulationPeriod = SimulationPeriod
                                                                       )
+                                                                      
+           
         
         
         #prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  
         BestKey[optimizationType], x_angles[optimizationType], y_angles[optimizationType] = prepareAngles(
                                                                             Building_Simulation_df = ResultsBuildingSimulation[optimizationType], 
                                                                             ANGLES = ANGLES,
-                                                                            start = start, end = end)   
+                                                                            start = start, end = end,
+                                                                            TotalHOY = TotalHOY)   
     
 #        # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
 #        monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType])
 #        
-    return hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles, UncomfortableH
+    return hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles, UncomfortableH, TotalHOY
     
     
     
@@ -386,10 +391,11 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 
 
 
-def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end):
+def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end, TotalHOY):
     
     from hourlyPlotFunction import PlotHour 
     from Function3dPlot import create3Dplot, create3Dplot2    
+    
     
     
     angles = {}
@@ -399,16 +405,18 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     
     
     for ii in optimization_Types:
-    
+        
+        
         fig[ii] = PlotHour(E = ResultsBuildingSimulation[ii]['E_tot'], PV = ResultsBuildingSimulation[ii]['PV'], L = ResultsBuildingSimulation[ii]['L'], 
-                       H = ResultsBuildingSimulation[ii]['H'], C = ResultsBuildingSimulation[ii]['C'], x_angle = x_angles[ii], y_angle = y_angles[ii], start = start, end = end, title = ii)
+                       H = ResultsBuildingSimulation[ii]['H'], C = ResultsBuildingSimulation[ii]['C'], x_angle = x_angles[ii], y_angle = y_angles[ii], 
+                        start = start, end = end, title = ii, TotalHOY = TotalHOY)
     
     
     
     figA = {}
     figB = {}
     
-   
+    """
     
     for jj in range(start,end+1):
         
@@ -418,7 +426,7 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     
     
     figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = start, end  = end)  
-    
+    """
     RBS_ELEC = {}
     
     #rearrange dataframes and split them
@@ -426,7 +434,7 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     
         ResultsBuildingSimulation[ii]  = ResultsBuildingSimulation[ii].T   
         
-        ELEC_df = pd.DataFrame(ResultsBuildingSimulation[ii], index = ['PV', 'L','C_elec', 'H_elec', 'E_HCL_elec', 'E_tot_elec']  ,columns= range(start,end+1))
+        ELEC_df = pd.DataFrame(ResultsBuildingSimulation[ii], index = ['PV', 'L','C_elec', 'H_elec', 'E_HCL_elec', 'E_tot_elec']  ,columns= TotalHOY)
     
         RBS_ELEC[ii] = ELEC_df.T
         

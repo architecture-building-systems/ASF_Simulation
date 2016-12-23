@@ -74,76 +74,22 @@ INPUT PARAMETER DEFINITION
 
 
 import os, sys
-import numpy as np
 import pandas as pd
 from buildingSystem import *  
 from SimulationClass import ASF_Simulation
-#
-#
-##
-#
-#for ii in range(3):
-#    
-#    if ii == 0:
+import numpy as np
+import matplotlib.pyplot as plt
+
+
 SimulationData = {
 'optimizationTypes' : ['E_total'],
-'DataName' : 'ZH13_49comb',
+'DataFolderName' : 'ZH13_49comb',
+'FileName': 'ZH13_49comb',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : False,
-'ShowFig': True,
+'ShowFig': False,
 'timePeriod': None}
-
-
-#SimulationData = {
-#'optimizationTypes' : ['E_total'],
-#'DataName' : 'Helsinki_49comb',
-#'geoLocation' : 'FIN_Helsinki.029740_IWEC',
-#'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',
-#'Save' : True,
-#'ShowFig': True,
-#'timePeriod': None}
-    
-#    elif ii == 1:
-#         SimulationData = {
-#        'optimizationTypes' : ['E_total'],
-#        'DataName' : 'Helsinki_49comb',
-#        'geoLocation' : 'FIN_Helsinki.029740_IWEC',
-#        'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',
-#        'Save' : True,
-#        'ShowFig': True,
-#        'timePeriod': None}
-#    elif ii == 2:
-#        SimulationData = {
-#        'optimizationTypes' : ['E_total'],
-#        'DataName' : 'Cairo_49comb',
-#        'geoLocation' : 'EGY_Cairo.623660_IWEC',
-#        'EPWfile': 'EGY_Cairo.623660_IWEC.epw',
-#        'Save' : True,
-#        'ShowFig': True,
-#        'timePeriod': None}
-    
-#	
-	
-#Set panel data
-#PanelData={
-#"XANGLES": [0],
-#"YANGLES" : [0],
-#"NoClusters":1,
-#"numberHorizontal":0,
-#"numberVertical":0,
-#"panelOffset":400,
-#"panelSize":400,
-#"panelSpacing":500}
-
-    #Set Building Parameters in [mm]
-#    BuildingData={
-#    "room_width": 4900,     
-#    "room_height":3100,
-#    "room_depth":7000,
-#    "glazing_percentage_w": 0.92,
-#    "glazing_percentage_h": 0.97,
-#    "WindowGridSize": 200}
 
 ##Set building properties for RC-Model simulator
 BuildingProperties={
@@ -179,17 +125,15 @@ BuildingProperties={
 #'ActuationEnergy' : False}
 
 	
-#if __name__=='__main__':
-#    ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties)
-#    ASFtest.SolveASF()
-#    print ASFtest.yearlyData
-#    #print ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey']  
+if __name__=='__main__':
+    ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties)
+    ASFtest.SolveASF()
+    print ASFtest.yearlyData
+    #print ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey']  
     
     
-import os, sys
-import numpy as np
-import csv
-import matplotlib.pyplot as plt
+
+
 
 x,y = [],[]
 x2,y2 = [],[]
@@ -203,7 +147,8 @@ for ii in x:
         
         x2.append(ii)
         y2.append(y[ii])
-        
+
+"""        
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(x2,y2,'o')
@@ -213,7 +158,21 @@ ax.plot(x2,y2,'o')
 plt.xlabel('Hour of year', fontsize=12)
 plt.ylabel('Angle Key', fontsize=12)
 plt.tight_layout()
+
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+
+ax1.plot(x2, y2, 'm-')
+ax1.set_xlabel('Angle degree', fontsize = 16)
+
+
+plt.legend(['Comb'], loc = 2)
+
+plt.tight_layout()
+plt.show()
  
+""" 
 
 
 print ASFtest.ResultsBuildingSimulation['E_total']['OptAngles'][0][0]
@@ -226,7 +185,7 @@ for ii in x2:
     Xangle.append(ASFtest.ResultsBuildingSimulation['E_total']['OptAngles'][ii][0])
     Yangle.append(ASFtest.ResultsBuildingSimulation['E_total']['OptAngles'][ii][1])
 
-
+"""
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -254,15 +213,34 @@ plt.yticks(range(-45,60,15))
 plt.xticks(range(0,10000,2000))
 plt.tight_layout()
 
+"""
+
 Yangle_Count = {}
 Xangle_Count = {}
+CombAngle_Count = {}
+
 Yangle_List = []
 Xangle_List = []
+CombAngle_List = []
+
 sumX = 0
 sumY = 0
+sumComb = 0
 
 xAngle = range(0,105,15)
 yAngle = range(-45,60,15)
+
+CombAngle = y2
+Comb = range(49)
+
+for jj in Comb:
+    count = 0
+    for ii in range(len(x2)):
+        if CombAngle[ii] == jj:
+            count += 1
+    CombAngle_Count[jj] = count
+    CombAngle_List.append(count)
+    sumComb += count
 
 for jj in yAngle:
     count = 0
@@ -284,16 +262,14 @@ for jj in xAngle:
     Xangle_List.append(count)
     sumX += count
     
-print sumX
-print sumY 
-
+"""
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 
 #ax1.set_title('(d) Summer Cooling Optimization', fontsize = 18)
 
 ax1.plot(xAngle, Xangle_List, 'm-')
-ax1.plot(yAngle, Yangle_List, 'c--')
+ax1.plot(yAngle, Yangle_List, 'c-')
 ax1.set_xlabel('Angle degree', fontsize = 16)
 ax1.set_ylabel('Counts per Year', fontsize = 16)
 #ax1.set_yticks([-800,-400,0,400,800])
@@ -304,16 +280,68 @@ plt.legend(['Xangle', 'Yangle'], loc = 2)
 
 #ax2 = ax1.twinx()
 #
-#ax2.plot(yAngle, Yangle_List, 'c--')
+#ax2.plot(range(49), CombAngle_List, 'k--')
 #
-##ax2.set_ylabel('[deg]', fontsize = 16)
-##ax2.set_yticks([-90,-45,0,45,90])
-#plt.legend(['Yangle'], loc = 3)
+#ax2.set_ylabel('[comb]', fontsize = 16)
+#ax2.set_yticks(range(49))
+#plt.legend(['Comb'], loc = 3)
 
 plt.tight_layout()
 plt.show()
+""" 
  
+ListComb= []
+
+for x in range(0,105,15):
+    for y in range(-45,60,15):
+        ListComb.append((x,y))
+ 
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+
+ax1.plot(Comb, CombAngle_List, 'k-')
+#ax1.set_xticks(ListComb)
+ax1.set_xlabel('Combination', fontsize = 16)
+ax1.set_ylabel('Counts per Year', fontsize = 16)
+
+
+#ax1.set_xticks(range(6,24,3))
+
+
+plt.legend(['Comb'], loc = 2)
+plt.tight_layout()
+plt.show() 
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(Comb,CombAngle_List,'o')
+
+#plt.xticks(ListComb)
+plt.ylabel('Counts per Year', fontsize=12)
+plt.xlabel('Comb', fontsize=12)
+plt.tight_layout()
+
 
 percX = np.array(Xangle_List) /float(sumX) *100
 percY = np.array(Yangle_List) /float(sumY) *100
+percComb = np.array(CombAngle_List) /float(sumX) *100
 
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(Comb,percComb,'o')
+
+#plt.title('Zurich 2013')
+
+plt.ylabel('Percentage', fontsize=12)
+plt.xlabel('Comb', fontsize=12)
+plt.tight_layout()
+
+Comb_df = pd.DataFrame(
+    {'CombCounts': CombAngle_List,
+     'Combination': ListComb,
+     'Percentage': percComb})
+     
+df = Comb_df[Comb_df.Percentage >= 1]
+
+Summe = df.sum()
