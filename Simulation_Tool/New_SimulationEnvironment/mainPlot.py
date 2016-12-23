@@ -341,7 +341,8 @@ Comb_df = pd.DataFrame(
     {'CombCounts': CombAngle_List,
      'Combination': ListComb,
      'Percentage': percComb})
-     
+
+#chose what condition a value has to fullfil     
 df = Comb_df[Comb_df.Percentage >= 1]
 
 Summe = df.sum()

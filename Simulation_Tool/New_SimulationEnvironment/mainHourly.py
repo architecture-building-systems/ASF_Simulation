@@ -265,7 +265,7 @@ if season == 'winter2':
     #Set simulation data
     SimulationData= {
     'optimizationTypes' : ['E_total'],
-    'DataName' : 'ZH13_1comb_Winter',#
+    'DataName' : 'ZH13_49comb_year',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : False}    
 else:
@@ -273,8 +273,8 @@ else:
  
 #Set panel data
 PanelData={
-"XANGLES": [0,45],#[45], 
-"YANGLES" : [0],#[0],
+"XANGLES": [0,45,90],#[45], 
+"YANGLES" : [-45,0,45],#[0],
 "NoClusters":1,
 "numberHorizontal":6,
 "numberVertical":9,
