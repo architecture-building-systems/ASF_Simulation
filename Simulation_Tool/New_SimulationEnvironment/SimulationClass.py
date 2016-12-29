@@ -17,6 +17,7 @@ import pandas as pd
 from buildingSystem import *  
 
 class ASF_Simulation(object):
+    #initilize ASF_simulation class
 
 	def __init__(self,
             SimulationData = 
@@ -34,13 +35,12 @@ class ASF_Simulation(object):
             {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
                             
                             
-
+            #define varibales of object
 		self.SimulationData=SimulationData
 		self.PanelData=PanelData
 		self.BuildingData=BuildingData
 		self.BuildingProperties=BuildingProperties
 		self.SimulationOptions=SimulationOptions
-
 		
 		self.XANGLES=self.PanelData['XANGLES']
 		self.YANGLES = self.PanelData['YANGLES']		
@@ -49,8 +49,7 @@ class ASF_Simulation(object):
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		self.optimization_Types = self.SimulationData['optimizationTypes']
 
-
-		#Set panel data
+		#Set folder name and chosen epw-file
 		self.FolderName={
 		"DataFolderName": SimulationData['DataFolderName'],
 		"EPW" : SimulationData['EPWfile']  
@@ -75,6 +74,7 @@ class ASF_Simulation(object):
 		with open('building.json','w') as f:
 			f.write(json.dumps(self.BuildingData))
 		
+           #calculate room floor area
 		self.roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
 		
 		
@@ -90,6 +90,9 @@ class ASF_Simulation(object):
 		
 	def setPaths(self): 
      
+		
+        
+           #set the occupancy file, which will be used for the evaluation
 		Occupancy = self.SimulationOptions['Occupancy']
 
 		# create dictionary to write all paths:
@@ -102,12 +105,13 @@ class ASF_Simulation(object):
 		self.paths['data'] =os.path.join(self.paths['main'], 'data')
 		self.paths['python'] = os.path.join(self.paths['main'], 'python')
 		self.paths['RadiationData'] = os.path.join(self.paths['main'], 'RadiationData')
-          		
+           #path of the ladybug radiation results for the ASF and window
 		self.paths['radiation_results'] = os.path.join(self.paths['RadiationData'],'radiation_results_' + self.FolderName['DataFolderName'])
 		self.paths['radiation_wall'] = os.path.join(self.paths['RadiationData'],  'radiation_wall_' + self.FolderName['DataFolderName'])
+		#folder where radiaton results are going to be stored
 		self.paths['PV'] = os.path.join(self.paths['main'], 'PV_results')
-
 		self.paths['save_results_path'] = self.paths['PV']
+
 		self.paths['weather_folder']= os.path.join(os.path.dirname(self.paths['main']), 'WeatherData')
 		
 		
@@ -117,11 +121,13 @@ class ASF_Simulation(object):
 		self.paths['weather'] = os.path.join(self.paths['weather_folder'], self.geoLocation + '.epw')
 		
 		# add python_path to system path, so that all files are available:
-		
 		sys.path.insert(0, self.paths['python'])
 		
 		
 		from epwreader import epw_reader
+		from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature # used?
+		from create_lookup_table import lookUpTableFunction
+  
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
 		
@@ -144,18 +150,16 @@ class ASF_Simulation(object):
 		self.paths['5R1C_ISO_simulator_data'] = os.path.join(self.paths['5R1C_ISO_simulator'], 'data')    
 		self.paths['Occupancy'] = os.path.join(self.paths['5R1C_ISO_simulator_data'], Occupancy) 
 		
-		from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature
+		
 		# create sun data based on grasshopper file, this is only possible with the ladybug component SunPath
 		self.SunTrackingData = SunAnglesTackingAndTemperature(paths = self.paths,
-												weatherData = self.weatherData)    
-		
-		from create_lookup_table import lookUpTableFunction
+                                                                weatherData = self.weatherData)    
   
 		# calculate and save lookup table if it does not yet exist:
 		self.paths['data_python'] = os.path.join(self.paths['data'], 'python')
 		self.paths['electrical_simulation'] = os.path.join(self.paths['data_python'], 'electrical_simulation') 
 	   
-		
+		#check if look up table is already created
 		if not os.path.isfile(os.path.join(self.paths['electrical_simulation'], 'curr_model_submod_lookup.npy')): 
 			if not os.path.isdir(self.paths['electrical_simulation']):
 				os.makedirs(self.paths['electrical_simulation'])
@@ -173,6 +177,7 @@ class ASF_Simulation(object):
 		
 	def CalculateVariables(self):
 		#Calculate variables
+		from hourRadiation import hourRadiation, hourRadiation_calculated, sumHours
 
 		#hour_in_month is dependent on the location, this dict is for ZH
 		hours = self.SunTrackingData['HoursInMonth']
@@ -185,21 +190,19 @@ class ASF_Simulation(object):
 		
 		self.daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
 		
-		from hourRadiation import hourRadiation, hourRadiation_calculated, sumHours
-		
-		
+		#hours for which the radiaiton is available
 		self.hourRadiation = hourRadiation(self.hour_in_month, self.daysPerMonth)
+		#hours for which the radiaiton is calculated
 		self.hourRadiation_calculated = hourRadiation_calculated(self.hour_in_month,self.daysPerMonth)
+            #summe of the hours of year in monthly steps
 		self.sumHours = sumHours(self.daysPerMonth)
-
 		
 		#Make a list of all angle combinations
 		self.ANGLES= [(x, y) for x in self.XANGLES for y in self.YANGLES]
 		
-		#append to more ANGLES combination option for the angle carpetplot
+		#append ANGLES combination option, for the case, the ASF is not moving and there is no sunlight
 		self.ANGLES.append((0.1111,0.1111)) # no sun
 	   
-		
 		#create a dicitionary with all angle combinations
 		self.combinationAngles = {}
 		
@@ -214,7 +217,8 @@ class ASF_Simulation(object):
 		
 	def runRadiationCalculation(self):
 		 
-         from RadiationCalculation import CalculateRadiationData     
+         from RadiationCalculation import CalculateRadiationData
+         from asf_electricity_production_mauro_3 import asf_electricity_production
 
 	   #Calculate the Radiation on the solar panels and window with ladybug
          self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
@@ -239,9 +243,6 @@ class ASF_Simulation(object):
         		if not os.path.isfile(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
         			if not os.path.isdir(self.paths['PV']):
         				os.makedirs(self.paths['PV'])
-        				
-        			from asf_electricity_production_mauro_3 import asf_electricity_production
-        			
         			print '\nCalculating PV electricity production'     
         			
         			
@@ -262,6 +263,7 @@ class ASF_Simulation(object):
         								   paths = self.paths, DataNamePV = self.SimulationData['FileName'])
         								   
         			else:
+                           #option the show plots of PV-production calculation
         				self.PV_electricity_results, self.PV_detailed_results = \
         				asf_electricity_production(
         								   createPlots = self.createPlots, 
@@ -278,6 +280,7 @@ class ASF_Simulation(object):
         								   paths = self.paths, DataNamePV = self.SimulationData['FileName'])
         		
         		else: 
+                      #if PV-results are available, they will be loaded from folder
         			self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.SimulationData['FileName'] + '.npy')).item()
         			self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'PV_detailed_results_' + self.SimulationData['FileName'] + '.npy')).item()
         			print '\nLadyBug data loaded from Folder:'
@@ -287,16 +290,14 @@ class ASF_Simulation(object):
 	   
 	 
 	def PrepareRadiationData(self):
+            #arrange radiaiton data into the correct form, so it can be used for the RC-model calculation
 		
 		from hourRadiation import hourRadiation, hourRadiation_calculated, sumHours
-
-		
 		
 		hourRadiation = hourRadiation(self.hour_in_month, self.daysPerMonth)
 		hourRadiation_calculated = hourRadiation_calculated(self.hour_in_month,self.daysPerMonth)
 		sumHours = sumHours(self.daysPerMonth)
-		
-				  
+					  
 		#add the radiation data to the specific HOY
 		self.PV={}
 		self.BuildingRadiationData_HOY= {}
@@ -313,7 +314,7 @@ class ASF_Simulation(object):
 					DAY = ii*24 + int(HOD)   
 					self.BuildingRadiationData_HOY[passedHours + DAY] = self.BuildingRadiationData_HOD[monthi][DAY] #W
 		
-		
+		#initilize dictionary
 		for hour_of_year in range(0,8760):
 			self.PV[hour_of_year]= {}
 			self.PV[hour_of_year]['PV']= []
@@ -321,6 +322,7 @@ class ASF_Simulation(object):
 			  
 		count = 0
 		DAY = 0
+             #check if no panels are selected, if so, than PV-Production is zero
 		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
                
                  for hour_of_year in range(0,8760):
@@ -337,7 +339,7 @@ class ASF_Simulation(object):
         						DAY = jj*24 + HOD     
         						self.PV[passedHours + DAY]['PV'] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
         					count +=self.NumberCombinations
-					
+		#add the window radiation data to the specific HOY			
 		for hour_of_year in range(0,8760):
 			if hour_of_year not in hourRadiation:
 					self.BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
@@ -346,7 +348,7 @@ class ASF_Simulation(object):
 		
 		
 	def runBuildingSimulation(self):
-           
+           #method which calls the RC-Model and runs the building energy simulation
            
             # add python_path to system path, so that all files are available:
             sys.path.insert(0, self.paths['5R1C_ISO_simulator'])
@@ -361,9 +363,8 @@ class ASF_Simulation(object):
             self.hourlyData = {}
             self.monthlyData = {}
             self.yearlyData = {}
-            self.ResultsBuildingSimulation = {}
-            self.BuildingSimulationELEC = {}
-            			
+            self.ResultsBuildingSimulation = {} #total energy building simulation results
+            self.BuildingSimulationELEC = {} #Building simulation results, if heating/cooling system is chosen
             self.x_angles = {} #optimized x-angles
             self.y_angles = {} #optimized y-angles
             self.BestKey_df = {} #optimized keys of the ANGLES dictionary
@@ -406,7 +407,7 @@ class ASF_Simulation(object):
 																				ANGLES = self.ANGLES)   
 		   
 			
-		
+                  #calculate the monthlyData dependet on which opimization is chosen
 			if optimizationType == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):
 				# prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], self.yearlyData [kWh/year]
 				self.monthlyData[optimizationType], self.yearlyData[optimizationType] = prepareResults(Building_Simulation_df = self.ResultsBuildingSimulation[optimizationType])
@@ -414,14 +415,15 @@ class ASF_Simulation(object):
 			elif optimizationType == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):                                                           
 				self.monthlyData[optimizationType], self.yearlyData[optimizationType] = prepareResultsELEC(Building_Simulation_df = self.BuildingSimulationELEC[optimizationType])
 			
-	   
 
 	def createAllPlots(self):
+            #create energy- and angle- carpet plots
 		
 		from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
 		
 		self.fig = {}    
 		
+            # carpet plot for total energy values
 		if ('E_total') in self.optimization_Types:    
 			#create the carpet plots detailing the net energy consumption, set only monthlyData['E_total']
 			print '\nFigure: total energy demand'    
@@ -429,7 +431,7 @@ class ASF_Simulation(object):
 			fig0 = createCarpetPlot (monthlyData = self.monthlyData['E_total'], roomFloorArea = self.roomFloorArea,  H = 'H', C = 'C', E = 'E', E_HCL = 'E_HCL')
 			
 			self.fig.update({'fig0': fig0})
-		
+		# carpet plots for electricity demand
 		if ('E_total_elec') in self.optimization_Types:
 			
 			print 'Figure: total electrical energy demand'
@@ -437,7 +439,7 @@ class ASF_Simulation(object):
 			figA = createCarpetPlot (monthlyData = self.monthlyData['E_total_elec'], roomFloorArea = self.roomFloorArea,  H = 'H_elec', C = 'C_elec', E = 'E_elec', E_HCL = 'E_HCL_elec')
 			self.fig.update({'figA' : figA})
 		
-		
+		# angle-carpet plots
 		if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
 			if ('SolarEnergy' and 'Lighting') in self.optimization_Types:
 				#create the angles carpet plots for the opimised simulation option, this option needs all simulation types
@@ -461,11 +463,11 @@ class ASF_Simulation(object):
 
 
 	def SaveResults(self):
-            
+           #method which saves the data and plots 
               
           self.monthlyData = pd.DataFrame(self.monthlyData)
           self.yearlyData = pd.DataFrame(self.yearlyData)
-            		#BestKeyDF = pd.DataFrame(self.BestKey_df)    
+          #BestKeyDF = pd.DataFrame(self.BestKey_df)    
 		
           if self.SimulationData['Save']: 
 			
@@ -476,11 +478,10 @@ class ASF_Simulation(object):
                 if not os.path.isdir(self.paths['result']):
     				os.makedirs(self.paths['result'])    
         			
-        			#create folder to save figures as svg and png:
+        		#create folder to save figures as svg and png:
                 self.paths['pdf'] = os.path.join(self.paths['result'], 'Figures')
                 os.makedirs(self.paths['pdf'])
 			
-			 
                 self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
                 self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
 			
@@ -520,7 +521,6 @@ class ASF_Simulation(object):
                 x_angles_df = pd.DataFrame(self.x_angles)
                 y_angles_df = pd.DataFrame(self.y_angles)           
 			
-			#hourlyData['E_total'].to_csv(os.path.join(self.paths['result'], 'hourlyData.csv'))
                 np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
                 self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
                 self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
@@ -532,7 +532,7 @@ class ASF_Simulation(object):
                 self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
                 			
                 				 
-                			#save building properties
+                #save building properties in json files
                 with open(os.path.join(self.paths['result'], 'BuildingProperties.json'), 'w') as f:
                 				f.write(json.dumps(self.BuildingProperties))
                 		
@@ -542,6 +542,7 @@ class ASF_Simulation(object):
 		
 
 	def SolveASF(self):
+         #main method which calls all sub-methods
 		
 
             self.initializeASF()
@@ -550,7 +551,6 @@ class ASF_Simulation(object):
             self.setPaths()				
             self.CalculateVariables()
             self.runRadiationCalculation()		  		 
-            #rearrange the Radiation Data on PV and Window into HOY form
             self.PrepareRadiationData()													   
             self.runBuildingSimulation()
             
