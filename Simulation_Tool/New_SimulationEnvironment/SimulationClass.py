@@ -527,7 +527,7 @@ class ASF_Simulation(object):
                 x_angles_df.to_csv(os.path.join(self.paths['result'], 'X-Angles.csv'))
                 y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))
                 			
-                			
+                #convert heating/cooling system variables into strings			
                 self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
                 self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
                 			
