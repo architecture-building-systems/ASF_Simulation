@@ -58,17 +58,15 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
                             with open('comb.json','w') as f:
                                 f.write(json.dumps(comb_data))
                                 
-                                print hour, day, monthi, x_angle, y_angle, resultsdetected
-                                toc = time.time() - tic
-                                print 'time passed (min): ' + str(toc/60.)
-                            
+                            print hour, day, monthi, x_angle, y_angle, resultsdetected
+                            toc = time.time() - tic
+                            print 'time passed (min): ' + str(toc/60.)
+                        
                            
                             #Wait until the radiation_results were created    
                             while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_' +  str(hour) + '_' + str(day) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                                 time.sleep(1)
-                            
-                            #paths['radiation_results']+'\\RadiationResults' +'_Index_'+ str(index) + '_NoCluster_' + str(NoClusters) + '_'  + str(HOD) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv'                
-                            
+                                                   
                             else:
                                 print 'next step'
                                 resultsdetected += 1

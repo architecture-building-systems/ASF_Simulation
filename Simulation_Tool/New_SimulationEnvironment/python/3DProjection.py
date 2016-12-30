@@ -9,7 +9,7 @@ from sympy import Point, Polygon, pi
 #http://math.stackexchange.com/questions/164700/how-to-transform-a-set-of-3d-vectors-into-a-2d-plane-from-a-view-point-of-anoth
 room_height = 3100.
 room_depth = 7000.
-room_width = 4900./20
+room_width = 4900.
 
 
 #S1 = [-2500,0,0]
@@ -24,13 +24,13 @@ SunVec = np.array([-2000, 2000 ,2000])
 
 PanelNum = 4
 
-PanelSize = 400. #mm
+PanelSize = 40. #mm
 
 Hyp = np.sin(np.deg2rad((45)))*PanelSize
 DistWindow = 500. # distance of panels from Window surface
 
-xAngle = 0
-yAngle = 30
+xAngle = 10
+yAngle = 0
 
 xAngle = np.deg2rad(xAngle)
 yAngle = np.deg2rad(yAngle)
@@ -555,16 +555,22 @@ for ii in range(1,PanelNum):
         
         
         
-        poly = [ASF_dict_prime[ii-1][2], ASF_dict_prime[ii][1],ASF_dict_prime[ii][2], ASF_dict_prime[ii][3], SP1, SP2] 
+        poly = [ASF_dict_prime[ii][1], ASF_dict_prime[ii][2],ASF_dict_prime[ii][3], ASF_dict_prime[ii][3],ASF_dict_prime[ii-1][2], SP1, SP2] 
         #poly = [ASF_dict_prime[ii-1][2], ASF_dict_prime[ii][1],ASF_dict_prime[ii][2], ASF_dict_prime[ii][3], SP1, SP2]         
         #print poly
         
         result2 = abs(10**(-6)* Polygon((SP2[0],SP2[2]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2]),\
                     (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]),(ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (SP1[0],SP1[2])).area)
+        
+        result1 = AreaCalc(poly = poly)
+        
+
+            
         print "ASF: ", ii + 1
         print "yes"
         #print "Area", result1
         #print Polygon((SP2[0],SP2[2]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (SP1[0],SP1[2]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2])).area
+        print 'poly', round(result1,3)        
         print "Area", round(result2,3)
               
        
@@ -575,7 +581,10 @@ for ii in range(1,PanelNum):
         result1 = AreaCalc(poly = poly)
         print "ASF: ", ii + 1
         print "no"
-        print "Area", round(result1,3)    
+        print "Area", round(result1,3)
+        result2 = abs(10**(-6)* Polygon((ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2]),\
+                    (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]),(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][2])).area)
+        print 'result2', round(result2,3)
         
 
 
