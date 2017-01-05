@@ -225,6 +225,8 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
             os.makedirs(paths['PV'])
             
         from asf_electricity_production_mauro_hourly import asf_electricity_production
+        #from asf_electricity_production_daysim import asf_electricity_production        
+        
         print '\nCalculating PV electricity production'     
         
         

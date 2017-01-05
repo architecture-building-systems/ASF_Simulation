@@ -32,16 +32,28 @@ room_width = 4900.
 SunVec = np.array([-2000, 2000 ,2000])
 #SunVec = np.array([0.92, -35 ,2])*1000
 
-PanelNum = 4
+PanelNum = 8
 
-PanelSize = 2000. #mm
+if PanelNum == 4:
+    row = 2
+    col = 2
+    
+elif PanelNum == 8:
+    row = 2
+    col = 4
+    
+PanelSize = 600. #mm
 
 Hyp = np.sin(np.deg2rad((45)))*PanelSize
 DistWindow = 500. # distance of panels from Window surface
 
-xAngle = 0
-yAngle = 0
+#XANGLES = range(5,15,5)
+#for xAngle in XANGLES:
 
+xAngle = 0
+yAngle = -20
+
+    
 xAngle = np.deg2rad(xAngle)
 yAngle = np.deg2rad(yAngle)
 
@@ -113,7 +125,7 @@ S3, PointA = ProjPlane(S1 = S1, n = SunVec)
 S3 = [5010,10,10]
 
 
-print "S3", S3
+#print "S3", S3
 
 #S4 = np.array(S2) - (np.array(S1)-np.array(S3))
 
@@ -121,14 +133,33 @@ print "S3", S3
 
 ASF_dict = {}
 
-
-
+"""
+#4 panels
 for jj in range(PanelNum):
     
     #determine the location of the panels
     xR1 = [-room_width * 1/4. + xR, room_width * 1/4. + xR , -room_width * 1/4. + xR, room_width * 1/4. + xR]
     yR1 = [DistWindow + yR]* 4 
     zR1 = [room_height/4. + zR ,room_height/4. + zR, -room_height/4. + zR, -room_height/4. + zR]
+    
+    # 1   
+    #0 2   
+    # 3 
+    #calculate edges for each panel
+    ASF_dict[jj] = [[xR1[jj] + room_width/2 - np.sqrt(2)/2*PanelSize + (Hyp- np.cos(yAngle)*Hyp),    yR1[jj] + np.sin(yAngle)* Hyp ,     zR1[jj] + room_height/2], #1
+                    [xR1[jj] + room_width/2 ,                                                        yR1[jj] - np.sin(xAngle)*Hyp,       zR1[jj] + room_height/2 + np.sqrt(2)/2*PanelSize - (Hyp- np.cos(xAngle)*Hyp)],#2
+                    [xR1[jj] + room_width/2 + np.sqrt(2)/2*PanelSize - (Hyp- np.cos(yAngle)*Hyp),    yR1[jj] - np.sin(yAngle)* Hyp,      zR1[jj] + room_height/2], #3
+                    [xR1[jj] + room_width/2 ,                                                        yR1[jj] + np.sin(xAngle)*Hyp,       zR1[jj] + room_height/2 - np.sqrt(2)/2*PanelSize + (Hyp- np.cos(xAngle)*Hyp)]] #4
+"""
+#8 panels
+for jj in range(PanelNum):
+    
+    #determine the location of the panels
+    xR1 = [-room_width * 4/PanelNum + xR, -room_width * 1/PanelNum + xR, room_width * 1/PanelNum + xR, room_width * 4/PanelNum + xR, 
+           -room_width * 4/PanelNum + xR, -room_width * 1/PanelNum + xR, room_width * 1/PanelNum + xR, room_width * 4/PanelNum + xR]
+    yR1 = [DistWindow + yR]* PanelNum 
+    zR1 = [room_height/PanelNum + zR ,room_height/PanelNum + zR, room_height/PanelNum + zR ,room_height/PanelNum + zR,
+           -room_height/PanelNum + zR, -room_height/PanelNum + zR, -room_height/PanelNum + zR, -room_height/PanelNum + zR]
     
     # 1   
     #0 2   
@@ -194,20 +225,21 @@ for ii in room:
 
 ASF_dict_prime = {}
 
-count = 0    
-for ii in range(len(ASF_dict)):
+count = 0
+for ii in range(PanelNum):    
     ASFPrime = []
     
-    for jj in range(PanelNum):
+    for jj in range(4):
+        
         Prime = PointPro(S1 = S1, S2 = S2, S3= S3, A = ASF_dict[ii][jj], SunVec = SunVec)
         ASFPrime.append(Prime)
         
         ASFX.append(Prime[0])
         ASFX.append(ASF_dict[ii][jj][0])
-
+    
         ASFY.append(Prime[1])
         ASFY.append(ASF_dict[ii][jj][1])
-
+    
         ASFZ.append(Prime[2])
         ASFZ.append(ASF_dict[ii][jj][2])        
         count += 1
@@ -298,13 +330,13 @@ def AreaCalc(poly):
     result = area(poly)
     
     return abs(result/2) * 10**(-6) #m2
-
+"""
 for tt in range(len(ASF_dict)):
     result1 = AreaCalc(poly = ASF_dict[tt])
     print "ASF", result1    
     result2 = AreaCalc(poly = ASF_dict_prime[tt])
     print "Prime", result2
-
+"""
 
 
 def createPlane(P1, P2, P3):
@@ -367,12 +399,12 @@ def Area2D(P1, P2, P3):
     
     return Len_N
     
-    
+
 areaReal = Area2D(P1 = room[0], P2 = room[1], P3 = room[2])
 print "Area Real: ", areaReal    
 
-areaPro = Area2D(P1 = RoomPrime[0], P2 = RoomPrime[1], P3 = RoomPrime[2])
-print "Area Projection: ", areaPro
+AreaWindow = Area2D(P1 = RoomPrime[0], P2 = RoomPrime[1], P3 = RoomPrime[2])
+print "Area Projection: ", AreaWindow
 
 
 
@@ -411,33 +443,6 @@ def LineInter(C1,C2,C3,C4):
     
     return InterPoint
 
-#def PointInFinitPlane(P1,P2,P3,P4,TestPoint):
-#    #Problem
-#    
-#    #check if point is in rectangle
-#    #http://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
-#    
-#    P1_TP = [TestPoint[0]-P1[0], TestPoint[1]-P1[1], TestPoint[2]-P1[2]]
-#    P1_P2 = [P2[0]-P1[0], P2[1]-P1[1], P2[2]-P1[2]]
-#    P1_P4 = [P4[0]-P1[0], P4[1]-P1[1], P4[2]-P1[2]]
-#    res1 = np.dot(P1_TP,P1_P2)
-#    res2 = np.dot(P1_P2,P1_P2)
-#    res3 = np.dot(P1_TP,P1_P4)
-#    res4 = np.dot(P1_P4,P1_P4)
-#    
-#    print res1,res2,res3,res4    
-#    
-#    if (res1 <= res2) and (res3 <= res4):
-#        #True point inside rectangel        
-#        Inter = True
-#    else:
-#        #False Point is outside
-#        Inter = False
-#    
-#    return Inter
-
-        
-
 
 # create Plane of projected planes
 PlaneDictPro = {}
@@ -447,16 +452,16 @@ for ii in range(PanelNum):
 
 
 
+print "\nStart Geometry Analysis"
 result1 = AreaCalc(poly = ASF_dict_prime[0])
-print "\nASF: 0"
-print "no" 
-print "Area", round(result1,3)   
+print "\nASF_Point2:  0", "- Area: ", round(result1,3)
+print "no"
 
 
-
-
-
-
+Shadow = {}
+ASFArea = {}
+Shadow[0] = 0
+ASFArea[0] = result1
 
 for ii in range(1,PanelNum):
     
@@ -469,14 +474,7 @@ for ii in range(1,PanelNum):
         #if Point is in polygon p, than true will be returned
         #test if far right point of asf porjection lies in plane of right asf projection plane
         
-#        #Calculate Intersection        
-#        SP1 = LineInter(ASF_dict_prime[ii-1][1],ASF_dict_prime[ii-1][2],ASF_dict_prime[ii][1],ASF_dict_prime[ii][0])
-#        SP2 = LineInter(ASF_dict_prime[ii-1][3],ASF_dict_prime[ii-1][2],ASF_dict_prime[ii][0],ASF_dict_prime[ii][3])
-#        #Calculate Area of ASF
-#        
-#        print SP1
-#        print SP2
-        
+        #Calculate Intersection               
         p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][2]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), 
                              (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2])])
 
@@ -491,50 +489,91 @@ for ii in range(1,PanelNum):
         SP1 = a[0]
         SP2 = a[1]
         
-        print SP1
-        print SP2
+               
         
-        
-        resultS = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (SP1[0],SP1[1]),
+        resultShadow = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (SP1[0],SP1[1]),
                     (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][2])).area)
         
         resultASF = abs(10**(-6)* poly1.area)
         
-        totalArea = resultASF - resultS
-        print resultS
-        print resultASF
-        
-        
-        #poly = [ASF_dict_prime[ii][1], ASF_dict_prime[ii][2],ASF_dict_prime[ii][3], ASF_dict_prime[ii][3],ASF_dict_prime[ii-1][2], [SP1[0], 10., SP2[1]], [SP2[0], 10., SP2[1]]] 
-        #poly = [ASF_dict_prime[ii-1][2], ASF_dict_prime[ii][1],ASF_dict_prime[ii][2], ASF_dict_prime[ii][3], SP1, SP2]         
-        #print poly
-        
-#        result2 = abs(10**(-6)* Polygon((SP2), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2]),\
-#                    (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]),(ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (SP1)).area)
-#        
-#        result1 = AreaCalc(poly = poly)
-        
+        totalArea = resultASF - resultShadow
 
-            
-        print "ASF: ", ii + 1
-        print "yes"
-        #print "Area", result1
-        #print Polygon((SP2[0],SP2[2]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (SP1[0],SP1[2]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2])).area
-        #print 'poly', round(result1,3)        
-        print "Area", round(totalArea,3)
-              
+        Shadow[ii]= resultShadow
+        ASFArea[ii] = resultASF
+        
+        print "ASF_Point2: ", ii , "- Area: ", round(totalArea,3)
+        print "yes"    
+        
        
         
     else:
         poly = ASF_dict_prime[ii]
-        #print poly
         result1 = AreaCalc(poly = poly)
-        print "ASF: ", ii + 1
+        print "ASF: ", ii , "- Area: ", round(result1,3)
         print "no"
-        print "Area", round(result1,3)
-        result2 = abs(10**(-6)* Polygon((ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2]),\
-                    (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2]),(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][2])).area)
-        print 'result2', round(result2,3)
+       
+    
+        Shadow[ii]= 0 
+        ASFArea[ii] = result1
+
+for ii in range(1,row): #2
+    #case: check is lowest point of panel is intersection with panel below
+    for colNum in range(col): #4
+        
+        
+        p = Polygon((ASF_dict_prime[colNum + ii *col][0][0],ASF_dict_prime[colNum + ii *col][0][2]),
+                    (ASF_dict_prime[colNum + ii *col][1][0],ASF_dict_prime[colNum + ii *col][1][2]),
+                    (ASF_dict_prime[colNum + ii *col][2][0],ASF_dict_prime[colNum + ii *col][2][2]),
+                    (ASF_dict_prime[colNum + ii *col][3][0],ASF_dict_prime[colNum + ii *col][3][2]))
+        
+        if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])):
+            #if Point is in polygon p, than true will be returned
+            
+            #Calculate Intersection               
+            p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[col + ii *colNum][0][0], ASF_dict_prime[col + ii *colNum][0][2]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), 
+                                 (ASF_dict_prime[colNum + ii *col][2][0], ASF_dict_prime[colNum + ii *col][2][2]), (ASF_dict_prime[colNum + ii *col][3][0], ASF_dict_prime[colNum + ii *col][3][2])])
+    
+    
+            p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][2]),
+                                 (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])])
+    
+            poly1 = Polygon(p1, p2, p3, p4)
+            poly2 = Polygon(p5, p6, p7, p8)
+    
+            a =  poly1.intersection(poly2)
+            SP1 = a[0]
+            SP2 = a[1]
+            
+                   
+            
+            resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), (SP1[0],SP1[1]),
+                                     (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])).area)
+    
+                    
+            Shadow[colNum + ii *col] += resultShadow2
+    
+                
+            print "ASF_Point3: ", colNum + ii *col
+            print "yes"    
+            
+            
+           
+            
+        else:
+            poly = ASF_dict_prime[colNum + ii *col]
+            result1 = AreaCalc(poly = poly)
+            print "ASF: ", colNum + ii *col
+            print "no"
+            Shadow[colNum + ii *col]+= 0
+
+sumArea = 0
+for ii in range(PanelNum):       
+       print "ASF: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
+       sumArea += ASFArea[ii]-Shadow[ii]
+            
+
+print 'ASF Area Projection: ', round(sumArea,3)    
+print "Area Window Projection: ", round(AreaWindow -sumArea,3)
         
 
 

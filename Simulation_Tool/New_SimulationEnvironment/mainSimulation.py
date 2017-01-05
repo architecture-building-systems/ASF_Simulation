@@ -82,8 +82,8 @@ from SimulationClass import ASF_Simulation
 
 SimulationData = {
 'optimizationTypes' : ['E_total', 'Lighting','SolarEnergy','Heating', 'Cooling', 'E_HCL'],
-'DataFolderName' : 'ZH13_49combHorizont',
-'FileName': 'ZH13_49combMitHorizont',
+'DataFolderName' : 'ZH13_49combHorizont2',
+'FileName': 'ZH13_49combMitHorizont2',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,

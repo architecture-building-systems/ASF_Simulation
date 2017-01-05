@@ -64,6 +64,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(XANGLES)*len(YANGLES)
+    
+    
     print "CombPerHour: ", numCombPerHour
     # set numCombPerHour to 1 if it appears to be zero (this is the case for suntracking)
     if numCombPerHour == 0:
@@ -74,25 +76,17 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     temp_amb= []
     
-    filenames = []
-    for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth'] + 1):
-       for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
-            for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):    
-                
-                HOY = calcHOY(month=monthi,day = day, hour = hour)
-                numHours += 1
-                for x_angle in XANGLES:
-                    for y_angle in YANGLES:
-                        # filenames.append(filename + str(i) + filetype)
-                        filenames.append(filename + '_' + str(int(hour)) + '_' + str(day) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
-                        
-                        
-                        
-                        temp_amb.append(weatherData['drybulb_C'][HOY])
+ 
+    for HOY in range(24):   
+
+        numHours += 1
+        temp_amb.append(weatherData['drybulb_C'][HOY])
     
     print "numHours: ", numHours
     
     numASFit = numHours*numCombPerHour
+    
+    
     
     # module and cell dimensions:
     
@@ -188,14 +182,18 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         
     tic = time.time()
     
+    load= r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
+   
+   
+    test = np.load(os.path.join(load, 'Test.npy')).item()
     
     
     
     # loop through simulation data files:
     for SimulationNumber in range(startIt,numASFit):
     
-        endata = np.genfromtxt(Simulation_Data_Folder + '/' + filenames[SimulationNumber], delimiter=',', skip_header=7) #filenames list of all files, access with indices
-       
+        #endata = np.genfromtxt(Simulation_Data_Folder + '/' + filenames[SimulationNumber], delimiter=',', skip_header=7) #filenames list of all files, access with indices
+        endata = test[SimulationNumber]
         
         maxRadPoint = np.max(endata)*1000 # Wh/(m2*h)
         #theoreticalMaxRad[SimulationNumber] = maxRadPoint/ days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
@@ -214,6 +212,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         Imod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
         Pmod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
     
+        
+        
         
         for mod_sel in range(panelnum):    # module iteration
     
@@ -341,10 +341,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         print 'iteration number: ' + str(SimulationNumber + 1) + ' of ' + str(numASFit)
     
     
-    PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'Hour' : hour, 'Day': day, 'Month':monthi}
+    PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr}
     np.save(os.path.join(save_results_path,'HourlyPV_electricity_results_'  + DataNamePV + '.npy'),PV_electricity_results)    
     
-    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'Hour': hour, 'Day': day, 'Month':monthi}
+    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp}
     np.save(os.path.join(save_results_path,'HourlyPV_detailed_results_' + DataNamePV + '.npy'),PV_detailed_results)    
     
    

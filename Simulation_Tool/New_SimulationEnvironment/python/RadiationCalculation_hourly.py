@@ -33,13 +33,14 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
             
             BuilRadData[monthi]= {}
             
-            #for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
-            for day in range(SimulationPeriode['FromDay'], daysPerMonth[monthi-1] + 1): 
+            for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
+            #for day in range(SimulationPeriode['FromDay'], daysPerMonth[monthi-1] + 1): 
                 
                 print "daysPerMonth", daysPerMonth[monthi-1]
     
                 BuilRadData[monthi][day] = {}
                 
+                # from hour + 1?
                 for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):
                     
                     BuildingRadiationData = np.array([])
@@ -61,12 +62,11 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
                             print hour, day, monthi, x_angle, y_angle, resultsdetected
                             toc = time.time() - tic
                             print 'time passed (min): ' + str(toc/60.)
-                        
-                           
+
                             #Wait until the radiation_results were created    
                             while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_' +  str(hour) + '_' + str(day) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                                 time.sleep(1)
-                                                   
+                                               
                             else:
                                 print 'next step'
                                 resultsdetected += 1

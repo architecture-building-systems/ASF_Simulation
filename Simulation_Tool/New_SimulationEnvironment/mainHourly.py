@@ -190,9 +190,9 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     return ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH 
 
                       
-
- 
-season = 'winter2'
+season = 'Test' 
+#season = '450' 
+#season = 'winter2'
    #'summer'#
 #DefaultValues
 ###############################################################################
@@ -256,9 +256,9 @@ if season == 'winter2':
     'FromMonth': 1, #7, #1,
     'ToMonth': 12,#7, #1,
     'FromDay': 1, #6, #8,
-    'ToDay': 28, #8,
+    'ToDay': 28, #28,
     'FromHour': 6,#5
-    'ToHour': 20,
+    'ToHour': 20, #20
     'Temp_start' : 18}#20
     
     
@@ -267,14 +267,51 @@ if season == 'winter2':
     'optimizationTypes' : ['E_total'],
     'DataName' : 'ZH13_3comb_year',#
     'geoLocation' : 'Zuerich_Kloten_2013',
-    'Save' : False}    
+    'Save' : False}  
+    
+
+elif season == '450':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 12,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 15, #28,
+    'FromHour': 8,#5
+    'ToHour': 18, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_45_0',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}
+
+elif season == 'Test':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 1,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 1, #28,
+    'FromHour': 1,#5
+    'ToHour': 22, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_45_0Test',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}        
 else:
     pass   
  
 #Set panel data
 PanelData={
 "XANGLES": [0],#[45], 
-"YANGLES" : [-45,0,45],#[0],
+"YANGLES" : [0],#[0],
 "NoClusters":1,
 "numberHorizontal":6,
 "numberVertical":9,
