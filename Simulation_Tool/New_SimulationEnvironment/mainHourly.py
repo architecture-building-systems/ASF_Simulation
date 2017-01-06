@@ -275,7 +275,7 @@ elif season == '450':
     'FromMonth': 1, #7, #1,
     'ToMonth': 12,#7, #1,
     'FromDay': 1, #6, #8,
-    'ToDay': 15, #28,
+    'ToDay': 28, #28,
     'FromHour': 8,#5
     'ToHour': 18, #20
     'Temp_start' : 18}#20
