@@ -25,16 +25,16 @@ def create3Dplot(Data, title):
     figA = plt.figure(figsize=(3, 3))
     ax = figA.add_subplot(111,  projection='3d') #, projection='3d'
     
-    X,Y = np.meshgrid(range(0,105,15),range(-45,60,15))
+    Y,X = np.meshgrid(range(-45,60,15),range(0,105,15))
     
        
     surf = ax.plot_surface(X,Y,reData, cmap = cm.pink_r, rstride=1, cstride=1)
     
     plt.title(title)
     plt.xlabel('Altitude Angle [deg]',  fontsize=8)
-    plt.xticks([0,15,30,45,60,75,90], fontsize=8)
+    plt.xticks(range(0,105,15),  fontsize=8)
     plt.ylabel('Azimuth Angle [deg]',  fontsize=8)
-    plt.yticks([-45,-30,-15,0,15,30,45], fontsize=8)
+    plt.yticks(range(45,-60,-15),  fontsize=8)
     
     #ax.set_zlim(250, 600)
     ax.set_zlabel('Net Energy Demand [Wh]',  fontsize=8)
@@ -77,18 +77,17 @@ def create3Dplot2(Data2, title, start, end):
         ax = figA.add_subplot(int(NumPlots),int(NumPlots),count,  projection='3d') #, projection='3d'
         count +=1        
         
-        X,Y = np.meshgrid(range(0,105,15),range(-45,60,15))
-        
-           
+        Y,X = np.meshgrid(range(-45,60,15),range(0,105,15))
+    
+       
         surf = ax.plot_surface(X,Y,reData, cmap = cm.pink_r, rstride=1, cstride=1)
-        
-        plt.title(str(jj))
+        plt.title(title)
         plt.xlabel('Altitude Angle [deg]',  fontsize=8)
-        plt.xticks([0,15,30,45,60,75,90],  fontsize=8)
+        plt.xticks(range(0,105,15),  fontsize=8)
         plt.ylabel('Azimuth Angle [deg]',  fontsize=8)
-        plt.yticks([-45,-30,-15,0,15,30,45],  fontsize=8)
+        plt.yticks(range(45,-60,-15),  fontsize=8)
         
-        #ax.set_zlim(fontsize = 8)
+        #ax.set_zlim(250, 600)
         ax.set_zlabel('Net Energy Demand [Wh]',  fontsize=8)
         
         

@@ -187,10 +187,10 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             start = start, end = end, TotalHOY = TotalHOY)
     print "calucation is finished"
                     
-    return ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH 
+    return ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH, BuildingRadiationHOY 
 
                       
-season = 'Test' 
+season = '900' 
 #season = '450' 
 #season = 'winter2'
    #'summer'#
@@ -222,15 +222,15 @@ elif season == 'summer':
     'FromDay': 6,#6, #8,
     'ToDay': 6, #8,
     'FromHour': 5,#5
-    'ToHour': 20,
+    'ToHour': 18,
     'Temp_start' : 22}#20
     
     #Set simulation data
     SimulationData= {
-    'optimizationTypes' : ['E_total','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
+    'optimizationTypes' : ['E_total'],
     'DataName' : 'ZH13_49comb_Notcloudy_6_7',#
     'geoLocation' : 'Zuerich_Kloten_2013',
-    'Save' : True}
+    'Save' : False}
 
 elif season == 'weekSummer':    
     
@@ -287,6 +287,24 @@ elif season == '450':
     'DataName' : 'ZH13_45_0',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : False}
+    
+elif season == '900':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 12,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 28, #28,
+    'FromHour': 8,#5
+    'ToHour': 18, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_90_0',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}
 
 elif season == 'Test':    
     SimulationPeriod = {
@@ -310,7 +328,7 @@ else:
  
 #Set panel data
 PanelData={
-"XANGLES": [0],#[45], 
+"XANGLES": [90],
 "YANGLES" : [0],#[0],
 "NoClusters":1,
 "numberHorizontal":6,
@@ -350,7 +368,7 @@ BuildingProperties={
 "coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
 "heatingEfficiency" : 1,
 "coolingEfficiency" :1,
-'COP_H': 4,
+'COP_H': 3,
 'COP_C':3}
 #add utilisation factor
 
@@ -362,7 +380,6 @@ SimulationOptions= {
 
    
 
-ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH = MainCalculateASF(SimulationPeriod, SimulationData,PanelData, BuildingData, BuildingProperties, SimulationOptions)
-#MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH, BuildingRadiationHOY = MainCalculateASF(SimulationPeriod, SimulationData,PanelData, BuildingData, BuildingProperties, SimulationOptions)
         
         

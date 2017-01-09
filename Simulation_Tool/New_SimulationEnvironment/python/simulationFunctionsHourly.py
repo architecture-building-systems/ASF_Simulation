@@ -418,17 +418,18 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     figA = {}
     figB = {}
     
-    """
+   
     
-    for jj in range(start,end+1):
-        
-        #figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
-        figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
+#    for jj in range(start,end+1):
+#       
+#       figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
+        #figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
+       
     
     
-    
-    figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = start, end  = end)  
-    """
+    #figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = 4472, end  = 4481)  
+   
+   
     RBS_ELEC = {}
     
     #rearrange dataframes and split them
@@ -458,8 +459,12 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
         if not os.path.isdir(paths['result']):
             os.makedirs(paths['result'])    
         
-        
-        
+#        for jj in range(start,end+1):
+#        
+#            figA[jj].savefig(os.path.join(paths['result'], 'figure_Energy_' + str(jj) + '.pdf'))  
+        #figC.savefig(os.path.join(paths['result'], 'figure_Energy.pdf'))
+       
+       
         for ii in optimization_Types:
             # save results 
             #ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T

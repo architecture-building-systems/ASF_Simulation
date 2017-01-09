@@ -7,20 +7,22 @@ Calculate Electrical Power of ASF
 Authors: Johannes Hofer, Jeremias Schmidli
 
 """
-def asf_electricity_production(createPlots=False, lb_radiation_path=None, 
-                               panelsize = 400, pvSizeOption=0, 
+def asf_electricity_production(createPlots=False,
+                               panelsize = 400, 
+                               pvSizeOption=0, 
                                save_results_path = None, 
                                lookup_table_path = None, 
-                               geo_path = None, flipOrientation = False, 
+                               geo_path = None, 
+                               flipOrientation = False, 
                                XANGLES = [], YANGLES = [], 
-                               hour_in_month = None, paths = None, 
-                               DataNamePV = None, SimulationPeriode = None,
-                               weatherData = None):
+                               paths = None,  
+                               DataNamePV = None, 
+                               weatherData = None,
+                               start = 0, end= 0):
                                    
-    import sys,os                               
-    # add python_path to system path, so that all files are available:
-    sys.path.insert(0, paths['aux_files'])                               
-  
+    								                                  
+                                   
+    import sys,os                                                       
     import json
     import numpy as np
     import time
@@ -33,11 +35,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     from calculateHOY import calcHOY    
     
     create_plots_flag = createPlots
-    Simulation_Data_Folder = lb_radiation_path
     
     
-    filename = ('RadiationResults')
-    filetype = ('.csv')
     
     # load irradiance lookup table
     # load('curr_model_submod_lookup2')
@@ -48,19 +47,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
     #print 'points', pointsPerLookupCurve
     #print curr_model_submod_lookup   
-
     
+    # number of panels in evaluated ASF:
+    panelnum = 50
     
-    # load weather file data corresponding to Simulation Data:
-    with open(os.path.join(geo_path,'SunTrackingData.json'), 'r') as fp:
-        SunTrackingData = json.load(fp)
-        fp.close()
-        
-        
-    #simulation for 1 hour
-    
-    #numHours = (end-start) + 1
-    numHours = 0
     
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(XANGLES)*len(YANGLES)
@@ -72,13 +62,12 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         numCombPerHour = 1
     
    
-    print weatherData['drybulb_C'][2]
+    
     
     temp_amb= []
     
- 
-    for HOY in range(24):   
-
+    numHours = 0
+    for HOY in range(start, end):   
         numHours += 1
         temp_amb.append(weatherData['drybulb_C'][HOY])
     
@@ -89,12 +78,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     
     # module and cell dimensions:
-    
-     # panelsize used for simulations (sidelength in mm):
-    panelsize = readLayoutAndCombinations(lb_radiation_path)['panelSize']  
-    
-    # gridpoint size input of GH, not equal to the actual grid point size if the panelsize is not a multiple of 25mm:
-    desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['desiredGridPointSize']  
+    desiredGridPointSize = 25
     
     nparcell = int(round(panelsize/float(desiredGridPointSize)))
     cellsPerGridpoint = 3
@@ -142,15 +126,13 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     modmppsim = max(volt_model_var * curr_model_submod_lookup[insrefind, trefind,:])#module maximum power point simulation
     currscale = modmpprating / modmppsim
     
-        
-    #temp_amb = SunTrackingData['TempTracking']
-    print len(temp_amb)
+          
     
     # load days per month
     days_passed_month, days_per_month =  daysPassedMonth()
     
-    # number of panels in evaluated ASF:
-    panelnum = len(flatten(readLayoutAndCombinations(lb_radiation_path)['ASFarray']))/2
+    
+    
     
     # preallocate data for speed:
     Pmod_mpp = np.empty((numASFit, panelnum))*np.nan
@@ -183,17 +165,27 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     tic = time.time()
     
     load= r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-   
-   
-    test = np.load(os.path.join(load, 'Test.npy')).item()
     
+    DaySimData = {} 
     
+    for x_angle in XANGLES:
+        for y_angle in YANGLES:
+            
+                fileName = 'ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1)
+                DaySimData[str(x_angle) + str(y_angle)] = np.load(os.path.join(load, fileName + '.npy')).item()
+   
+    DataList = []
+    for hour in range(start,end):  
+        for x_angle in XANGLES:
+            for y_angle in YANGLES:
+                DataList.append(DaySimData[str(x_angle) + str(y_angle)][hour]) 
     
     # loop through simulation data files:
+    
     for SimulationNumber in range(startIt,numASFit):
     
         #endata = np.genfromtxt(Simulation_Data_Folder + '/' + filenames[SimulationNumber], delimiter=',', skip_header=7) #filenames list of all files, access with indices
-        endata = test[SimulationNumber]
+        endata = DataList[SimulationNumber]
         
         maxRadPoint = np.max(endata)*1000 # Wh/(m2*h)
         #theoreticalMaxRad[SimulationNumber] = maxRadPoint/ days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] # Wh/h per gridpoint
