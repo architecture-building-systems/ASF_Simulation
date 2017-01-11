@@ -565,7 +565,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         BuildingSimulationELEC[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
         
         #show which HOY is calculated
-        if hour_of_year % 1 == 0 and hour_of_year != 0:
+        if hour_of_year % 1000 == 0 and hour_of_year != 0:
             print 'HOY:', hour_of_year
             toc = time.time() - tic
             print 'time passed (sec): ' + str(round(toc,2))

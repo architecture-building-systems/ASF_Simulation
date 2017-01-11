@@ -13,6 +13,8 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     
     z_max = max(monthlyData[E])/roomFloorArea
     z_min = min(monthlyData[E])/roomFloorArea
+    print 'z_min', z_min
+    z_min = -0.25
    
     fig = plt.figure(figsize=(16, 8))
     #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)

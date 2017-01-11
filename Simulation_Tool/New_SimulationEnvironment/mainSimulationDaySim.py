@@ -82,20 +82,20 @@ from SimulationClassDaySim import ASF_Simulation
 
 SimulationData = {
 'optimizationTypes' : ['E_total'],
-'DataFolderName' : 'DaySim',
-'FileName': 'DaySim',
+'DataFolderName' : 'DaySim9comb',
+'FileName': 'DaySim9comb',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
 'ShowFig': True,
 'timePeriod': None,
 'Temp_start' : 18,
-'start' : 2,
-'end': 24}
+'start' : 0,
+'end': 8760}
 
 PanelData = {
-"XANGLES": [0],
-"YANGLES" : [0],
+"XANGLES": [0,45],
+"YANGLES" : [-45,0,45],
 "NoClusters":1,
 "numberHorizontal":6,
 "numberVertical":9,
@@ -109,6 +109,10 @@ PanelData = {
 if __name__=='__main__':
     ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData)
     ASFtest.SolveASF()
-    print ASFtest.yearlyData
+    yearlyData = ASFtest.yearlyData
+    results = ASFtest.ResultsBuildingSimulation
+    monthlyData = ASFtest.monthlyData
+    E = ASFtest.monthlyData['E_total']['E']     
+    print yearlyData 
     
  

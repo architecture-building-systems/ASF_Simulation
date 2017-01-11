@@ -33,6 +33,7 @@ def carpetPlot(X, z_min, z_max, title, roomFloorArea):
     cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'),
                                                     (z_middle, 'white'),
                                                     (1, 'firebrick')])
+    
     if z_min ==0:
         cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'white'),(1, 'firebrick')])
     else:

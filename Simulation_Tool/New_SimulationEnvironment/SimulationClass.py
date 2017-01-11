@@ -119,6 +119,7 @@ class ASF_Simulation(object):
 		self.paths['weather_folder']= os.path.join(os.path.dirname(self.paths['main']), 'WeatherData')
 		print self.geoLocation
 		self.paths['weather'] = os.path.join(self.paths['weather_folder'], self.geoLocation + '.epw')
+  
 		
 		# add python_path to system path, so that all files are available:
 		sys.path.insert(0, self.paths['python'])
@@ -130,7 +131,9 @@ class ASF_Simulation(object):
   
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
-		
+  
+		self.radiation = self.weatherData[['year', 'month', 'day', 'hour','dirnorrad_Whm2', 'difhorrad_Whm2','glohorrad_Whm2','totskycvr_tenths']]
+ 
 		if not os.path.isdir(self.paths['RadiationData']):
 				os.makedirs(self.paths['RadiationData'])
   

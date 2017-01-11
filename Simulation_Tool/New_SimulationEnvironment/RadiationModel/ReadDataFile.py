@@ -40,6 +40,32 @@ def Evaluation(path = None, project= None):
         Default_df = df.append(Default_df, ignore_index=True)
         
         return Default_df
+        
+def EvaluationAngle(project_folder = None, project_name= None, x_angle = 0, y_angle = 0):
+        #read Data from DaySim
+
+        location1 = os.path.join(os.path.join(os.path.join('output', 'ASF1_' + str(x_angle) + '_' + str(y_angle)), 'res'), 'ASF1_' + str(x_angle) + '_' + str(y_angle) + '.ill')
+        location2 = os.path.join(os.path.join(os.path.join('output', 'ASF2_' + str(x_angle) + '_' + str(y_angle)), 'res'), 'ASF2_' + str(x_angle) + '_' + str(y_angle) + '.ill')
+        location3 = os.path.join(os.path.join(os.path.join('output', 'ASF3_' + str(x_angle) + '_' + str(y_angle)), 'res'), 'ASF3_' + str(x_angle) + '_' + str(y_angle) + '.ill')
+        location4 = os.path.join(os.path.join(os.path.join('output', 'ASF4_' + str(x_angle) + '_' + str(y_angle)), 'res'), 'ASF4_' + str(x_angle) + '_' + str(y_angle) + '.ill')
+        
+        path1 = os.path.join(os.path.join(project_folder, project_name), location1)
+        path2 = os.path.join(os.path.join(project_folder, project_name), location2)
+        path3 = os.path.join(os.path.join(project_folder, project_name), location3)
+        path4 = os.path.join(os.path.join(project_folder, project_name), location4)
+
+        ASF1 = pd.read_csv(path1)
+        ASF2 = pd.read_csv(path2)
+        ASF3 = pd.read_csv(path3)
+        ASF4 = pd.read_csv(path4)
+        
+        df1 = ASF1 + ASF2 + ASF3 + ASF4
+        Default_df = df1 * 8./(50*400/25.*400/25. * 1000) # sum of Daysim values * 8 m^2 / numberPanels * sensorPoints per Panel * in kWh
+        
+        df = pd.DataFrame([0], columns = [0.0])
+        Default_df = df.append(Default_df, ignore_index=True)
+        
+        return Default_df
 
 def EvaluationWindow(path = None, project= None):
         #read Data from DaySim
@@ -200,9 +226,9 @@ def BoxPlot(data, title, index):
         Box.append([])
         #Box[i]=(BoxData[i]-BoxData[2])/(BoxData[2]) #Mean Bias error
     
-        #Box[i]=(BoxData[i])/(BoxData[Num-1])
+        Box[i]=(BoxData[i])/(BoxData[Num-1])
     
-        Box[i]=(BoxData[i])/(BoxData[((int(i)/3+1)*3)-1])
+        #Box[i]=(BoxData[i])/(BoxData[((int(i)/3+1)*3)-1])
         #Box[i]=(BoxData[i])
 
     
@@ -272,6 +298,23 @@ ASF_45_0_All0 = Evaluation(path = pathFolder, project = 'ASF_45_0_All0' )
 ASF_90_0_All0 = Evaluation(path = pathFolder, project = 'ASF_90_0_All0' ) 
 
 
+ASF_0_45_AB1 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB1')
+ASF_0_45_AB2 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB2')
+ASF_0_45_AB4 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB4')
+ASF_0_45_AB6 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB6')
+ASF_0_45_AB8 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB8')
+
+ASF_0_45_Con066 = Evaluation(path = pathFolder, project = 'ASF_0_45_Con0.66')
+ASF_0_45_Con0 = Evaluation(path = pathFolder, project = 'ASF_0_45_Con0')
+ASF_0_45_Win0 = Evaluation(path = pathFolder, project = 'ASF_0_45_Win0')
+ASF_0_45_ASF0 = Evaluation(path = pathFolder, project = 'ASF_0_45_ASF0')
+ASF_0_45_Ro0 = Evaluation(path = pathFolder, project = 'ASF_0_45_Ro0')
+
+
+ASF_0_45_Con1 = Evaluation(path = pathFolder, project = 'ASF_0_45_Con1')
+ASF_0_45_Win1 = Evaluation(path = pathFolder, project = 'ASF_0_45_Win1')
+ASF_0_45_ASF1 = Evaluation(path = pathFolder, project = 'ASF_0_45_ASF1')
+ASF_0_45_Ro1 = Evaluation(path = pathFolder, project = 'ASF_0_45_Ro1')
 
 
 
@@ -325,12 +368,22 @@ SolarData_df3 = pd.DataFrame(SolarData3)
 
 SolarData_df = pd.concat([SolarData_df,SolarData_df2, SolarData_df3], axis=1)
 
+#different number of bounces for one combination
+result045Bounce = pd.concat([ASF_0_45_AB1, ASF_0_45_AB2, ASF_0_45_AB4, ASF_0_45_AB6, ASF_0_45_AB8], axis=1)
+result045Bounce.columns = ['0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8']
+data = BoxPlot(data =result045Bounce, title = 'Analysis of the Ambient Bounces', index = ('0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8'))
+
+
+#different material values for one combination
+result045Mat = pd.concat([ASF_0_45_Con0, ASF_0_45_Con066, ASF_0_45_Con1, ASF_0_45_Win0, ASF_0_45_Win1, ASF_0_45_ASF0, ASF_0_45_ASF1, ASF_0_45_Ro0, ASF_0_45_Ro1, ASF_0_45_AM], axis=1)
+result045Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM']
+data = BoxPlot(data =result045Mat, title = 'Material Analysis - Combination 0/45', index = ('0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM'))
 
 
 
 result045 = pd.concat([ASF_0_45_AM, ASF_0_45_All0, SolarData_df['045']], axis=1)
 result045.columns = ['ASF0/45_AM', 'ASF0/45_All0','LB-0/45']
-
+#
 result00 = pd.concat([ASF_0_0_AM,  ASF_0_0_All0, SolarData_df['00']], axis=1)
 result00.columns = ['ASF0/0_AM','ASF0/0_All0','LB-0/0']
 
@@ -343,36 +396,47 @@ result450.columns = ['ASF45/0_AlbedoMix','ASF45/0_All0',  'LB-45/0']
 result900 = pd.concat([ ASF_90_0_AM, ASF_90_0_All0,  SolarData_df['900']] , axis=1)
 result900.columns = ['90/0_AM','90/0_All0',  'LB-90/0']
 
-resultCom = pd.concat([result045, result00, result0Minus45] , axis=1)
-data2 = BoxPlot(data =resultCom, title = 'Comparison of Different Angle Combinations', index = ('0/45_AM', '0/45_All0','LB-0/45', '0/0_AM','0/0_All0','LB-0/0', '0/-45_AM', '0/-45_All0','LB-0/-45', '45/0_AM','45/0_All0',  'LB-45/0', '90/0_AM','90/0_All0',  'LB-Data90/0'))
+sum_045 = result045.sum()
+sum_00 = result00.sum()
+sum_0Minus45 = result0Minus45.sum()
 
-resultCom3 = pd.concat([result450, result900] , axis=1)
-data3 = BoxPlot(data =resultCom3, title = 'Comparison of Different Angle Combinations', index = ('45/0_AM','45/0_All0','LB-45/0', '90/0_AM','90/0_All0',  'LB-Data90/0'))
 
-"""
-result045[4000:4400].plot(kind='line', yticks= range(0,8)) 
-result045[:400].plot(kind='line', yticks= range(0,8)) 
+#
+#resultCom = pd.concat([result045, result00, result0Minus45] , axis=1)
+#data2 = BoxPlot(data =resultCom, title = 'Comparison of Different Angle Combinations', index = ('0/45_AM', '0/45_All0','LB-0/45', '0/0_AM','0/0_All0','LB-0/0', '0/-45_AM', '0/-45_All0','LB-0/-45', '45/0_AM','45/0_All0',  'LB-45/0', '90/0_AM','90/0_All0',  'LB-90/0'))
+#
+#resultCom3 = pd.concat([result450, result900] , axis=1)
+#data3 = BoxPlot(data =resultCom3, title = 'Comparison of Different Angle Combinations', index = ('45/0_AM','45/0_All0','LB-45/0', '90/0_AM','90/0_All0',  'LB-90/0'))
 
-result00[4000:4400].plot(kind='line', yticks= range(0,8)) 
-result00[:400].plot(kind='line', yticks= range(0,8)) 
+#
+#result045_5 = pd.concat([ASF_0_45_AM/ASF_0_45_All0, ASF_0_45_All0], axis=1)
+#result045_5.columns = ['ASF0/45_AM', 'ASF0/45_All0']
+#
+#result045_5[4000:4200].plot(kind='line', yticks= range(0,8)) 
 
-result0Minus45[4000:4400].plot(kind='line', yticks= range(0,8)) 
-result0Minus45[:400].plot(kind='line',yticks= range(0,8)) 
+#result045[4000:4050].plot(kind='line', yticks= range(0,8)) 
+#result045[:400].plot(kind='line', yticks= range(0,8)) 
 
-result450[4000:4400].plot(kind='line', yticks= range(0,8)) 
-result450[:400].plot(kind='line',yticks= range(0,8)) 
+#result00[4000:4050].plot(kind='line', yticks= range(0,8)) 
+#result00[:400].plot(kind='line', yticks= range(0,8)) 
 
-result900[4000:4400].plot(kind='line', yticks= range(0,8)) 
-result900[:400].plot(kind='line',yticks= range(0,8)) 
+#result0Minus45[4000:4400].plot(kind='line', yticks= range(0,8)) 
+#result0Minus45[:400].plot(kind='line',yticks= range(0,8)) 
+#
+#result450[4000:4400].plot(kind='line', yticks= range(0,8)) 
+#result450[:400].plot(kind='line',yticks= range(0,8)) 
+#
+#result900[4000:4400].plot(kind='line', yticks= range(0,8)) 
+#result900[:400].plot(kind='line',yticks= range(0,8)) 
+#
 
-"""
 
 #ax = s.hist()  # s is an instance of Series
 #fig = ax.get_figure()
 #fig.savefig('/path/to/figure.pdf')
 
 
-"""
+
 
 
 #Combination x= 45, y = 0
@@ -387,11 +451,13 @@ result450_2 = pd.concat([ASF_45_0_2AM, ASF_45_0_2All1, ASF_45_0_2All0, SolarData
 result450_2.columns = ['ASF45/0_AM_AB1', 'ASF45/0_All1_AB1', 'ASF45/0_All0_AB1', 'LB']
 
 
-
+"""
 BoxPlot(data = result450, title = 'Combination 45/0 - AB=4', index = ('ASF45/0_AlbedoMix','ASF45/0_All0',  'LB-45/0'))
 BoxPlot(data = result450_1, title = 'Combination 45/0 - AB=8', index = ('ASF45/0_AM', 'ASF45/0_AM_ab8', 'ASF45/0_All1_ab8', 'LB'))
 BoxPlot(data = result450_2, title = 'Combination 45/0 - AB=1', index = ('ASF45/0_AM_AB1', 'ASF45/0_All1_AB1', 'ASF45/0_All0_AB1', 'LB'))
+"""
 
+"""
 #result450_3 = pd.concat([result450, result450_2] , axis=1)
 #BoxPlot(data = result450_3, title = 'Combination 45/0', index = ('default', 'All0', 'All1', 'MatASF_02', 'AlbedoMix','NoAB','AlbedoMix_NoAB', 'All1_NoAB', 'All0_NoAB'))
 

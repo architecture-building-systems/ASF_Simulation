@@ -396,16 +396,10 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end, TotalHOY):
     
     from hourlyPlotFunction import PlotHour 
-    from Function3dPlot import create3Dplot, create3Dplot2    
+    from Function3dPlot import create3Dplot, create3Dplot2       
     
-    
-    
-    angles = {}
     fig = {}
       
-    anglesHOY = pd.DataFrame(angles)
-    
-    
     for ii in optimization_Types:
         
         
@@ -470,7 +464,7 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
             #ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T
             ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
             RBS_ELEC[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
-            ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
+
             np.save(os.path.join(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.npy')), ResultsBuildingSimulation[ii])
             np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
             
@@ -497,6 +491,6 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     
     print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
-    return ResultsBuildingSimulation, anglesHOY,anglesHOY, RBS_ELEC
+    return ResultsBuildingSimulation, RBS_ELEC
 
      

@@ -73,7 +73,7 @@ class ASF_Simulation(object):
 		# define self.paths of subfolders:
 		self.paths['data'] =os.path.join(self.paths['main'], 'data')
 		self.paths['python'] = os.path.join(self.paths['main'], 'python')
-		self.paths['DaySim'] = os.path.join(self.paths['main'], 'RadiationModel')  
+		self.paths['DaySim'] = os.path.join(self.paths['main'], 'DaySimData')  
 		
 		#folder where radiaton results are going to be stored
 		self.paths['PV'] = os.path.join(self.paths['main'], 'PV_results')
@@ -82,6 +82,14 @@ class ASF_Simulation(object):
 		self.paths['weather_folder']= os.path.join(os.path.dirname(self.paths['main']), 'WeatherData')
 		
 		
+		self.project_folder = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
+  
+		self.path_script = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
+  
+		if not os.path.isdir(self.paths['DaySim']):
+			os.makedirs(self.paths['DaySim'])
+            
+            
 		# define path of weather file:
 		self.paths['weather_folder']= os.path.join(os.path.dirname(self.paths['main']), 'WeatherData')
 		print self.geoLocation
@@ -89,7 +97,7 @@ class ASF_Simulation(object):
 		
 		# add python_path to system path, so that all files are available:
 		sys.path.insert(0, self.paths['python'])
-		sys.path.insert(0, self.paths['DaySim'])
+		sys.path.insert(0, self.path_script)
 		
 		
 		from epwreader import epw_reader
@@ -136,6 +144,17 @@ class ASF_Simulation(object):
 		
 	def CalculateVariables(self):
 		#Calculate variables
+		self.fig = {}
+            
+            #hour_in_month is dependent on the location, this dict is for ZH
+		hours = self.SunTrackingData['HoursInMonth']
+		self.hour_in_month={}
+		
+		#adjust shape of self.hour_in_month dictionary
+		for item in range(0,len(hours)):
+			self.hour_in_month[item+1]= hours[item]
+   
+		self.daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
 			
 		#Make a list of all angle combinations
 		self.ANGLES= [(x, y) for x in self.XANGLES for y in self.YANGLES]
@@ -152,6 +171,8 @@ class ASF_Simulation(object):
 		
 		self.NumberCombinations = len(self.XANGLES)*len(self.YANGLES) #*NoClusters
 		
+		self.roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
+  
 		self.BuildingProperties.update({
 				"Fenst_A": self.BuildingData['room_width']/1000.0*self.BuildingData['room_height']/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
 				"Room_Depth": self.BuildingData['room_depth']/1000.0,
@@ -164,10 +185,6 @@ class ASF_Simulation(object):
      
          from asf_electricity_production_daysim import asf_electricity_production
          from DaySimData import ShapeData
-	   
-         self.path_save = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-         self.project_folder = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
-            
 
                      
          for x_angle in self.XANGLES:
@@ -176,11 +193,11 @@ class ASF_Simulation(object):
                 project_name = 'ASF_' + str(x_angle) + '_' + str(y_angle)
                 print project_name
                 #check if file is there, if not create and save it
-                print os.path.isfile(os.path.join(self.path_save, project_name) + '_' + str(self.start) + '_' + str(self.end-1) + '.npy')
+                #print os.path.isfile(os.path.join(self.paths['DaySim'], project_name) + '_' + str(self.start) + '_' + str(self.end-1) + '.npy')
                 
-                if not os.path.isfile(os.path.join(self.path_save, project_name) + '_' + str(self.start) + '_' + str(self.end-1) + '.npy'):     
+                if not os.path.isfile(os.path.join(self.paths['DaySim'], project_name) + '_' + str(self.start) + '_' + str(self.end-1) + '.npy'):     
                     #reshape data after radiaiton calculation
-                    ShapeData(project_folder = self.project_folder, project_name = project_name, path_save = self.path_save, \
+                    ShapeData(project_folder = self.project_folder, project_name = project_name, path_save = self.paths['DaySim'], \
                                 start = self.start, end = self.end, x_angle = x_angle, y_angle = y_angle)
                 else:
                     print 'File already Saved'
@@ -215,7 +232,8 @@ class ASF_Simulation(object):
 								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
 								   paths = self.paths, DataNamePV = self.SimulationData['FileName'],
 								   weatherData = self.weatherData,
-								   start = self.start, end = self.end)
+								   start = self.start, end = self.end,
+								   path_DaySimData = self.paths['DaySim'])
     								   
     			else:
                        #option the show plots of PV-production calculation
@@ -231,7 +249,8 @@ class ASF_Simulation(object):
     								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
     								   paths = self.paths, DataNamePV = self.SimulationData['FileName'],
 								   weatherData = self.weatherData,
-    								   start = self.start, end = self.end)
+    								   start = self.start, end = self.end,
+								   path_DaySimData = self.paths['DaySim'])
     		
     		else: 
                   #if PV-results are available, they will be loaded from folder
@@ -243,7 +262,7 @@ class ASF_Simulation(object):
 	   
 	 
 	def PrepareRadiationData(self):
-            #arrange radiaiton data into the correct form, so it can be used for the RC-model calculation
+            #rearrange radiation data into the correct form, so it can be used for the RC-model calculation
      
             print '\n'          
             #add the radiation data to the specific HOY
@@ -256,7 +275,7 @@ class ASF_Simulation(object):
             for x_angle in self.XANGLES:
                 for y_angle in self.YANGLES:        
                     fileName = 'Window_' + str(x_angle) + '_' + str(y_angle) + '_' + str(self.start) + '_' + str(self.end-1)
-                    path = os.path.join(self.path_save, fileName + '.npy')
+                    path = os.path.join(self.paths['DaySim'], fileName + '.npy')
                     print path
                     WindowData[str(x_angle) + str(y_angle)] = np.load(path)
            
@@ -274,8 +293,6 @@ class ASF_Simulation(object):
                 count += self.NumberCombinations               
                 hour += 1
                 
-    
-    
 
 		
 	def runBuildingSimulation(self):
@@ -287,7 +304,7 @@ class ASF_Simulation(object):
             self.setBackTempC = self.SimulationOptions['setBackTempC']     
             		
             from energy_minimization_daysim import RC_Model
-            from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC
+            
             from read_occupancy import read_occupancy
             		
             #create dicitionaries to save the results
@@ -296,9 +313,7 @@ class ASF_Simulation(object):
             self.yearlyData = {}
             self.ResultsBuildingSimulation = {} #total energy building simulation results
             self.BuildingSimulationELEC = {} #Building simulation results, if heating/cooling system is chosen
-            self.x_angles = {} #optimized x-angles
-            self.y_angles = {} #optimized y-angles
-            self.BestKey_df = {} #optimized keys of the ANGLES dictionary
+            
             		
             		
             #set parameters
@@ -314,12 +329,11 @@ class ASF_Simulation(object):
             for optimizationType in self.optimization_Types:
 				
 			self.hourlyData[optimizationType], self.ResultsBuildingSimulation[optimizationType], \
-                 self.BuildingSimulationELEC[optimizationType] = RC_Model (
+                 self.BuildingSimulationELEC[optimizationType], self.TotalHOY = RC_Model (
                                                                          optimization_type = optimizationType, 
                                                                          paths = self.paths,
                                                                          building_data = self.BuildingData, 
                                                                          weatherData = self.weatherData, 
-                                                                         
                                                                          BuildingRadiationData_HOY = self.BuildingRadiationHOY, 
                                                                          PV = self.PV, 
                                                                          NumberCombinations = self.NumberCombinations, 
@@ -333,15 +347,21 @@ class ASF_Simulation(object):
                                                                          end = self.end, 
                                                                          Temp_start = self.SimulationData['Temp_start']
                                                                          )
-                                                                         
-                                                                     
+        def PrepareYearlyResults(self):
+
+            from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC                                                                 
+            
+            self.x_angles = {} #optimized x-angles
+            self.y_angles = {} #optimized y-angles
+            self.BestKey_df = {} #optimized keys of the ANGLES dictionary
+            
+            for optimizationType in self.optimization_Types:    
+                                             
 			#prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  
 			self.BestKey_df[optimizationType], self.x_angles[optimizationType], self.y_angles[optimizationType] = prepareAngles(
 																				Building_Simulation_df = self.ResultsBuildingSimulation[optimizationType], 
 																				daysPerMonth = self.daysPerMonth,
 																				ANGLES = self.ANGLES)   
-		   
-			
                   #calculate the monthlyData dependet on which opimization is chosen
 			if optimizationType == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):
 				# prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], self.yearlyData [kWh/year]
@@ -349,6 +369,25 @@ class ASF_Simulation(object):
 			
 			elif optimizationType == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):                                                           
 				self.monthlyData[optimizationType], self.yearlyData[optimizationType] = prepareResultsELEC(Building_Simulation_df = self.BuildingSimulationELEC[optimizationType])
+    
+        def PrepareHourlyResults(self):
+            
+            from prepareDataMain_hourly import prepareAngles
+    
+            self.x_angles = {} #optimized x-angles
+            self.y_angles = {} #optimized y-angles
+            self.BestKey = {} #optimized keys of the ANGLES dictionary
+    
+            #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
+            for optimizationType in self.optimization_Types:
+           
+                #prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  
+                self.BestKey[optimizationType], self.x_angles[optimizationType], self.y_angles[optimizationType] = prepareAngles(
+                                                                            Building_Simulation_df = self.ResultsBuildingSimulation[optimizationType], 
+                                                                            ANGLES = self.ANGLES,
+                                                                            start = self.start, 
+                                                                            end = self.end,
+                                                                            TotalHOY = self.TotalHOY)   
 			
 
 	def createAllPlots(self):
@@ -356,7 +395,6 @@ class ASF_Simulation(object):
 		
 		from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
 		
-		self.fig = {}    
 		
             # carpet plot for total energy values
 		if ('E_total') in self.optimization_Types:    
@@ -393,9 +431,36 @@ class ASF_Simulation(object):
 				self.fig.update({'figB' : figB, 'figC' : figC})
 		
 		return self.fig
-
-
-
+  
+  
+	def createHourlyPlots(self):
+    
+            from hourlyPlotFunction import PlotHour 
+            from Function3dPlot import create3Dplot, create3Dplot2    
+            
+            for ii in self.optimization_Types:
+                
+                figProxy = PlotHour(E = self.ResultsBuildingSimulation[ii]['E_tot'], PV = self.ResultsBuildingSimulation[ii]['PV'], L = self.ResultsBuildingSimulation[ii]['L'], 
+                               H = self.ResultsBuildingSimulation[ii]['H'], C = self.ResultsBuildingSimulation[ii]['C'], x_angle = self.x_angles[ii], y_angle = self.y_angles[ii], 
+                                start = self.start, end = self.end, title = ii, TotalHOY = self.TotalHOY)
+                self.fig.updata({ii : figProxy})
+            
+            
+#            figD = {}
+#            figE = {}
+#            
+           
+            
+        #    for jj in range(start,end+1):
+        #       
+        #       figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
+                #figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
+               
+            
+            
+            #figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = 4472, end  = 4481)  
+           
+           
 
 	def SaveResults(self):
            #method which saves the data and plots 
@@ -416,43 +481,50 @@ class ASF_Simulation(object):
         		#create folder to save figures as svg and png:
                 self.paths['pdf'] = os.path.join(self.paths['result'], 'Figures')
                 os.makedirs(self.paths['pdf'])
+                
+                if self.start == 0 and self.end == 8760:
 			
-                self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
-                self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
-			
-                if ('E_total_elec') in self.optimization_Types:
-                    self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.pdf'))
-                    self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.png'))
+                    self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0.pdf'))
+                    self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0.png'))
+    			
+                    if ('E_total_elec') in self.optimization_Types:
+                        self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA.pdf'))
+                        self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA.png'))
+                    
                 else:
-                    pass
-			
+                    for ii in self.optimization_Types: 
+                        self.fig[ii].savefig(os.path.join(self.paths['pdf'], 'figure_' + ii + '.pdf'))
+                    
 			
                 if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
                     if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
 					#save figures
-                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.pdf'))
-                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.pdf'))
-                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.png'))
-                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.png'))
-                else:
-                    pass
+                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1.pdf'))
+                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2.pdf'))
+                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1.png'))
+                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2.png'))
+               
                 
                 if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
 				if ('SolarEnergy' and 'Lighting') in self.optimization_Types:           
 					#save figures
-					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.pdf'))
-					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.pdf'))
-					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.png'))
-					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.png'))
-                else:
-                     pass
+					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB.pdf'))
+					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC.pdf'))
+					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB.png'))
+					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC.png'))
+               
+                 
+                 
                  
                 for ii in self.optimization_Types:
 				if ii == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):
 					# save results 
 					self.ResultsBuildingSimulation[ii].to_csv(os.path.join(self.paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
+     
 				elif ii == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):
 					self.BuildingSimulationELEC[ii].to_csv(os.path.join(self.paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
+               
+                
                 x_angles_df = pd.DataFrame(self.x_angles)
                 y_angles_df = pd.DataFrame(self.y_angles)           
 			
@@ -485,8 +557,15 @@ class ASF_Simulation(object):
             self.PrepareRadiationData()													   
             self.runBuildingSimulation()
             
-            if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
-            	self.createAllPlots()
+            
+            if (self.SimulationData['ShowFig'] or self.SimulationData['Save']) and self.start == 0 and self.end == 8760:
+                 self.PrepareYearlyResults()
+                 self.createAllPlots()
+            
+            elif (self.SimulationData['ShowFig'] or self.SimulationData['Save']) and (self.start != 0 or self.end != 8760):
+                 self.PrepareHourlyResults()
+                 self.createHourlyPlots()
+            
             else:
             	self.fig = None 
                

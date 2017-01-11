@@ -114,20 +114,38 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source):
             pass
         
         
-        with open(os.path.join(paths['Simulation_Environment'],'project_folder.json'),'w') as f:
-            f.write(json.dumps(empty))
-
-        comb_data={}
-        
-        with open(os.path.join(paths['Simulation_Environment'],'comb.json'),'w') as f:
-            f.write(json.dumps(comb_data))
+#        with open(os.path.join(paths['Simulation_Environment'],'project_folder.json'),'w') as f:
+#            f.write(json.dumps(empty))
+#
+#        comb_data={}
+#        
+#        with open(os.path.join(paths['Simulation_Environment'],'comb.json'),'w') as f:
+#            f.write(json.dumps(comb_data))
     
         print 'Folder Sucessfully Created!' 
         
 
     else:
         'Folder Already Exists!'
-    
-    
-CreateFolder(x_angle, y_angle, MaterialDict, source)
+
+XANGLES = [0]
+YANGLES = [-45,0]#,0,45]
+
+MaterialDict = {'ASF': 0.2,
+                'Window': 0.654}
+
+source = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization\ASF_0_0_AM\input' 
+path_project = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'   
+
+for x_angle in XANGLES:
+    for y_angle in YANGLES:
+        
+        project_name = 'ASF_' + str(x_angle) + '_' + str(y_angle) + '_1Panel'
+        print project_name
+        
+        if not os.path.isdir(os.path.join(path_project, project_name)):
+            CreateFolder(x_angle, y_angle, MaterialDict, source)
+            
+        else:
+            'Folder already exists!'
         

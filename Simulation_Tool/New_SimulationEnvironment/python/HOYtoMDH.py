@@ -11,7 +11,7 @@ from calculateHOY import calcHOY
 
 
 
-HOY = 5000
+HOY = 755
 
 print HOY
 #print (HOY)
@@ -63,7 +63,7 @@ def HOYtoMonthDayHour(HOY):
         
     day += 1
     
-       
+    print month,day, hour
     return month, day, hour
 
 month, day, hour = HOYtoMonthDayHour(HOY = HOY)

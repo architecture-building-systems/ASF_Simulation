@@ -18,9 +18,10 @@ def asf_electricity_production(createPlots=False,
                                paths = None,  
                                DataNamePV = None, 
                                weatherData = None,
-                               start = 0, end= 0):
+                               start = 0, end= 0,
+                               path_DaySimData = None):
                                    
-    								                                  
+   							                                  
                                    
     import sys,os                                                       
     import json
@@ -164,7 +165,6 @@ def asf_electricity_production(createPlots=False,
         
     tic = time.time()
     
-    load= r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
     
     DaySimData = {} 
     
@@ -172,7 +172,7 @@ def asf_electricity_production(createPlots=False,
         for y_angle in YANGLES:
             
                 fileName = 'ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1)
-                DaySimData[str(x_angle) + str(y_angle)] = np.load(os.path.join(load, fileName + '.npy')).item()
+                DaySimData[str(x_angle) + str(y_angle)] = np.load(os.path.join(path_DaySimData, fileName + '.npy')).item()
    
     DataList = []
     for hour in range(start,end):  

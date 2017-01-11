@@ -18,20 +18,25 @@ SaveEPW = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization\WeatherData
 
 epw = EPW()
 epw.read(epwPath)
-
+#epw.read(SaveEPW)
 
 #for wd in epw.weatherdata:
 #    print wd.year, wd.month, wd.day, wd.hour, wd.minute, wd.dry_bulb_temperature
 
+sunnySom = {}
+sunnyWin = {}
+cloudySom = {}
+cloudyWin = {}
 
-for wd in epw.weatherdata:
+#for wd in epw.weatherdata:
     
-    
-    wd.year = 0
-    wd.dry_bulb_temperature = 20
-    wd.direct_normal_radiation = 30 
-    wd.diffuse_horizontal_radiation = 40 
-    wd.global_horizontal_radiation = 70
+#    print wd.dry_bulb_temperature
+#    print wd.direct_normal_radiation 
+
+#    wd.dry_bulb_temperature = 20
+#    wd.direct_normal_radiation = 30 
+#    wd.diffuse_horizontal_radiation = 40 
+#    wd.global_horizontal_radiation = 70
     
     #print wd.month, wd.day, wd.hour, wd.dry_bulb_temperature, wd.direct_normal_radiation, wd.diffuse_horizontal_radiation, wd.global_horizontal_radiation
     
@@ -40,34 +45,42 @@ for wd in epw.weatherdata:
     count += 1
     
     
+    if wd.month == 2 and wd.day == 1:
+        sunnyWin[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility}
+        
+    elif wd.month == 1 and wd.day == 21:
+        cloudyWin[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility} 
     
-    if count == 3:
-        print "hallo"
-        print wd
-    if count < 1000:
-        wd.dry_bulb_temperature = 0
-        wd.direct_normal_radiation = 0 
-        wd.diffuse_horizontal_radiation = 0 
-        wd.global_horizontal_radiation = 0
+    elif wd.month == 5 and wd.day == 25:
+        sunnySom[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility}
+    
+    elif wd.month == 5 and wd.day == 23:
+        cloudySom[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility}
         
-    if count >2000 and count < 3000:
-        
-        wd.albedo= 0
-    if count >3000 and count < 4000:
-        
-        wd.total_sky_cover = 0
-    if count >4000 and count < 5000:
-        wd.opaque_sky_cover = 0
-        
-    if count >5000 and count < 6000:
-        
-        wd.visibility = 0
+#    if count < 1000:
+#        wd.dry_bulb_temperature = 0
+#        wd.direct_normal_radiation = 0 
+#        wd.diffuse_horizontal_radiation = 0 
+#        wd.global_horizontal_radiation = 0
+#        
+#    if count >2000 and count < 3000:
+#        
+#        wd.albedo= 0
+#    if count >3000 and count < 4000:
+#        
+#        wd.total_sky_cover = 0
+#    if count >4000 and count < 5000:
+#        wd.opaque_sky_cover = 0
+#        
+#    if count >5000 and count < 6000:
+#        
+#        wd.visibility = 0
         
        # print wd.month, wd.day, wd.hour, wd.dry_bulb_temperature, wd.direct_normal_radiation, wd.diffuse_horizontal_radiation, wd.global_horizontal_radiation    
 print count
 
 
-epw.save(SaveEPW)
+#epw.save(SaveEPW)
 
 #r(self.data_source_and_uncertainty_flags))
 #out.append(self._to_str(self.dry_bulb_temperature))

@@ -172,7 +172,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
    
                                
     
-    ResultsBuildingSimulation, angles_df, anglesHOY, rbsELEC = SaveResults(
+    ResultsBuildingSimulation, rbsELEC = SaveResults(
                             hourlyData = hourlyData,
                             now = now, 
                             Save = SimulationData['Save'], 
@@ -187,7 +187,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             start = start, end = end, TotalHOY = TotalHOY)
     print "calucation is finished"
                     
-    return ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH, BuildingRadiationHOY 
+    return ResultsBuildingSimulation, hourlyData, UncomfortableH, BuildingRadiationHOY 
 
                       
 season = '900' 
@@ -380,6 +380,6 @@ SimulationOptions= {
 
    
 
-ResultsBuildingSimulation, angles_df, anglesHOY, hourlyData, UncomfortableH, BuildingRadiationHOY = MainCalculateASF(SimulationPeriod, SimulationData,PanelData, BuildingData, BuildingProperties, SimulationOptions)
+ResultsBuildingSimulation, hourlyData, UncomfortableH, BuildingRadiationHOY = MainCalculateASF(SimulationPeriod, SimulationData,PanelData, BuildingData, BuildingProperties, SimulationOptions)
         
         

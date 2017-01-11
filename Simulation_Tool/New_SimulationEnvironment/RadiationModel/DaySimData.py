@@ -18,11 +18,11 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
     GridSize = 25 #mm
     GridPoints = (PanelLen/GridSize)**2
     
-    print 'Save Data of DaySim Radiation Calculation: ', project_name
+    print 'Save Data of DaySim Radiation Calculation: ', project_name      
+    print 'Time: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     print 'From hour: ' + str(start)  
-    print 'Until hour: ' + str(end-1)
-    
-    print '\nTime: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+    print 'Until hour: ' + str(end-1)    
+
     tic = time.time()
     
     location1 = os.path.join(os.path.join(os.path.join('output', 'ASF1_' + str(x_angle) + '_' + str(y_angle)), 'res'), 'ASF1_' + str(x_angle) + '_' + str(y_angle) + '.ill')
