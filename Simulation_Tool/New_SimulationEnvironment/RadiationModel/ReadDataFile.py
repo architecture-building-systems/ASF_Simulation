@@ -371,35 +371,67 @@ SolarData_df = pd.concat([SolarData_df,SolarData_df2, SolarData_df3], axis=1)
 #different number of bounces for one combination
 result045Bounce = pd.concat([ASF_0_45_AB1, ASF_0_45_AB2, ASF_0_45_AB4, ASF_0_45_AB6, ASF_0_45_AB8], axis=1)
 result045Bounce.columns = ['0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8']
-data = BoxPlot(data =result045Bounce, title = 'Analysis of the Ambient Bounces', index = ('0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8'))
+#data = BoxPlot(data =result045Bounce, title = 'Analysis of the Ambient Bounces', index = ('0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8'))
 
 
 #different material values for one combination
 result045Mat = pd.concat([ASF_0_45_Con0, ASF_0_45_Con066, ASF_0_45_Con1, ASF_0_45_Win0, ASF_0_45_Win1, ASF_0_45_ASF0, ASF_0_45_ASF1, ASF_0_45_Ro0, ASF_0_45_Ro1, ASF_0_45_AM], axis=1)
 result045Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM']
-data = BoxPlot(data =result045Mat, title = 'Material Analysis - Combination 0/45', index = ('0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM'))
+#data = BoxPlot(data =result045Mat, title = 'Material Analysis - Combination 0/45', index = ('0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM'))
 
 
+start = 0
+end = 8760
 
-result045 = pd.concat([ASF_0_45_AM, ASF_0_45_All0, SolarData_df['045']], axis=1)
-result045.columns = ['ASF0/45_AM', 'ASF0/45_All0','LB-0/45']
+result045_Mat = pd.concat([ASF_0_45_Con0/ASF_0_45_AM, ASF_0_45_Con066/ASF_0_45_AM, ASF_0_45_Con1/ASF_0_45_AM, ASF_0_45_Win0/ASF_0_45_AM, ASF_0_45_Win1/ASF_0_45_AM, ASF_0_45_ASF0/ASF_0_45_AM, ASF_0_45_ASF1/ASF_0_45_AM, ASF_0_45_AM/ASF_0_45_AM], axis=1)
+result045_Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1','0/45_AM']
+result045_Mat[start:end].plot(kind='line') 
+
+result045Bounce_2 = pd.concat([ASF_0_45_AB1/ASF_0_45_AB4, ASF_0_45_AB2/ASF_0_45_AB4, ASF_0_45_AB4/ASF_0_45_AB4, ASF_0_45_AB6/ASF_0_45_AB4, ASF_0_45_AB8/ASF_0_45_AB4], axis=1)
+result045Bounce_2.columns = ['0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8']
+result045Bounce_2[start:end].plot(kind='line') 
+
+Result = {}
+
+Result['045'] = pd.concat([ASF_0_45_AM, ASF_0_45_All0, SolarData_df['045']], axis=1)
+Result['045'].columns = ['ASF0/45_AM', 'ASF0/45_All0','LB-0/45']
 #
-result00 = pd.concat([ASF_0_0_AM,  ASF_0_0_All0, SolarData_df['00']], axis=1)
-result00.columns = ['ASF0/0_AM','ASF0/0_All0','LB-0/0']
+Result['00'] = pd.concat([ASF_0_0_AM,  ASF_0_0_All0, SolarData_df['00']], axis=1)
+Result['00'].columns = ['ASF0/0_AM','ASF0/0_All0','LB-0/0']
 
-result0Minus45 = pd.concat([ASF_0_Minus45_AM, ASF_0_Minus45_All0, SolarData_df['0-45']], axis=1)
-result0Minus45.columns = ['ASF0/-45_AM',  'ASF0/-45_All0','LB-0/-45']
+Result['0-45'] = pd.concat([ASF_0_Minus45_AM, ASF_0_Minus45_All0, SolarData_df['0-45']], axis=1)
+Result['0-45'].columns = ['ASF0/-45_AM',  'ASF0/-45_All0','LB-0/-45']
 
-result450 = pd.concat([ ASF_45_0_AM, ASF_45_0_All0,  SolarData_df['450']] , axis=1)
-result450.columns = ['ASF45/0_AlbedoMix','ASF45/0_All0',  'LB-45/0']
+Result['450'] = pd.concat([ ASF_45_0_AM, ASF_45_0_All0,  SolarData_df['450']] , axis=1)
+Result['450'].columns = ['ASF45/0_AlbedoMix','ASF45/0_All0',  'LB-45/0']
 
-result900 = pd.concat([ ASF_90_0_AM, ASF_90_0_All0,  SolarData_df['900']] , axis=1)
-result900.columns = ['90/0_AM','90/0_All0',  'LB-90/0']
+Result['900'] = pd.concat([ ASF_90_0_AM, ASF_90_0_All0,  SolarData_df['900']] , axis=1)
+Result['900'].columns = ['90/0_AM','90/0_All0',  'LB-90/0']
 
-sum_045 = result045.sum()
-sum_00 = result00.sum()
-sum_0Minus45 = result0Minus45.sum()
 
+
+sum_045 = Result['045'][start:end].sum()
+sum_00 = Result['00'][start:end].sum()
+sum_0Minus45 = Result['0-45'][start:end].sum()
+
+
+result045 = Result['045']
+result045_6 = pd.concat([result045['ASF0/45_AM'][start:end]/result045['ASF0/45_All0'][start:end], result045['LB-0/45'][start:end]/result045['ASF0/45_All0'][start:end], result045['ASF0/45_All0'][start:end]/result045['ASF0/45_All0'][start:end]], axis=1)
+result045_6.columns = ['Ratio', 'RatioLB', 'ASF0/45_All0']
+#result045_6[start:end].plot(kind='line') 
+
+result00 = Result['00']
+result00_6 = pd.concat([result00['ASF0/0_AM'][start:end]/result00['ASF0/0_All0'][start:end], result00['LB-0/0'][start:end]/result00['ASF0/0_All0'][start:end], result00['ASF0/0_All0'][start:end]/result00['ASF0/0_All0'][start:end]], axis=1)
+result00_6.columns = ['Ratio', 'RatioLB', 'ASF0/0_All0']
+#result00_6[start:end].plot(kind='line') 
+
+res = Result['0-45']
+result0Minus45_6 = pd.concat([res['ASF0/-45_AM'][start:end]/res['ASF0/-45_All0'][start:end], res['LB-0/-45'][start:end]/res['ASF0/-45_All0'][start:end], res['ASF0/-45_All0'][start:end]/res['ASF0/-45_All0'][start:end]], axis=1)
+result0Minus45_6.columns = ['Ratio', 'RatioLB', 'ASF0/-45_All0']
+#result0Minus45_6[start:end].plot(kind='line') 
+
+#result00[0:800].plot(kind='line', yticks= range(0,8)) 
+#result0Minus45[0:800].plot(kind='line', yticks= range(0,8)) 
 
 #
 #resultCom = pd.concat([result045, result00, result0Minus45] , axis=1)
@@ -408,9 +440,8 @@ sum_0Minus45 = result0Minus45.sum()
 #resultCom3 = pd.concat([result450, result900] , axis=1)
 #data3 = BoxPlot(data =resultCom3, title = 'Comparison of Different Angle Combinations', index = ('45/0_AM','45/0_All0','LB-45/0', '90/0_AM','90/0_All0',  'LB-90/0'))
 
-#
 #result045_5 = pd.concat([ASF_0_45_AM/ASF_0_45_All0, ASF_0_45_All0], axis=1)
-#result045_5.columns = ['ASF0/45_AM', 'ASF0/45_All0']
+#result045_5.columns = ['Ratio', 'ASF0/45_All0']
 #
 #result045_5[4000:4200].plot(kind='line', yticks= range(0,8)) 
 

@@ -21,12 +21,9 @@ class ASF_Simulation(object):
 
 	def __init__(self,
             SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 
-            'ShowFig': False, 'timePeriod':None, 'Temp_start' : 18,'start':0 , 'end': 0},
+            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'Save' : True, 'ShowFig': False, 'Temp_start' : 20,'start':0 , 'end': 0},
             PanelData = 
-            {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500},
-            BuildingData = 
-            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200},
+            {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45]},
             BuildingProperties = 
             {"glass_solar_transmitance" : 0.687,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
             "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.2,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 20,\
@@ -35,28 +32,52 @@ class ASF_Simulation(object):
             SimulationOptions= 
             {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
                             
-                            
+            
+            BuildingData = {
+            "room_width": 4900, 
+            "room_height":3100, 
+            "room_depth":7000, 
+            "glazing_percentage_w": 0.92,
+            "glazing_percentage_h": 0.97, 
+            "WindowGridSize": 200,
+            "BuildingOrientation" : 0}  #building orientation of 0 corresponds to south facing, 90 is east facing, -90 is west facing
+
+                
             #define varibales of object
-		self.SimulationData=SimulationData
-		self.PanelData=PanelData
-		self.BuildingData=BuildingData
-		self.BuildingProperties=BuildingProperties
-		self.SimulationOptions=SimulationOptions
-		self.start = SimulationData['start']
-		self.end = SimulationData['end']
+            self.SimulationData=SimulationData
+            self.PanelData=PanelData
+            self.BuildingData=BuildingData
+  
+            self.PanelData.update({		  
+            "NoClusters":1,
+            "numberHorizontal":6,
+            "numberVertical":9,
+            "panelOffset":400,
+            "panelSize":400,
+            "panelSpacing":500,
+            "PanelGridSize": 25})  
+            
+            self.SimulationData.update({
+            'geoLocation' : 'Zuerich_Kloten_2013',
+            'EPWfile': 'Zuerich_Kloten_2013.epw'})
+            
+
+            self.BuildingProperties=BuildingProperties
+            self.SimulationOptions=SimulationOptions
+            self.start = SimulationData['start']
+            self.end = SimulationData['end']
 		
-		self.XANGLES=self.PanelData['XANGLES']
-		self.YANGLES = self.PanelData['YANGLES']		
-		self.createPlots=False
-		self.geoLocation = SimulationData['geoLocation']
-		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-		self.optimization_Types = self.SimulationData['optimizationTypes']
+            self.XANGLES=self.PanelData['XANGLES']
+            self.YANGLES = self.PanelData['YANGLES']		
+            self.createPlots=False
+            self.geoLocation = SimulationData['geoLocation']
+            self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+            self.optimization_Types = self.SimulationData['optimizationTypes']
 
 		#Set folder name and chosen epw-file
-		self.FolderName={
+            self.FolderName={
 		"DataFolderName": SimulationData['DataFolderName'],
-		"EPW" : SimulationData['EPWfile']  
-		}
+		"EPW" : SimulationData['EPWfile']}
 		
 		
 	def setPaths(self): 
@@ -106,7 +127,7 @@ class ASF_Simulation(object):
   
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
-		
+		self.radiation = self.weatherData[['year', 'month', 'day', 'hour','dirnorrad_Whm2', 'difhorrad_Whm2','glohorrad_Whm2','totskycvr_tenths']]
 				
 		# define path of geographical location:
 		self.paths['geo_location'] = os.path.join(self.paths['data'], 'geographical_location')
@@ -276,9 +297,8 @@ class ASF_Simulation(object):
                 for y_angle in self.YANGLES:        
                     fileName = 'Window_' + str(x_angle) + '_' + str(y_angle) + '_' + str(self.start) + '_' + str(self.end-1)
                     path = os.path.join(self.paths['DaySim'], fileName + '.npy')
-                    print path
-                    WindowData[str(x_angle) + str(y_angle)] = np.load(path)
-           
+                    dataWindow = np.load(path)
+                    WindowData[str(x_angle) + str(y_angle)] = np.asarray(dataWindow)
             
             for HOY in range(self.start, self.end):  
         
@@ -437,13 +457,13 @@ class ASF_Simulation(object):
     
             from hourlyPlotFunction import PlotHour 
             from Function3dPlot import create3Dplot, create3Dplot2    
-            
+
             for ii in self.optimization_Types:
                 
-                figProxy = PlotHour(E = self.ResultsBuildingSimulation[ii]['E_tot'], PV = self.ResultsBuildingSimulation[ii]['PV'], L = self.ResultsBuildingSimulation[ii]['L'], 
+                figProxy = PlotHour(E = self.ResultsBuildingSimulation[ii]['E_tot'], PV = -1 * self.ResultsBuildingSimulation[ii]['PV'], L = self.ResultsBuildingSimulation[ii]['L'], 
                                H = self.ResultsBuildingSimulation[ii]['H'], C = self.ResultsBuildingSimulation[ii]['C'], x_angle = self.x_angles[ii], y_angle = self.y_angles[ii], 
                                 start = self.start, end = self.end, title = ii, TotalHOY = self.TotalHOY)
-                self.fig.updata({ii : figProxy})
+                self.fig.update({ii : figProxy})
             
             
 #            figD = {}
@@ -467,6 +487,7 @@ class ASF_Simulation(object):
               
           self.monthlyData = pd.DataFrame(self.monthlyData)
           self.yearlyData = pd.DataFrame(self.yearlyData)
+          
           #BestKeyDF = pd.DataFrame(self.BestKey_df)    
 		
           if self.SimulationData['Save']: 
@@ -523,11 +544,18 @@ class ASF_Simulation(object):
      
 				elif ii == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):
 					self.BuildingSimulationELEC[ii].to_csv(os.path.join(self.paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
-               
+				else:
+					pass
+                       
+				self.hourlyData = pd.DataFrame(self.hourlyData[ii].T)
+				self.hourlyData.to_csv(os.path.join(self.paths['result'], 'hourlyData_' + ii + '.csv'))
+                       
                 
                 x_angles_df = pd.DataFrame(self.x_angles)
                 y_angles_df = pd.DataFrame(self.y_angles)           
-			
+                
+                
+   
                 np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
                 self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
                 self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
@@ -537,7 +565,8 @@ class ASF_Simulation(object):
                 #convert heating/cooling system variables into strings			
                 self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
                 self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
-                			
+                self.BuildingProperties["start"] = self.start
+                self.BuildingProperties["end"] = self.end
                 				 
                 #save building properties in json files
                 with open(os.path.join(self.paths['result'], 'BuildingProperties.json'), 'w') as f:

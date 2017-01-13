@@ -67,5 +67,5 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
     
     toc = time.time() - tic
     print 'time passed (min): ' + str(round(toc/60.,2))
-    print '\nData Sucessfully Saved'
+    print 'Data Sucessfully Saved\n'
 

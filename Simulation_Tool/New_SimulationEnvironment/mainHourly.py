@@ -189,8 +189,8 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                     
     return ResultsBuildingSimulation, hourlyData, UncomfortableH, BuildingRadiationHOY 
 
-                      
-season = '900' 
+season = 'Test'                    
+#season = '900' 
 #season = '450' 
 #season = 'winter2'
    #'summer'#
@@ -302,7 +302,7 @@ elif season == '900':
     #Set simulation data
     SimulationData= {
     'optimizationTypes' : ['E_total'],
-    'DataName' : 'ZH13_90_0',#
+    'DataName' : 'ZH13_90_0Test',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : False}
 
@@ -320,7 +320,7 @@ elif season == 'Test':
     #Set simulation data
     SimulationData= {
     'optimizationTypes' : ['E_total'],
-    'DataName' : 'ZH13_45_0Test',#
+    'DataName' : 'ZH13_45_0Test2',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : False}        
 else:
@@ -335,7 +335,8 @@ PanelData={
 "numberVertical":9,
 "panelOffset":400,
 "panelSize":400,
-"panelSpacing":500}
+"panelSpacing":500,
+"panelGridSize": 25}
 
 #Set Building Parameters in [mm]
 BuildingData={
@@ -344,7 +345,8 @@ BuildingData={
 "room_depth":7000,
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97,
-'GridSizeWindow' : 200}
+"GridSizeWindow" : 200,
+"BuildingOrientation" : 0}
 
 #Set building properties for RC-Model simulator
 BuildingProperties={

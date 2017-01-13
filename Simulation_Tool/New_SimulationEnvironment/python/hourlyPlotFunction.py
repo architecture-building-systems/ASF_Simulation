@@ -22,13 +22,16 @@ mpl.rcParams['ytick.labelsize'] = label_size
 
 
 def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title, TotalHOY):
-  
-   
-    
-    #x = range(start, end+1)
-      
+       
     x= TotalHOY
    
+    z_max = round(max(E),-2)
+    z_min = round(min(PV),-2)
+    
+    print 'z_max', z_max
+    print 'z_min', z_min
+    
+    diff = z_max-z_min
     
     fig = plt.figure(figsize=(8, 4))
     
@@ -44,6 +47,8 @@ def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title, TotalHOY):
     ax1.plot(x, H, 'r-')
     ax1.plot(x, C, 'b-')
     ax1.set_xlabel('Hour of Year')
+    #ax1.set_yticks([z_min,z_min + diff/4, z_min + 2* diff/4, z_max - diff/4, z_max])
+    
     ax1.set_yticks([-800,-400,0,400,800])
     #ax1.set_xticks(range(6,24,3))
     # Make the y-axis label and tick labels match the line color.
@@ -53,12 +58,10 @@ def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title, TotalHOY):
     
     
     ax2 = ax1.twinx()
-    
-    
-    
+ 
     ax2.plot(x, x_angle, 'c--')
     ax2.plot(x, y_angle, 'k--')
-    #ax2.set_ylabel('[deg]', fontsize = 16)
+    ax2.set_ylabel('[deg]', fontsize = 16)
     ax2.set_yticks([-90,-45,0,45,90])
     
     plt.legend(['Altitude Angle','Azimuth Angle'], loc = 4)

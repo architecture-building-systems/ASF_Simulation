@@ -30,9 +30,13 @@ def carpetPlot(X, z_min, z_max, title, roomFloorArea):
     # define the location of the middle number (where 0 is):
     z_middle = float(abs(z_min)) / (z_max-z_min) 
                 
-    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'),
+#    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'),
+#                                                    (z_middle, 'white'),
+#                                                    (1, 'firebrick')])
+                
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'cyan'),
                                                     (z_middle, 'white'),
-                                                    (1, 'firebrick')])
+                                                    (1, 'darkorange')])
     
     if z_min ==0:
         cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'white'),(1, 'firebrick')])

@@ -7,6 +7,16 @@ Created on Thu Dec 22 12:12:30 2016
 
 from pyepw.epw import EPW
 import numpy as np
+import sys,os
+import pandas as pd
+
+sys.path.insert(0, r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\python')
+		
+		
+from epwreader import epw_reader
+	
+  
+		
 
 
 #epwPath = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization\ASF_TestEPW\input\Zuerich_Kloten_2005.epw'
@@ -15,6 +25,14 @@ import numpy as np
 
 epwPath = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\CHE_Geneva.067000_IWEC.epw'
 SaveEPW = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization\WeatherData\Test.epw'
+
+
+
+#read epw file of needed destination
+weatherData = epw_reader(epwPath)
+radiation = weatherData[['year', 'month', 'day', 'hour','dirnorrad_Whm2', 'difhorrad_Whm2','glohorrad_Whm2','totskycvr_tenths']]
+
+sunnyDay = radiation[745-1:768]
 
 epw = EPW()
 epw.read(epwPath)
@@ -43,19 +61,48 @@ cloudyWin = {}
 count = 0   
 for wd in epw.weatherdata:
     count += 1
+    #if wd.month ==1:
     
+    wd.direct_normal_radiation = 10
+    wd.diffuse_horizontal_radiation = 20 
+    wd.global_horizontal_radiation = 30 
+    #title has influence as well
+    
+    
+
+    
+    #no influence
+#    wd.total_sky_cover = 5.0
+#    wd.visibility = 10.
+#    wd.opaque_sky_cover = 7.
+#    wd.ceiling_height = 15
+#    wd.extraterrestrial_horizontal_radiation = 10
+#    wd.extraterrestrial_direct_normal_radiation = 10
+#    wd.horizontal_infrared_radiation_intensity = 10
+#    wd.zenith_luminance = 3000.
+#    
+#    wd.month = 1
+#    wd.global_horizontal_illuminance =12
+#    wd.direct_normal_illuminance = 11
+#    wd.diffuse_horizontal_illuminance = 13
+    
+#    wd.hour = 12
+#    wd.month = 1
+#    wd.day = 15
     
     if wd.month == 2 and wd.day == 1:
-        sunnyWin[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility}
+        #print count
+        sunnyWin[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover,  'visibility': wd.visibility}
+        
         
     elif wd.month == 1 and wd.day == 21:
-        cloudyWin[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility} 
+        cloudyWin[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'visibility': wd.visibility} 
     
     elif wd.month == 5 and wd.day == 25:
-        sunnySom[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility}
+        sunnySom[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover,  'visibility': wd.visibility}
     
     elif wd.month == 5 and wd.day == 23:
-        cloudySom[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover, 'opaque' :wd.opaque_sky_cover, 'visibility': wd.visibility}
+        cloudySom[wd.hour] = {'dir' : wd.direct_normal_radiation, 'dif' : wd.diffuse_horizontal_radiation, 'glo' : wd.global_horizontal_radiation, 'total_sky_cover': wd.total_sky_cover,  'visibility': wd.visibility}
         
 #    if count < 1000:
 #        wd.dry_bulb_temperature = 0
@@ -80,7 +127,7 @@ for wd in epw.weatherdata:
 print count
 
 
-#epw.save(SaveEPW)
+epw.save(SaveEPW)
 
 #r(self.data_source_and_uncertainty_flags))
 #out.append(self._to_str(self.dry_bulb_temperature))

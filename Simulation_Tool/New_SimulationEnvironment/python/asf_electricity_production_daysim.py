@@ -204,123 +204,130 @@ def asf_electricity_production(createPlots=False,
         Imod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
         Pmod_tot = np.empty((panelnum, len(volt_model_var)))*np.nan
     
+        if maxRadPoint != 0:
+        #if the maxRadPoint is equals zero, bypass the calculate since there is no radiation
         
+            for mod_sel in range(panelnum):    # module iteration
         
-        
-        for mod_sel in range(panelnum):    # module iteration
-    
-            # select irradiance per module
-            irr_mod_sel = np.array(1 / gridPsize *irr_gridP[mod_sel, :])
-            
-            # create a grid with all radiation points (nparcellxnparcell)
-            irr_mod_mat_rnd = np.round(irr_mod_sel * 1000)   
-            irr_mod_mat_rnd.resize(nparcell, nparcell)     
-            
-            # flip orientation of PV cells on panels if requested
-            if flipOrientation:
-                irr_mod_mat_rnd = irr_mod_mat_rnd.transpose()
-            
-            # delete 2 times number of columns and rows specified in varPVsize 
-            if varPVsize > 0:
-                irr_mod_mat_rnd = irr_mod_mat_rnd[ varPVsize: - varPVsize,varPVsize:- varPVsize]
-    
-    
-            # set results for very small radiation equal to zero
-    #        if np.mean(irr_mod_mat_rnd)<10:
-    #            Pmod_tot[mod_sel,:] = 0
-    #            break
+                # select irradiance per module
+                irr_mod_sel = np.array(1 / gridPsize *irr_gridP[mod_sel, :])
                 
-            #Ins_apule = sum(sum(irr_mod_mat_rnd)) * gridPsize    # insolation per module [Wh]
-            #Ins_aparea = Ins_apule / panelarea    # insolation per module area [Wh/m2]
-    
-            # preallocate data for currents at each gridpoint:
-            curr_model_submod = np.empty((len(irr_mod_mat_rnd),len(irr_mod_mat_rnd),pointsPerLookupCurve))*np.nan
-                     
-            
-            # lookup current for each gridpoint:     
-            for i in range(np.shape(irr_mod_mat_rnd)[0]):
-                for j in range(np.shape(irr_mod_mat_rnd)[1]):
-                    insind = int(round(irr_mod_mat_rnd[i, j] / 5.0))
-                    tempind = int(round((20 + temp_amb[SimulationNumber/numCombPerHour] + 0.0225*irr_mod_mat_rnd[i, j])/5.0))
-                    if alwaysUseReferenceTemperature:
-                        tempind = trefind
-                    curr_model_submod[i, j, :] = scellscale_factor * currscale * curr_model_submod_lookup[insind, tempind,:]
-    
-            # cell reverse characteristics
-            vol_bd = -6.1
-            miller_exp = 3
-    
-            # calculate subcell forward and reverse iv curve
-            Vscell = volt_model_var / refncell
-            Iscell = np.empty((varnparcell, varnparcell, pointsPerLookupCurve))
-            RevScale = 1. / (1 - (abs(Vscell) /-vol_bd) ** miller_exp)
-    
-            for ii in range(varnparcell):
-                for jj in range(varnparcell):
-    
-                    Iscell[ii, jj,:] = curr_model_submod[ii, jj,:] * RevScale /refnparcell
-    
-            Icell_comb = np.empty((varncell, pointsPerLookupCurve))*np.nan
-            
-            #  add currents of subcells per cell
-            pointCounter = 0
-            for kk in range(varncell):
-                if kk % 3 == 0:
-                    pointCounter = pointCounter + 1
-    
-                Icell_comb[kk, :] = np.sum(Iscell[pointCounter-1, :, :], axis = 0)
-    
-            # add voltage from cell to cell
-            curr_int_points_cell = np.linspace(-0.0, np.min([np.min(np.max(Icell_comb,1)),5]), 1000)
-            #curr_int_points_cell = np.linspace(-0.5, 5, 1000)
-    
-            Vcell_comb_int = np.empty((varncell,pointsPerLookupCurve))*np.nan
-            Vmod_curr = np.empty((varncell-1,pointsPerLookupCurve))*np.nan
-            Imod_curr =  np.empty((varncell-1,pointsPerLookupCurve))*np.nan
-            Vmod_curr_int =  np.empty((varncell-1,pointsPerLookupCurve))*np.nan
-            Pmod_curr =  np.empty((varncell-1,pointsPerLookupCurve))*np.nan
-    
-            for kk in range(varncell - 1):
-                if kk == 0:
-                    interpFunction = interpolate.interp1d( Icell_comb[kk, :], Vscell)
-                    Vcell_comb_int[kk, :] = interpFunction(curr_int_points_cell)
-                    interpFunction = interpolate.interp1d( Icell_comb[kk+1, :], Vscell)
-                    Vcell_comb_int[kk + 1, :] = interpFunction(curr_int_points_cell)
-                    Vmod_curr[kk, :] = Vcell_comb_int[kk, :] + Vcell_comb_int[kk + 1, :]
-                    Imod_curr[kk, :] = curr_int_points_cell
-                elif kk > 0:
-                    interpFunction = interpolate.interp1d(Imod_curr[kk - 1, :], Vmod_curr[kk - 1, :])
-                    Vmod_curr_int[kk, :] = interpFunction(curr_int_points_cell)
-                    interpFunction = interpolate.interp1d( Icell_comb[kk+1, :], Vscell)
-                    Vcell_comb_int[kk + 1, :] = interpFunction(curr_int_points_cell)
-                    Vmod_curr[kk, :] = Vmod_curr_int[kk, :] + Vcell_comb_int[kk + 1, :]
-                    Imod_curr[kk, :] = curr_int_points_cell
-                    Pmod_curr[kk, :] = Imod_curr[kk, :] * Vmod_curr[kk, :]
-    
-            Vmod = Vmod_curr[kk, :]
-            Imod = Imod_curr[kk, :]
-            Pmod = Pmod_curr[kk, :]
-    
-            Vmod_tot[mod_sel,:] = Vmod
-            Imod_tot[mod_sel,:] = Imod
-            Pmod_tot[mod_sel,:] = Pmod
-    
-            Pmod_mpp[SimulationNumber, mod_sel]= np.max(Pmod) # [W]
-            Pmodmpp_ind = np.argmax(Pmod)                                   
-            Vmod_mpp[SimulationNumber, mod_sel] = Vmod[Pmodmpp_ind]
-            Imod_mpp[SimulationNumber, mod_sel] = Imod[Pmodmpp_ind]
-            Ins_ap[SimulationNumber, mod_sel] = np.sum(irr_mod_mat_rnd) * gridPsize # insolation per aperture [Wh]
-            Ins_ap_mean[SimulationNumber, mod_sel] = np.mean(irr_mod_mat_rnd) # average insolation per aperture [Wh/m2]
-    
-    
-        Ins_sum[SimulationNumber] = np.sum(Ins_ap[SimulationNumber,:]) # sum insolation
-        #     Ins_avg(i)=sum(Ins_ap(i,:)./panelarea)/numpanels(i); % W/m2 average
-        Ins_avg[SimulationNumber] = np.sum(Ins_ap_mean[SimulationNumber,:]) / panelnum  # W/m2 average
-        Pmpp_sum[SimulationNumber] = np.sum(Pmod_mpp[SimulationNumber, :])    # sum power
-        Pmpp_avg[SimulationNumber] = np.sum(Pmod_mpp[SimulationNumber, :] / apertsize) / panelnum   # W/m2 average
-        effap_arr[SimulationNumber] = Pmpp_sum[SimulationNumber] / Ins_sum[SimulationNumber]* 100.  #
-        effmod_arr[SimulationNumber] = Pmpp_sum[SimulationNumber] / Ins_sum[SimulationNumber]* 100* apertscale 
+                # create a grid with all radiation points (nparcellxnparcell)
+                irr_mod_mat_rnd = np.round(irr_mod_sel * 1000)   
+                irr_mod_mat_rnd.resize(nparcell, nparcell)     
+                
+                # flip orientation of PV cells on panels if requested
+                if flipOrientation:
+                    irr_mod_mat_rnd = irr_mod_mat_rnd.transpose()
+                
+                # delete 2 times number of columns and rows specified in varPVsize 
+                if varPVsize > 0:
+                    irr_mod_mat_rnd = irr_mod_mat_rnd[ varPVsize: - varPVsize,varPVsize:- varPVsize]
         
+        
+                # set results for very small radiation equal to zero
+        #        if np.mean(irr_mod_mat_rnd)<10:
+        #            Pmod_tot[mod_sel,:] = 0
+        #            break
+                    
+                #Ins_apule = sum(sum(irr_mod_mat_rnd)) * gridPsize    # insolation per module [Wh]
+                #Ins_aparea = Ins_apule / panelarea    # insolation per module area [Wh/m2]
+        
+                # preallocate data for currents at each gridpoint:
+                curr_model_submod = np.empty((len(irr_mod_mat_rnd),len(irr_mod_mat_rnd),pointsPerLookupCurve))*np.nan
+                         
+                
+                # lookup current for each gridpoint:     
+                for i in range(np.shape(irr_mod_mat_rnd)[0]):
+                    for j in range(np.shape(irr_mod_mat_rnd)[1]):
+                        insind = int(round(irr_mod_mat_rnd[i, j] / 5.0))
+                        tempind = int(round((20 + temp_amb[SimulationNumber/numCombPerHour] + 0.0225*irr_mod_mat_rnd[i, j])/5.0))
+                        if alwaysUseReferenceTemperature:
+                            tempind = trefind
+                        curr_model_submod[i, j, :] = scellscale_factor * currscale * curr_model_submod_lookup[insind, tempind,:]
+        
+                # cell reverse characteristics
+                vol_bd = -6.1
+                miller_exp = 3
+        
+                # calculate subcell forward and reverse iv curve
+                Vscell = volt_model_var / refncell
+                Iscell = np.empty((varnparcell, varnparcell, pointsPerLookupCurve))
+                RevScale = 1. / (1 - (abs(Vscell) /-vol_bd) ** miller_exp)
+        
+                for ii in range(varnparcell):
+                    for jj in range(varnparcell):
+        
+                        Iscell[ii, jj,:] = curr_model_submod[ii, jj,:] * RevScale /refnparcell
+        
+                Icell_comb = np.empty((varncell, pointsPerLookupCurve))*np.nan
+                
+                #  add currents of subcells per cell
+                pointCounter = 0
+                for kk in range(varncell):
+                    if kk % 3 == 0:
+                        pointCounter = pointCounter + 1
+        
+                    Icell_comb[kk, :] = np.sum(Iscell[pointCounter-1, :, :], axis = 0)
+        
+                # add voltage from cell to cell
+                curr_int_points_cell = np.linspace(-0.0, np.min([np.min(np.max(Icell_comb,1)),5]), 1000)
+                #curr_int_points_cell = np.linspace(-0.5, 5, 1000)
+        
+                Vcell_comb_int = np.empty((varncell,pointsPerLookupCurve))*np.nan
+                Vmod_curr = np.empty((varncell-1,pointsPerLookupCurve))*np.nan
+                Imod_curr =  np.empty((varncell-1,pointsPerLookupCurve))*np.nan
+                Vmod_curr_int =  np.empty((varncell-1,pointsPerLookupCurve))*np.nan
+                Pmod_curr =  np.empty((varncell-1,pointsPerLookupCurve))*np.nan
+        
+                for kk in range(varncell - 1):
+                    if kk == 0:
+                        interpFunction = interpolate.interp1d( Icell_comb[kk, :], Vscell)
+                        Vcell_comb_int[kk, :] = interpFunction(curr_int_points_cell)
+                        interpFunction = interpolate.interp1d( Icell_comb[kk+1, :], Vscell)
+                        Vcell_comb_int[kk + 1, :] = interpFunction(curr_int_points_cell)
+                        Vmod_curr[kk, :] = Vcell_comb_int[kk, :] + Vcell_comb_int[kk + 1, :]
+                        Imod_curr[kk, :] = curr_int_points_cell
+                    elif kk > 0:
+                        interpFunction = interpolate.interp1d(Imod_curr[kk - 1, :], Vmod_curr[kk - 1, :])
+                        Vmod_curr_int[kk, :] = interpFunction(curr_int_points_cell)
+                        interpFunction = interpolate.interp1d( Icell_comb[kk+1, :], Vscell)
+                        Vcell_comb_int[kk + 1, :] = interpFunction(curr_int_points_cell)
+                        Vmod_curr[kk, :] = Vmod_curr_int[kk, :] + Vcell_comb_int[kk + 1, :]
+                        Imod_curr[kk, :] = curr_int_points_cell
+                        Pmod_curr[kk, :] = Imod_curr[kk, :] * Vmod_curr[kk, :]
+        
+                Vmod = Vmod_curr[kk, :]
+                Imod = Imod_curr[kk, :]
+                Pmod = Pmod_curr[kk, :]
+        
+                Vmod_tot[mod_sel,:] = Vmod
+                Imod_tot[mod_sel,:] = Imod
+                Pmod_tot[mod_sel,:] = Pmod
+        
+                Pmod_mpp[SimulationNumber, mod_sel]= np.max(Pmod) # [W]
+                Pmodmpp_ind = np.argmax(Pmod)                                   
+                Vmod_mpp[SimulationNumber, mod_sel] = Vmod[Pmodmpp_ind]
+                Imod_mpp[SimulationNumber, mod_sel] = Imod[Pmodmpp_ind]
+                Ins_ap[SimulationNumber, mod_sel] = np.sum(irr_mod_mat_rnd) * gridPsize # insolation per aperture [Wh]
+                Ins_ap_mean[SimulationNumber, mod_sel] = np.mean(irr_mod_mat_rnd) # average insolation per aperture [Wh/m2]
+        
+        
+            Ins_sum[SimulationNumber] = np.sum(Ins_ap[SimulationNumber,:]) # sum insolation
+            #     Ins_avg(i)=sum(Ins_ap(i,:)./panelarea)/numpanels(i); % W/m2 average
+            Ins_avg[SimulationNumber] = np.sum(Ins_ap_mean[SimulationNumber,:]) / panelnum  # W/m2 average
+            Pmpp_sum[SimulationNumber] = np.sum(Pmod_mpp[SimulationNumber, :])    # sum power
+            Pmpp_avg[SimulationNumber] = np.sum(Pmod_mpp[SimulationNumber, :] / apertsize) / panelnum   # W/m2 average
+            effap_arr[SimulationNumber] = Pmpp_sum[SimulationNumber] / Ins_sum[SimulationNumber]* 100.  #
+            effmod_arr[SimulationNumber] = Pmpp_sum[SimulationNumber] / Ins_sum[SimulationNumber]* 100* apertscale 
+        
+        else:
+            Ins_sum[SimulationNumber] = 0
+            Ins_avg[SimulationNumber] = 0
+            Pmpp_sum[SimulationNumber] = 0 
+            Pmpp_avg[SimulationNumber] = 0
+            effap_arr[SimulationNumber] = 0
+            effmod_arr[SimulationNumber] = 0
         #add total energy (radiation and pv) and multiply by days in month
         
         #radiationYear += Ins_sum[SimulationNumber]/1000.* days_per_month[SunTrackingData['MonthTracking'][SimulationNumber/numCombPerHour]-1] #kWh

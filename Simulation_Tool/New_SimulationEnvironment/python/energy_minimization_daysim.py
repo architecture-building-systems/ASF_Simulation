@@ -14,7 +14,7 @@ import pandas as pd
 def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadiationData_HOY, PV, NumberCombinations, 
               combinationAngles, BuildingProperties, setBackTempH, setBackTempC, occupancy, Q_human, start, end, Temp_start):
 
-
+    
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])    
     
@@ -321,7 +321,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             
             if BuildingRadiationData_HOY[hour_of_year][0] != 0:
                 #get key with max building radiaiton value
-                BestComb =BuildingRadiationData_HOY[hour_of_year].argmax(axis=0)
+                data = BuildingRadiationData_HOY[hour_of_year]
+                data = np.asarray(data)
+                BestComb =data.argmax(axis=0)
                 BestCombKey = BestComb
               
         
@@ -545,7 +547,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
         results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
-        results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]   
+           
         results_building_simulation[hour_of_year]['BestCombKey'] = BestCombKey
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
@@ -558,12 +560,21 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         BuildingSimulationELEC[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
         BuildingSimulationELEC[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
-        BuildingSimulationELEC[hour_of_year]['OptAngles'] = combinationAngles[BestComb]   
+         
         BuildingSimulationELEC[hour_of_year]['BestCombKey'] = BestCombKey
         BuildingSimulationELEC[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         BuildingSimulationELEC[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
         BuildingSimulationELEC[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
+
+        if BestCombKey == NumberCombinations:
+
+            results_building_simulation[hour_of_year]['OptAngles'] = (np.nan,np.nan)
+            BuildingSimulationELEC[hour_of_year]['OptAngles'] = (np.nan, np.nan)
         
+        else:
+            results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
+            BuildingSimulationELEC[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
+
         #show which HOY is calculated
         if hour_of_year % 1000 == 0 and hour_of_year != 0:
             print 'HOY:', hour_of_year

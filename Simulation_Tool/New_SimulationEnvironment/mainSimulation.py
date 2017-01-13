@@ -81,12 +81,12 @@ from SimulationClass import ASF_Simulation
 
 
 SimulationData = {
-'optimizationTypes' : ['E_total', 'Lighting','SolarEnergy','Heating', 'Cooling', 'E_HCL'],
-'DataFolderName' : 'ZH13_49combHorizont2',
-'FileName': 'ZH13_49combMitHorizont2',
+'optimizationTypes' : ['E_total'],
+'DataFolderName' : 'ZH13_49comb',
+'FileName': 'ZH13_49comb',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
-'Save' : True,
+'Save' : False,
 'ShowFig': True,
 'timePeriod': None}
 
@@ -139,5 +139,60 @@ if __name__=='__main__':
     ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
     ASFtest.SolveASF()
     print ASFtest.yearlyData
-    
+    yearlyData = ASFtest.yearlyData
+    results = ASFtest.ResultsBuildingSimulation
+    rad = ASFtest.radiation
+    monthlyData = ASFtest.monthlyData
+    E = ASFtest.monthlyData['E_total']['E']     
+    print yearlyData 
  
+
+import pandas as pd
+from pandas import DataFrame
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+
+df = results['E_total']
+df1 = df['PV']
+df2 = rad['dirnorrad_Whm2']
+df3 = rad['difhorrad_Whm2']
+df4 = rad['glohorrad_Whm2']
+df5 = df['BestCombKey']
+
+test = plt.figure().gca(projection='3d')
+test.scatter(df.index, df['PV'], df2)
+test.set_xlabel('Index')
+test.set_ylabel('PV')
+test.set_zlabel('directRad')
+plt.show() 
+
+#
+#test = plt.figure().gca(projection='3d')
+#test.scatter(df.index, df3, df2, color='k')
+#test.set_xlabel('Index')
+#test.set_ylabel('diffuseRad')
+#test.set_zlabel('directRad')
+#plt.show() 
+
+test = plt.figure().gca(projection='3d')
+test.scatter(df['PV'], df3, df2, color='r')
+test.set_xlabel('PV')
+test.set_ylabel('diffuseRad')
+test.set_zlabel('directRad')
+plt.show() 
+
+test = plt.figure().gca(projection='3d')
+test.scatter(df.index, df4, df1, color='m')
+test.set_xlabel('index')
+test.set_ylabel('gloRad')
+test.set_zlabel('PV')
+plt.show() 
+    
+    
+test = plt.figure().gca(projection='3d')
+test.scatter(df.index, df4, df5, color='y')
+test.set_xlabel('index')
+test.set_ylabel('gloRad')
+test.set_zlabel('Comb')
+plt.show()  

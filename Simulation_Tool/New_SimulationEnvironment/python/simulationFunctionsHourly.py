@@ -467,18 +467,23 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
 
             np.save(os.path.join(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.npy')), ResultsBuildingSimulation[ii])
             np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
+            hourlyData = pd.DataFrame(hourlyData[ii].T)
+            hourlyData.to_csv(os.path.join(paths['result'], 'hourlyData_' + ii + '.csv'))
             
             fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii + '.pdf'))
             #fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii +  '.png'))
         
         
        
-        anglesHOY.to_csv(os.path.join(paths['result'], 'Angles.csv'))
+        
         
         #fig.savefig(os.path.join(paths['result'],'BuildingSimulation.pdf'), format='pdf')       
         
         BuildingProperties["heatingSystem"] = str(BuildingProperties["heatingSystem"])
         BuildingProperties["coolingSystem"] = str(BuildingProperties["coolingSystem"])
+        
+        BuildingProperties["start"] = start
+        BuildingProperties["end"] = end
         
              
         #save building properties

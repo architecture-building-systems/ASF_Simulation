@@ -19,8 +19,8 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
     #iterate through all months, days and hours
     for HOY in TotalHOY:
         
-        key_array = np.append(key_array, Building_Simulation_df['BestCombKey'][HOY][0])
-        key_dict[HOY] = Building_Simulation_df['BestCombKey'][HOY][0]
+        key_array = np.append(key_array, Building_Simulation_df['BestCombKey'][HOY])
+        key_dict[HOY] = Building_Simulation_df['BestCombKey'][HOY]
         
     #create an comb_array with the combination belonging to the given key
     key_array = np.int_(key_array)
@@ -31,7 +31,11 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
     
     #divide the combination angles into x- and y-angle
     for jj in range(0,len(comb_array)):
-            
+        
+        if comb_array[jj][0]== 0.1111:
+            x_angle_array = np.append(x_angle_array, np.nan)
+            y_angle_array = np.append(y_angle_array, np.nan)
+        else:
             x_angle_array = np.append(x_angle_array, comb_array[jj][0])
             y_angle_array = np.append(y_angle_array, comb_array[jj][1])
             
