@@ -144,7 +144,7 @@ if __name__=='__main__':
     rad = ASFtest.radiation
     monthlyData = ASFtest.monthlyData
     E = ASFtest.monthlyData['E_total']['E']     
-    print yearlyData 
+"""    
  
 
 import pandas as pd
@@ -196,3 +196,4 @@ test.set_xlabel('index')
 test.set_ylabel('gloRad')
 test.set_zlabel('Comb')
 plt.show()  
+"""

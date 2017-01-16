@@ -94,8 +94,8 @@ SimulationData = {
 'end': 8760} #8760
 
 PanelData = {
-"XANGLES": [0,15,30,45,60,75,90],#[0,45],
-"YANGLES" : [-45,-30,-15,0,15,30,45]}
+"XANGLES": [0],#[0,45],
+"YANGLES" : [0]}
 
 BuildingProperties = {
 "glass_solar_transmitance" : 0.687,

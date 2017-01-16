@@ -21,8 +21,7 @@ def asf_electricity_production(createPlots=False,
                                start = 0, end= 0,
                                path_DaySimData = None):
                                    
-   							                                  
-                                   
+                      
     import sys,os                                                       
     import json
     import numpy as np
@@ -40,19 +39,13 @@ def asf_electricity_production(createPlots=False,
     
     
     # load irradiance lookup table
-    # load('curr_model_submod_lookup2')
-    # load('curr_model_submod_lookup2_constTemp')
-    #load('C:/Users/Assistenz/ASF_Simulation/Python/curr_model_submod_lookup.npy','r')
+   
     curr_model_submod_lookup = np.load(os.path.join(lookup_table_path, 'curr_model_submod_lookup.npy'),'r')
     pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
-    #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
-    #print 'points', pointsPerLookupCurve
-    #print curr_model_submod_lookup   
     
     # number of panels in evaluated ASF:
     panelnum = 50
-    
-    
+        
     # find the number of combinations analysed by ladybug:
     numCombPerHour = len(XANGLES)*len(YANGLES)
     
@@ -62,20 +55,7 @@ def asf_electricity_production(createPlots=False,
     if numCombPerHour == 0:
         numCombPerHour = 1
     
-   
-    
-    
-    temp_amb= []
-    
-    numHours = 0
-    for HOY in range(start, end):   
-        numHours += 1
-        temp_amb.append(weatherData['drybulb_C'][HOY])
-    
-    print "numHours: ", numHours
-    
-    numASFit = numHours*numCombPerHour
-    
+       
     
     
     # module and cell dimensions:
@@ -132,8 +112,62 @@ def asf_electricity_production(createPlots=False,
     # load days per month
     days_passed_month, days_per_month =  daysPassedMonth()
     
+    DaySimData = {} 
+    #Load data
+    for x_angle in XANGLES:
+        for y_angle in YANGLES:
+                fileName = 'ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1)
+                DaySimData[str(x_angle) + str(y_angle)] = np.load(os.path.join(path_DaySimData, fileName + '.npy')).item()
+    
+    if start != 0 or end != 8760:
+        #case not average values
+        temp_amb= []
+    
+        numHours = 0
+        for HOY in range(start, end):   
+            numHours += 1
+            temp_amb.append(weatherData['drybulb_C'][HOY])
+    
+        
+    
+        DataList = []
+        for hour in range(start,end):  
+            for x_angle in XANGLES:
+                for y_angle in YANGLES:
+                    DataList.append(DaySimData[str(x_angle) + str(y_angle)][hour]) 
     
     
+    elif start ==0 and end == 8760:
+        #case average monthly values
+        daysPerMonth = [31,28,31,30,31,30,31,31,30,31,30,31]
+        temp_amb= []
+    
+        numHours = 0
+        HourPassed = 0
+        for monthi in range(12):
+            for hour in range(24):
+                TempAVG = 0
+                for day in range(daysPerMonth[monthi]):
+                    TimeHour = HourPassed + 24 * day + hour
+                    print TimeHour
+                    TempAVG += weatherData['drybulb_C'][TimeHour]/daysPerMonth[monthi]                     
+                temp_amb.append(TempAVG)
+                numHours += 1
+            HourPassed += daysPerMonth[monthi] * 24
+                
+        print temp_amb    
+    
+        
+        DataList = []
+        for monthi in range(12):
+            for hour in range(24):  
+                for x_angle in XANGLES:
+                    for y_angle in YANGLES:
+                        DataList.append(DaySimData[str(x_angle) + str(y_angle)][monthi][hour]) 
+    
+    print "numHours: ", numHours
+    
+    numASFit = numHours*numCombPerHour
     
     # preallocate data for speed:
     Pmod_mpp = np.empty((numASFit, panelnum))*np.nan
@@ -166,19 +200,8 @@ def asf_electricity_production(createPlots=False,
     tic = time.time()
     
     
-    DaySimData = {} 
     
-    for x_angle in XANGLES:
-        for y_angle in YANGLES:
-            
-                fileName = 'ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1)
-                DaySimData[str(x_angle) + str(y_angle)] = np.load(os.path.join(path_DaySimData, fileName + '.npy')).item()
-   
-    DataList = []
-    for hour in range(start,end):  
-        for x_angle in XANGLES:
-            for y_angle in YANGLES:
-                DataList.append(DaySimData[str(x_angle) + str(y_angle)][hour]) 
+        
     
     # loop through simulation data files:
     

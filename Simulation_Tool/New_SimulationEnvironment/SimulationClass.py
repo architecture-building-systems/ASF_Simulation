@@ -326,6 +326,7 @@ class ASF_Simulation(object):
 			  
 		count = 0
 		DAY = 0
+		passedHours = 0
              #check if no panels are selected, if so, than PV-Production is zero
 		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
                
@@ -333,17 +334,15 @@ class ASF_Simulation(object):
                      self.PV[int(hour_of_year)]['PV']= [0]
 		else:		
         		for monthi in range(1,13):
-        			if monthi == 1:
-        				passedHours = 0
-        			else:
-        				passedHours = sumHours[monthi-2]
-        				
         			for HOD in self.hour_in_month[monthi]:
         					for jj in range(0,self.daysPerMonth[monthi-1]):
-        						DAY = jj*24 + HOD     
-        						self.PV[passedHours + DAY]['PV'] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
+        						DAY = passedHours + jj*24 + HOD     
+        						self.PV[DAY]['PV'] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
         					count +=self.NumberCombinations
-		#add the window radiation data to the specific HOY			
+        			passedHours += self.daysPerMonth[monthi-1]*24
+		
+          
+          #add the window radiation data to the specific HOY			
 		for hour_of_year in range(0,8760):
 			if hour_of_year not in hourRadiation:
 					self.BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)

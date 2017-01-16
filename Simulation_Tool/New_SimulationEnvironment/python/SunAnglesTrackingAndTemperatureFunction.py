@@ -6,7 +6,7 @@ Script to calculate sun-tracking-angles and temperatures for evaluation of
 average days for every month. corresponding data is generated in grasshopper. 
 
 @author: Jeremias
-@credits: Mauro
+
 """
 import sys,os
 import numpy as np

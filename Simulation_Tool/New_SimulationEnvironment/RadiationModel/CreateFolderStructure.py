@@ -54,14 +54,14 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
         os.makedirs(paths['py2radiance_data'])
     
     
-        src= os.path.join(paths['source'],'Room.stl')
-        shutil.copy(src, paths['input'])
-        
-        src= os.path.join(paths['source'], 'Window.stl')
-        shutil.copy(src, paths['input'])
-        
-        src= os.path.join(paths['source'],'Context.stl')
-        shutil.copy(src, paths['input'])
+#        src= os.path.join(paths['source'],'Room.stl')
+#        shutil.copy(src, paths['input'])
+#        
+#        src= os.path.join(paths['source'], 'Window.stl')
+#        shutil.copy(src, paths['input'])
+#        
+#        src= os.path.join(paths['source'],'Context.stl')
+#        shutil.copy(src, paths['input'])
         
         src= os.path.join(paths['source'], 'base.rad')
         shutil.copy(src, paths['input'])
@@ -121,23 +121,25 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
         
         #print 'Folder: ', paths['input']
         
+        
         with open(os.path.join(paths['Simulation_Environment'],'comb.json'),'w') as f:
             f.write(json.dumps(comb_data))
-            
+        
         with open(os.path.join(paths['Simulation_Environment'],'project_folder.json'),'w') as f:
             f.write(json.dumps(paths['input']))
-       
+        
+            
+
        
         while not os.path.exists(os.path.join(paths['input'],'ASF4_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
             time.sleep(1)                                
         else:
             pass
 
-        
-        while not os.path.exists(os.path.join(paths['input'],'ASF_' + str(x_angle) + '_' + str(y_angle)+ '.stl')):
-            time.sleep(1)
-        else:
-            pass
+        for ii in range(1,5):
+            if os.path.exists(os.path.join(paths['input'], 'ASF' + str(ii) + '_' + str(x_angle) + '_' + str(y_angle + 5) + '.csv')):
+                os.remove(os.path.join(paths['input'], 'ASF' + str(ii) + '_' + str(x_angle) + '_' + str(y_angle + 5) + '.csv'))
+            
         
         comb_data={}
         
@@ -149,7 +151,7 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
             f.write(json.dumps(comb_data))
             
         
-        time.sleep(1)   
+        time.sleep(2)   
         
     
         print 'Folder Sucessfully Created!' 
@@ -241,7 +243,7 @@ def STLFolder(x_angle, y_angle):
     
     
     
-XANGLES = [25,30,35,40,45,50,55,60,65,70,75,80,85,90]
+XANGLES = [0,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90]
 YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]#,0,45]
 
 MaterialDict = {'ASF': 0.2,
@@ -254,9 +256,20 @@ for x_angle in XANGLES:
     for y_angle in YANGLES:
         
         project_name = '2ASF_' + str(x_angle) + '_' + str(y_angle)
-        #CreateFolder(x_angle, y_angle, MaterialDict, source, project_name)
+        CreateFolder(x_angle, y_angle, MaterialDict, source, project_name)
         
-        STLFolder(x_angle, y_angle)
-            
-       
-        
+        #STLFolder(x_angle, y_angle)
+"""            
+
+x_angle = 0
+y_angle = -45       
+path = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization\2ASF_0_-45\input'    
+destination  = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
+source = os.path.join(path, 'ASF1_' + str(x_angle) + '_' + str(y_angle) + '.csv')    
+
+shutil.move(source, destination)
+
+
+os.remove(pathTest)
+
+"""

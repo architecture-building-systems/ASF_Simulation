@@ -303,17 +303,37 @@ class ASF_Simulation(object):
             for HOY in range(self.start, self.end):  
         
                 self.BuildingRadiationHOY[HOY] = []
-                self.PV[HOY] = []
+                
                 for x_angle in self.XANGLES:
                     for y_angle in self.YANGLES:
-        
                         self.BuildingRadiationHOY[HOY].append(WindowData[str(x_angle) + str(y_angle)][hour]) 
-                
-                self.PV[HOY] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
-                count += self.NumberCombinations               
                 hour += 1
                 
+            if self.start == 0 and self.end == 8760:
+                
+                #initilize dictionary
+                for hour_of_year in range(0,8760):
+                    self.PV[hour_of_year]= []
+            	  
+                count = 0
+                passedHours = 0
+                 #check if no panels are selected, if so, than PV-Production is zero
+                for monthi in range(0,12):
+                    for HOD in range(24):
+                        for jj in range(0,self.daysPerMonth[monthi]):
+                               timeHour = passedHours + jj*24 + HOD     
+                               self.PV[timeHour]= self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
+         
+                        count +=self.NumberCombinations
+                    passedHours += self.daysPerMonth[monthi] * 24
+       
+            else:
+                for HOY in range(self.start, self.end):   
+                    self.PV[HOY] = []
+                    self.PV[HOY] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
+                    count += self.NumberCombinations               
 
+     
 		
 	def runBuildingSimulation(self):
            #method which calls the RC-Model and runs the building energy simulation
