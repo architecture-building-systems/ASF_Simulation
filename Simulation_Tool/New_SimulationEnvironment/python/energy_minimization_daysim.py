@@ -263,7 +263,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         if optimization_type == 'E_total':
             #Best comb for overall energy demand
                         
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
                 
@@ -276,7 +276,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb       
                
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 #Check if there is no PV-value (no radiation)
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -292,7 +292,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         elif optimization_type == 'E_total_elec':
             #Best comb for overall energy demand
                         
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(E_tot_elec[hour_of_year], key=lambda comb: E_tot_elec[hour_of_year][comb])
                 
@@ -303,7 +303,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb      
                
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 #Check if there is no PV-value (no radiation)
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -318,16 +318,19 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
  
         
         elif optimization_type == 'Lighting':
+            #print BuildingRadiationData_HOY[hour_of_year]
+            #print hourlyData[hour_of_year]['PV']
             
-            if BuildingRadiationData_HOY[hour_of_year][0] != 0:
+            if max(BuildingRadiationData_HOY[hour_of_year]) != 0:
                 #get key with max building radiaiton value
-                data = BuildingRadiationData_HOY[hour_of_year]
-                data = np.asarray(data)
-                BestComb =data.argmax(axis=0)
+#                data = BuildingRadiationData_HOY[hour_of_year]
+#                data = np.asarray(data)
+                BestComb =BuildingRadiationData_HOY[hour_of_year].argmax(axis=0)
                 BestCombKey = BestComb
+             #   print BestComb
               
         
-            elif BuildingRadiationData_HOY[hour_of_year][0] == 0:
+            elif max(BuildingRadiationData_HOY[hour_of_year]) == 0:
                 #Check if there is no PV-value (no radiation)
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -345,12 +348,12 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
         elif optimization_type == 'SolarEnergy':
            
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with max PV production
                 BestComb = hourlyData[hour_of_year]['PV'].argmax(axis=0)
                 BestCombKey = BestComb               
                         
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 #Check if there is no PV-value (no radiation)
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -368,7 +371,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
        
         elif optimization_type == 'Heating':    
         
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_Heating_HOY[hour_of_year], key=lambda comb: Data_Heating_HOY[hour_of_year][comb])
                  
@@ -380,7 +383,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb
         
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 #Check if there is no PV-value (no radiation)
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -395,7 +398,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         elif optimization_type == 'Heating_elec':    
         
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_H_elec[hour_of_year], key=lambda comb: Data_H_elec[hour_of_year][comb])
                  
@@ -407,7 +410,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb
         
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 #Check if there is no PV-value (no radiation)
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -423,7 +426,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         elif optimization_type == 'Cooling':
             
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_Cooling_HOY[hour_of_year], key=lambda comb: Data_Cooling_HOY[hour_of_year][comb])
                 
@@ -434,7 +437,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb
         
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 #Check if there is no PV-value (nor radiation), then don't move the modules
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -449,7 +452,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                     
         elif optimization_type == 'Cooling_elec':
             
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(Data_C_elec[hour_of_year], key=lambda comb: Data_C_elec[hour_of_year][comb])
                 
@@ -460,7 +463,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb
         
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 #Check if there is no PV-value (nor radiation), then don't move the modules
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
                 
@@ -476,7 +479,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                         
         elif optimization_type == 'E_HCL':
                             
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the dictionary
                 BestComb = min(E_HCL[hour_of_year], key=lambda comb: E_HCL[hour_of_year][comb])
                 
@@ -487,7 +490,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb 
             
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 
                 #Check if there is no PV-value (nor radiation), then don't move the modules
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
@@ -504,7 +507,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         elif optimization_type == 'E_HCL_elec':
                             
-            if hourlyData[hour_of_year]['PV'][0] != 0:
+            if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the dictionary
                 BestComb = min(E_HCL_elec[hour_of_year], key=lambda comb: E_HCL_elec[hour_of_year][comb])
                 
@@ -515,7 +518,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 
                 BestCombKey = BestComb 
             
-            elif hourlyData[hour_of_year]['PV'][0] == 0:
+            elif max(hourlyData[hour_of_year]['PV']) == 0:
                 
                 #Check if there is no PV-value (nor radiation), then don't move the modules
                 equal = checkEqual(Data = Data_T_in_HOY[hour_of_year])                
@@ -548,7 +551,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
         results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
            
-        results_building_simulation[hour_of_year]['BestCombKey'] = BestCombKey
+        
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
         results_building_simulation[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
@@ -561,19 +564,23 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         BuildingSimulationELEC[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
         BuildingSimulationELEC[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
          
-        BuildingSimulationELEC[hour_of_year]['BestCombKey'] = BestCombKey
+        
         BuildingSimulationELEC[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         BuildingSimulationELEC[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
         BuildingSimulationELEC[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
+        BuildingSimulationELEC[hour_of_year]['BestCombKey'] = BestCombKey
+        results_building_simulation[hour_of_year]['BestCombKey'] = BestCombKey
 
         if BestCombKey == NumberCombinations:
 
             results_building_simulation[hour_of_year]['OptAngles'] = (np.nan,np.nan)
             BuildingSimulationELEC[hour_of_year]['OptAngles'] = (np.nan, np.nan)
+           
         
         else:
             results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
             BuildingSimulationELEC[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
+            
 
         #show which HOY is calculated
         if hour_of_year % 1000 == 0 and hour_of_year != 0:

@@ -81,14 +81,14 @@ from SimulationClass import ASF_Simulation
 
 
 SimulationData = {
-'optimizationTypes' : ['E_total'],
+'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
 'DataFolderName' : 'ZH13_49comb',
 'FileName': 'ZH13_49comb',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
-'Save' : False,
+'Save' : True,
 'ShowFig': True,
-'timePeriod': None}
+'timePeriod': None} #setting for asf_elec_production function
 
 #SimulationData = {
 #'optimizationTypes' : ['E_total'],
@@ -107,10 +107,10 @@ BuildingProperties={
 "glass_light_transmitance" : 0.744 ,
 "lighting_load" : 11.74 ,
 "lighting_control" : 300,
-"Lighting_Utilisation_Factor" :  0.64,
-"Lighting_MaintenanceFactor" : 1,
-"U_em" : 0.277, 
-"U_w" : 1.71,
+"Lighting_Utilisation_Factor" :  0.45,
+"Lighting_MaintenanceFactor" : 0.9,
+"U_em" : 0.2, 
+"U_w" : 1.1,
 "ACH_vent" : 1.5,
 "ACH_infl" : 0.5,
 "ventilation_efficiency" : 0.6 ,#0.6
@@ -136,9 +136,12 @@ SimulationOptions= {
 
 	
 if __name__=='__main__':
-    ASFtest=ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+    
+    ASFtest = ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
     ASFtest.SolveASF()
+
     print ASFtest.yearlyData
+
     yearlyData = ASFtest.yearlyData
     results = ASFtest.ResultsBuildingSimulation
     rad = ASFtest.radiation

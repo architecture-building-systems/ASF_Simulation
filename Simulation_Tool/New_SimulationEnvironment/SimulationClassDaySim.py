@@ -211,7 +211,8 @@ class ASF_Simulation(object):
          for x_angle in self.XANGLES:
              for y_angle in self.YANGLES:
                     
-                project_name = 'ASF_' + str(x_angle) + '_' + str(y_angle)
+                #project_name = 'ASF_' + str(x_angle) + '_' + str(y_angle)
+                project_name = '2ASF_' + str(x_angle) + '_' + str(y_angle)
                 print project_name
                 #check if file is there, if not create and save it
                 #print os.path.isfile(os.path.join(self.paths['DaySim'], project_name) + '_' + str(self.start) + '_' + str(self.end-1) + '.npy')
@@ -302,11 +303,11 @@ class ASF_Simulation(object):
             
             for HOY in range(self.start, self.end):  
         
-                self.BuildingRadiationHOY[HOY] = []
+                self.BuildingRadiationHOY[HOY] = np.array([])
                 
                 for x_angle in self.XANGLES:
                     for y_angle in self.YANGLES:
-                        self.BuildingRadiationHOY[HOY].append(WindowData[str(x_angle) + str(y_angle)][hour]) 
+                        self.BuildingRadiationHOY[HOY] = np.append(self.BuildingRadiationHOY[HOY], WindowData[str(x_angle) + str(y_angle)][hour]) 
                 hour += 1
                 
             if self.start == 0 and self.end == 8760:
@@ -318,7 +319,7 @@ class ASF_Simulation(object):
                 count = 0
                 passedHours = 0
                  #check if no panels are selected, if so, than PV-Production is zero
-                for monthi in range(0,12):
+                for monthi in range(12):
                     for HOD in range(24):
                         for jj in range(0,self.daysPerMonth[monthi]):
                                timeHour = passedHours + jj*24 + HOD     
@@ -567,8 +568,8 @@ class ASF_Simulation(object):
 				else:
 					pass
                        
-				self.hourlyData = pd.DataFrame(self.hourlyData[ii].T)
-				self.hourlyData.to_csv(os.path.join(self.paths['result'], 'hourlyData_' + ii + '.csv'))
+#				self.hourlyData = pd.DataFrame(self.hourlyData[ii].T)
+#				self.hourlyData.to_csv(os.path.join(self.paths['result'], 'hourlyData_' + ii + '.csv'))
                        
                 
                 x_angles_df = pd.DataFrame(self.x_angles)
@@ -579,6 +580,7 @@ class ASF_Simulation(object):
                 np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
                 self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
                 self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
+                
                 x_angles_df.to_csv(os.path.join(self.paths['result'], 'X-Angles.csv'))
                 y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))
                 			

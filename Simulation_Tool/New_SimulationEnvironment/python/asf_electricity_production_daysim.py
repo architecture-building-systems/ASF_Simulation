@@ -149,13 +149,13 @@ def asf_electricity_production(createPlots=False,
                 TempAVG = 0
                 for day in range(daysPerMonth[monthi]):
                     TimeHour = HourPassed + 24 * day + hour
-                    print TimeHour
+                    #print TimeHour
                     TempAVG += weatherData['drybulb_C'][TimeHour]/daysPerMonth[monthi]                     
                 temp_amb.append(TempAVG)
                 numHours += 1
             HourPassed += daysPerMonth[monthi] * 24
                 
-        print temp_amb    
+        #print temp_amb    
     
         
         DataList = []

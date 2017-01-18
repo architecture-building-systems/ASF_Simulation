@@ -13,9 +13,7 @@ import matplotlib
 
 
 def carpetPlot(X, z_min, z_max, title, roomFloorArea):
-
-#    fig = plt.figure(figsize=(4, 4))
-        
+       
     z= np.reshape(X,(12,24)).T
     z = z/roomFloorArea
     
@@ -30,13 +28,11 @@ def carpetPlot(X, z_min, z_max, title, roomFloorArea):
     # define the location of the middle number (where 0 is):
     z_middle = float(abs(z_min)) / (z_max-z_min) 
                 
-#    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'),
-#                                                    (z_middle, 'white'),
-#                                                    (1, 'firebrick')])
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'), (z_middle, 'white'), (1, 'firebrick')])
                 
-    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'cyan'),
-                                                    (z_middle, 'white'),
-                                                    (1, 'darkorange')])
+#    cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'cyan'),
+#                                                    (z_middle, 'white'),
+#                                                    (1, 'darkorange')])
     
     if z_min ==0:
         cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'white'),(1, 'firebrick')])
@@ -177,7 +173,7 @@ def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
     
     cmap = matplotlib.cm.get_cmap('afmhot')     
            
-    cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.3, 'darkred'),(0.55, 'orange'), (0.75, 'yellow'),(1, 'white')])                                                
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.3, 'darkred'),(0.55, 'orange'), (0.75, 'yellow'),(1, 'white')],7)                                                
     #cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.25, cmap(0.325)),(0.5,cmap(0.55)), (0.75, cmap(0.775)),(1, cmap(1))])                                                
                                          
     #cmap = plt.cm.afmhot

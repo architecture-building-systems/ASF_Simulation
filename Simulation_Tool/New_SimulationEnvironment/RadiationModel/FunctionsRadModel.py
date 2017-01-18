@@ -3,6 +3,8 @@
 Created on Fri Jan 13 14:43:32 2017
 
 @author: Assistenz
+
+old functions, not used
 """
 
 """

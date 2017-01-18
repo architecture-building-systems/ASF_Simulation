@@ -12,7 +12,9 @@ from carpetPlot import carpetPlot, carpetPlotMask
 def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     
     z_max = max(monthlyData[E])/roomFloorArea
-    z_min = min(monthlyData[E])/roomFloorArea
+    z_min = min(monthlyData['PV'])/roomFloorArea
+    
+    print 'z_min', z_min
     
     if z_min > 0.25:
         z_min = -0.25

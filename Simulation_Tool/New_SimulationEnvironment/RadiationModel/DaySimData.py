@@ -45,7 +45,7 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
     d4 = np.genfromtxt(path4, skip_footer= skip_end, skip_header= skip_start)
     
     #the first thre values stand for the time, therefore skip them
-    ASF = np.concatenate((d1[:,3:]/1000., d2[:,3:]/1000., d3[:,3:]/1000.,d4[:,3:]/1000.), axis=1)
+    ASF = np.concatenate((d1[:,3:]/1000., d2[:,3:]/1000., d3[:,3:]/1000.,d4[:,3:]/1000.), axis=1) #The ASF is split in 4 pieces and is added togther
     
     d5 = np.genfromtxt(path5, skip_footer= skip_end, skip_header= skip_start)
     Window = d5 * (0.2**2) # * area of sensorpoint in Wh
@@ -60,10 +60,11 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
             hourHOY = 0
             hourHOY = hour + start
             ASF_HOY[hourHOY]= np.reshape(ASF[hour],(PanelNum, GridPoints))
-            #ASF_HOY[hour]= np.reshape(ASF[hour],(PanelNum, GridPoints))
+            
         
     
     elif TimePeriod == 8760:
+        #for yearly analysis the values are averaged, for every month one day with average radiaiton values will be calculated
         
         daysPerMonth = [31,28,31,30,31,30,31,31,30,31,30,31]
 

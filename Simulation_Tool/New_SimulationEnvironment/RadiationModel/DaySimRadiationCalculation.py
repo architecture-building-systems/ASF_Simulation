@@ -2,7 +2,8 @@
 """
 Created on Fri Jan 06 09:16:01 2017
 
-@author: Assistenz
+@author: Mauro
+Unused!
 """
 import os, sys
 import numpy as np
@@ -12,12 +13,6 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
-#
-#XANGLES = self.XANGLES, 
-#YANGLES = self.YANGLES, 
-#paths = self.paths, 
-#DataFolderName = self.FolderName['DataFolderName'],
-#FileName = self.SimulationData['FileName'])
 
     
 x_angle = 76

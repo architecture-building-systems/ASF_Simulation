@@ -84,8 +84,8 @@ Analysis = {
 
 SimulationData = {
 'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
-'DataFolderName' : 'DaySimZH13Year', #'DaySimSunnyWinter_8_1', #DaySim9comb', 
-'FileName': 'DaySimZH13Year', #'DaySimSunnyWinter_8_1', #'DaySim9comb',
+'DataFolderName' : 'DaySimZH13Year2', #'DaySimSunnyWinter_8_1', #DaySim9comb', 
+'FileName': 'DaySimZH13Year2', #'DaySimSunnyWinter_8_1', #'DaySim9comb',
 'Save' : True,
 'ShowFig': True,
 
@@ -94,32 +94,41 @@ SimulationData = {
 'end': 8760} #8760
 
 PanelData = {
-"XANGLES": [0],#[0,45],
-"YANGLES" : [0]}
+"XANGLES": [0,15,30,45,60,75,90],
+"YANGLES" : [-45,-30,-15,0,15,30,45]}
 
-BuildingProperties = {
-"glass_solar_transmitance" : 0.687,
-"glass_light_transmitance" : 0.744,
-"lighting_load" : 11.74,
+
+BuildingProperties={
+"glass_solar_transmitance" : 0.691 ,
+"glass_light_transmitance" : 0.744 ,
+"lighting_load" : 11.74 ,
 "lighting_control" : 300,
 "Lighting_Utilisation_Factor" :  0.45,
 "Lighting_MaintenanceFactor" : 0.9,
-"U_em" : 0.2,
-"U_w" : 1.2,
+"U_em" : 0.2, 
+"U_w" : 1.1,
 "ACH_vent" : 1.5,
-"ACH_infl" :0.5,
-"ventilation_efficiency" : 0.6 ,
+"ACH_infl" : 0.5,
+"ventilation_efficiency" : 0.6 ,#0.6
 "c_m_A_f" : 165 * 10**3,
-"theta_int_h_set" : 20,
+"theta_int_h_set" : 22,
 "theta_int_c_set" : 26,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSystem" : DirectHeater,
-"coolingSystem" : DirectCooler, 
+"heatingSystem" : DirectHeater, #DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
+"coolingSystem" : DirectCooler, #DirectCooler, #DirectCooler, #HeatPumpCooler
 "heatingEfficiency" : 1,
 "coolingEfficiency" :1,
-"COP_H": 3, 
-"COP_C":3}
+'COP_H': 1,
+'COP_C':1}
+
+#
+#Set simulation Properties
+SimulationOptions= {
+'setBackTempH' : 4.,
+'setBackTempC' : 4.,
+'Occupancy' : 'Occupancy_COM.csv',
+'ActuationEnergy' : False}
 
 	
 if __name__=='__main__':

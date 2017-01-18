@@ -73,7 +73,7 @@ def EvaluationWindow(path = None, project= None):
         path1 = os.path.join(path, project) + r"\output\Window\res\Window.csv"
         Win1 = pd.read_csv(path1)
         
-        Win_df = Win1 * (4900./1000. * 0.92 * 3100./1000. * 0.97)/ (4900./1000. * 0.92/0.2 * 3100./1000. * 0.97/0.2 *1000)# Daysim values * WindoArea / sensorPoints * in kWh
+        Win_df = Win1 * (0.2 * 0.2)/ (1000)# Daysim values * WindoArea / sensorPoints * in kWh
         
         df = pd.DataFrame([0], columns = [0.0])
         Win_df = df.append(Win_df, ignore_index=True)
@@ -287,7 +287,6 @@ ASF_0_45_AM = Evaluation(path = pathFolder, project = 'ASF_0_45_AM')
 ASF_0_Minus45_AM = Evaluation(path = pathFolder, project = 'ASF_0_-45_AM')
 ASF_0_0_AM = Evaluation(path = pathFolder, project = 'ASF_0_0_AM' )
 ASF_45_0_AM = Evaluation(path = pathFolder, project = 'ASF_45_0_AM') 
-ASF_0_0_AM = Evaluation(path = pathFolder, project = 'ASF_0_0_AM')
 ASF_90_0_AM = Evaluation(path = pathFolder, project = 'ASF_90_0_AM' ) 
 
 # default rad param, mat= 0 albedo
@@ -299,12 +298,12 @@ ASF_90_0_All0 = Evaluation(path = pathFolder, project = 'ASF_90_0_All0' )
 
 
 ASF_0_45_AB1 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB1')
-ASF_0_45_AB2 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB2')
+ASF_0_45_AB2 = Evaluation(path = pathFolder, project = 'ASF_0_45_two')
 ASF_0_45_AB4 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB4')
-ASF_0_45_AB6 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB6')
+ASF_0_45_AB6 = Evaluation(path = pathFolder, project = 'ASF_0_45_six')
 ASF_0_45_AB8 = Evaluation(path = pathFolder, project = 'ASF_0_45_AB8')
 
-ASF_0_45_Con066 = Evaluation(path = pathFolder, project = 'ASF_0_45_Con0.66')
+ASF_0_45_Con066 = Evaluation(path = pathFolder, project = 'ASF_0_45_Con066')
 ASF_0_45_Con0 = Evaluation(path = pathFolder, project = 'ASF_0_45_Con0')
 ASF_0_45_Win0 = Evaluation(path = pathFolder, project = 'ASF_0_45_Win0')
 ASF_0_45_ASF0 = Evaluation(path = pathFolder, project = 'ASF_0_45_ASF0')
@@ -327,6 +326,16 @@ ASF_0_0_AB8 = Evaluation(path = pathFolder, project = 'ASF_0_0_AB8')
 Win_0_0 = EvaluationWindow(path = pathFolder, project = 'ASF_0_0_AM' )
 Win_0_45 = EvaluationWindow(path = pathFolder, project = 'ASF_0_45_AM' )
 Win_0_Minus45 =  EvaluationWindow(path = pathFolder, project = 'ASF_0_-45_AM' )
+Win_90_0 = EvaluationWindow(path = pathFolder, project = 'ASF_90_0_AM' )
+Win_45_0 = EvaluationWindow(path = pathFolder, project = 'ASF_45_0_AM' )
+
+
+Win_0_0_All0 = EvaluationWindow(path = pathFolder, project = 'ASF_0_0_All0' )
+Win_0_45_All0 = EvaluationWindow(path = pathFolder, project = 'ASF_0_45_All0' )
+Win_0_Minus45_All0 =  EvaluationWindow(path = pathFolder, project = 'ASF_0_-45_All0' )
+Win_90_0_All0 = EvaluationWindow(path = pathFolder, project = 'ASF_90_0_All0' )
+Win_45_0_All0 = EvaluationWindow(path = pathFolder, project = 'ASF_45_0_All0' )
+
 
 
 ASF_0_0_EPW = Evaluation(path = pathFolder, project = 'ASF_0_0_EPW')
@@ -379,19 +388,46 @@ result045Mat = pd.concat([ASF_0_45_Con0, ASF_0_45_Con066, ASF_0_45_Con1, ASF_0_4
 result045Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM']
 #data = BoxPlot(data =result045Mat, title = 'Material Analysis - Combination 0/45', index = ('0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM'))
 
-
+"""
+#sunny day 6. july
+start = 4460
+end = 4491
+"""
 start = 0
 end = 8760
 
 result045_Mat = pd.concat([ASF_0_45_Con0/ASF_0_45_AM, ASF_0_45_Con066/ASF_0_45_AM, ASF_0_45_Con1/ASF_0_45_AM, ASF_0_45_Win0/ASF_0_45_AM, ASF_0_45_Win1/ASF_0_45_AM, ASF_0_45_ASF0/ASF_0_45_AM, ASF_0_45_ASF1/ASF_0_45_AM, ASF_0_45_AM/ASF_0_45_AM], axis=1)
 result045_Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1','0/45_AM']
-result045_Mat[start:end].plot(kind='line') 
+#result045_Mat[start:end].plot(kind='line', title = 'Material Analysis', grid = True) 
+
 
 result045Bounce_2 = pd.concat([ASF_0_45_AB1/ASF_0_45_AB4, ASF_0_45_AB2/ASF_0_45_AB4, ASF_0_45_AB4/ASF_0_45_AB4, ASF_0_45_AB6/ASF_0_45_AB4, ASF_0_45_AB8/ASF_0_45_AB4], axis=1)
 result045Bounce_2.columns = ['0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8']
-result045Bounce_2[start:end].plot(kind='line') 
+#result045Bounce_2[start:end].plot(kind='line', title = 'Ambient Bounces Analysis', grid = True) 
 
 Result = {}
+#Radiation on Window
+Result['W045'] = pd.concat([Win_0_45/Win_0_45_All0, Win_0_45_All0/Win_0_45_All0], axis=1)
+Result['W045'].columns = ['Win0/45_AM', 'Win0/45_All0']
+Result['W045'][start:end].plot(kind='line', title = 'Window045', grid = True) 
+#
+Result['W00'] = pd.concat([Win_0_0,  Win_0_0_All0], axis=1)
+Result['W00'].columns = ['Win0/0_AM','Win0/0_All0']
+Result['W00'][start:end].plot(kind='line', title = 'Window00', grid = True) 
+
+Result['W0-45'] = pd.concat([Win_0_Minus45, Win_0_Minus45_All0], axis=1)
+Result['W0-45'].columns = ['Win0/-45_AM',  'Win0/-45_All0']
+Result['W0-45'][start:end].plot(kind='line', title = 'Window0-45', grid = True) 
+
+Result['W450'] = pd.concat([ Win_45_0, Win_45_0_All0] , axis=1)
+Result['W450'].columns = ['Win45/0_AlbedoMix','Win45/0_All0']
+Result['W450'][start:end].plot(kind='line', title = 'Window450', grid = True) 
+
+Result['W900'] = pd.concat([ Win_90_0, Win_90_0_All0] , axis=1)
+Result['W900'].columns = ['Win90/0_AM','Win90/0_All0']
+Result['W900'][start:end].plot(kind='line', title = 'Window900', grid = True) 
+
+
 
 Result['045'] = pd.concat([ASF_0_45_AM, ASF_0_45_All0, SolarData_df['045']], axis=1)
 Result['045'].columns = ['ASF0/45_AM', 'ASF0/45_All0','LB-0/45']
