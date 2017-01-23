@@ -77,25 +77,51 @@ from buildingSystem import *
 from SimulationClassDaySim import ASF_Simulation
 
 Analysis = {
-'DaySimSunnySommer_6_7' : 4465 - 4485, #Temp_start = 22
-'DaySimSunnyWinter_8_1' :  170 -  190 #Temp_start = 18
+'DaySimSunnySommer_6_7' : 4465 - 4485, #Temp_start = 22 #old Material
+'DaySimSunnyWinter_8_1' :  170 -  190, #Temp_start = 18
+'DaySimZH13Year2' : 0-8760,
+'DaySimZH13Year' : 0- 8760,
+'DaySimZH13YearXANGLE' : 0- 8760,
+'DaySimSunnySommer_6_7_2' : 4465 - 4485, #Mat = 0.2
+'DaySimSunnyWinter_8_1_2' : 170 - 190, # Mat = 0.2
+'DaySimZH13YearXANGLE': 0-8760
+
 }
 
 
 SimulationData = {
 'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
-'DataFolderName' : 'DaySimZH13Year2', #'DaySimSunnyWinter_8_1', #DaySim9comb', 
-'FileName': 'DaySimZH13Year2', #'DaySimSunnyWinter_8_1', #'DaySim9comb',
+
+'DataFolderName' : 'DaySimZH13YearMat0', 
+'FileName': 'DaySimZH13YearMat0', 
+'ProjectName': 'Mat0',
+
+#'DataFolderName' : 'DaySimZH13YearYANGLE', 
+#'FileName': 'DaySimZH13YearYANGLE', 
+
+#'DataFolderName' : 'DaySimZH13YearXANGLE', 
+#'FileName': 'DaySimZH13YearXANGLE',
+
 'Save' : True,
 'ShowFig': True,
 
-'Temp_start' : 18,
+'Temp_start' : 20,
 'start' : 0,
 'end': 8760} #8760
 
 PanelData = {
 "XANGLES": [0,15,30,45,60,75,90],
 "YANGLES" : [-45,-30,-15,0,15,30,45]}
+
+#PanelData = {
+#"XANGLES": [0,15,30,45,60,75,90],
+#"YANGLES" : [0]}
+
+Material = {
+'ASF' : 0,
+'Window': 0}
+
+
 
 
 BuildingProperties={
@@ -119,20 +145,20 @@ BuildingProperties={
 "coolingSystem" : DirectCooler, #DirectCooler, #DirectCooler, #HeatPumpCooler
 "heatingEfficiency" : 1,
 "coolingEfficiency" :1,
-'COP_H': 1,
-'COP_C':1}
+'COP_H': 3,
+'COP_C':3}
 
 #
 #Set simulation Properties
 SimulationOptions= {
-'setBackTempH' : 4.,
-'setBackTempC' : 4.,
+'setBackTempH' : 1.,
+'setBackTempC' : 1.,
 'Occupancy' : 'Occupancy_COM.csv',
 'ActuationEnergy' : False}
 
 	
 if __name__=='__main__':
-    ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingProperties = BuildingProperties)
+    ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingProperties = BuildingProperties, Material = Material)
     ASFtest.SolveASF()
     #yearlyData = ASFtest.yearlyData
     results = ASFtest.ResultsBuildingSimulation

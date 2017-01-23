@@ -11,7 +11,7 @@ import os
 
 
 
-def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_angle):
+def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_angle, MatDict):
     
     PanelNum = 50
     PanelLen = 400 #mm
@@ -67,7 +67,8 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
         #for yearly analysis the values are averaged, for every month one day with average radiaiton values will be calculated
         
         daysPerMonth = [31,28,31,30,31,30,31,31,30,31,30,31]
-
+        
+        #initialize dict which saves all hours for ech averaged monthly day
         avgHour = {}
         for monthi in range(12):
             avgHour[monthi]= {}
@@ -85,9 +86,9 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
         ASF_AVG = {}
                 
         for hour in range(TimePeriod):
-            hourHOY = 0
-            hourHOY = hour + start
-            ASF_HOY[hourHOY]= np.reshape(ASF[hour],(PanelNum, GridPoints))
+#            hourHOY = 0
+#            hourHOY = hour + start
+            ASF_HOY[hour]= np.reshape(ASF[hour],(PanelNum, GridPoints))
             #ASF_HOY[hour]= np.reshape(ASF[hour],(PanelNum, GridPoints))
             
            
@@ -99,13 +100,14 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
 
                 for ii in range(daysPerMonth[monthi]):                    
                     ASF_AVG[monthi][hour] += ASF_HOY[avgHour[monthi][hour][ii]]/float(daysPerMonth[monthi])    
-                                    
+        
+                                   
         ASF_HOY = ASF_AVG
         print 'Monthly Averaged Values Saved!'
          
     
-    np.save(os.path.join(path_save,project_name) + '_' + str(start) + '_' + str(end-1) + '.npy', ASF_HOY)    
-    np.save(os.path.join(path_save, 'Window_'+str(x_angle) + '_' + str(y_angle)) + '_' + str(start) + '_' + str(end-1)+ '.npy', Window)   
+    np.save(os.path.join(path_save,project_name) + '_' + str(start) + '_' + str(end-1) + '_' + str(MatDict['ASF']) + '.npy', ASF_HOY)    
+    np.save(os.path.join(path_save, 'Window_'+str(x_angle) + '_' + str(y_angle)) + '_' + str(start) + '_' + str(end-1)+ '_' + str(MatDict['Window']) + '.npy', Window)   
  
     toc = time.time() - tic
     print 'time passed (min): ' + str(round(toc/60.,2))
@@ -127,9 +129,14 @@ y_angle = 0
 dataAVG, dataHOY = ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_angle)
 
 jan= {}
-Summe = 0
-for ii in range(31):
-    jan[ii] = dataHOY[12+24*ii]
-    Summe += jan[ii][0][0]/31.
+
+SuM = {}
+for hour in range(24):
+    Summe = 0
+    for ii in range(31):
+        jan[ii] = dataHOY[hour+24*ii]
+        Summe += jan[ii][0][0]/31.
+    SuM[hour] = Summe
+    print Summe
     
 """

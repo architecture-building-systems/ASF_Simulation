@@ -94,11 +94,11 @@ def LB():
     
 
     paths = {}
-#    paths['radiation_results'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_3comb_year'
-#    paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_3comb_year'
+    paths['radiation_results'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_3comb_year'
+    paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_3comb_year'
     
-    paths['radiation_results'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_45_0'
-    paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_45_0'
+#    paths['radiation_results'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_45_0'
+#    paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_45_0'
 
 #    paths['radiation_results'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_results_ZH13_90_0'
 #    paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_90_0'
@@ -122,14 +122,14 @@ def LB():
 #        'Temp_start' : 18}#20
     daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
     
-    XANGLES = [45]
+    XANGLES = [0,45,90]
     YANGLES = [0] #-45,0,
     
     for x_angle in XANGLES:
         for y_angle in YANGLES:
             
-            x_angle = 45
-            y_angle = 0
+#            x_angle = 45
+#            y_angle = 0
 #            
             print str(x_angle)+str(y_angle)
             
@@ -156,7 +156,7 @@ def LB():
                         SolarRadiationData = np.array([])            
 
                             
-                        
+                        """
                         with open(os.path.join(paths['radiation_results'], 'RadiationResults' + '_' + str(hour) + '_' + str(day) + '_' + str(monthi) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv'), 'r') as csvfile:
                                     
                             #print 'RadiationResults' +'_' +  str(hour) + '_' + str(day) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv'                                    
@@ -177,33 +177,30 @@ def LB():
                                     BuildingRadiationData = np.append(BuildingRadiationData, [float(line[0])])
                                     #print "Buil", BuildingRadiationData
                                     BuilData[str(x_angle)+str(y_angle)][HOY+1] = BuildingRadiationData[0] 
-                                    #break
-                        """
-                    #Radiation data is calculated for all days per month, so the data is divided through the amount of days per month
+                                    
+                       
+                   
                     
-#                    BuilRadData[monthi][day][hour] = BuildingRadiationData  #kW/h
+                    BuilRadData[monthi][day][hour] = BuildingRadiationData  #kW/h
 
-                    SolarRadData[monthi][day][hour]= SolarRadiationData  #kW/h
+                    #SolarRadData[monthi][day][hour]= SolarRadiationData  #kW/h
                     
     pathSave = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
     
     #np.save(os.path.join(pathSave,'SolarData.npy'),SolarData)  
-    np.save(os.path.join(pathSave,'SolarData2.npy'),SolarData)   
+    #np.save(os.path.join(pathSave,'SolarData2.npy'),SolarData)   
     #np.save(os.path.join(pathSave,'SolarData3.npy'),SolarData)       
-    SolarData_df = pd.DataFrame(SolarData)
+    #SolarData_df = pd.DataFrame(SolarData)
     #SolarData_df = SolarData_df.T
+    #SolarData_df.to_csv(os.path.join(pathSave, 'SolarData.csv'))
     
- #   BuildingData_df = pd.DataFrame(BuilData)
+    BuildingData_df = pd.DataFrame(BuilData)        
+    BuildingData_df = BuildingData_df.T
+    np.save(os.path.join(pathSave,'BuildingData.npy'),BuilData) 
+    BuildingData_df.to_csv(os.path.join(pathSave, 'BuildingData.csv'))
     
-    
-    #BuildingData_df = BuildingData_df.T
-    
-
-#    SolarData_df.to_csv(os.path.join(pathSave, 'SolarData.csv'))
-#    BuildingData_df.to_csv(os.path.join(pathSave, 'BuildingData.csv'))
-    
-    return SolarData_df, SolarData #, BuilData, BuildingData_df
-    
+    #return SolarData_df, SolarData #, BuilData, BuildingData_df
+    return BuilData, BuildingData_df
 
 def BoxPlot(data, title, index):
     
@@ -281,6 +278,7 @@ pathSave = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New
 
 #SolarData_df, SolarData = LB()
 
+#BuilData, BuildingData_df = LB()
 
 # default rad param, mat= albedo mix
 ASF_0_45_AM = Evaluation(path = pathFolder, project = 'ASF_0_45_AM')
@@ -374,36 +372,40 @@ SolarData_df2 = pd.DataFrame(SolarData2)
 SolarData3 = np.load(os.path.join(pathSave, 'SolarData3.npy')).item()
 SolarData_df3 = pd.DataFrame(SolarData3)
 
+WindowData = np.load(os.path.join(pathSave, 'BuildingData.npy')).item()
+BuildingRad_df = pd.DataFrame(WindowData)
+
+
 
 SolarData_df = pd.concat([SolarData_df,SolarData_df2, SolarData_df3], axis=1)
 
 #different number of bounces for one combination
 result045Bounce = pd.concat([ASF_0_45_AB1, ASF_0_45_AB2, ASF_0_45_AB4, ASF_0_45_AB6, ASF_0_45_AB8], axis=1)
 result045Bounce.columns = ['0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8']
-#data = BoxPlot(data =result045Bounce, title = 'Analysis of the Ambient Bounces', index = ('0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8'))
+data = BoxPlot(data =result045Bounce, title = 'Analysis of the Ambient Bounces', index = ('0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8'))
 
 
 #different material values for one combination
 result045Mat = pd.concat([ASF_0_45_Con0, ASF_0_45_Con066, ASF_0_45_Con1, ASF_0_45_Win0, ASF_0_45_Win1, ASF_0_45_ASF0, ASF_0_45_ASF1, ASF_0_45_Ro0, ASF_0_45_Ro1, ASF_0_45_AM], axis=1)
 result045Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM']
-#data = BoxPlot(data =result045Mat, title = 'Material Analysis - Combination 0/45', index = ('0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM'))
+data = BoxPlot(data =result045Mat, title = 'Material Analysis - Combination 0/45', index = ('0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1', '0/45_Ro0', '0/45_Ro1', '0/45_AM'))
 
-"""
+
 #sunny day 6. july
 start = 4460
 end = 4491
-"""
-start = 0
-end = 8760
+
+#start = 0
+#end = 8760
 
 result045_Mat = pd.concat([ASF_0_45_Con0/ASF_0_45_AM, ASF_0_45_Con066/ASF_0_45_AM, ASF_0_45_Con1/ASF_0_45_AM, ASF_0_45_Win0/ASF_0_45_AM, ASF_0_45_Win1/ASF_0_45_AM, ASF_0_45_ASF0/ASF_0_45_AM, ASF_0_45_ASF1/ASF_0_45_AM, ASF_0_45_AM/ASF_0_45_AM], axis=1)
 result045_Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1','0/45_AM']
-#result045_Mat[start:end].plot(kind='line', title = 'Material Analysis', grid = True) 
+result045_Mat[start:end].plot(kind='line', title = 'Material Analysis', grid = True) 
 
 
 result045Bounce_2 = pd.concat([ASF_0_45_AB1/ASF_0_45_AB4, ASF_0_45_AB2/ASF_0_45_AB4, ASF_0_45_AB4/ASF_0_45_AB4, ASF_0_45_AB6/ASF_0_45_AB4, ASF_0_45_AB8/ASF_0_45_AB4], axis=1)
 result045Bounce_2.columns = ['0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8']
-#result045Bounce_2[start:end].plot(kind='line', title = 'Ambient Bounces Analysis', grid = True) 
+result045Bounce_2[start:end].plot(kind='line', title = 'Ambient Bounces Analysis', grid = True) 
 
 Result = {}
 #Radiation on Window
@@ -411,21 +413,25 @@ Result['W045'] = pd.concat([Win_0_45/Win_0_45_All0, Win_0_45_All0/Win_0_45_All0]
 Result['W045'].columns = ['Win0/45_AM', 'Win0/45_All0']
 Result['W045'][start:end].plot(kind='line', title = 'Window045', grid = True) 
 #
-Result['W00'] = pd.concat([Win_0_0,  Win_0_0_All0], axis=1)
-Result['W00'].columns = ['Win0/0_AM','Win0/0_All0']
+Result['W00'] = pd.concat([Win_0_0,  Win_0_0_All0, BuildingRad_df['00']], axis=1)
+Result['W00'].columns = ['Win0/0_AM','Win0/0_All0', 'LB']
 Result['W00'][start:end].plot(kind='line', title = 'Window00', grid = True) 
 
 Result['W0-45'] = pd.concat([Win_0_Minus45, Win_0_Minus45_All0], axis=1)
 Result['W0-45'].columns = ['Win0/-45_AM',  'Win0/-45_All0']
 Result['W0-45'][start:end].plot(kind='line', title = 'Window0-45', grid = True) 
 
-Result['W450'] = pd.concat([ Win_45_0, Win_45_0_All0] , axis=1)
-Result['W450'].columns = ['Win45/0_AlbedoMix','Win45/0_All0']
+Result['W450'] = pd.concat([ Win_45_0, Win_45_0_All0, BuildingRad_df['450']] , axis=1)
+Result['W450'].columns = ['Win45/0_AlbedoMix','Win45/0_All0', 'LB']
 Result['W450'][start:end].plot(kind='line', title = 'Window450', grid = True) 
 
-Result['W900'] = pd.concat([ Win_90_0, Win_90_0_All0] , axis=1)
-Result['W900'].columns = ['Win90/0_AM','Win90/0_All0']
+Result['W900'] = pd.concat([ Win_90_0, Win_90_0_All0, BuildingRad_df['900']] , axis=1)
+Result['W900'].columns = ['Win90/0_AM','Win90/0_All0', 'LB']
 Result['W900'][start:end].plot(kind='line', title = 'Window900', grid = True) 
+
+Result['WLB'] = pd.concat([BuildingRad_df['00']/BuildingRad_df['00'], BuildingRad_df['450']/BuildingRad_df['00'], BuildingRad_df['900']/BuildingRad_df['00']], axis=1)
+Result['WLB'].columns = ['WLB00', 'WLB450', 'WLB900']
+#Result['WLB'][4474:4480].plot(kind='line', title = 'WindowLB', grid = True) 
 
 
 
@@ -434,15 +440,18 @@ Result['045'].columns = ['ASF0/45_AM', 'ASF0/45_All0','LB-0/45']
 #
 Result['00'] = pd.concat([ASF_0_0_AM,  ASF_0_0_All0, SolarData_df['00']], axis=1)
 Result['00'].columns = ['ASF0/0_AM','ASF0/0_All0','LB-0/0']
+#Result['00'][start:end].plot(kind='line', title = '00', grid = True)
 
 Result['0-45'] = pd.concat([ASF_0_Minus45_AM, ASF_0_Minus45_All0, SolarData_df['0-45']], axis=1)
-Result['0-45'].columns = ['ASF0/-45_AM',  'ASF0/-45_All0','LB-0/-45']
+#Result['0-45'].columns = ['ASF0/-45_AM',  'ASF0/-45_All0','LB-0/-45']
 
 Result['450'] = pd.concat([ ASF_45_0_AM, ASF_45_0_All0,  SolarData_df['450']] , axis=1)
 Result['450'].columns = ['ASF45/0_AlbedoMix','ASF45/0_All0',  'LB-45/0']
+#Result['450'][start:end].plot(kind='line', title = '450', grid = True)
 
 Result['900'] = pd.concat([ ASF_90_0_AM, ASF_90_0_All0,  SolarData_df['900']] , axis=1)
 Result['900'].columns = ['90/0_AM','90/0_All0',  'LB-90/0']
+#Result['900'][start:end].plot(kind='line', title = '900', grid = True)
 
 
 
@@ -454,12 +463,12 @@ sum_0Minus45 = Result['0-45'][start:end].sum()
 result045 = Result['045']
 result045_6 = pd.concat([result045['ASF0/45_AM'][start:end]/result045['ASF0/45_All0'][start:end], result045['LB-0/45'][start:end]/result045['ASF0/45_All0'][start:end], result045['ASF0/45_All0'][start:end]/result045['ASF0/45_All0'][start:end]], axis=1)
 result045_6.columns = ['Ratio', 'RatioLB', 'ASF0/45_All0']
-#result045_6[start:end].plot(kind='line') 
+result045_6[start:end].plot(kind='line') 
 
 result00 = Result['00']
 result00_6 = pd.concat([result00['ASF0/0_AM'][start:end]/result00['ASF0/0_All0'][start:end], result00['LB-0/0'][start:end]/result00['ASF0/0_All0'][start:end], result00['ASF0/0_All0'][start:end]/result00['ASF0/0_All0'][start:end]], axis=1)
 result00_6.columns = ['Ratio', 'RatioLB', 'ASF0/0_All0']
-#result00_6[start:end].plot(kind='line') 
+result00_6[start:end].plot(kind='line') 
 
 res = Result['0-45']
 result0Minus45_6 = pd.concat([res['ASF0/-45_AM'][start:end]/res['ASF0/-45_All0'][start:end], res['LB-0/-45'][start:end]/res['ASF0/-45_All0'][start:end], res['ASF0/-45_All0'][start:end]/res['ASF0/-45_All0'][start:end]], axis=1)

@@ -54,15 +54,15 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
 #        src= os.path.join(paths['source'],'Context.stl')
 #        shutil.copy(src, paths['input'])
         
-        src= os.path.join(paths['source'], 'base.rad')
-        shutil.copy(src, paths['input'])
-        
-        
-        src= os.path.join(os.path.join(paths['source'], 'py2radiance_data'), 'command.txt')
-        shutil.copy(src, paths['py2radiance_data'])
-        
-        src= os.path.join(os.path.join(paths['source'], 'py2radiance_data'), 'geometry.rad')
-        shutil.copy(src, paths['py2radiance_data'])
+#        src= os.path.join(paths['source'], 'base.rad')
+#        shutil.copy(src, paths['input'])
+#        
+#        
+#        src= os.path.join(os.path.join(paths['source'], 'py2radiance_data'), 'command.txt')
+#        shutil.copy(src, paths['py2radiance_data'])
+#        
+#        src= os.path.join(os.path.join(paths['source'], 'py2radiance_data'), 'geometry.rad')
+#        shutil.copy(src, paths['py2radiance_data'])
         
         
         with open(os.path.join(paths['input'],'background_geometries.csv'), 'wb') as csvfile:
@@ -73,7 +73,7 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
             writer.writerow({'name': project_name , 'mat_name': '0_6', 'mat_value': MaterialDict['ASF']})
             writer.writerow({'name': 'Window', 'mat_name': '0_7', 'mat_value': MaterialDict['Window']})
             writer.writerow({'name': 'Room', 'mat_name': '0_8', 'mat_value': 0.2})
-            writer.writerow({'name': 'Context', 'mat_name': '0_8', 'mat_value': 0.2})
+            writer.writerow({'name': 'Context', 'mat_name': '0_8', 'mat_value': MaterialDict['Context']})
     
         PanelData = {
         "XANGLES": x_angle,
@@ -208,16 +208,17 @@ def STLFolder(x_angle, y_angle):
     
     
     
-XANGLES = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90]
-YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]
+#XANGLES = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90]
+#YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]
 
-#XANGLES = [60]
-#YANGLES = [15]
+XANGLES = [3]
+YANGLES = [-7]
 
 # set material reflectance valcue of ASF and Window (from 0 to 1)
 MaterialDict = {
 'ASF': 0.2,
-'Window': 0.2}
+'Window': 0.2,
+'Context' : 0.2}
 
 source = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization\ASF_0_0_AM\input' 
 path_project = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'   

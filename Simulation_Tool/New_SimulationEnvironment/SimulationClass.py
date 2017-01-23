@@ -493,27 +493,27 @@ class ASF_Simulation(object):
                     self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.png'))
                 else:
                     pass
-			
-			
-                if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
-                    if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
-					#save figures
-                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.pdf'))
-                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.pdf'))
-                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.png'))
-                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.png'))
-                else:
-                    pass
-                
-                if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
-				if ('SolarEnergy' and 'Lighting') in self.optimization_Types:           
-					#save figures
-					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.pdf'))
-					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.pdf'))
-					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.png'))
-					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.png'))
-                else:
-                     pass
+
+                if self.start == 0 and self.end == 8760:
+                    if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
+                        if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
+    					#save figures
+                            self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.pdf'))
+                            self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.pdf'))
+                            self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.png'))
+                            self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.png'))
+                    else:
+                        pass
+                    
+                    if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
+    				if ('SolarEnergy' and 'Lighting') in self.optimization_Types:           
+    					#save figures
+    					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.pdf'))
+    					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.pdf'))
+    					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.png'))
+    					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.png'))
+                    else:
+                         pass
                  
                 for ii in self.optimization_Types:
 				if ii == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):

@@ -168,6 +168,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         results_building_simulation[hour_of_year]['T_in'] = np.nan
         results_building_simulation[hour_of_year]['T_out'] = np.nan
         results_building_simulation[hour_of_year]['RadiationWindow'] = np.nan
+        results_building_simulation[hour_of_year]['UncomfHour'] = np.nan
     
     tic = time.time()
     #run for every hour of year the RC-Model    
@@ -536,12 +537,18 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
     
         #count uncomfortable hours
-        if (T_in > Tmax or T_in < Tmin) and occupancy['People'][hour_of_year] != 0: 
-            uncomf_hours += 1
-            uncomf_hours_HOY.append(hour_of_year)
-            
+        # with 20 Precent range
+        UncomfHour = None
+        if occupancy['People'][hour_of_year] != 0: 
+            if T_in  > Tmax * 1.2 or T_in  < Tmin * 0.8:
+                uncomf_hours += 1
+                uncomf_hours_HOY.append(hour_of_year)
+                UncomfHour = True
+            else:
+                UncomfHour = False
         
         #save optimal results in a dictionary and convert to a DataFrame   
+        results_building_simulation[hour_of_year]['UncomfHour'] = UncomfHour
         results_building_simulation[hour_of_year]['E_tot'] = hourlyData[hour_of_year]['E_tot'][BestComb]
         results_building_simulation[hour_of_year]['E_HCL'] =hourlyData[hour_of_year]['E_HCL'][BestComb]
         results_building_simulation[hour_of_year]['HC']  = hourlyData[hour_of_year]['HC'][BestComb]

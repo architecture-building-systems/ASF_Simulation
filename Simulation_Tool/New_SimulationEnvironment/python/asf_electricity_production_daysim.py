@@ -116,7 +116,7 @@ def asf_electricity_production(createPlots=False,
     #Load data
     for x_angle in XANGLES:
         for y_angle in YANGLES:
-                fileName = 'ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1)
+                fileName = '2ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1)
                 DaySimData[str(x_angle) + str(y_angle)] = np.load(os.path.join(path_DaySimData, fileName + '.npy')).item()
     
     if start != 0 or end != 8760:

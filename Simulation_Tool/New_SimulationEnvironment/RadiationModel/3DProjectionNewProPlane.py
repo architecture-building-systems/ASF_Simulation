@@ -13,7 +13,7 @@ import pylab
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-from sympy.abc import t
+#from sympy.abc import t
 
 
 paths = {}
@@ -89,11 +89,11 @@ print str(ii)
 
 #SunVec = np.array([-2000, 2000 ,2000])
 #SunVec = np.array([0.92, -35 ,2])*1000
-SunVec = np.array([SunData['xV'][TotalHOY[ii]], SunData['yV'][TotalHOY[ii]], SunData['zV'][TotalHOY[ii]]])
+SunVec = np.array([SunData['xV'][TotalHOY[ii]], SunData['yV'][TotalHOY[ii]], SunData['zV'][TotalHOY[ii]]]) *1000
 SunPos = np.array([SunData['xP'][TotalHOY[ii]], SunData['yP'][TotalHOY[ii]], SunData['zP'][TotalHOY[ii]]])
 
 PanelNum = len(PanelPoints)/4
-PanelNum = 22
+#PanelNum = 10
 
 
 
@@ -223,8 +223,8 @@ def DisPoints (P1,P2):
 def Area(Dict):
     #calcualte area of polygon
     ASF_dict = Dict
-    p1, p2, p3, p4 = map(Point, [(ASF_dict[0][0], ASF_dict[0][2]), (ASF_dict[1][0], ASF_dict[1][2]), 
-                             (ASF_dict[2][0], ASF_dict[2][2]), (ASF_dict[3][0], ASF_dict[3][2])])
+    p1, p2, p3, p4 = map(Point, [(ASF_dict[0][0], ASF_dict[0][1]), (ASF_dict[1][0], ASF_dict[1][1]), 
+                             (ASF_dict[2][0], ASF_dict[2][1]), (ASF_dict[3][0], ASF_dict[3][1])])
     poly1 = Polygon(p1, p2, p3, p4)
     
     resultASF = abs(round(float(poly1.area),2)) #mm2
@@ -236,7 +236,7 @@ xAngle = 0
 yAngle = 45
 
 XANGLES = [45]
-YANGLES = [45]
+YANGLES = [-45]
 
 TotalDict = {}
 
@@ -250,22 +250,22 @@ for x_angle in XANGLES:
         
         print str(x_angle), str(y_angle)
         
-        xAngle = np.deg2rad(x_angle)
+        xAngle = np.deg2rad(-x_angle)
         yAngle = np.deg2rad(y_angle) 
         
         #old projection plane
         
-        S1 = [10,-5000,10]
-        S2 = [10,-5000,50010]
-        S3, PointA = ProjPlane(S1 = S1, n = SunVec)
-        S3 = [50010,-5000,10]
+#        S1 = [10,-5000,10]
+#        S2 = [10,-5000,50010]
+#        S3, PointA = ProjPlane(S1 = S1, n = SunVec)
+#        S3 = [50010,-5000,10]
         
         #new projection plan
         
-#        S1 = [0,0,-1]
-#        S2 = [0,5000,-1]
-#        #3S3, PointA = ProjPlane(S1 = S1, n = SunVec)
-#        S3 = [5000,0,-1]
+        S1 = [0,0,-10]
+        S2 = [0,5000,-10]
+        #3S3, PointA = ProjPlane(S1 = S1, n = SunVec)
+        S3 = [5000,0,-10]
         
         
         RoomPrime = []
@@ -311,14 +311,14 @@ for x_angle in XANGLES:
                 Prime = PointPro(S1 = S1, S2 = S2, S3= S3, A = ASF_dict[ii][jj], SunVec = SunVec)
                 ASFPrime.append(Prime)
                 
-                ASFX.append(Prime[0])
-                ASFX.append(ASF_dict[ii][jj][0])
-            
-                ASFY.append(Prime[1])
-                ASFY.append(ASF_dict[ii][jj][1])
-            
+                ASFX.append(Prime[0])                            
+                ASFY.append(Prime[1])                            
                 ASFZ.append(Prime[2])
-                ASFZ.append(ASF_dict[ii][jj][2])        
+
+#                ASFZ.append(ASF_dict[ii][jj][2])
+#                ASFY.append(ASF_dict[ii][jj][1])
+#                ASFX.append(ASF_dict[ii][jj][0])
+
                 count += 1
                 
             ASF_dict_prime[ii] = ASFPrime        
@@ -333,29 +333,30 @@ for x_angle in XANGLES:
         
         Shadow = {}
         ASFArea = {}
+        ASFRealArea = {}
         Shadow[0] = 0
         ASFArea[0] = result1
         
         SumArea = 0
-        
+        """
         for ii in range(1,PanelNum):
             #case: if far right point of panel is within the panel to the right
-            p = Polygon((ASF_dict_prime[ii][0][0],ASF_dict_prime[ii][0][2]),
-                        (ASF_dict_prime[ii][1][0],ASF_dict_prime[ii][1][2]),
-                        (ASF_dict_prime[ii][2][0],ASF_dict_prime[ii][2][2]),
-                        (ASF_dict_prime[ii][3][0],ASF_dict_prime[ii][3][2]))
+            p = Polygon((ASF_dict_prime[ii][0][0],ASF_dict_prime[ii][0][1]),
+                        (ASF_dict_prime[ii][1][0],ASF_dict_prime[ii][1][1]),
+                        (ASF_dict_prime[ii][2][0],ASF_dict_prime[ii][2][1]),
+                        (ASF_dict_prime[ii][3][0],ASF_dict_prime[ii][3][1]))
             
-            if p.encloses_point(Point(ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2])):
+            if p.encloses_point(Point(ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1])):
                 #if Point is in polygon p, than true will be returned
                 #test if far right point of asf porjection lies in the panel right to the existing one
                 
                 #Calculate Intersection               
-                p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][2]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][2]), 
-                                     (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][2]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][2])])
+                p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][1]), 
+                                     (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][1]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][1])])
         
         
-                p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[ii-1][0][0], ASF_dict_prime[ii-1][0][2]), (ASF_dict_prime[ii-1][1][0], ASF_dict_prime[ii-1][1][2]),
-                                     (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (ASF_dict_prime[ii-1][3][0], ASF_dict_prime[ii-1][3][2])])
+                p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[ii-1][0][0], ASF_dict_prime[ii-1][0][1]), (ASF_dict_prime[ii-1][1][0], ASF_dict_prime[ii-1][1][1]),
+                                     (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (ASF_dict_prime[ii-1][3][0], ASF_dict_prime[ii-1][3][1])])
         
                 poly1 = Polygon(p1, p2, p3, p4)
                 poly2 = Polygon(p5, p6, p7, p8)
@@ -365,8 +366,8 @@ for x_angle in XANGLES:
                 SP2 = a[1]
                 
                 
-                resultShadow = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][2]), (SP1[0],SP1[1]),
-                            (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][2])).area)
+                resultShadow = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (SP1[0],SP1[1]),
+                            (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])).area)
                 
                 resultASF = abs(poly1.area)
                 
@@ -392,11 +393,12 @@ for x_angle in XANGLES:
             
             print "ASFreal: ", ii    
             result2 = Area(Dict = ASF_dict[ii])
+            ASFRealArea[ii] = result2
             print result2
             
         TotalDict[str(x_angle) + str(y_angle)] = SumArea 
            
-        
+     
         
         for ii in range(1,row): #2
             #case: check if the lowest edge of  a panel is intersection with panel below
@@ -405,22 +407,22 @@ for x_angle in XANGLES:
                                 
                 if (colNum + ii *col) < PanelNum: #skip the last panels 
                 
-                    p = Polygon((ASF_dict_prime[colNum + ii *col][0][0],ASF_dict_prime[colNum + ii *col][0][2]),
-                                (ASF_dict_prime[colNum + ii *col][1][0],ASF_dict_prime[colNum + ii *col][1][2]),
-                                (ASF_dict_prime[colNum + ii *col][2][0],ASF_dict_prime[colNum + ii *col][2][2]),
-                                (ASF_dict_prime[colNum + ii *col][3][0],ASF_dict_prime[colNum + ii *col][3][2]))
+                    p = Polygon((ASF_dict_prime[colNum + ii *col][0][0],ASF_dict_prime[colNum + ii *col][0][1]),
+                                (ASF_dict_prime[colNum + ii *col][1][0],ASF_dict_prime[colNum + ii *col][1][1]),
+                                (ASF_dict_prime[colNum + ii *col][2][0],ASF_dict_prime[colNum + ii *col][2][1]),
+                                (ASF_dict_prime[colNum + ii *col][3][0],ASF_dict_prime[colNum + ii *col][3][1]))
     
                 
-                    if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])):
+                    if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])):
                         #if Point is in polygon p, than true will be returned
                         
                         #Calculate Intersection               
-                        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[col + ii *colNum][0][0], ASF_dict_prime[col + ii *colNum][0][2]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), 
-                                             (ASF_dict_prime[colNum + ii *col][2][0], ASF_dict_prime[colNum + ii *col][2][2]), (ASF_dict_prime[colNum + ii *col][3][0], ASF_dict_prime[colNum + ii *col][3][2])])
+                        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[col + ii *colNum][0][0], ASF_dict_prime[col + ii *colNum][0][1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), 
+                                             (ASF_dict_prime[colNum + ii *col][2][0], ASF_dict_prime[colNum + ii *col][2][1]), (ASF_dict_prime[colNum + ii *col][3][0], ASF_dict_prime[colNum + ii *col][3][1])])
                 
                 
-                        p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][2]),
-                                             (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])])
+                        p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][1]),
+                                             (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])])
                 
                         poly1 = Polygon(p1, p2, p3, p4)
                         poly2 = Polygon(p5, p6, p7, p8)
@@ -431,8 +433,8 @@ for x_angle in XANGLES:
                         
                                
                         
-                        resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), (SP1[0],SP1[1]),
-                                                 (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])).area)
+                        resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), (SP1[0],SP1[1]),
+                                                 (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])).area)
                 
                                 
                         Shadow[colNum + ii *col] += resultShadow2
@@ -450,7 +452,7 @@ for x_angle in XANGLES:
                         Shadow[colNum + ii *col]+= 0
                 else:
                     pass
-            
+        
         sumArea2 = 0
         for ii in range(PanelNum):       
                print "ASF: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
@@ -458,7 +460,7 @@ for x_angle in XANGLES:
                     
         
         print 'ASF Area Projection: ', round(sumArea2,3)    
-                
+        """        
     
         showFig = True
         if showFig == True:
@@ -466,13 +468,26 @@ for x_angle in XANGLES:
             fig = pylab.figure()
             ax = Axes3D(fig)
             
-            x_vals = ASFX 
-            y_vals = ASFY 
-            z_vals = ASFZ 
+            x_vals = np.array(ASFX) 
+            y_vals = np.array(ASFY) 
+            z_vals = np.array(ASFZ) 
             
+            import random
+
+            print random.random()
+            colors1 = cm.rainbow(np.linspace(0, 1, len(x_vals)/4))
             
-           
-            ax.scatter(x_vals, y_vals, z_vals, s=2, color=['red','green','blue'])
+            def swap_cols(arr, frm, to):
+                arr[:,[frm, to]] = arr[:,[to, frm]]
+
+            colors2 = swap_cols(colors1, 0, 1)
+            
+            colors3 = np.random.shuffle(colors1[:,2])
+            
+            for ii in range(len(x_vals)/4):
+                rand = random.random()
+                ax.scatter(x_vals[ii* 4 + 0: ii* 4 + 4], y_vals[ii* 4 + 0: ii* 4 +4], z_vals[ii* 4 + 0: ii* 4 +4], s=15, color=colors3[ii])
+            
             #ax.scatter(ListX, ListY, ListZ)
             
             ax.set_xlabel('X Label')
@@ -483,7 +498,6 @@ for x_angle in XANGLES:
             ax.view_init(0,90)
             #ax.view_init(45,60)
             pyplot.show()
-
         toc = time.time() - tic
         print 'time passed (min): ' + str(round(toc/60.,2))
         
