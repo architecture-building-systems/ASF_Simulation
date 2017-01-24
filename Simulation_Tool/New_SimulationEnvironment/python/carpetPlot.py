@@ -173,7 +173,7 @@ def carpetPlotMask(X, z_min, z_max, title, hour_in_month):
     
     cmap = matplotlib.cm.get_cmap('afmhot')     
            
-    cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.3, 'darkred'),(0.55, 'orange'), (0.75, 'yellow'),(1, 'white')],7)                                                
+    cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.3, 'darkred'),(0.55, 'orange'), (0.75, 'yellow'),(1, 'white')])                                                
     #cmap = LinearSegmentedColormap.from_list('mycmap', [(0,cmap(0.1)),(0.25, cmap(0.325)),(0.5,cmap(0.55)), (0.75, cmap(0.775)),(1, cmap(1))])                                                
                                          
     #cmap = plt.cm.afmhot

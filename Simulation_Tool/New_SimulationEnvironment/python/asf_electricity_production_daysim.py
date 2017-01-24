@@ -19,7 +19,8 @@ def asf_electricity_production(createPlots=False,
                                DataNamePV = None, 
                                weatherData = None,
                                start = 0, end= 0,
-                               path_DaySimData = None):
+                               path_DaySimData = None,
+                               MatDict = None):
                                    
                       
     import sys,os                                                       
@@ -116,7 +117,7 @@ def asf_electricity_production(createPlots=False,
     #Load data
     for x_angle in XANGLES:
         for y_angle in YANGLES:
-                fileName = '2ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1)
+                fileName = '2ASF_' + str(x_angle) + '_' + str(y_angle) + '_' + str(start) + '_' + str(end-1) + '_' + str(MatDict['ASF'])
                 DaySimData[str(x_angle) + str(y_angle)] = np.load(os.path.join(path_DaySimData, fileName + '.npy')).item()
     
     if start != 0 or end != 8760:

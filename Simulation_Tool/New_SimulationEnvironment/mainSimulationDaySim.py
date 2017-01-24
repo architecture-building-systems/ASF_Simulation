@@ -79,47 +79,167 @@ from SimulationClassDaySim import ASF_Simulation
 Analysis = {
 'DaySimSunnySommer_6_7' : 4465 - 4485, #Temp_start = 22 #old Material
 'DaySimSunnyWinter_8_1' :  170 -  190, #Temp_start = 18
-'DaySimZH13Year2' : 0-8760,
+'DaySimZH13Year2' : 0-8760, #Mat = 0.2
 'DaySimZH13Year' : 0- 8760,
-'DaySimZH13YearXANGLE' : 0- 8760,
+'DaySimZH13YearXANGLE' : 0- 8760, #Mat = 0.2, only X-angles
 'DaySimSunnySommer_6_7_2' : 4465 - 4485, #Mat = 0.2
 'DaySimSunnyWinter_8_1_2' : 170 - 190, # Mat = 0.2
-'DaySimZH13YearXANGLE': 0-8760
-
+'DaySimZH13YearXANGLE': 0-8760, #Mat = 0.2, only y-angles
+'DaySimZH13YearMat0': 0-8760, #Mat = 0
+'DaySimZH13YearMat02long': 0-8760, # mat = 0.2, 361 comb
+'DaySimZH13WinterMat0' :  170 -  190, #Temp_start = 18, mat = 0
+'DaySimZH13SummerMat0' : 4465 - 4485  #Temp_start = 22 , mat = 0
 }
 
+Mat = '02'
 
-SimulationData = {
-'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+if Mat == '0':
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13YearMat0', 
+    'FileName': 'DaySimZH13YearMat0', 
+    'ProjectName': 'Mat0',
+    
+    #'DataFolderName' : 'DaySimZH13YearYANGLE', 
+    #'FileName': 'DaySimZH13YearYANGLE', 
+    
+    #'DataFolderName' : 'DaySimZH13YearXANGLE', 
+    #'FileName': 'DaySimZH13YearXANGLE',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 20,
+    'start' : 0,
+    'end': 8760} #8760
+    
+    PanelData = {
+    "XANGLES": [0,15,30,45,60,75,90],
+    "YANGLES" : [-45,-30,-15,0,15,30,45]}
+    
+    Material = {
+    'ASF' : 0,
+    'Window': 0}
+    
+if Mat == 'Summer':
+    
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13SummerMat0', 
+    'FileName': 'DaySimZH13SummerMat0', 
+    'ProjectName': 'Mat0',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 22,
+    'start' : 4465, 
+    'end': 4485} #8760
+    
+    PanelData = {
+    "XANGLES": [0,15,30,45,60,75,90],
+    "YANGLES" : [-45,-30,-15,0,15,30,45]}
+    
+    Material = {
+    'ASF' : 0,
+    'Window': 0}
 
-'DataFolderName' : 'DaySimZH13YearMat0', 
-'FileName': 'DaySimZH13YearMat0', 
-'ProjectName': 'Mat0',
+if Mat == 'Winter':
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13WinterMat0', 
+    'FileName': 'DaySimZH13WinterMat0', 
+    'ProjectName': 'Mat0',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 18,
+    'start' : 170,
+    'end': 190}
+    
+    PanelData = {
+    "XANGLES": [0,15,30,45,60,75,90],
+    "YANGLES" : [-45,-30,-15,0,15,30,45]}
+    
+    Material = {
+    'ASF' : 0,
+    'Window': 0}
+    
+elif Mat == '02':
+    
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13YearMat02long', 
+    'FileName': 'DaySimZH13YearMat02long', 
+    'ProjectName': 'Mat02',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 20,
+    'start' : 0,
+    'end': 8760} #8760
+    
+    PanelData = {
+    "XANGLES": [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90],
+    "YANGLES" :[-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]}
+    
+    Material = {
+    'ASF' : 0.2,
+    'Window': 0.2}
 
-#'DataFolderName' : 'DaySimZH13YearYANGLE', 
-#'FileName': 'DaySimZH13YearYANGLE', 
+elif Mat == 'longWinter':
+    
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13WinterMat02long', 
+    'FileName': 'DaySimZH13WinterMat02long', 
+    'ProjectName': 'Mat02',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 18,
+    'start' : 170,
+    'end': 190} 
+    
+    PanelData = {
+    "XANGLES": [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90],
+    "YANGLES" :[-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]}
+    
+    Material = {
+    'ASF' : 0.2,
+    'Window': 0.2}
 
-#'DataFolderName' : 'DaySimZH13YearXANGLE', 
-#'FileName': 'DaySimZH13YearXANGLE',
-
-'Save' : True,
-'ShowFig': True,
-
-'Temp_start' : 20,
-'start' : 0,
-'end': 8760} #8760
-
-PanelData = {
-"XANGLES": [0,15,30,45,60,75,90],
-"YANGLES" : [-45,-30,-15,0,15,30,45]}
-
-#PanelData = {
-#"XANGLES": [0,15,30,45,60,75,90],
-#"YANGLES" : [0]}
-
-Material = {
-'ASF' : 0,
-'Window': 0}
+elif Mat == 'longSummer':
+    
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13SummerMat02long', 
+    'FileName': 'DaySimZH13SummerMat02long', 
+    'ProjectName': 'Mat02',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 22,
+    'start' : 4465, 
+    'end': 4485} #8760
+    
+    PanelData = {
+    "XANGLES": [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90],
+    "YANGLES" :[-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]}
+    
+    Material = {
+    'ASF' : 0.2,
+    'Window': 0.2}
 
 
 
@@ -147,7 +267,6 @@ BuildingProperties={
 "coolingEfficiency" :1,
 'COP_H': 3,
 'COP_C':3}
-
 #
 #Set simulation Properties
 SimulationOptions= {

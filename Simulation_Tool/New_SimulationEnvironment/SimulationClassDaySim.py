@@ -137,6 +137,10 @@ class ASF_Simulation(object):
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
 		self.radiation = self.weatherData[['year', 'month', 'day', 'hour','dirnorrad_Whm2', 'difhorrad_Whm2','glohorrad_Whm2','totskycvr_tenths']]
+		
+		self.TotalHour = []  
+		for hour in range(self.start, self.end):
+			self.TotalHour.append(self.radiation['hour'][hour])
 				
 		# define path of geographical location:
 		self.paths['geo_location'] = os.path.join(self.paths['data'], 'geographical_location')
@@ -263,7 +267,8 @@ class ASF_Simulation(object):
 								   paths = self.paths, DataNamePV = self.SimulationData['FileName'],
 								   weatherData = self.weatherData,
 								   start = self.start, end = self.end,
-								   path_DaySimData = self.paths['saveDaySim'])
+								   path_DaySimData = self.paths['saveDaySim'],
+								   MatDict = self.Material)
     								   
     			else:
                        #option the show plots of PV-production calculation
@@ -280,7 +285,8 @@ class ASF_Simulation(object):
     								   paths = self.paths, DataNamePV = self.SimulationData['FileName'],
 								   weatherData = self.weatherData,
     								   start = self.start, end = self.end,
-								   path_DaySimData = self.paths['saveDaySim'])
+								   path_DaySimData = self.paths['saveDaySim'],
+								   MatDict = self.Material)
     		
     		else: 
                   #if PV-results are available, they will be loaded from folder
@@ -493,7 +499,7 @@ class ASF_Simulation(object):
                 
                 figProxy = PlotHour(E = self.ResultsBuildingSimulation[ii]['E_tot'], PV = -1 * self.ResultsBuildingSimulation[ii]['PV'], L = self.ResultsBuildingSimulation[ii]['L'], 
                                H = self.ResultsBuildingSimulation[ii]['H'], C = self.ResultsBuildingSimulation[ii]['C'], x_angle = self.x_angles[ii], y_angle = self.y_angles[ii], 
-                                start = self.start, end = self.end, title = ii, TotalHOY = self.TotalHOY)
+                                start = self.start, end = self.end, title = ii, TotalHOY = self.TotalHour)
                 self.fig.update({ii : figProxy})
             
             
@@ -561,7 +567,7 @@ class ASF_Simulation(object):
                     
                 else:
                     for ii in self.optimization_Types: 
-                        self.fig[ii].savefig(os.path.join(self.paths['pdf'], 'figure_' + ii + '.pdf'))
+                        self.fig[ii].savefig(os.path.join(self.paths['pdf'], 'figure_' + ii + '.pdf'), transparent=True)
                     
 			
               

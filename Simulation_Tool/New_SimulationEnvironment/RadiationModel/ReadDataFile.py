@@ -255,7 +255,7 @@ def BoxPlot(data, title, index):
     plt.ylabel('normalized radiation [-]', fontsize = 14)
     plt.xlabel('Radiation Calculation Type', fontsize = 14)
     #colors = ['cyan', 'lightblue', 'lightgreen', 'tan', 'pink', 'red']
-    colors = ['pink']*Num
+    colors = ['lightblue']*Num
     for patch, color in zip(box['boxes'], colors):
         patch.set_facecolor(color)
     #plt.tight_layout()
@@ -402,6 +402,9 @@ result045_Mat = pd.concat([ASF_0_45_Con0/ASF_0_45_AM, ASF_0_45_Con066/ASF_0_45_A
 result045_Mat.columns = ['0/45_Con0', '0/45_Con0.66', '0/45_Con1', '0/45_Win0', '0/45_Win1', '0/45_ASF0', '0/45_ASF1','0/45_AM']
 result045_Mat[start:end].plot(kind='line', title = 'Material Analysis', grid = True) 
 
+plt.xlabel('xlabel')
+plt.ylabel('ylabel')
+
 
 result045Bounce_2 = pd.concat([ASF_0_45_AB1/ASF_0_45_AB4, ASF_0_45_AB2/ASF_0_45_AB4, ASF_0_45_AB4/ASF_0_45_AB4, ASF_0_45_AB6/ASF_0_45_AB4, ASF_0_45_AB8/ASF_0_45_AB4], axis=1)
 result045Bounce_2.columns = ['0/45_AB1', '0/45_AB2','0/45_AB4','0/45_AB6','0/45_AB8']
@@ -412,10 +415,15 @@ Result = {}
 Result['W045'] = pd.concat([Win_0_45/Win_0_45_All0, Win_0_45_All0/Win_0_45_All0], axis=1)
 Result['W045'].columns = ['Win0/45_AM', 'Win0/45_All0']
 Result['W045'][start:end].plot(kind='line', title = 'Window045', grid = True) 
+plt.xlabel('xlabel')
+plt.ylabel('ylabel')
 #
 Result['W00'] = pd.concat([Win_0_0,  Win_0_0_All0, BuildingRad_df['00']], axis=1)
 Result['W00'].columns = ['Win0/0_AM','Win0/0_All0', 'LB']
 Result['W00'][start:end].plot(kind='line', title = 'Window00', grid = True) 
+
+plt.xlabel('xlabel')
+plt.ylabel('ylabel')
 
 Result['W0-45'] = pd.concat([Win_0_Minus45, Win_0_Minus45_All0], axis=1)
 Result['W0-45'].columns = ['Win0/-45_AM',  'Win0/-45_All0']
@@ -463,7 +471,7 @@ sum_0Minus45 = Result['0-45'][start:end].sum()
 result045 = Result['045']
 result045_6 = pd.concat([result045['ASF0/45_AM'][start:end]/result045['ASF0/45_All0'][start:end], result045['LB-0/45'][start:end]/result045['ASF0/45_All0'][start:end], result045['ASF0/45_All0'][start:end]/result045['ASF0/45_All0'][start:end]], axis=1)
 result045_6.columns = ['Ratio', 'RatioLB', 'ASF0/45_All0']
-result045_6[start:end].plot(kind='line') 
+#result045_6[start:end].plot(kind='line') 
 
 result00 = Result['00']
 result00_6 = pd.concat([result00['ASF0/0_AM'][start:end]/result00['ASF0/0_All0'][start:end], result00['LB-0/0'][start:end]/result00['ASF0/0_All0'][start:end], result00['ASF0/0_All0'][start:end]/result00['ASF0/0_All0'][start:end]], axis=1)
