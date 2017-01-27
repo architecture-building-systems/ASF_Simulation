@@ -222,7 +222,7 @@ class ASF_Simulation(object):
 	def runRadiationCalculation(self):
 		 
          from RadiationCalculation import CalculateRadiationData
-         from asf_electricity_production_mauro_3 import asf_electricity_production
+         from asf_electricity_production_2 import asf_electricity_production
 
 	   #Calculate the Radiation on the solar panels and window with ladybug
          self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 

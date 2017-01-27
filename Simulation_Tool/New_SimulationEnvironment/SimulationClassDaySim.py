@@ -434,12 +434,13 @@ class ASF_Simulation(object):
             self.x_angles = {} #optimized x-angles
             self.y_angles = {} #optimized y-angles
             self.BestKey = {} #optimized keys of the ANGLES dictionary
+            self.HourlyTotalData = {}
     
             #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
             for optimizationType in self.optimization_Types:
            
                 #prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  
-                self.BestKey[optimizationType], self.x_angles[optimizationType], self.y_angles[optimizationType] = prepareAngles(
+                self.BestKey[optimizationType], self.x_angles[optimizationType], self.y_angles[optimizationType], self.HourlyTotalData[optimizationType] = prepareAngles(
                                                                             Building_Simulation_df = self.ResultsBuildingSimulation[optimizationType], 
                                                                             ANGLES = self.ANGLES,
                                                                             start = self.start, 
@@ -497,7 +498,7 @@ class ASF_Simulation(object):
 
             for ii in self.optimization_Types:
                 
-                figProxy = PlotHour(E = self.ResultsBuildingSimulation[ii]['E_tot'], PV = -1 * self.ResultsBuildingSimulation[ii]['PV'], L = self.ResultsBuildingSimulation[ii]['L'], 
+                figProxy = PlotHour(E = self.ResultsBuildingSimulation[ii]['E_tot'], PV = self.ResultsBuildingSimulation[ii]['PV'], L = self.ResultsBuildingSimulation[ii]['L'], 
                                H = self.ResultsBuildingSimulation[ii]['H'], C = self.ResultsBuildingSimulation[ii]['C'], x_angle = self.x_angles[ii], y_angle = self.y_angles[ii], 
                                 start = self.start, end = self.end, title = ii, TotalHOY = self.TotalHour)
                 self.fig.update({ii : figProxy})
@@ -569,9 +570,7 @@ class ASF_Simulation(object):
                     for ii in self.optimization_Types: 
                         self.fig[ii].savefig(os.path.join(self.paths['pdf'], 'figure_' + ii + '.pdf'), transparent=True)
                     
-			
-              
-               
+
                  
                 for ii in self.optimization_Types:
 				if ii == 'E_total' or ii =='Heating' or ii =='Cooling' or ii =='E_HCL' or ii =='SolarEnergy' or ii =='Lighting':
@@ -583,10 +582,10 @@ class ASF_Simulation(object):
 				else:
 					pass
                        
-                if self.start != 0 and self.start != 8760:
-                    for ii in range(self.start, self.end):
-                        hourlyData = pd.DataFrame(self.hourlyData['E_total'][ii].T)
-                        hourlyData.to_csv(os.path.join(self.paths['result'], 'hourlyDataEtotal_' + str(ii) + '.csv'))
+#                if self.start != 0 and self.start != 8760:
+#                    for ii in range(self.start, self.end):
+#                        hourlyData = pd.DataFrame(self.hourlyData['E_total'][ii].T)
+#                        hourlyData.to_csv(os.path.join(self.paths['result'], 'hourlyDataEtotal_' + str(ii) + '.csv'))
                        
                 
                 x_angles_df = pd.DataFrame(self.x_angles)
@@ -600,7 +599,10 @@ class ASF_Simulation(object):
                     #np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
                     self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
                     self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
-                
+                else:
+                    self.HourlyTotalData = pd.DataFrame(self.HourlyTotalData)
+                    self.HourlyTotalData.to_csv(os.path.join(self.paths['result'], 'HourlyTotalData.csv'))
+                    
                 #BestKeyDF.to_csv(os.path.join(self.paths['result'], 'BestKeyMonthly.csv'))                
                 x_angles_df.to_csv(os.path.join(self.paths['result'], 'X-Angles.csv'))
                 y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))

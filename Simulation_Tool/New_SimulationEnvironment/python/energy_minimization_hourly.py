@@ -556,7 +556,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         results_building_simulation[hour_of_year]['C_elec']  = hourlyData[hour_of_year]['C_elec'][BestComb]
         
         results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
-        results_building_simulation[hour_of_year]['PV']  = -1 * hourlyData[hour_of_year]['PV'][BestComb]
+        results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb] * (-1)
         
         results_building_simulation[hour_of_year]['BestCombKey'] = [BestCombKey]
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]

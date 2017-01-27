@@ -53,77 +53,41 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
     
     
     
-            
-    return BestKey, x_angle_array, y_angle_array
-    
-   
-   
-    
-def prepareResults (Building_Simulation_df):
-    
-    from prepareData_mauro import sum_monthly
-    
-    
     #convert into kWh
-    H_monthly_array = np.array(Building_Simulation_df['H'] *0.001)
-    C_monthly_array = np.array(Building_Simulation_df['C'] *0.001)
-    L_monthly_array = np.array(Building_Simulation_df['L'] *0.001)
-    E_monthly_array = np.array(Building_Simulation_df['E_tot'] *0.001) 
-    PV_monthly_array =np.array(Building_Simulation_df['PV'] *0.001)
-    E_HCL_monthly_array = np.array(Building_Simulation_df['E_HCL'] *0.001)
+    H = np.array(Building_Simulation_df['H'] *0.001)
+    C = np.array(Building_Simulation_df['C'] *0.001)
+    L = np.array(Building_Simulation_df['L'] *0.001)
+    E = np.array(Building_Simulation_df['E_tot'] *0.001) 
+    PV =np.array(Building_Simulation_df['PV'] *0.001) 
+    E_HCL = np.array(Building_Simulation_df['E_HCL'] *0.001)
     
-    H_elec_monthly_array = np.array(Building_Simulation_df['H_elec'] *0.001)
-    C_elec_monthly_array = np.array(Building_Simulation_df['C_elec'] *0.001)
-    E_elec_monthly_array = np.array(Building_Simulation_df['E_tot_elec'] *0.001)
-    E_HCL_elec_monthly_array = np.array(Building_Simulation_df['E_HCL_elec'] *0.001)
+    """
     
-        
-    # summed data for each hour of a month in kWh:
-    sum_L = sum_monthly(X = L_monthly_array)
-    sum_E = sum_monthly(X = E_monthly_array)
-    sum_E_HCL = sum_monthly(X = E_HCL_monthly_array)
-    sum_C = sum_monthly(X = C_monthly_array)
-    sum_H = sum_monthly(X = H_monthly_array)
-    sum_PV = -1* sum_monthly(X = PV_monthly_array)
+    H_elec = np.array(Building_Simulation_df['H_elec'] *0.001)
+    C_elec = np.array(Building_Simulation_df['C_elec'] *0.001)
+    E_elec = np.array(Building_Simulation_df['E_tot_elec'] *0.001)
+    E_HCL_elec = np.array(Building_Simulation_df['E_HCL_elec'] *0.001)
     
-    sum_E_HCL_elec = sum_monthly(X = E_HCL_elec_monthly_array)
-    sum_C_elec = sum_monthly(X = C_elec_monthly_array)
-    sum_H_elec = sum_monthly(X = H_elec_monthly_array)
-    sum_E_elec = sum_monthly(X = E_elec_monthly_array)
+    """
     
-    #Calculate the summed monthly values and store it in dicitionary (24 hour per every month)
-    monthlyData = {}
-    yearlyData = {}
+    HourlyTotalData = {}
     
+    #in kWh for all analysed hours
+    HourlyTotalData['H'] = H.sum()
+    HourlyTotalData['C'] = C.sum()
+    HourlyTotalData['L'] = L.sum()
+    HourlyTotalData['E'] = E.sum()
+    HourlyTotalData['E_HCL'] = E_HCL.sum()
+    HourlyTotalData['PV'] = PV.sum()
     
-    #in kWh/DaysPerMonth
-    monthlyData['H'] = sum_H
-    monthlyData['C'] = sum_C
-    monthlyData['L'] = sum_L
-    monthlyData['E'] = sum_E
-    monthlyData['E_HCL'] = sum_E_HCL
-    monthlyData['PV'] = sum_PV
-
-    monthlyData['H_elec'] = sum_H_elec
-    monthlyData['C_elec'] = sum_C_elec
-    monthlyData['E_elec'] = sum_E_elec
-    monthlyData['E_HCL_elec'] = sum_E_HCL_elec
+    """
+    HourlyTotalData['H_elec'] = H_elec.sum()
+    HourlyTotalData['C_elec'] = C_elec.sum()
+    HourlyTotalData['E_elec'] = E_elec.sum()
+    HourlyTotalData['E_HCL_elec'] = E_HCL_elec.sum()
+    """
+            
+    return BestKey, x_angle_array, y_angle_array, HourlyTotalData
     
-    #in kWh/year
-    yearlyData['E'] = sum_E.sum()
-    yearlyData['E_HCL'] = sum_E_HCL.sum()
-    yearlyData['PV'] = sum_PV.sum() 
-    yearlyData['H'] = sum_H.sum() 
-    yearlyData['C'] = sum_C.sum()
-    yearlyData['L'] = sum_L.sum()
-    
-    yearlyData['E_elec'] = sum_E_elec.sum()
-    yearlyData['E_HCL_elec'] = sum_E_HCL_elec.sum()
-    yearlyData['C_elec'] = sum_C_elec.sum() 
-    yearlyData['H_elec'] = sum_H_elec.sum() 
-    
-
-    return  monthlyData, yearlyData
-    
-    
+   
     

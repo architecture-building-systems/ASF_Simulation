@@ -79,8 +79,9 @@ from SimulationClassDaySim import ASF_Simulation
 Analysis = {
 'DaySimSunnySommer_6_7' : 4465 - 4485, #Temp_start = 22 #old Material
 'DaySimSunnyWinter_8_1' :  170 -  190, #Temp_start = 18
+'DaySimZH13Year' : 0- 8760, # old material?
+
 'DaySimZH13Year2' : 0-8760, #Mat = 0.2
-'DaySimZH13Year' : 0- 8760,
 'DaySimZH13YearXANGLE' : 0- 8760, #Mat = 0.2, only X-angles
 'DaySimSunnySommer_6_7_2' : 4465 - 4485, #Mat = 0.2
 'DaySimSunnyWinter_8_1_2' : 170 - 190, # Mat = 0.2
@@ -88,10 +89,13 @@ Analysis = {
 'DaySimZH13YearMat0': 0-8760, #Mat = 0
 'DaySimZH13YearMat02long': 0-8760, # mat = 0.2, 361 comb
 'DaySimZH13WinterMat0' :  170 -  190, #Temp_start = 18, mat = 0
-'DaySimZH13SummerMat0' : 4465 - 4485  #Temp_start = 22 , mat = 0
+'DaySimZH13SummerMat0' : 4465 - 4485,  #Temp_start = 22 , mat = 0
+
+'DaySimZH13WinterMat0_15hour' :  175 -  190, #Temp_start = 18, mat = 0, 15 hours
+'DaySimZH13SummerMat0_15hour' : 4470 - 4485  #Temp_start = 22 , mat = 0, 15 hours
 }
 
-Mat = '02'
+Mat = 'Winter02'
 
 if Mat == '0':
     SimulationData = {
@@ -100,12 +104,6 @@ if Mat == '0':
     'DataFolderName' : 'DaySimZH13YearMat0', 
     'FileName': 'DaySimZH13YearMat0', 
     'ProjectName': 'Mat0',
-    
-    #'DataFolderName' : 'DaySimZH13YearYANGLE', 
-    #'FileName': 'DaySimZH13YearYANGLE', 
-    
-    #'DataFolderName' : 'DaySimZH13YearXANGLE', 
-    #'FileName': 'DaySimZH13YearXANGLE',
     
     'Save' : True,
     'ShowFig': True,
@@ -122,7 +120,7 @@ if Mat == '0':
     'ASF' : 0,
     'Window': 0}
     
-if Mat == 'Summer':
+if Mat == 'Summer0':
     
     SimulationData = {
     'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
@@ -146,7 +144,7 @@ if Mat == 'Summer':
     'ASF' : 0,
     'Window': 0}
 
-if Mat == 'Winter':
+if Mat == 'Winter0':
     SimulationData = {
     'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
     
@@ -241,7 +239,52 @@ elif Mat == 'longSummer':
     'ASF' : 0.2,
     'Window': 0.2}
 
+if Mat == 'Summer02':
+    
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13SummerMat02', 
+    'FileName': 'DaySimZH13SummerMat02', 
+    'ProjectName': 'Mat02',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 22,
+    'start' : 4465, 
+    'end': 4485} #8760
+    
+    PanelData = {
+    "XANGLES": [0,15,30,45,60,75,90],
+    "YANGLES" : [-45,-30,-15,0,15,30,45]}
+    
+    Material = {
+    'ASF' : 0,
+    'Window': 0}
 
+if Mat == 'Winter02':
+    SimulationData = {
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+    
+    'DataFolderName' : 'DaySimZH13WinterMat02', 
+    'FileName': 'DaySimZH13WinterMat02', 
+    'ProjectName': 'Mat02',
+    
+    'Save' : True,
+    'ShowFig': True,
+    
+    'Temp_start' : 18,
+    'start' : 170,
+    'end': 190}
+    
+    PanelData = {
+    "XANGLES": [0,15,30,45,60,75,90],
+    "YANGLES" : [-45,-30,-15,0,15,30,45]}
+    
+    Material = {
+    'ASF' : 0,
+    'Window': 0}
 
 
 BuildingProperties={
@@ -270,8 +313,8 @@ BuildingProperties={
 #
 #Set simulation Properties
 SimulationOptions= {
-'setBackTempH' : 1.,
-'setBackTempC' : 1.,
+'setBackTempH' : 4.,
+'setBackTempC' : 4.,
 'Occupancy' : 'Occupancy_COM.csv',
 'ActuationEnergy' : False}
 

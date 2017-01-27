@@ -224,7 +224,7 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
         if not os.path.isdir(paths['PV']):
             os.makedirs(paths['PV'])
             
-        from asf_electricity_production_mauro_hourly import asf_electricity_production
+        from asf_electricity_production_hourly import asf_electricity_production
         #from asf_electricity_production_daysim import asf_electricity_production        
         
         print '\nCalculating PV electricity production'     
@@ -324,6 +324,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     x_angles = {} #optimized x-angles
     y_angles = {} #optimized y-angles
     BestKey = {} #optimized keys of the ANGLES dictionary
+    TotalHourlyData = {}
     
     #set parameters
     human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
@@ -357,43 +358,20 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
         
         
         #prepareAngles creates two arrays with x- and y-angles for the respective optimization type and a dataFrame with all the keys stored  
-        BestKey[optimizationType], x_angles[optimizationType], y_angles[optimizationType] = prepareAngles(
+        BestKey[optimizationType], x_angles[optimizationType], y_angles[optimizationType],  TotalHourlyData[optimizationType] = prepareAngles(
                                                                             Building_Simulation_df = ResultsBuildingSimulation[optimizationType], 
                                                                             ANGLES = ANGLES,
                                                                             start = start, end = end,
                                                                             TotalHOY = TotalHOY)   
     
-#        # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], yearlyData [kWh/year]
-#        monthlyData[optimizationType], yearlyData[optimizationType] = prepareResults(Building_Simulation_df = ResultsBuildingSimulation[optimizationType])
-#        
-    return hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles, UncomfortableH, TotalHOY
+        
+    return hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles, UncomfortableH, TotalHOY, TotalHourlyData
     
     
-    
-#
-#def createAllPlots(monthlyData, roomFloorArea, x_angles, y_angles, hour_in_month, optimization_Types):
-#    
-#    from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
-#    
-#    #create the carpet plots detailing the net energy consumption, set only monthlyData['E_total']
-#    fig0 = createCarpetPlot (monthlyData = monthlyData['E_total'], roomFloorArea = roomFloorArea)
-#    
-#    fig = {'fig0' : fig0}
-#    
-#    if optimization_Types == ['E_total','Heating','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting']:    
-#        #create the angles carpet plots for the opimised simulation option, this option needs all simulation types
-#        fig1 = createCarpetPlotXAngles(x_angles, hour_in_month)
-#        fig2 = createCarpetPlotYAngles(y_angles, hour_in_month)
-#        
-#        fig = {'fig0' : fig0, 'fig1' : fig1, 'fig2' : fig2}
-#    
-#    
-#    return fig
 
 
 
-
-def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end, TotalHOY):
+def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end, TotalHOY, TotalHourlyData):
     
     from hourlyPlotFunction import PlotHour 
     from Function3dPlot import create3Dplot, create3Dplot2       
@@ -466,15 +444,17 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
             RBS_ELEC[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
 
             np.save(os.path.join(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.npy')), ResultsBuildingSimulation[ii])
-            np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
-            hourlyData = pd.DataFrame(hourlyData[ii].T)
-            hourlyData.to_csv(os.path.join(paths['result'], 'hourlyData_' + ii + '.csv'))
+            
+#            np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
+#            hourlyData = pd.DataFrame(hourlyData[ii].T)
+#            hourlyData.to_csv(os.path.join(paths['result'], 'hourlyData_' + ii + '.csv'))
             
             fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii + '.pdf'))
             #fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii +  '.png'))
         
         
-       
+        TotalHourlyData = pd.DataFrame(TotalHourlyData)
+        TotalHourlyData.to_csv(os.path.join(paths['result'], 'HourlyTotalData.csv'))
         
         
         #fig.savefig(os.path.join(paths['result'],'BuildingSimulation.pdf'), format='pdf')       

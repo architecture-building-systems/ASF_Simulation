@@ -166,4 +166,15 @@ def createPlane(P1, P2, P3):
 #    print n
 #    print a
     return n, a
+    
+
+room= [[xR, yR, zR],
+        [xR + room_width, yR, zR],
+        #[xR + room_width, yR- room_depth, zR],
+        #[xR, yR - room_depth, zR],
+        [xR, yR, zR + room_height],
+        [xR + room_width, yR, zR + room_height],
+        #[xR + room_width, yR- room_depth, zR + room_height],
+        #[xR, yR - room_depth, zR + room_height],
+        ]
         
