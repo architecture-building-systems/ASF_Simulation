@@ -53,6 +53,25 @@ if __name__ == "__main__":
 
 
 	#The adaptive solar facade is represented by an array of coordinates and panel size
+	panelSpacing=700 # in x y dirction[mm]
+
+	xArray=4
+	yArray=3
+	ASFArray=[]
+	for ii in range(0,yArray):
+		ASFArray.append([])
+		for jj in range (0,xArray):
+			if ii%2==0:
+				ASFArray[ii].append([ii*panelSpacing/2,jj*panelSpacing])
+			else:
+				if jj==xArray-1:
+					pass
+				else:
+					ASFArray[ii].append([ii*panelSpacing/2,jj*panelSpacing+panelSpacing/2])
+		
+
+	print ASFArray
+
 	P0=[0,0];
 		#Sun Position
 
@@ -66,8 +85,16 @@ if __name__ == "__main__":
 	h=math.sqrt(2*(400/2)**2) #distance from centre of panel to corner [mm]
 	d=300 #Distance from the Glazed Surface
 
-	S0,S1,S2,S3,S4=calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d)
+	shadowData=[]
+	for ii,row in enumerate(ASFArray):
+		shadowData.append([])
+		for jj,P in enumerate(row):
+			S0,S1,S2,S3,S4=calcShadow(P,sunAz,sunAlt,panelAz,panelAlt,h,d)
+			shadowData[ii].append([S0,S1,S2,S3,S4])
+			
+	print shadowData
 
-	print S0
-	print P0
+	#S0,S1,S2,S3,S4=calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d)
+
+
 
