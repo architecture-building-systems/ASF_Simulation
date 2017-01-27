@@ -47,20 +47,9 @@ def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
 	S3=[S0[0],S0[1]-h/2-y]
 	S4=[S0[0]-h/2-x,S0[1]]
 
-	# S1=S0[1]+h/2+y 
-	# S2=S0[0]+h/2+x
-	# S3=S0[1]-h/2-y
-	# S4=S0[0]-h/2-x
-
-
-
 
 	return S0,S1,S2,S3,S4
 
-	#Old Alternative Equations
-	#shadowDistanceAlt= -h/2 -(d +  h * math.sin(panelAlt/2)*math.cos(panelAlt/2))*math.tan(sunAlt) + (h * math.sin(panelAlt/2) * math.sin(panelAlt/2) ) 
-
-	#shadowDistanceAz= -h/2 -(d +  h * math.sin(panelAz/2)*math.cos(panelAz/2))*math.tan(sunAz) + (h * math.sin(panelAz/2) * math.sin(panelAz/2) ) 
 
 def calcASFGeo(panelSpacing,xArray,yArray):
 	"""
