@@ -10,6 +10,7 @@ Date: 27.01.2017
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 
 def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
@@ -58,6 +59,7 @@ def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
 
 if __name__ == "__main__":
 
+	t0=time.time()
 	#Set Panel Properties
 	h=math.sqrt(2*(400/2)**2) #distance from centre of panel to corner [mm]
 	d=300 #Distance from the Glazed Surface
@@ -98,7 +100,7 @@ if __name__ == "__main__":
 			S0,S1,S2,S3,S4=calcShadow(P,sunAz,sunAlt,panelAz,panelAlt,h,d)
 			shadowData[ii].append([S1,S2,S3,S4])
 			
-
+	t1=time.time()
 
 	#Plot Data
 	for ii,row in enumerate(shadowData):
@@ -109,6 +111,8 @@ if __name__ == "__main__":
 			plt.scatter(x,y, c=np.random.rand(3,1))
 			plt.axis('equal')
 
+	speed=t1-t0
+	print speed
 	
 	plt.show()
 
