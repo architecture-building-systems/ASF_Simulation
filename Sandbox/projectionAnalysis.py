@@ -14,7 +14,12 @@ import time
 
 
 def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
-	
+	"""
+	Cacluates the shadow of a single panel 
+	Takes the Sun position (Azimuth and Altitude angles)
+		and panel orientation (Azimuth and Altitude angles) as an input
+	Returns the coordinates of the ASF corner in (x,y) coordinate space
+	"""
 
 	#Calculate Centre of Shadow
 	S0=[0,0] #initialise Centre of Shadow
@@ -57,19 +62,17 @@ def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
 
 	#shadowDistanceAz= -h/2 -(d +  h * math.sin(panelAz/2)*math.cos(panelAz/2))*math.tan(sunAz) + (h * math.sin(panelAz/2) * math.sin(panelAz/2) ) 
 
-if __name__ == "__main__":
-
-	t0=time.time()
-	#Set Panel Properties
-	h=math.sqrt(2*(400/2)**2) #distance from centre of panel to corner [mm]
-	d=300 #Distance from the Glazed Surface
-
+def calcASFGeo(panelSpacing,xArray,yArray):
+	"""
+	Calcuates the coordinates of the centre of each ASF panel
+	Input: Spacing between panels in the x,y direction, 
+			number of panels in the x direction
+			number of panels in the y direction
+	Output: Nested List of (x,y) coordinates 
+	"""
 	#Calculate ASF Geometry
 	#The adaptive solar facade is represented by an array of coordinates and panel size
-	panelSpacing=600 # in x y dirction[mm]
 
-	xArray=4
-	yArray=3
 	ASFArray=[]
 	for ii in range(0,yArray):
 		ASFArray.append([])
@@ -81,16 +84,17 @@ if __name__ == "__main__":
 					pass
 				else:
 					ASFArray[ii].append([jj*panelSpacing+panelSpacing/2,ii*panelSpacing/2])
-		
-	#Set Sun Position
-	sunAz=math.radians(20)
-	sunAlt=math.radians(0)
+	return ASFArray
 
-	#Set Panel Position (note that this should be an array in the future)
-	panelAz=math.radians(20)
-	panelAlt=math.radians(0)
-
-
+def calcShadedPattern(ASFArray,sunAz,sunAlt,panelAz,panelAlt):
+	"""
+	Calculates the Shadow of the entire ASF array 
+	Input: Sun position (Altitude and Azimuth angles)
+			angles of all panels (Altitude and Azimuth)
+			Array of ASF Geometry
+	Calls: calcShadow 
+	Returns: Array of corner positions that can then be plotted
+	"""		
 
 	#Calculate Shadow Pattern
 	shadowData=[]
@@ -99,9 +103,27 @@ if __name__ == "__main__":
 		for jj,P in enumerate(row):
 			S0,S1,S2,S3,S4=calcShadow(P,sunAz,sunAlt,panelAz,panelAlt,h,d)
 			shadowData[ii].append([S1,S2,S3,S4])
-			
-	t1=time.time()
+	return shadowData
 
+
+if __name__ == "__main__":
+
+
+	#Set Panel Properties
+	h=math.sqrt(2*(400/2)**2) #distance from centre of panel to corner [mm]
+	d=300 #Distance from the Glazed Surface
+
+	#Generate ASF Array
+	ASFArray= calcASFGeo(panelSpacing=600, xArray=4, yArray=3)
+
+	#Calculate array of Shadow Data
+	shadowData=calcShadedPattern(ASFArray=ASFArray,
+									sunAz=math.radians(00),
+									sunAlt=math.radians(0),
+									panelAz=math.radians(0),
+									panelAlt=math.radians(45))
+
+			
 	#Plot Data
 	for ii,row in enumerate(shadowData):
 		print 'new row'
@@ -111,8 +133,6 @@ if __name__ == "__main__":
 			plt.scatter(x,y, c=np.random.rand(3,1))
 			plt.axis('equal')
 
-	speed=t1-t0
-	print speed
 	
 	plt.show()
 
