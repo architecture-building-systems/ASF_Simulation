@@ -314,10 +314,10 @@ col = 6
 showFig = False
 
 
-XANGLES = [0,15, 30,45,60,75,90]
-YANGLES = [-45,-30,-15,0,15,30,45]
+XANGLES = [0]
+YANGLES = [0]
 
-for HOY in range(4400,4800):
+for HOY in range(12,13):
     
     RadTilt_dict[int(HOY)] = {}
     RadASF_dict[int(HOY)] = {}
@@ -734,9 +734,7 @@ for HOY in range(4400,4800):
                 WindowArea[int(HOY)][str(x_angle) + str(y_angle)] = np.nan
                 WindowProArea[int(HOY)][str(x_angle) + str(y_angle)] =  np.nan
                 WindowRadiation[int(HOY)][str(x_angle) + str(y_angle)] = 0
-                
-                       
-          
+    
 ResultASF_df = pd.DataFrame(RadASF_dict).T
 ResultWindow_df = pd.DataFrame(WindowRadiation).T
 

@@ -225,7 +225,7 @@ elif season == 'summer':
     'FromDay': 6,#6, #8,
     'ToDay': 6, #8,
     'FromHour': 5,#5
-    'ToHour': 18,
+    'ToHour': 20,
     'Temp_start' : 22}#20
     
     #Set simulation data
@@ -348,7 +348,7 @@ BuildingData={
 "room_depth":7000,
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97,
-"GridSizeWindow" : 200,
+"WindowGridSize" : 200,
 "BuildingOrientation" : 0}
 
 BuildingProperties={
