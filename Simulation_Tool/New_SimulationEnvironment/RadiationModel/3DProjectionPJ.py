@@ -61,11 +61,49 @@ def ThetaAngle (alpha_s, gamma_s, beta, gamma):
     return theta # deg
 
 
-def RadTilt (I_dirnor, I_dif, ref, theta, beta, alpha_s):
+#gamma_s = sun azimuth angle
+#alpha_s = sun altitude angle
+
+#beta = 90       # slope of tilt surface
+#gamma = 180       # surface azimuth angle, south facing ASF = 180
+#ref = 0         # reflectivity
+
+
+
+
+def Theta2directions (sunAlti, sunAzi , beta, panelAzi):
+
+    sunAlti = np.deg2rad(sunAlti)
+    beta = np.deg2rad(beta) # panelAlti
+    sunAzi = np.deg2rad(sunAzi)
+    panelAzi = np.deg2rad(panelAzi)
+    
+      
+    theta2 = np.arccos(np.cos(sunAlti) * np.cos(sunAzi-panelAzi) * np.sin(beta) + np.sin(sunAlti)* np.cos(beta))
+   
+    theta2 = np.rad2deg(theta2)
+   
+    return theta2 # deg
+
+test = Theta2directions(sunAlti = 57.5, sunAzi = -55.5, beta = 25, panelAzi = 0)
+
+print 'Test1', test # value 43.69 deg
+
+test = Theta2directions(sunAlti = 57.5, sunAzi = -55.5, beta = 25, panelAzi = 22.5)
+
+print 'Test2', test # value 43.69 deg
+
+test = Theta2directions(sunAlti = 57.5, sunAzi = -55.5, beta = 25, panelAzi = 45)
+
+print 'Test3', test # value 43.69 deg
+
+
+
+def RadTilt (I_dirnor, I_dif, ref, theta, beta, sunAlti):
     #calculate radiation on tilt surface
     theta = np.deg2rad(theta)
     beta = np.deg2rad(beta)
-    alpha_s = np.deg2rad(alpha_s)
+    alpha_s = np.deg2rad(sunAlti)
 
     I_tot = I_dif + I_dirnor * np.sin(alpha_s)
     
@@ -227,6 +265,8 @@ SolarData_df3 = pd.DataFrame(SolarData3)
 SolarData_df = pd.concat([SolarData_df,SolarData_df2, SolarData_df3], axis=1)
 LB = SolarData_df['00'] * 1000 / (50*0.4*0.4) # kWh in Wh divided through area of panels in m2
 
+
+
 WindowDataLB = np.load(os.path.join(paths['Save'], 'BuildingData.npy')).item()
 BuildingRadLB_df = pd.DataFrame(WindowDataLB)
 
@@ -236,6 +276,7 @@ RadData_df = pd.concat([radiation, LB], axis=1)
 start = 0
 end = 8760
 RadAnalysis = pd.concat([radiation['dirnorrad_Whm2']/LB, radiation['difhorrad_Whm2']/LB,radiation['glohorrad_Whm2']/LB, LB/LB], axis=1)
+
 RadAnalysis.columns = ['direct', 'diffuse', 'global', 'LB']
 
 #RadAnalysis[start:end].plot(kind='line', title = 'Radiation Analysis', grid = True) 
@@ -250,6 +291,9 @@ Sun = pd.concat([SunAngles, SunData], axis = 1)
 
 PanelPoints = pd.read_csv(paths['PanelData'])
 
+
+DF = pd.concat([SolarData_df['045']/LB, SunAngles['Azimuth'], SunAngles['Altitude']], axis=1)
+DF.columns = ['045', 'Azimuth', 'Altitude']
 
 
 TotalHOY = SunData['HOY'].tolist()
@@ -269,7 +313,7 @@ DistWindow = 100. # distance of panels from Window surface
 
         
 xR = 0 
-yR = 1 
+yR = 0 
 zR = 0
 
 
@@ -279,7 +323,7 @@ zR = 0
 
 beta = 90       # slope of tilt surface
 gamma = 180       # surface azimuth angle, south facing ASF = 180
-ref = 0         # reflectivity
+ref = 0         # reflectivity # 0.2
 
 
 
@@ -290,6 +334,7 @@ RadASF_dict = {}
 WindowArea = {}
 WindowProArea = {}
 WindowRadiation = {}
+Percentage = {}
 
 PanelNum = len(PanelPoints)/4
 #PanelNum = 7
@@ -302,10 +347,10 @@ col = 6
 showFig = False
 
 
-XANGLES = [0,15,30,45,60,75,90]
-YANGLES = [-45,-30,-15,0,15,30,45]
+XANGLES = [0]
+YANGLES = [-45,0,45]
 
-for HOY in range(4460,4486):
+for HOY in range(4200,4400):
     
     RadTilt_dict[int(HOY)] = {}
     RadASF_dict[int(HOY)] = {}
@@ -313,25 +358,20 @@ for HOY in range(4460,4486):
     WindowArea[int(HOY)] = {}
     WindowProArea[int(HOY)] = {}
     WindowRadiation[int(HOY)] = {}
+    Percentage[HOY] = {}
     
     if HOY in TotalHOY:
         
         ii = TotalHOY.index(HOY)
             
 
-        #Calculate angle of incidence
-        theta = ThetaAngle(alpha_s = SunAngles['Altitude'][ii], gamma_s = SunAngles['Azimuth'][ii], beta = beta, gamma = gamma)
-        
-        #Calculate Radiation on tilt surface
-        Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = ref, theta = theta, beta = beta, alpha_s = SunAngles['Altitude'][ii])          
-        RadTilt_dict[int(HOY)] = Rad_tilt
         
         SunVec = np.array([SunData['xV'][ii], SunData['yV'][ii], SunData['zV'][ii]])
 #        SunPos = np.array([SunData['xP'][ii], SunData['yP'][ii], SunData['zP'][ii]])
     
         print 'Altitude', SunAngles['Altitude'][ii]
         print 'Azimuth', SunAngles['Azimuth'][ii]
-        
+       
         for x_angle in XANGLES:
             for y_angle in YANGLES:
                 
@@ -346,7 +386,13 @@ for HOY in range(4460,4486):
                 print str(x_angle), str(y_angle)
                                 
                 
-                
+                #Calculate angle of incidence
+                #theta = ThetaAngle(alpha_s = SunAngles['Altitude'][ii], gamma_s = SunAngles['Azimuth'][ii], beta = beta - x_angle, gamma = gamma)
+                theta2 = Theta2directions (sunAlti = SunAngles['Altitude'][ii], sunAzi = SunAngles['Azimuth'][ii] , beta = (beta - x_angle), panelAzi = y_angle)
+        
+                #Calculate Radiation on tilt surface
+                Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = ref, theta = theta2, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ii])          
+                RadTilt_dict[int(HOY)][str(x_angle) + str(y_angle)] = Rad_tilt
 
 
             	#Set Panel Properties
@@ -698,7 +744,14 @@ for HOY in range(4460,4486):
 
                 #save area and total radiation for each hour and angle combination
                 TotalArea[HOY][str(x_angle) + str(y_angle)] = round(sumArea2/10**6,3)  #m2
-                RadASF_dict[int(HOY)][str(x_angle) + str(y_angle)] = round(sumArea2/10**6,3) * RadTilt_dict[int(HOY)] * 0.001 # area in m2 * Wh/m2 in KWh
+                
+                BestKey = max(ASFArea, key=ASFArea.get)
+                Percentage[HOY][str(x_angle) + str(y_angle)] = sumArea2/(ASFArea[BestKey] * PanelNum)
+                
+               
+                #Percentage[HOY][str(x_angle) + str(y_angle)] = sumArea2/(160000 * PanelNum)
+
+                RadASF_dict[int(HOY)][str(x_angle) + str(y_angle)] = round(sumArea2/10**6 * RadTilt_dict[int(HOY)][str(x_angle) + str(y_angle)] * 0.001,3) # area in m2 * Wh/m2 in KWh
                
                
                 toc = time.time() - tic
@@ -718,7 +771,7 @@ for HOY in range(4460,4486):
 ResultASF_df = pd.DataFrame(RadASF_dict).T
 ResultWindow_df = pd.DataFrame(WindowRadiation).T
 
-ResultAnalysis = pd.concat([radiation['glohorrad_Whm2'], SolarData_df['00'], ResultASF_df['00'],  SolarData_df['0-45'], ResultASF_df['0-45'],  SolarData_df['045'], ResultASF_df['045']], axis=1)
+#ResultAnalysis = pd.concat([radiation['glohorrad_Whm2'], SolarData_df['00'], ResultASF_df['00'],  SolarData_df['0-45'], ResultASF_df['0-45'],  SolarData_df['045'], ResultASF_df['045']], axis=1)
 
 """
 
@@ -726,6 +779,78 @@ ResultAnalysis = pd.concat([radiation['glohorrad_Whm2'], SolarData_df['00'], Res
 #SolarData_df[30:50].plot()
 
 """
+
+
+def PointPro(S1, S2, S3, A, SunVec): #needed
+    
+    #creates a Projection of A_prime for A on the plane S
+    
+    #W = math.sqrt((S2[0]-S1[0])**2 + (S2[1]-S1[1])**2 + (S2[2]-S1[2])**2)
+    #H = math.sqrt((S3[0]-S1[0])**2 + (S3[1]-S1[1])**2 + (S3[2]-S1[2])**2)
+    
+    M = [(S2[0] + S3[0])/2.,(S2[1] + S3[1])/2. ,(S2[2] + S3[2])/2.]
+    
+    
+    a = np.array([[S1[0],S1[1],S1[2]], [S2[0],S2[1],S2[2]],[M[0],M[1],M[2]]])
+    b = np.array([1,1,1])
+    coef = np.linalg.solve(a, b)
+    
+    #N = [coef[0]/np.sqrt(coef[0]**2 + coef[1]**2 + coef[2]**2), coef[1]/np.sqrt(coef[0]**2 + coef[1]**2 + coef[2]**2), coef[2]/np.sqrt(coef[0]**2 + coef[1]**2 + coef[2]**2)]
+    
+    #find projection of A, Aprime
+    k = Symbol('k')
+    k = solve(coef[0]*(k*SunVec[0]+ A[0]) + coef[1]*(k*SunVec[1]+ A[1]) + coef[2]*(k*SunVec[2] + A[2]) -1, k)
+    k = k[0]
+        
+    APrime = [round( (k*(SunVec[0])+ A[0]),4), round((k*(SunVec[1])+ A[1]),4), round((k*(SunVec[2])+ A[2]),4)] 
+    
+    return APrime
+
+#projection plane
+S1 = [10, -10,    10]
+S2 = [10, -10, 50010]
+S3 = ProjPlane(S1 = S1, n = SunVec)
+
+#xAngle = 0
+#yAngle = 45
+
+for HOY in range(57,58):
+    for x_angle in XANGLES:
+        for y_angle in YANGLES:
+            
+            print x_angle, y_angle
+            
+            xAngle = np.deg2rad(x_angle)
+            yAngle = np.deg2rad(y_angle)
+            ASF_dict = {}
+            dot = 0
+            
+            ASF_dict[dot] = [
+            [PanelPoints['x'][(dot*4) + 0] + (Hyp- np.cos(yAngle)*Hyp)     ,PanelPoints['y'][(dot*4) + 0] - np.sin(yAngle)* Hyp,   PanelPoints['z'][(dot*4) + 0]], 
+            [PanelPoints['x'][(dot*4) + 1]                                 ,PanelPoints['y'][(dot*4) + 1] - np.sin(xAngle)* Hyp,   PanelPoints['z'][(dot*4) + 1] - (Hyp- np.cos(xAngle)*Hyp)],
+            [PanelPoints['x'][(dot*4) + 3] - (Hyp- np.cos(yAngle)*Hyp)     ,PanelPoints['y'][(dot*4) + 3] + np.sin(yAngle)* Hyp,   PanelPoints['z'][(dot*4) + 3]],
+            [PanelPoints['x'][(dot*4) + 2]                                 ,PanelPoints['y'][(dot*4) + 2] + np.sin(xAngle)* Hyp,   PanelPoints['z'][(dot*4) + 2] + (Hyp- np.cos(xAngle)*Hyp)]]
+                                
+            ASFPrime = []
+            ii = TotalHOY.index(HOY)
+        
+        
+            SunVec = np.array([SunData['xV'][ii], SunData['yV'][ii], SunData['zV'][ii]])
+                        
+            for jj in range(4):
+                Prime = PointPro(S1 = S1, S2 = S2, S3= S3, A = ASF_dict[dot][jj], SunVec = SunVec)
+                ASFPrime.append(Prime)
+            AreaTest3 = Area3D(poly = ASFPrime)
+            AreaTest3 = AreaTest3 * 10**(-6)
+            
+            print AreaTest3 
+            
+            print AreaTest3 * PanelNum
+            
+            print AreaTest3 * PanelNum * RadTilt_dict[int(HOY)][str(x_angle) + str(y_angle)] * 0.001, '\n'
+            
+            
+
 
 #ResultASF_df['00'].plot()
 #ResultASF_df['045'].plot()

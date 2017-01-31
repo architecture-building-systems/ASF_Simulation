@@ -57,13 +57,29 @@ def ThetaAngle (alpha_s, gamma_s, beta, gamma):
     theta = np.rad2deg(theta)
    
     return theta # deg
+    
+    
+def Theta2directions (sunAlti, sunAzi , beta, panelAzi):
+
+    sunAlti = np.deg2rad(sunAlti)
+    beta = np.deg2rad(beta) # panelAlti
+    sunAzi = np.deg2rad(sunAzi)
+    panelAzi = np.deg2rad(panelAzi)
+    
+      
+    theta2 = np.arccos(np.cos(sunAlti) * np.cos(sunAzi-panelAzi) * np.sin(beta) + np.sin(sunAlti)* np.cos(beta))
+   
+    theta2 = np.rad2deg(theta2)
+   
+    return theta2 # deg
 
 
-def RadTilt (I_dirnor, I_dif, ref, theta, beta, alpha_s):
+
+def RadTilt (I_dirnor, I_dif, ref, theta, beta, sunAlti):
     #calculate radiation on tilt surface
     theta = np.deg2rad(theta)
     beta = np.deg2rad(beta)
-    alpha_s = np.deg2rad(alpha_s)
+    alpha_s = np.deg2rad(sunAlti)
 
     I_tot = I_dif + I_dirnor * np.sin(alpha_s)
     
@@ -282,6 +298,8 @@ RadASF_dict = {}
 WindowArea = {}
 WindowProArea = {}
 WindowRadiation = {}
+Percentage2 = {}
+RadiationPercentage_dict = {}
 
 PanelNum = len(PanelPoints)/4
 #PanelNum = 7
@@ -289,35 +307,15 @@ PanelNum = len(PanelPoints)/4
 row = 9
 col = 6
 
-#if PanelNum == 4:
-#    row = 1
-#    col = 4
-#        
-#elif PanelNum == 8:
-#    row = 2
-#    col = 4
-#elif PanelNum == 10:
-#    row = 2
-#    col = 5
-#    
-#elif PanelNum == 50:
-#    row = 9
-#    col = 6
-#elif PanelNum == 22:
-#    row = 4
-#    col = 6
-#elif PanelNum == 12:
-#    row = 2
-#    col = 6
 
 
 showFig = False
 
 
 XANGLES = [0]
-YANGLES = [0]
+YANGLES = [-45,0,45]
 
-for HOY in range(12,13):
+for HOY in range(24):
     
     RadTilt_dict[int(HOY)] = {}
     RadASF_dict[int(HOY)] = {}
@@ -325,23 +323,15 @@ for HOY in range(12,13):
     WindowArea[int(HOY)] = {}
     WindowProArea[int(HOY)] = {}
     WindowRadiation[int(HOY)] = {}
+    Percentage2[HOY] = {}
+    RadiationPercentage_dict[int(HOY)] = {}
     
     if HOY in TotalHOY:
         
         ii = TotalHOY.index(HOY)
-            
-#        print 'HOY', HOY
-#        print 'ii', ii
-    
-        #Calculate angle of incidence
-        theta = ThetaAngle(alpha_s = SunAngles['Altitude'][ii], gamma_s = SunAngles['Azimuth'][ii], beta = beta, gamma = gamma)
-        
-        #Calculate Radiation on tilt surface
-        Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = ref, theta = theta, beta = beta, alpha_s = SunAngles['Altitude'][ii])          
-        RadTilt_dict[int(HOY)] = Rad_tilt
         
         SunVec = np.array([SunData['xV'][ii], SunData['yV'][ii], SunData['zV'][ii]])
-#        SunPos = np.array([SunData['xP'][ii], SunData['yP'][ii], SunData['zP'][ii]])
+
     
         print 'Altitude', SunAngles['Altitude'][ii]
         print 'Azimuth', SunAngles['Azimuth'][ii]
@@ -358,14 +348,21 @@ for HOY in range(12,13):
                 tic = time.time()
                 
                 print str(x_angle), str(y_angle)
+               
                 
-#                #Calculate angle of incidence
-#                theta = ThetaAngle(alpha_s = SunAngles['Altitude'][ii], gamma_s = SunAngles['Azimuth'][ii], beta = beta - x_angle, gamma = gamma)
-#        
-#                #Calculate Radiation on tilt surface
-#                Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = ref, theta = theta, beta = beta - x_angle, alpha_s = SunAngles['Altitude'][ii])          
-#                RadTilt_dict[int(HOY)] = Rad_tilt
+                #Calculate angle of incidence
+                #theta = ThetaAngle(alpha_s = SunAngles['Altitude'][ii], gamma_s = SunAngles['Azimuth'][ii], beta = beta - x_angle, gamma = gamma)
+                theta2 = Theta2directions (sunAlti = SunAngles['Altitude'][ii], sunAzi = SunAngles['Azimuth'][ii] , beta = (beta - x_angle), panelAzi = y_angle)
                 
+                print 'theta', theta2
+        
+                #Calculate Radiation on tilt surface
+                Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = ref, theta = theta2, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ii])          
+                RadTilt_dict[int(HOY)][str(x_angle) + str(y_angle)] = Rad_tilt
+                
+                print 'Rad_tilt', Rad_tilt
+             
+             
                 
                 xAngle = np.deg2rad(-x_angle)
                 yAngle = np.deg2rad(y_angle) 
@@ -549,19 +546,77 @@ for HOY in range(12,13):
                         
                             Shadow[ii]= 0 
                             ASFArea[ii] = result
+                    
+                    print '\nCase 2a'
+                    for ii in range(1,row): #2
+                        #case: check if the lowest edge of  a panel is intersection with panel below
+                        for colNum in range(col): #4
+                        
+                                            
+                            if (colNum + ii *col) < PanelNum: #skip the last panels 
+                            
+                                p = Polygon((ASF_dict_prime[colNum + ii *col][0][0],ASF_dict_prime[colNum + ii *col][0][2]),
+                                            (ASF_dict_prime[colNum + ii *col][1][0],ASF_dict_prime[colNum + ii *col][1][2]),
+                                            (ASF_dict_prime[colNum + ii *col][2][0],ASF_dict_prime[colNum + ii *col][2][2]),
+                                            (ASF_dict_prime[colNum + ii *col][3][0],ASF_dict_prime[colNum + ii *col][3][2]))
+                
+                            
+                                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])):
+                                    #if Point is in polygon p, than true will be returned
+                                
+        #                            print 'Num Check Panel', str(colNum + ii *col)
+        #                            print 'Num2 Panel above', str(colNum + (ii-1) *col)
+        
+                                    #Calculate Intersection               
+                                    p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[colNum + ii *col][0][0], ASF_dict_prime[colNum + ii *col][0][2]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), 
+                                                         (ASF_dict_prime[colNum + ii *col][2][0], ASF_dict_prime[colNum + ii *col][2][2]), (ASF_dict_prime[colNum + ii *col][3][0], ASF_dict_prime[colNum + ii *col][3][2])])
+                            
+                            
+                                    p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][2]),
+                                                         (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])])
+                            
+                                    poly1 = Polygon(p1, p2, p3, p4)
+                                    poly2 = Polygon(p5, p6, p7, p8)
+                            
+                                    a =  poly1.intersection(poly2)
+                                    SP1 = a[0]
+                                    SP2 = a[1]
+                                    
+                                           
+                                    
+                                    resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), (SP1[0],SP1[1]),
+                                                             (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])).area)
+                            
+                                            
+                                    Shadow[colNum + ii *col] += float(resultShadow2)
+                            
+                                        
+                                    print "ASF: ", colNum + ii *col
+                                    print "Intersection with upper panel: Yes"    
+                                    
+            
+                                    
+                                else:
+                                    result1 = Area(Dict = ASF_dict_prime[colNum + ii *col])
+                                    print "ASF: ", colNum + ii *col
+                                    print "Intersection with upper panel: No"
+                                    Shadow[colNum + ii *col]+= 0
+                            else:
+                                pass
                 
                 elif SunAngles['Azimuth'][ii] < 0: 
                     print '\nCase 1b'
                     
                     print '\nSun Azimuth:', SunAngles['Azimuth'][ii]
                     
-                    result1 = Area(Dict = ASF_dict_prime[0])
-                    print "ASF:  0", "- Area: ", result1
+                    result1 = Area(Dict = ASF_dict_prime[49])
+                    print "ASF:  49", "- Area: ", result1
                     print "Intersection with panel to the right: No"
                     
-                    Shadow[0] = 0
-                    ASFArea[0] = result1
+                    Shadow[49] = 0
+                    ASFArea[49] = result1
                     
+                                        
                     SumArea = 0
                      
                     for ii in range(1,PanelNum):
@@ -599,11 +654,11 @@ for HOY in range(12,13):
                             
                             totalArea = resultASF - resultShadow
                     
-                            Shadow[ii]= float(resultShadow)
-                            ASFArea[ii] = resultASF
+                            Shadow[ii-1]= float(resultShadow)
+                            ASFArea[ii-1] = resultASF
                             
                             SumArea += resultASF            
-                            print "ASF: ", ii , "- Area: ", round(totalArea,3)
+                            print "ASF: ", ii-1 , "- Area: ", round(totalArea,3)
                             print "Intersection with panel to the right: Yes"    
                             
                         else:
@@ -618,68 +673,71 @@ for HOY in range(12,13):
                             
                             SumArea += result 
                         
-                            Shadow[ii]= 0 
-                            ASFArea[ii] = result
+                            Shadow[ii-1]= 0 
+                            ASFArea[ii-1] = result
                             
-                          
-                   
-                print '\nCase 2'
-                
-                for ii in range(1,row): #2
-                    #case: check if the lowest edge of  a panel is intersection with panel below
-                    for colNum in range(col): #4
+                            
+               
+                    print '\nCase 2b'
                     
-                                        
-                        if (colNum + ii *col) < PanelNum: #skip the last panels 
+                    for ii in range(1,row): #2
+                        #case: check if the lowest edge of  a panel is intersection with panel below
+                        for colNum in range(col): #4
                         
-                            p = Polygon((ASF_dict_prime[colNum + ii *col][0][0],ASF_dict_prime[colNum + ii *col][0][2]),
-                                        (ASF_dict_prime[colNum + ii *col][1][0],ASF_dict_prime[colNum + ii *col][1][2]),
-                                        (ASF_dict_prime[colNum + ii *col][2][0],ASF_dict_prime[colNum + ii *col][2][2]),
-                                        (ASF_dict_prime[colNum + ii *col][3][0],ASF_dict_prime[colNum + ii *col][3][2]))
-            
-                        
-                            if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])):
-                                #if Point is in polygon p, than true will be returned
+                                            
+                            if (colNum-1) + ii *col < PanelNum: #skip the last panels 
+                                
+#                                print colNum + (ii-1) *col
+#                                print (colNum-1) + ii *col
                             
-    #                            print 'Num Check Panel', str(colNum + ii *col)
-    #                            print 'Num2 Panel above', str(colNum + (ii-1) *col)
-    
-                                #Calculate Intersection               
-                                p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[colNum + ii *col][0][0], ASF_dict_prime[colNum + ii *col][0][2]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), 
-                                                     (ASF_dict_prime[colNum + ii *col][2][0], ASF_dict_prime[colNum + ii *col][2][2]), (ASF_dict_prime[colNum + ii *col][3][0], ASF_dict_prime[colNum + ii *col][3][2])])
-                        
-                        
-                                p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][2]),
-                                                     (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])])
-                        
-                                poly1 = Polygon(p1, p2, p3, p4)
-                                poly2 = Polygon(p5, p6, p7, p8)
-                        
-                                a =  poly1.intersection(poly2)
-                                SP1 = a[0]
-                                SP2 = a[1]
+                                p = Polygon((ASF_dict_prime[(colNum-1) + ii *col][0][0],ASF_dict_prime[(colNum-1) + ii *col][0][2]),
+                                            (ASF_dict_prime[(colNum-1) + ii *col][1][0],ASF_dict_prime[(colNum-1) + ii *col][1][2]),
+                                            (ASF_dict_prime[(colNum-1) + ii *col][2][0],ASF_dict_prime[(colNum-1) + ii *col][2][2]),
+                                            (ASF_dict_prime[(colNum-1) + ii *col][3][0],ASF_dict_prime[(colNum-1) + ii *col][3][2]))
+                
+                            
+                                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])):
+                                    #if Point is in polygon p, than true will be returned
                                 
-                                       
-                                
-                                resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][2]), (SP1[0],SP1[1]),
-                                                         (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])).area)
-                        
-                                        
-                                Shadow[colNum + ii *col] += float(resultShadow2)
-                        
-                                    
-                                print "ASF: ", colNum + ii *col
-                                print "Intersection with upper panel: Yes"    
-                                
+        #                            print 'Num Check Panel', str(colNum + ii *col)
+        #                            print 'Num2 Panel above', str(colNum + (ii-1) *col)
         
-                                
+                                    #Calculate Intersection               
+                                    p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[(colNum-1) + ii *col][0][0], ASF_dict_prime[(colNum-1) + ii *col][0][2]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][2]), 
+                                                         (ASF_dict_prime[(colNum-1) + ii *col][2][0], ASF_dict_prime[(colNum-1) + ii *col][2][2]), (ASF_dict_prime[(colNum-1) + ii *col][3][0], ASF_dict_prime[(colNum-1) + ii *col][3][2])])
+                            
+                            
+                                    p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][2]),
+                                                         (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][2]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])])
+                            
+                                    poly1 = Polygon(p1, p2, p3, p4)
+                                    poly2 = Polygon(p5, p6, p7, p8)
+                            
+                                    a =  poly1.intersection(poly2)
+                                    SP1 = a[0]
+                                    SP2 = a[1]
+                                    
+                                           
+                                    
+                                    resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][2]), (SP1[0],SP1[1]),
+                                                             (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][2])).area)
+                            
+                                            
+                                    Shadow[(colNum-1) + ii *col] += float(resultShadow2)
+                            
+                                        
+                                    print "ASF: ", (colNum-1) + ii *col
+                                    print "Intersection with upper panel: Yes"    
+                                    
+            
+                                    
+                                else:
+                                    result1 = Area(Dict = ASF_dict_prime[(colNum-1) + ii *col])
+                                    print "ASF: ", (colNum-1) + ii *col
+                                    print "Intersection with upper panel: No"
+                                    Shadow[(colNum-1) + ii *col]+= 0
                             else:
-                                result1 = Area(Dict = ASF_dict_prime[colNum + ii *col])
-                                print "ASF: ", colNum + ii *col
-                                print "Intersection with upper panel: No"
-                                Shadow[colNum + ii *col]+= 0
-                        else:
-                            pass
+                                pass
               
     
                 print '\nSummary of Solar Radiation Analysis'                
@@ -696,7 +754,36 @@ for HOY in range(12,13):
 
                 #save area and total radiation for each hour and angle combination
                 TotalArea[HOY][str(x_angle) + str(y_angle)] = round(sumArea2/10**6,2)  #m2
-                RadASF_dict[int(HOY)][str(x_angle) + str(y_angle)] = round(sumArea2/10**6,2) * RadTilt_dict[int(HOY)] * 0.001 # area in m2 * Wh/m2 in KWh
+                RadASF_dict[int(HOY)][str(x_angle) + str(y_angle)] = round(sumArea2/10**6 * RadTilt_dict[int(HOY)][str(x_angle) + str(y_angle)] * 0.001,3) # area in m2 * Wh/m2 in KWh
+                
+                
+                BestKey = max(ASFArea, key=ASFArea.get)
+                Percentage2[HOY][str(x_angle) + str(y_angle)] = sumArea2/(ASFArea[BestKey] * PanelNum)
+                
+                #projection plane
+                S1 = [10, -10,    10]
+                S2 = [10, -10, 50010]
+                S3 = ProjPlane(S1 = S1, n = SunVec)
+                
+                ASF_prime = {}
+                for ii in range(PanelNum):    
+                    ASFPrime = []
+                    
+                    for jj in range(4):
+                        
+                        Prime = PointPro(S1 = S1, S2 = S2, S3= S3, A = ASF_dict[ii][jj], SunVec = SunVec)
+                        ASFPrime.append(Prime)
+                        
+                    ASF_prime[ii] = ASFPrime  
+                
+                
+                sum3D = 0
+
+                for zz in range(PanelNum):
+                    result3D = Area3D(poly = ASF_prime[ii])
+                    sum3D += result3D
+
+                RadiationPercentage_dict[int(HOY)][str(x_angle) + str(y_angle)] = round(Percentage2[HOY][str(x_angle) + str(y_angle)] * sum3D/10**6 * RadTilt_dict[int(HOY)][str(x_angle) + str(y_angle)] * 0.001,3)
                
                 
                 #calculate the height and width of the Window and WindoProjection
@@ -717,7 +804,7 @@ for HOY in range(12,13):
                 print "RoomProjection Area:", AreaWindowPrime
                 WindowProArea[int(HOY)][str(x_angle) + str(y_angle)] =  AreaWindowPrime
                 
-                WindowRadiation[int(HOY)][str(x_angle) + str(y_angle)] = round((AreaWindowPrime - sumArea2/10**6) * RadTilt_dict[int(HOY)] * 0.001,3) # area in m2 * Wh/m2 in KWh
+                WindowRadiation[int(HOY)][str(x_angle) + str(y_angle)] = round((AreaWindowPrime - sumArea2/10**6) * RadTilt_dict[int(HOY)][str(x_angle) + str(y_angle)] * 0.001,3) # area in m2 * Wh/m2 in KWh
                 
                 toc = time.time() - tic
                 print 'time passed (sec): ' + str(round(toc,2))
@@ -740,13 +827,13 @@ ResultWindow_df = pd.DataFrame(WindowRadiation).T
 
 #BestComb = max(RadASF_dict[180], key=lambda comb: RadASF_dict[180][comb])
 
-"""
+
 
 #ResultASF_df.plot() 
 #SolarData_df[30:50].plot()
 ResultAnalysis = pd.concat([radiation['glohorrad_Whm2'], SolarData_df['00'], ResultASF_df['00'], SolarData_df['0-45'], ResultASF_df['0-45'], SolarData_df['045'], ResultASF_df['045']], axis=1)
 
-"""
+
 
 #ResultASF_df['00'].plot()
 #ResultASF_df['045'].plot()
@@ -769,3 +856,4 @@ RadData_df = pd.concat([radiation, LB, ResultASF_df, SunAngles['Azimuth']], axis
 #RadCom = pd.concat([LB, df], axis=1)
 #RadCom.columns = ['LB', 'RadTilt']
 #RadCom[0:8760].plot(kind='line', title = 'Radiation Analysis', grid = True) 
+
