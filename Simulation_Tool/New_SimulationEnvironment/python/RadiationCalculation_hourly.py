@@ -33,8 +33,8 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
             
             BuilRadData[monthi]= {}
             
-            for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
-            #for day in range(SimulationPeriode['FromDay'], daysPerMonth[monthi-1] + 1): 
+            #for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
+            for day in range(SimulationPeriode['FromDay'], daysPerMonth[monthi-1] + 1): 
                 
                 print "daysPerMonth", daysPerMonth[monthi-1]
     

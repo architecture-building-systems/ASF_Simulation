@@ -315,7 +315,7 @@ showFig = False
 XANGLES = [0]
 YANGLES = [-45,0,45]
 
-for HOY in range(24):
+for HOY in range(4460,4480):
     
     RadTilt_dict[int(HOY)] = {}
     RadASF_dict[int(HOY)] = {}

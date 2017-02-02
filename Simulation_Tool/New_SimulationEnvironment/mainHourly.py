@@ -168,8 +168,6 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             end = end,
                             Temp_start = SimulationPeriod['Temp_start'],
                             SimulationPeriod= SimulationPeriod)
-    
-   
                                
     
     ResultsBuildingSimulation, rbsELEC = SaveResults(
@@ -190,7 +188,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                     
     return ResultsBuildingSimulation, hourlyData, UncomfortableH, BuildingRadiationHOY, TotalHourlyData 
 
-season = 'summer'
+season = 'Spacing'
 #season = 'winter'                 
       
 #season = '900' 
@@ -325,21 +323,52 @@ elif season == 'Test':
     'optimizationTypes' : ['E_total'],
     'DataName' : 'ZH13_45_0Test2',#
     'geoLocation' : 'Zuerich_Kloten_2013',
-    'Save' : False}        
+    'Save' : False} 
+
+elif season == 'Spacing':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 12,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 28, #28,
+    'FromHour': 6,#5
+    'ToHour': 20, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_9comb_Spacing',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}            
+
+    #Set panel data
+    PanelData={
+    "XANGLES": [0,45,90],
+    "YANGLES" : [-45,0,45],#[0],
+    "NoClusters":1,
+    "numberHorizontal":6,
+    "numberVertical":1,
+    "panelOffset":400,
+    "panelSize":400,
+    "panelSpacing":1000,
+    "panelGridSize": 25}
+
 else:
     pass   
  
-#Set panel data
-PanelData={
-"XANGLES": [0,15,30,45,60,75,90],
-"YANGLES" : [-45,-30,-15,0,15,30,45],#[0],
-"NoClusters":1,
-"numberHorizontal":6,
-"numberVertical":9,
-"panelOffset":400,
-"panelSize":400,
-"panelSpacing":500,
-"panelGridSize": 25}
+##Set panel data
+#PanelData={
+#"XANGLES": [0,45,90],
+#"YANGLES" : [-45,0,45],#[0],
+#"NoClusters":1,
+#"numberHorizontal":6,
+#"numberVertical":9,
+#"panelOffset":400,
+#"panelSize":400,
+#"panelSpacing":500,
+#"panelGridSize": 25}
 
 #Set Building Parameters in [mm]
 BuildingData={

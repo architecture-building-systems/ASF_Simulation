@@ -533,6 +533,9 @@ class ASF_Simulation(object):
                 #convert heating/cooling system variables into strings			
                 self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
                 self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
+                self.BuildingProperties["T_start"] = 20
+                self.BuildingProperties["SetBack_H"] = self.SimulationOptions['setBackTempH']
+                self.BuildingProperties["SetBack_C"] = self.SimulationOptions['setBackTempC']
                 			
                 				 
                 #save building properties in json files

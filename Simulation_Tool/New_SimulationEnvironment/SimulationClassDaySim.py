@@ -613,7 +613,10 @@ class ASF_Simulation(object):
                 self.BuildingProperties["start"] = self.start
                 self.BuildingProperties["end"] = self.end
                 self.BuildingProperties["T_start"] = self.SimulationData['Temp_start']
-                				 
+                self.BuildingProperties["SetBack_H"] = self.SimulationOptions['setBackTempH']
+                self.BuildingProperties["SetBack_C"] = self.SimulationOptions['setBackTempC']
+                				        
+                    
                 #save building properties in json files
                 with open(os.path.join(self.paths['result'], 'BuildingProperties.json'), 'w') as f:
                 				f.write(json.dumps(self.BuildingProperties))
