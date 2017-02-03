@@ -173,7 +173,7 @@ theta_dict = {}
 
 beta = 90       # slope of tilt surface
 gamma = 180       # surface azimuth angle, south facing ASF = 180
-ref = 0         # reflectivity # 0.2
+reflectance = 0         # reflectivity # 0.2
 
 
 
@@ -191,15 +191,17 @@ gpH =  0.97 #glazing_percentage_h
 #Set Panel Properties
 PanelSize = 400. #mm
 DistWindow = 300 #Distance from the Glazed Surface
+
 panelSpacing = 500 # in x y dirction[mm]
+
 xArray= 6 # Number of Panels in x direction
 yArray= 9 # number of rows
 
 
-XANGLES = [0]
-YANGLES = [-45,45]
+XANGLES = [0,15,30,45,60,75,90]
+YANGLES = [-45,-30,-15,0,15,30,45]
 
-TimePeriod = range(4000,4050)
+TimePeriod = range(4470,4485)
 
 showFig = False
 
@@ -222,121 +224,117 @@ for HOY in TimePeriod:
         for x_angle in XANGLES:
             for y_angle in YANGLES:
                 
-                if x_angle == 0 and y_angle == 0 and SunAngles['Azimuth'][ind] > 89 and SunAngles['Azimuth'][ind] < 91:
-                    print 'Break', x_angle, SunAngles['Azimuth'][ind]                    
-                    continue
-                else:
-                       
                 
-                    print '\nStart Calculation'
-                    print 'Time: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+                print '\nStart Calculation'
+                print 'Time: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
+                
+                print 'HOY', HOY
+                print 'ii', ind
+                
+                tic = time.time()
+                
+                print str(x_angle), str(y_angle)
+                
                     
-                    print 'HOY', HOY
-                    print 'ii', ind
-                    
-                    tic = time.time()
-                    
-                    print str(x_angle), str(y_angle)
-                                    
-                    
-                    #Calculate angle of incidence
-                    theta = Theta2directions (sunAlti = SunAngles['Altitude'][ind] , sunAzi = SunAngles['Azimuth'][ind] -180, beta = (beta - x_angle), panelAzi = -y_angle)
-                    theta_dict[HOY][str(x_angle) + str(y_angle)] = theta
+                #Calculate angle of incidence
+                theta = Theta2directions (sunAlti = SunAngles['Altitude'][ind] , sunAzi = SunAngles['Azimuth'][ind] -180, beta = (beta - x_angle), panelAzi = -y_angle)
+                theta_dict[HOY][str(x_angle) + str(y_angle)] = theta
+                
+                if SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
             
                     #Calculate Radiation on tilt surface
-                    Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = ref, theta = theta, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ind])          
+                    Rad_tilt = RadTilt (I_dirnor = 0, I_dif = radiation['difhorrad_Whm2'][HOY], ref = reflectance, theta = np.nan, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ind])          
                     RadiationTilt[int(HOY)][str(x_angle) + str(y_angle)] = Rad_tilt
-                   
-                    
-                    #Set Sun Position
-                    sunAz=math.radians(SunAngles['Azimuth'][ind])
-                    sunAlt=math.radians(SunAngles['Altitude'][ind])
-                
-                	   #Set Panel Position (note that this should be an array in the future)
-                    panelAz=math.radians(y_angle)
-                    panelAlt=math.radians(y_angle)
-                    
-                    #Calculate ASF Geometry
-                    #The adaptive solar facade is represented by an array of coordinates and panel size
-                    h=math.sqrt(2*(PanelSize/2)**2) #distance from centre of panel to corner [mm]
-
-                    ASFArray=[] # create array with all panel centerpoints with x and y-coordination
-                    for ii in range(yArray):
-                		ASFArray.append([])
-                		for jj in range (xArray):
-                			if ii%2==0:
-                				ASFArray[ii].append([jj*panelSpacing,ii*panelSpacing/2])
-                			else:
-                				if jj==xArray-1:
-                					pass
-                				else:
-                					ASFArray[ii].append([jj*panelSpacing+panelSpacing/2,ii*panelSpacing/2])
-                    
-                    ASFArray2 = []
-                    for ii in range(yArray-1,-1,-1):
-                		ASFArray2.append(ASFArray[ii])
-    
-                	
-                    #Calculate Shadow Pattern
-                    ASF_dict_prime = {}
-                    count = 0
-                    shadowData=[]
-                    for ii,row in enumerate(ASFArray2):
-                		shadowData.append([])
-        
-                		for jj,P in enumerate(row):
+                else:
+                    #Calculate Radiation on tilt surface
+                    Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = reflectance, theta = theta, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ind])          
+                    RadiationTilt[int(HOY)][str(x_angle) + str(y_angle)] = Rad_tilt
                
-                      
-                			S0,S1,S2,S3,S4=calcShadow(P0 = P, sunAz = sunAz, sunAlt = sunAlt, panelAz = panelAz, panelAlt = panelAlt, h = h, d = DistWindow)
-                			shadowData[ii].append([S1,S2,S3,S4])
+                
+                #Set Sun Position
+                sunAz=math.radians(SunAngles['Azimuth'][ind])
+                sunAlt=math.radians(SunAngles['Altitude'][ind])
+            
+            	   #Set Panel Position (note that this should be an array in the future)
+                panelAz=math.radians(y_angle)
+                panelAlt=math.radians(y_angle)
+                
+                #Calculate ASF Geometry
+                #The adaptive solar facade is represented by an array of coordinates and panel size
+                h=math.sqrt(2*(PanelSize/2)**2) #distance from centre of panel to corner [mm]
+
+                ASFArray=[] # create array with all panel centerpoints with x and y-coordination
+                for ii in range(yArray):
+            		ASFArray.append([])
+            		for jj in range (xArray):
+            			if ii%2==0:
+            				ASFArray[ii].append([jj*panelSpacing,ii*panelSpacing/2])
+            			else:
+            				if jj==xArray-1:
+            					pass
+            				else:
+            					ASFArray[ii].append([jj*panelSpacing+panelSpacing/2,ii*panelSpacing/2])
+                
+                ASFArray2 = []
+                for ii in range(yArray-1,-1,-1):
+            		ASFArray2.append(ASFArray[ii])
+
+            	
+                #Calculate Shadow Pattern
+                ASF_dict_prime = {}
+                count = 0
+                shadowData=[]
+                for ii,row in enumerate(ASFArray2):
+            		shadowData.append([])
     
-                			ASF_dict_prime[count] = [S1,S2,S3,S4]
-                			count +=1
-            
-                    if showFig == True:
-                        #Plot Data
-                        for ii,row in enumerate(shadowData):
-                    		#print 'new row'
-                    		for jj, Shadow in enumerate(row):
-                    			#print Shadow
-                    			x,y = zip(*Shadow)
-                    			plt.scatter(x,y, c=np.random.rand(3,1))
-                    			plt.axis('equal')
-                        plt.show()
-                		
-                    #Calculate Number of Panels
-                    PanelNum = len(ASF_dict_prime)
-                    
-                    if SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
+            		for jj,P in enumerate(row):
+           
+                  
+            			S0,S1,S2,S3,S4=calcShadow(P0 = P, sunAz = sunAz, sunAlt = sunAlt, panelAz = panelAz, panelAlt = panelAlt, h = h, d = DistWindow)
+            			shadowData[ii].append([S1,S2,S3,S4])
+
+            			ASF_dict_prime[count] = [S1,S2,S3,S4]
+            			count +=1
         
-                        #no direct radiation, therefore no overlap
-                        Percentage[HOY][str(x_angle) + str(y_angle)] = 1
-                        
-                        #Calculate angle of incidence
-                        theta = Theta2directions (sunAlti = SunAngles['Altitude'][ind] , sunAzi = SunAngles['Azimuth'][ind] -180, beta = (beta - x_angle), panelAzi = -y_angle)
-                        theta_dict[HOY][str(x_angle) + str(y_angle)] = theta
-            
-                        #Calculate Radiation on tilt surface
-                        Rad_tilt = RadTilt (I_dirnor = 0, I_dif = radiation['difhorrad_Whm2'][HOY], ref = ref, theta = theta, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ind])          
-                        RadiationTilt[int(HOY)][str(x_angle) + str(y_angle)] = Rad_tilt
-                        
+                if showFig == True:
+                    #Plot Data
+                    for ii,row in enumerate(shadowData):
+                		#print 'new row'
+                		for jj, Shadow in enumerate(row):
+                			#print Shadow
+                			x,y = zip(*Shadow)
+                			plt.scatter(x,y, c=np.random.rand(3,1))
+                			plt.axis('equal')
+                    plt.show()
+            		
+                #Calculate Number of Panels
+                PanelNum = len(ASF_dict_prime)
+                
+                if y_angle == 0 :
+                    Percentage[HOY][str(x_angle) + str(y_angle)] = 1                    
+                
+
+                elif SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
+    
+                    #no direct radiation, therefore no overlap
+                    Percentage[HOY][str(x_angle) + str(y_angle)] = 1
                     
-                    else: 
-                        print "\nStart Geometry Analysis"
-        
-                        if SunAngles['Azimuth'][ind] >= 180: 
-                            Percentage[HOY][str(x_angle) + str(y_angle)] = CaseA (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray)
-                            
-                        elif SunAngles['Azimuth'][ind] < 180: 
-                            Percentage[HOY][str(x_angle) + str(y_angle)] = CaseB (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray)
-                    
-                    #Percentage[HOY][str(x_angle) + str(y_angle)] = 1
-                    #Calculate Radiation on ASF
-                    RadiationASF[int(HOY)][str(x_angle) + str(y_angle)] = round(PanelNum * (PanelSize**2/10**(6)) * RadiationTilt[int(HOY)][str(x_angle) + str(y_angle)] * 0.001 * Percentage[HOY][str(x_angle) + str(y_angle)],3) # area in m2 * Wh/m2 in KWh
-                   
-                   
-                    toc = time.time() - tic
-                    print 'time passed (sec): ' + str(round(toc,2))
+                else: 
+                    print "\nStart Geometry Analysis"
+    
+                    if SunAngles['Azimuth'][ind] >= 180: 
+                        Percentage[HOY][str(x_angle) + str(y_angle)] = CaseA (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray)
+                        
+                    elif SunAngles['Azimuth'][ind] < 180: 
+                        Percentage[HOY][str(x_angle) + str(y_angle)] = CaseB (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray)
+                
+                #Percentage[HOY][str(x_angle) + str(y_angle)] = 1
+                #Calculate Radiation on ASF
+                RadiationASF[int(HOY)][str(x_angle) + str(y_angle)] = round(PanelNum * (PanelSize**2/10**(6)) * RadiationTilt[int(HOY)][str(x_angle) + str(y_angle)] * 0.001 * Percentage[HOY][str(x_angle) + str(y_angle)],3) # area in m2 * Wh/m2 in KWh
+               
+               
+                toc = time.time() - tic
+                print 'time passed (sec): ' + str(round(toc,2))
         
     else:
         print 'HOY', HOY
