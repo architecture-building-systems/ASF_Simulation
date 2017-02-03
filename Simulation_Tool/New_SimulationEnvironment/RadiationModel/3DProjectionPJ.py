@@ -26,17 +26,16 @@ paths = {}
 geoLocation = 'Zuerich_Kloten_2013.epw'
 
 # find path of current folder (simulation_environment)
-paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+paths['RadModel'] = os.path.abspath(os.path.dirname(sys.argv[0]))
 
+paths['main'] = os.path.dirname(paths['RadModel'])
 paths['weather'] = os.path.join(os.path.dirname(paths['main']), 'WeatherData')
-paths['scirpt'] =  os.path.join(paths['main'], 'python')
 paths['location'] = os.path.join(paths['weather'], geoLocation)
-paths['Save'] = os.path.join(paths['main'],'RadiationModel')
-
-paths['SunData'] = os.path.join(paths['Save'], 'SunPosition2.csv')
-paths['PanelData'] = os.path.join(paths['Save'], 'PanelPostion.csv')
-paths['SunAngles'] = os.path.join(paths['Save'], 'SunAngles.csv')
-
+paths['scirpt'] =  os.path.join(paths['main'], 'python')
+paths['SunData'] = os.path.join(paths['RadModel'], 'SunPosition2.csv')
+paths['PanelData'] = os.path.join(paths['RadModel'], 'PanelPostion.csv')
+paths['SunAngles'] = os.path.join(paths['RadModel'], 'SunAngles.csv')
+paths['Save'] = paths['RadModel']
 
 sys.path.insert(0, paths['scirpt'])
 						
