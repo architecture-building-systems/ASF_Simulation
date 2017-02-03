@@ -135,6 +135,10 @@ sympy-plots-for-*.tex/
 !SunPosition2.csv
 !PanelPostion.csv
 !SunAngles.csv
+!BuildingData.npy
+!SolarData.npy
+!SolarData2.npy
+!SolarData3.npy
 *.json
 *.npy
 
