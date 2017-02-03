@@ -132,6 +132,9 @@ sympy-plots-for-*.tex/
 !Occupancy_COM.csv
 !Temperature.csv
 !SunPosition.csv
+!SunPosition2.csv
+!PanelPostion.csv
+!SunAngles.csv
 *.json
 *.npy
 
