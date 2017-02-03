@@ -198,12 +198,12 @@ xArray= 6 # Number of Panels in x direction
 yArray= 9 # number of rows
 
 
-XANGLES = [0,15,30,45,60,75,90]
-YANGLES = [-45,-30,-15,0,15,30,45]
+XANGLES = [0]
+YANGLES = [-45,0,45]
 
-TimePeriod = range(4470,4485)
+TimePeriod = range(4460,4490)
 
-showFig = False
+showFig = True
 
 for HOY in TimePeriod:
     
@@ -256,8 +256,8 @@ for HOY in TimePeriod:
                 sunAlt=math.radians(SunAngles['Altitude'][ind])
             
             	   #Set Panel Position (note that this should be an array in the future)
-                panelAz=math.radians(y_angle)
-                panelAlt=math.radians(y_angle)
+                panelAz=math.radians(-y_angle)
+                panelAlt=math.radians(x_angle)
                 
                 #Calculate ASF Geometry
                 #The adaptive solar facade is represented by an array of coordinates and panel size
@@ -310,11 +310,11 @@ for HOY in TimePeriod:
                 #Calculate Number of Panels
                 PanelNum = len(ASF_dict_prime)
                 
-                if y_angle == 0 :
-                    Percentage[HOY][str(x_angle) + str(y_angle)] = 1                    
+#                if y_angle == 0 :
+#                    Percentage[HOY][str(x_angle) + str(y_angle)] = 1                    
                 
 
-                elif SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
+                if SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
     
                     #no direct radiation, therefore no overlap
                     Percentage[HOY][str(x_angle) + str(y_angle)] = 1
@@ -354,33 +354,35 @@ ResultWindow_df = pd.DataFrame(WindowRadiation).T
 
 #ResultAnalysis = pd.concat([radiation['glohorrad_Whm2'], SolarData_df['00'], ResultASF_df['00'], SolarData_df['0-45'], ResultASF_df['0-45'],   SolarData_df['045'], ResultASF_df['045']], axis=1)
 #
-#PlotData1 = pd.concat([np.abs(SolarData_df['00'] -ResultASF_df['00'])/SolarData_df['00']], axis = 1)
-#PlotData1 = pd.concat([SolarData_df['00']/ResultASF_df['00']], axis = 1)
-#PlotData1.columns = ['rad1']
-#df = PlotData1[PlotData1.rad1 <= 2]
-#df.plot()
+PlotData1 = pd.concat([SolarData_df['00']/ResultASF_df['00']], axis = 1)
+PlotData1.columns = ['rad00']
+df = PlotData1[PlotData1.rad00 <= 2]
+df.plot()
 
 
 PlotData2 = pd.concat([SolarData_df['0-45']/ResultASF_df['0-45']], axis = 1)
-PlotData2.columns = ['rad2']
-df = PlotData2[PlotData2.rad2 <= 2]
+PlotData2.columns = ['rad0_45']
+df = PlotData2[PlotData2.rad0_45 <= 2]
 df.plot()
 
 
 PlotData3 = pd.concat([SolarData_df['045']/ResultASF_df['045']], axis = 1)
-PlotData3.columns = ['rad3']
-df = PlotData3[PlotData3.rad3 <= 2]
+PlotData3.columns = ['rad045']
+df = PlotData3[PlotData3.rad045 <= 2]
 df.plot()
 
 
-PlotData4 = pd.concat([ResultASF_df['045'],SolarData_df['045']], axis = 1)
-PlotData4.columns = ['Geo', 'LB']
+PlotData4 = pd.concat([ResultASF_df['045'],SolarData_df['045'][TimePeriod]], axis = 1)
+PlotData4.columns = ['Geo045', 'LB']
 PlotData4.plot()
 
-PlotData5 = pd.concat([ResultASF_df['0-45'],SolarData_df['0-45']], axis = 1)
-PlotData5.columns = ['Geo', 'LB']
+PlotData5 = pd.concat([ResultASF_df['0-45'],SolarData_df['0-45'][TimePeriod]], axis = 1)
+PlotData5.columns = ['Geo0-45', 'LB']
 PlotData5.plot()
 
+PlotData6 = pd.concat([ResultASF_df['00'],SolarData_df['00'][TimePeriod]], axis = 1)
+PlotData6.columns = ['Geo00', 'LB']
+PlotData6.plot()
 
 
 

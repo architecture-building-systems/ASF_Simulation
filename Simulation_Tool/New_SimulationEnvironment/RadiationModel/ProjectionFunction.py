@@ -91,7 +91,7 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
     print 'Azimuth', SunAngles['Azimuth'][ind]
     
     result1 = Area(Dict = ASF_dict_prime[0])
-    print "\nASF:  0", "- Area: ", result1
+    print "\nPanel:  0", "- Area: ", result1
     print "Intersection with panel to the left: No"
     
        
@@ -140,14 +140,14 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
             ASFArea[ii] = resultASF
             
             SumArea += resultASF            
-            print "ASF: ", ii , "- Area: ", round(totalArea,3)
+            print "Panel: ", ii , "- Area: ", round(totalArea,3)
             print "Intersection with panel to the left: Yes"    
             
         else:
             
                                         
             result = Area(Dict = ASF_dict_prime[ii])
-            print "ASF: ", ii , "- Area: ", round(result,3)
+            print "Panel: ", ii , "- Area: ", round(result,3)
             print "Intersection with panel to the left: No"
             
             SumArea += result 
@@ -172,8 +172,6 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                 if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])):
                     #if Point is in polygon p, than true will be returned
                 
-    #                            print 'Num Check Panel', str(colNum + ii *col)
-    #                            print 'Num2 Panel above', str(colNum + (ii-1) *col)
     
                     #Calculate Intersection               
                     p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[colNum + ii *col][0][0], ASF_dict_prime[colNum + ii *col][0][1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), 
@@ -199,14 +197,14 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                     Shadow[colNum + ii *col] += float(resultShadow2)
             
                         
-                    print "ASF: ", colNum + ii *col
+                    print "Panel: ", colNum + ii *col
                     print "Intersection with upper panel: Yes"    
                     
     
                     
                 else:
                     result1 = Area(Dict = ASF_dict_prime[colNum + ii *col])
-                    print "ASF: ", colNum + ii *col
+                    print "Panel: ", colNum + ii *col
                     print "Intersection with upper panel: No"
                     Shadow[colNum + ii *col]+= 0
             else:
@@ -216,7 +214,7 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                         
     sumArea = 0
     for ii in range(PanelNum):       
-           print "ASF: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
+           print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
            sumArea += ASFArea[ii]-Shadow[ii]
            
     
@@ -239,7 +237,7 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
     print 'Azimuth', SunAngles['Azimuth'][ind]
     
     result1 = Area(Dict = ASF_dict_prime[49])
-    print "ASF:  49", "- Area: ", result1
+    print "Panel:  49", "- Area: ", result1
     print "Intersection with panel to the right: No"
     
     Shadow[49] = 0
@@ -287,14 +285,14 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
             ASFArea[ii-1] = resultASF
             
             SumArea += resultASF            
-            print "ASF: ", ii-1 , "- Area: ", round(totalArea,3)
+            print "Panel: ", ii-1 , "- Area: ", round(totalArea,3)
             print "Intersection with panel to the right: Yes"    
             
         else:            
             
             result = Area(Dict = ASF_dict_prime[ii])
 
-            print "ASF: ", ii , "- Area: ", round(result,3)
+            print "Panel: ", ii , "- Area: ", round(result,3)
             print "Intersection with panel to the right: No"
             
             SumArea += result 
@@ -348,14 +346,14 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                     Shadow[(colNum-1) + ii *col] += float(resultShadow2)
             
                         
-                    print "ASF: ", (colNum-1) + ii *col
+                    print "Panel: ", (colNum-1) + ii *col
                     print "Intersection with upper panel: Yes"    
                     
 
                     
                 else:
                     result1 = Area(Dict = ASF_dict_prime[(colNum-1) + ii *col])
-                    print "ASF: ", (colNum-1) + ii *col
+                    print "Panel: ", (colNum-1) + ii *col
                     print "Intersection with upper panel: No"
                     Shadow[(colNum-1) + ii *col]+= 0
             else:
@@ -364,7 +362,7 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                         
     sumArea = 0
     for ii in range(PanelNum):       
-           print "ASF: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
+           print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
            sumArea += ASFArea[ii]-Shadow[ii]
            
     
