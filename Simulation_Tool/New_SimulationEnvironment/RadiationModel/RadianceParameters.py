@@ -2,7 +2,7 @@
 """
 Created on Mon Jan 09 10:54:21 2017
 
-@author: Assistenz
+@author: Mauro
 """
 
 def Library(RadianceValues = 'Default'):
@@ -47,6 +47,47 @@ def Library(RadianceValues = 'Default'):
             'rad_dr': 3,
             'rad_dp': 512,
                 }
+    elif RadianceValues == 'AB2':
+        print "rad_ab = 2"
+        #params
+        rad_params = {    
+            'rad_n': 2,
+            'rad_af': 'file',
+            'rad_ab': 2,
+            'rad_ad': 512,
+            'rad_as': 256,
+            'rad_ar': 128,
+            'rad_aa': 0.15,
+            'rad_lr': 8,
+            'rad_st': 0.15,
+            'rad_sj': 0.7,
+            'rad_lw': 0.002,
+            'rad_dj': 0.7,
+            'rad_ds': 0.15,
+            'rad_dr': 3,
+            'rad_dp': 512,
+                }
+    elif RadianceValues == 'AB6':
+        print "rad_ab = 6"
+        #params
+        rad_params = {    
+            'rad_n': 2,
+            'rad_af': 'file',
+            'rad_ab': 6,
+            'rad_ad': 512,
+            'rad_as': 256,
+            'rad_ar': 128,
+            'rad_aa': 0.15,
+            'rad_lr': 8,
+            'rad_st': 0.15,
+            'rad_sj': 0.7,
+            'rad_lw': 0.002,
+            'rad_dj': 0.7,
+            'rad_ds': 0.15,
+            'rad_dr': 3,
+            'rad_dp': 512,
+                }
+                
     elif RadianceValues == 'MinRad':
         print "Minimum Radiance Values"
         #params
@@ -73,7 +114,7 @@ def Library(RadianceValues = 'Default'):
         rad_params = {    
             'rad_n': 2,
             'rad_af': 'file',
-            'rad_ab': 6,
+            'rad_ab': 8,
             'rad_ad': 4096,
             'rad_as': 1024,
             'rad_ar': 0,

@@ -352,7 +352,7 @@ elif season == 'Spacing':
     "numberVertical":1,
     "panelOffset":400,
     "panelSize":400,
-    "panelSpacing":1000,
+    "panelSpacing":600,
     "panelGridSize": 25}
 
 else:
