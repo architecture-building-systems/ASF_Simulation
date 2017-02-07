@@ -137,7 +137,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         hourlyData[hour_of_year]['T_out'] = []
         hourlyData[hour_of_year]['T_in'] = []
         hourlyData[hour_of_year]['AngleComb'] = []
-        hourlyData[hour_of_year]['PV'] = PV[hour_of_year]['PV']
+        hourlyData[hour_of_year]['PV'] = PV[hour_of_year]
         
         hourlyData[hour_of_year]['H_elec'] = [] 
         hourlyData[hour_of_year]['C_elec'] = [] 

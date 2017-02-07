@@ -21,7 +21,7 @@ paths = {}
  # define path of weather file:
 paths['weather'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich_Kloten_2013.epw' #paths['epw_name']
 
-paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+paths['main'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment'
 
 # define paths of subfolders:
 paths['data'] =os.path.join(paths['main'], 'data')
@@ -188,7 +188,7 @@ for x_angle in [0,90]:
 #Result = abs(IlluWindow[0] - GH[0])/GH[0]
 
 
-plt.style.use('ggplot')
+plt.style.use('seaborn-white')
 
 
 import numpy as np
@@ -200,24 +200,25 @@ plt.subplot(1,2,1)
 
 x= Fun[0]
 y = GH[0]
-plt.title('Closed ASF Configuration')
+plt.title('Closed ASF')
 plt.plot(x, y, "ro")
-plt.xlabel('Total Flux Method Method [Lux]')
-plt.ylabel('HoneyBee [Lux]')
+plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
+plt.ylabel('HoneyBee/ Radiance [Lux]', fontsize = 14)
 #plt.xticks([0,4000,8000,12000])
 plt.xticks([0,3000,6000,9000,12000])
 plt.yticks([0,3000,6000,9000,12000])
-
+plt.grid(True)
 plt.subplot(1,2,2)
 
 x1= Fun[90]
 y1 = GH[90]
 
-plt.title('Open ASF Configuration')
+plt.title('Open ASF')
 plt.plot(x1, y1, "ko")
-plt.xlabel('Total Flux Method Method [Lux]')
+plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
 plt.xticks([0,3000,6000,9000,12000])
 plt.yticks([0,3000,6000,9000,12000])
+plt.grid(True)
 #plt.ylabel('HoneyBee [Lux]')
 fig2.tight_layout()
 
@@ -230,30 +231,30 @@ plt.subplot(1,2,1)
 
 x= Fun[0]
 y = GH[0]
-plt.title('Closed ASF Configuration')
+plt.title('Closed ASF')
 plt.plot(x, y, "ro")
-plt.xlabel('Total Flux Method Method [Lux]')
-plt.ylabel('HoneyBee [Lux]')
+plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
+plt.ylabel('HoneyBee/ Radiance [Lux]', fontsize = 14)
 plt.ylim(0,1500)
 plt.xlim(0,1500)
 plt.xticks([0,300,600,900,1200,1500])
 plt.yticks([0,300,600,900,1200,1500])
 
-
+plt.grid(True)
 plt.subplot(1,2,2)
 
 x1= Fun[90]
 y1 = GH[90]
 
-plt.title('Open ASF Configuration')
+plt.title('Open ASF')
 plt.plot(x1, y1, "ko")
-plt.xlabel('Total Flux Method Method [Lux]')
+plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
 plt.ylim(0,1500)
 plt.xlim(0,1500)
 plt.xticks([0,300,600,900,1200,1500])
 plt.yticks([0,300,600,900,1200,1500])
 #plt.ylabel('HoneyBee [Lux]')
-
+plt.grid(True)
 fig1.tight_layout()
 
 #create Plot if set to True
@@ -272,7 +273,7 @@ if Plot == True:
     
     plt.subplot(2,2,1)
     
-    carpetPlotIlluminance(z =illuGH[0], z_min = z_min, z_max= z_max, title = '(a) HoneyBee (closed)')
+    carpetPlotIlluminance(z =illuGH[0], z_min = z_min, z_max= z_max, title = '(a) HoneyBee/ Radiance (closed)')
     plt.ylabel("Hour of the Day",size=14)
     
 #    plt.subplot(2,2,2)
@@ -284,7 +285,7 @@ if Plot == True:
     
     
     plt.subplot(2,2,3)
-    carpetPlotIlluminance(z = illuGH[90],  z_min = z_min, z_max= z_max, title = "(c) HoneyBee (open)")
+    carpetPlotIlluminance(z = illuGH[90],  z_min = z_min, z_max= z_max, title = "(c) HoneyBee/ Radiance (open)")
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     

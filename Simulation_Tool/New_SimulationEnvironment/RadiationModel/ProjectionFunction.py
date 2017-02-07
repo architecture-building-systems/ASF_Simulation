@@ -4,15 +4,95 @@ Created on Fri Feb 03 09:41:42 2017
 
 @author: Assistenz
 """
-from sympy.solvers import solve
-from sympy import Point, Polygon, pi, Symbol
-from scipy.optimize import fsolve
-import numpy as np
 
-def DisPoints (P1,P2):
-    distance = np.sqrt( (P1[0]-P2[0])**2 + (P1[1]-P2[1])**2 + (P1[2]-P2[2])**2)
-    #print distance    
-    return distance
+from sympy import Point, Polygon
+import numpy as np
+import math
+
+def Theta2directions (sunAlti, sunAzi , beta, panelAzi):
+
+    sunAlti = np.deg2rad(sunAlti)
+    beta = np.deg2rad(beta) # panelAlti
+    sunAzi = np.deg2rad(sunAzi)
+    panelAzi = np.deg2rad(panelAzi)
+    
+      
+    theta2 = np.arccos(np.cos(sunAlti) * np.cos(sunAzi-panelAzi) * np.sin(beta) + np.sin(sunAlti)* np.cos(beta))
+    
+    if sunAzi >= np.deg2rad(90) or sunAzi <= np.deg2rad(-90):
+        theta2 = np.nan
+    else:
+        theta2 = np.rad2deg(theta2)
+   
+    return theta2 # deg
+
+
+
+def RadTilt (I_dirnor, I_dif, ref, theta, beta, sunAlti):
+    #calculate radiation on tilt surface
+    theta = np.deg2rad(theta)
+    beta = np.deg2rad(beta)
+    alpha_s = np.deg2rad(sunAlti)
+
+    I_tot = I_dif + I_dirnor * np.sin(alpha_s)
+    
+    if theta == np.nan:
+        Rad_tilt = I_dif * ((1+np.cos(beta))/2) + I_tot * ref * ((1- np.cos(beta))/2)
+    
+    elif I_dif != 0 and theta == np.nan:
+        Rad_tilt = I_dif * ((1+np.cos(beta))/2) + I_tot * ref * ((1- np.cos(beta))/2)
+        
+    else:
+        Rad_tilt = I_dirnor * np.cos(theta) + I_dif * ((1+np.cos(beta))/2) + I_tot * ref * ((1- np.cos(beta))/2)
+    
+    if Rad_tilt < 0:
+        Rad_tilt = np.nan
+    
+    return Rad_tilt # W/m2
+    
+
+
+  
+def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
+	
+
+	#Calculate Centre of Shadow
+	S0=[0,0] #initialise Centre of Shadow
+	S0[0]=P0[0]+d*math.tan(sunAz)
+	S0[1]=P0[1]-d*math.tan(sunAlt)
+
+
+	#Calcuate the contraction or expansion of the shadow in the x and y directions due to the actuation
+	#The difference is relative to the flat panel position
+	y=(math.sin(sunAlt-panelAlt/2)/(math.sin(math.pi/2-sunAlt)))*h*math.sin(panelAlt/2) 
+	#print y
+	x=(math.sin(sunAz-panelAz/2)/(math.sin(math.pi/2-sunAz)))*h*math.sin(panelAz/2)
+	#print x
+
+	
+#	     S2
+#	    /\
+#	   /S0\
+#	S1 \' / S2
+#	    \/
+#	    S4  
+	
+	S2=[S0[0], S0[1]+h+y] # changed not dividing through 2
+	S3=[S0[0]+h+x,S0[1]]
+	S4=[S0[0], S0[1]-h-y]
+	S1=[S0[0]-h-x,S0[1]]
+
+
+	return S0,S1,S2,S3,S4
+      
+def Distance (P1,P2):
+    p1, p2 = Point(P1[0], P1[1]), Point(P2[0], P2[1])
+    Dis = p1.distance(p2)
+    return abs(Dis)
+
+#Test = Distance([1,1],[2,-1])
+#
+#print Test
 
 def Area3D(poly):
 #calculate area of 3D polygon
@@ -99,6 +179,13 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
     ASFArea[0] = result1
     
     SumArea = 0
+    
+    
+    ShadowLong = {}
+    ShadowLat = {}
+    
+    ShadowLong[0] = 0
+    ShadowLat[0] = 0
      
     for ii in range(1,PanelNum):
         
@@ -128,11 +215,21 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
             SP1 = a[0]
             SP2 = a[1]
             
-            
+
             resultShadow = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (SP1[0],SP1[1]),
                         (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])).area)
             
             resultASF = abs(poly1.area)
+            
+            Dis1 = Distance(P1 = ASF_dict_prime[ii][0], P2 =  SP2) # latitudinal shading length
+            Dis2 = Distance(P1 = ASF_dict_prime[ii][0] , P2 =  ASF_dict_prime[ii][3]) # latitudinal panel length
+            ShadowLat[ii] = float(Dis1 / Dis2) # percentage latitudinal shading
+            
+            print float(Dis1/Dis2)
+            
+            Dis3 = Distance(P1 = ASF_dict_prime[ii][0], P2 = SP1 )
+            Dis4 = Distance(P1 = ASF_dict_prime[ii][0] , P2 =  ASF_dict_prime[ii][1])
+            ShadowLong[ii] = float(Dis3 / Dis4)            
             
             totalArea = resultASF - resultShadow
     
@@ -154,11 +251,13 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
         
             Shadow[ii]= 0 
             ASFArea[ii] = result
+            ShadowLat[ii] = 0
+            ShadowLong[ii] = 0
     
-    print '\nCase 2a'
-    for ii in range(1,row2): #2
+    print '\nCase 2a1'
+    for ii in range(1,row2): 
         #case: check if the lowest edge of  a panel is intersection with panel below
-        for colNum in range(col): #4
+        for colNum in range(col): 
         
                             
             if (colNum + ii *col) < PanelNum: #skip the last panels 
@@ -188,19 +287,30 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                     SP1 = a[0]
                     SP2 = a[1]
                     
-                           
+#                    print 'SP1_0', float(SP1[0])
+#                    print 'SP1_1', float(SP1[1])  
+#                    
+#                    print 'SP2_0', float(SP2[0])
+#                    print 'SP2_1', float(SP2[1])     
                     
-                    resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), (SP1[0],SP1[1]),
+                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), (SP1[0],SP1[1]),
                                              (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])).area)
             
                             
                     Shadow[colNum + ii *col] += float(resultShadow2)
+                    
+                    Dis1 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  SP2) # latitudinal shading length
+                    Dis2 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  ASF_dict_prime[colNum + ii *col][2]) # latitudinal panel length
+                    ShadowLat[colNum + ii *col] += float(Dis1/Dis2) # percentage latitudinal shading
+            
+                    Dis3 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  SP1)
+                    Dis4 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1] ,P2 =  ASF_dict_prime[colNum + ii *col][0])
+                    ShadowLong[colNum + ii *col] += float(Dis3/Dis4)      
+            
             
                         
                     print "Panel: ", colNum + ii *col
-                    print "Intersection with upper panel: Yes"    
-                    
-    
+                    print "Intersection with upper panel: Yes" 
                     
                 else:
                     result1 = Area(Dict = ASF_dict_prime[colNum + ii *col])
@@ -209,12 +319,78 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                     Shadow[colNum + ii *col]+= 0
             else:
                 pass
+                   
+                    
+    print '\nCase 2a2'              
+                      
+    for ii in range(2,row2): #row2 = yArray, col = xArray
+    
+            #case: check if the lowest edge of  a panel is intersection with panel below
+        for colNum in range(col): 
+        
+            if (colNum + ii *col-1) < PanelNum: #skip the last panels 
+                
+                dot = colNum + ii *col -1
             
-    print '\nSummary of Solar Radiation Analysis'                
+                p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
+                            (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
+                            (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
+                            (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
+                
+            
+                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])):
+                    #if Point is in polygon p, than true will be returned
+                
+    
+                    #Calculate Intersection               
+                    p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
+                                         (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
+            
+            
+                    p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-2) *col)][0][0], ASF_dict_prime[(colNum + (ii-2) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][1][0], ASF_dict_prime[(colNum + (ii-2) *col)][1][1]),
+                                         (ASF_dict_prime[(colNum + (ii-2) *col)][2][0], ASF_dict_prime[(colNum + (ii-2) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])])
+            
+                    poly1 = Polygon(p1, p2, p3, p4)
+                    poly2 = Polygon(p5, p6, p7, p8)
+            
+                    a =  poly1.intersection(poly2)
+                    SP1 = a[0]
+                    SP2 = a[1]
+                    
+   
+                    
+                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP1[0],SP1[1]),
+                                             (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])).area)
+            
+                    
+                    Shadow[dot] += float(resultShadow2)
+                    
+                    Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP2) # latitudinal shading length
+                    Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
+                    ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
+            
+                    Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP1)
+                    Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
+                    ShadowLong[dot] += float(Dis3 / Dis4)
+                        
+                    print "Panel: ", dot
+                    print "Intersection with second upper panel: Yes" 
+                    
+    
+                    
+                else:
+                    result1 = Area(Dict = ASF_dict_prime[dot])
+                    print "Panel: ", dot
+                    print "Intersection with second upper panel: No"
+                    Shadow[dot]+= 0
+            else:
+                pass
+            
+    #print '\nSummary of Solar Radiation Analysis'                
                         
     sumArea = 0
     for ii in range(PanelNum):       
-           print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
+           #print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
            sumArea += ASFArea[ii]-Shadow[ii]
            
     
@@ -222,7 +398,9 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
     BestKey = max(ASFArea, key=ASFArea.get)
     Percentage = round(sumArea/(ASFArea[BestKey] * PanelNum),4)
     
-    return Percentage   
+
+    
+    return Percentage, ShadowLat, ShadowLong   
     
 
 def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
@@ -242,6 +420,12 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
     
     Shadow[49] = 0
     ASFArea[49] = result1
+    
+    ShadowLong = {}
+    ShadowLat = {}
+    
+    ShadowLong[49] = 0
+    ShadowLat[49] = 0
     
                         
     SumArea = 0
@@ -284,25 +468,34 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
             Shadow[ii-1]= float(resultShadow)
             ASFArea[ii-1] = resultASF
             
+            Dis1 = Distance(P1 = ASF_dict_prime[ii-1][2], P2 = SP2) # latitudinal shading length
+            Dis2 = Distance(P1 = ASF_dict_prime[ii-1][2] ,P2 = ASF_dict_prime[ii-1][3]) # latitudinal panel length
+            ShadowLat[ii-1] = float(Dis1/ Dis2) # percentage latitudinal shading
+            
+            Dis3 = Distance(P1 = ASF_dict_prime[ii-1][1], P2 = SP1)
+            Dis4 = Distance(P1 = ASF_dict_prime[ii-1][1], P2 =  ASF_dict_prime[ii][2])
+            ShadowLong[ii-1] = float(Dis3 / Dis4)      
+            
             SumArea += resultASF            
-            print "Panel: ", ii-1 , "- Area: ", round(totalArea,3)
+            print "Panel: ", ii-1, "- Area: ", round(totalArea,3)
             print "Intersection with panel to the right: Yes"    
             
         else:            
             
-            result = Area(Dict = ASF_dict_prime[ii])
+            result = Area(Dict = ASF_dict_prime[ii-1])
 
-            print "Panel: ", ii , "- Area: ", round(result,3)
+            print "Panel: ", ii-1 , "- Area: ", round(result,3)
             print "Intersection with panel to the right: No"
             
             SumArea += result 
         
             Shadow[ii-1]= 0 
             ASFArea[ii-1] = result
-            
+            ShadowLat[ii-1] = 0
+            ShadowLong[ii-1] = 0
             
    
-    print '\nCase 2b'
+    print '\nCase 2b1'
     
     for ii in range(1,row2): #2
         #case: check if the lowest edge of  a panel is intersection with panel below
@@ -323,11 +516,11 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                 
 
                     #Calculate Intersection               
-                    p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[(colNum-1) + ii *col][0][0], ASF_dict_prime[(colNum-1) + ii *col][0][1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), 
+                    p1, p2, p3, p4 = map(Point,[(ASF_dict_prime[(colNum-1) + ii *col][0][0], ASF_dict_prime[(colNum-1) + ii *col][0][1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), 
                                          (ASF_dict_prime[(colNum-1) + ii *col][2][0], ASF_dict_prime[(colNum-1) + ii *col][2][1]), (ASF_dict_prime[(colNum-1) + ii *col][3][0], ASF_dict_prime[(colNum-1) + ii *col][3][1])])
             
             
-                    p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][1]),
+                    p5, p6, p7, p8 = map(Point,[(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][1]),
                                          (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])])
             
                     poly1 = Polygon(p1, p2, p3, p4)
@@ -339,11 +532,19 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                     
                            
                     
-                    resultShadow2 = abs(10**(-6)* Polygon((SP2[0],SP2[1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), (SP1[0],SP1[1]),
+                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), (SP1[0],SP1[1]),
                                              (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])).area)
             
                             
                     Shadow[(colNum-1) + ii *col] += float(resultShadow2)
+                    
+                    Dis1 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  SP2) # latitudinal shading length
+                    Dis2 = Distance(P1 =  ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  ASF_dict_prime[(colNum-1) + ii *col][2]) # latitudinal panel length
+                    ShadowLat[(colNum-1) + ii *col] += float(Dis1 / Dis2) # percentage latitudinal shading
+            
+                    Dis3 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  SP1)
+                    Dis4 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1] , P2 =  ASF_dict_prime[(colNum-1) + ii *col][0])
+                    ShadowLong[(colNum-1) + ii *col] += float(Dis3 / Dis4)   
             
                         
                     print "Panel: ", (colNum-1) + ii *col
@@ -358,11 +559,77 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
                     Shadow[(colNum-1) + ii *col]+= 0
             else:
                 pass
-    print '\nSummary of Solar Radiation Analysis'                
+            
+    print '\nCase 2b2'              
+                      
+    for ii in range(2,row2): #row2 = yArray, col = xArray
+    
+            #case: check if the lowest edge of  a panel is intersection with panel below
+        for colNum in range(col): 
+        
+            if (colNum + ii *col-1) < PanelNum: #skip the last panels 
+                
+                dot = colNum + ii *col -1
+            
+                p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
+                            (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
+                            (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
+                            (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
+                
+            
+                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])):
+                    #if Point is in polygon p, than true will be returned
+                
+    
+                    #Calculate Intersection               
+                    p1, p2, p3, p4 = map(Point,[(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
+                                         (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
+            
+            
+                    p5, p6, p7, p8 = map(Point,[(ASF_dict_prime[(colNum + (ii-2) *col)][0][0], ASF_dict_prime[(colNum + (ii-2) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][1][0], ASF_dict_prime[(colNum + (ii-2) *col)][1][1]),
+                                         (ASF_dict_prime[(colNum + (ii-2) *col)][2][0], ASF_dict_prime[(colNum + (ii-2) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])])
+            
+                    poly1 = Polygon(p1, p2, p3, p4)
+                    poly2 = Polygon(p5, p6, p7, p8)
+            
+                    a =  poly1.intersection(poly2)
+                    SP1 = a[0]
+                    SP2 = a[1]
+                    
+
+                    
+                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP1[0],SP1[1]),
+                                             (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])).area)
+            
+                    
+                    Shadow[dot] += float(resultShadow2)
+                    
+                    Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP2) # latitudinal shading length
+                    Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
+                    ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
+            
+                    Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP1)
+                    Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
+                    ShadowLong[dot] += float(Dis3/ Dis4) 
+            
+                        
+                    print "Panel: ", dot
+                    print "Intersection with second upper panel: Yes" 
+                    
+    
+                    
+                else:
+                    result1 = Area(Dict = ASF_dict_prime[dot])
+                    print "Panel: ", dot
+                    print "Intersection with second upper panel: No"
+                    Shadow[dot]+= 0
+            else:
+                pass
+    #print '\nSummary of Solar Radiation Analysis'                
                         
     sumArea = 0
     for ii in range(PanelNum):       
-           print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
+           #print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
            sumArea += ASFArea[ii]-Shadow[ii]
            
     
@@ -370,4 +637,4 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
     BestKey = max(ASFArea, key=ASFArea.get)
     Percentage = round(sumArea/(ASFArea[BestKey] * PanelNum),4)
     
-    return Percentage                                  
+    return Percentage, ShadowLat, ShadowLong                                  

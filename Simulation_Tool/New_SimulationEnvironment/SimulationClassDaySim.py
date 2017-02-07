@@ -609,19 +609,19 @@ class ASF_Simulation(object):
                 y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))
                 			
                 #convert heating/cooling system variables into strings			
-                self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
-                self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
+#                self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
+#                self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
                 self.BuildingProperties["start"] = self.start
                 self.BuildingProperties["end"] = self.end
                 self.BuildingProperties["T_start"] = self.SimulationData['Temp_start']
                 self.BuildingProperties["SetBack_H"] = self.SimulationOptions['setBackTempH']
                 self.BuildingProperties["SetBack_C"] = self.SimulationOptions['setBackTempC']
                 				        
-                    
+                """    
                 #save building properties in json files
                 with open(os.path.join(self.paths['result'], 'BuildingProperties.json'), 'w') as f:
                 				f.write(json.dumps(self.BuildingProperties))
-                		
+                """		
                 print '\nResults are saved!'    
 		
           print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())

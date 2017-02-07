@@ -97,7 +97,7 @@ Analysis = {
 
 Mat = 'Winter02'
 
-for Mat in ['0','02short', '0.2long', 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer02', 'Winter02']:
+for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer02', 'Winter02']:
     
     if Mat == '0':
         SimulationData = {
@@ -312,15 +312,20 @@ for Mat in ['0','02short', '0.2long', 'Summer0', 'Winter0','longWinter', 'longSu
         'ASF' : 0,
         'Window': 0}
     
+    BuildingProperties = {"glass_solar_transmitance" : 0.691,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
+    "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
+    "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1,
+    'COP_H': 3, 'COP_C':3},
+    SimulationOptions= {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}
     
-    
+    ASFtest = None
     
     if __name__=='__main__':
-        ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, Material = Material)
+        ASFtest = ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, Material = Material)
         ASFtest.SolveASF()
         #yearlyData = ASFtest.yearlyData
         results = ASFtest.ResultsBuildingSimulation
-        rad = ASFtest.radiation
+        rad = ASFtest1.radiation
         
         #print yearlyData 
  

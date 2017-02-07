@@ -318,10 +318,10 @@ class ASF_Simulation(object):
 					DAY = ii*24 + int(HOD)   
 					self.BuildingRadiationData_HOY[passedHours + DAY] = self.BuildingRadiationData_HOD[monthi][DAY] #W
 		
-		#initilize dictionary
-		for hour_of_year in range(0,8760):
-			self.PV[hour_of_year]= {}
-			self.PV[hour_of_year]['PV']= []
+#		#initilize dictionary
+#		for hour_of_year in range(0,8760):
+#			self.PV[hour_of_year]= {}
+			
 			
 			  
 		count = 0
@@ -331,13 +331,13 @@ class ASF_Simulation(object):
 		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
                
                  for hour_of_year in range(0,8760):
-                     self.PV[int(hour_of_year)]['PV']= [0]
+                     self.PV[int(hour_of_year)] = [0]
 		else:		
         		for monthi in range(1,13):
         			for HOD in self.hour_in_month[monthi]:
         					for jj in range(0,self.daysPerMonth[monthi-1]):
         						DAY = passedHours + jj*24 + HOD     
-        						self.PV[DAY]['PV'] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
+        						self.PV[DAY] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
         					count +=self.NumberCombinations
         			passedHours += self.daysPerMonth[monthi-1]*24
 		
@@ -346,7 +346,7 @@ class ASF_Simulation(object):
 		for hour_of_year in range(0,8760):
 			if hour_of_year not in hourRadiation:
 					self.BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
-					self.PV[int(hour_of_year)]['PV'] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
+					self.PV[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
 		   
 		
 		
