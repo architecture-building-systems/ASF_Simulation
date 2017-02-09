@@ -115,7 +115,7 @@ def IlluminanceFunction():
     fenstIll = {}
     TransIll = {}
     
-    glass_light_transmittance = 0.744 # visible light transmittance window
+    
     
     y_angle = 0
    
@@ -136,9 +136,18 @@ def IlluminanceFunction():
                 fenstIll[x_angle][monthi][HOD] =RadiationData[x_angle][monthi][HOD]*Ill_Eq[0]/roomFloorArea #Lux.  Note that the constant has been ignored because it should be 0
                 
                 #Illuminance after transmitting through the window 
-                Lighting_Utilisation_Factor=0.64
                 
-                TransIll[x_angle][monthi][HOD] = fenstIll[x_angle][monthi][HOD]*glass_light_transmittance * Lighting_Utilisation_Factor
+                #1 set up
+                Lighting_Utilisation_Factor = 0.7
+                Lighing_maintencance_factor = 0.9
+                glass_light_transmittance = 0.68 # visible light transmittance window
+                
+#                #2 set up
+#                Lighting_Utilisation_Factor = 0.45
+#                Lighing_maintencance_factor = 0.9
+#                glass_light_transmittance = 0.89 # visible light transmittance window
+                
+                TransIll[x_angle][monthi][HOD] = fenstIll[x_angle][monthi][HOD]*glass_light_transmittance * Lighting_Utilisation_Factor *  Lighing_maintencance_factor
     
         
     
@@ -153,7 +162,7 @@ def IlluminanceFunction():
         
         illuFun[x_angle]= np.reshape(z,(12,11))
 
-    paths['save_results_path'] = paths['main'] + '\IlluminanceResults\Data'    
+    paths['save_results_path'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\IlluminanceResults\Data'
     np.save(os.path.join(paths['save_results_path'],'IlluminanceFunctionRadiation.npy'), illuFun)
     np.save(os.path.join(paths['save_results_path'],'IlluminanceFunctionDict.npy'), TransIll)            
     np.save(os.path.join(paths['save_results_path'],'RadiationWindow.npy'), fenstIll)  

@@ -191,123 +191,15 @@ def CalculateVariables(SunTrackingData, building_data, XANGLES, YANGLES):
     
 
     
-def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_month, FolderName, panel_data, NumberCombinations, createPlots, start, end, weatherData):
-     # Start the simulation
-    
-    now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-#    print "simulation start: " + now    
-    
-    from RadiationCalculation_hourly import CalculateRadiationData
-    
-    
-    
-    #Calculate the Radiation on the solar panels and window with ladybug
-    HourlyRadiation = CalculateRadiationData(SimulationPeriode = SimulationPeriode,
-                                            XANGLES = XANGLES, 
-                                            YANGLES = YANGLES, 
-                                            paths = paths, 
-                                            DataNamePV = FolderName['DataNamePV'],
-                                            DataNameWin = FolderName['DataNameWin'])
-    
-    
-    
-    #if there are no panels vertical and horizontal
-    if panel_data['numberHorizontal'] == 0 and panel_data['numberVertical'] == 0:
-        PV_electricity_results = {}
-        
-        PV_electricity_results['Pmpp_sum'] = np.array(NumberCombinations * len(hour_in_month) * [0])
-        print "PV_electricity_results is zero"
-        
-    
-    #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
-    if not os.path.isfile(os.path.join(paths['PV'], 'HourlyPV_electricity_results_' + FolderName['DataNamePV'] + '.npy')): 
-        if not os.path.isdir(paths['PV']):
-            os.makedirs(paths['PV'])
-            
-        from asf_electricity_production_hourly import asf_electricity_production
-        #from asf_electricity_production_daysim import asf_electricity_production        
-        
-        print '\nCalculating PV electricity production'     
-        
-        
-        if createPlots:
-            PV_electricity_results, PV_detailed_results, fig1, fig2 = \
-            asf_electricity_production(
-                               createPlots = createPlots, 
-                               lb_radiation_path = paths['radiation_results'],
-                               panelsize = panel_data['panelSize'], 
-                               pvSizeOption = 0,
-                               save_results_path = paths['PV'], 
-                               lookup_table_path = paths['electrical_simulation'], 
-                               geo_path = paths['geo'],
-                               flipOrientation= False, 
-                               XANGLES = XANGLES, YANGLES= YANGLES, 
-                               hour_in_month = hour_in_month, 
-                               paths = paths, DataNamePV = FolderName['DataNamePV'],
-                               SimulationPeriode = SimulationPeriode, weatherData = weatherData)
-                               
-        else:
-            PV_electricity_results, PV_detailed_results = \
-            asf_electricity_production(
-                               createPlots = createPlots, 
-                               lb_radiation_path = paths['radiation_results'],
-                               panelsize = panel_data['panelSize'], 
-                               pvSizeOption = 0,
-                               save_results_path = paths['PV'], 
-                               lookup_table_path = paths['electrical_simulation'], 
-                               geo_path = paths['geo'],
-                               flipOrientation= False, 
-                               XANGLES = XANGLES, YANGLES= YANGLES, 
-                               hour_in_month = hour_in_month,
-                               paths = paths, DataNamePV = FolderName['DataNamePV'],
-                               SimulationPeriode = SimulationPeriode, weatherData = weatherData)
-    
-    else: 
-        PV_electricity_results = np.load(os.path.join(paths['PV'], 'HourlyPV_electricity_results_' + FolderName['DataNamePV'] + '.npy')).item()
-        PV_detailed_results = np.load(os.path.join(paths['PV'], 'HourlyPV_detailed_results_' + FolderName['DataNamePV'] + '.npy')).item()
-        print '\nLadyBug data loaded from Folder:'
-        print 'radiation_results_' + FolderName['DataNamePV']  
-        
-      
-    
-    
-    return PV_electricity_results, PV_detailed_results, HourlyRadiation, now,  
-  
-  
- 
-def PrepareRadiationData(HourlyRadiation, PV_electricity_results, NumberCombinations, SimulationPeriod, start, end):
-    
-    from calculateHOY import calcHOY
-    
-    print '\n'          
-    #add the radiation data to the specific HOY
-    PV={}
-    BuildingRadiationHOY= {}
-    passedHours = 0
-    count = 0
-    
-    for monthi in range(SimulationPeriod['FromMonth'], SimulationPeriod['ToMonth'] + 1):
-       for day in range(SimulationPeriod['FromDay'], SimulationPeriod['ToDay'] + 1):
-            for hour in range(SimulationPeriod['FromHour'], SimulationPeriod['ToHour'] + 1):        
-                
-                #HOY = start + passedHours
-                HOY = calcHOY(month= monthi,day = day, hour=hour)
-                BuildingRadiationHOY[HOY] = HourlyRadiation[monthi][day][hour] #W
-                
-                #print 'HOY: ' + str(HOY) + ' of ' + str(end)
-
-                PV[HOY] = PV_electricity_results['Pmpp_sum'][count:count+NumberCombinations] #Watts
-                count +=NumberCombinations               
-               
-                passedHours += 1
-    
-    return PV, BuildingRadiationHOY
 
 
     
-def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, BuildingRadiationData_HOY, PV, \
+def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data, weatherData, hourRadiation, \
                             NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES,\
                             start, end, Temp_start, SimulationPeriod):
+                                
+    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo.npy').item()
+    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo.npy').item()
     
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])     

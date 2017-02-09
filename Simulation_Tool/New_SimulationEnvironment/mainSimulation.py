@@ -71,7 +71,8 @@ INPUT PARAMETER DEFINITION
 
 """
 
-
+#'ZH13_NoASF', #'ZH13_49comb',
+#'FileName': 'ZH13_No_ASF_new',
 
 import os, sys
 import numpy as np
@@ -82,8 +83,8 @@ from SimulationClass import ASF_Simulation
 
 SimulationData = {
 'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
-'DataFolderName' : 'ZH13_49comb',
-'FileName': 'ZH13_49comb',
+'DataFolderName' : 'ZH13_NoASF', #'ZH13_49comb',
+'FileName': 'ZH13_No_ASF_new',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
@@ -107,7 +108,7 @@ BuildingProperties={
 "glass_light_transmitance" : 0.744 ,
 "lighting_load" : 11.74 ,
 "lighting_control" : 300,
-"Lighting_Utilisation_Factor" :  0.45,
+"Lighting_Utilisation_Factor" :  0.6,
 "Lighting_MaintenanceFactor" : 0.9,
 "U_em" : 0.2, 
 "U_w" : 1.1,
@@ -123,8 +124,8 @@ BuildingProperties={
 "coolingSystem" : DirectCooler, #DirectCooler, #DirectCooler, #HeatPumpCooler
 "heatingEfficiency" : 1,
 "coolingEfficiency" :1,
-'COP_H': 3,
-'COP_C':3}
+'COP_H': 6,
+'COP_C':6}
 
 #
 #Set simulation Properties
@@ -134,10 +135,13 @@ SimulationOptions= {
 'Occupancy' : 'Occupancy_COM.csv',
 'ActuationEnergy' : False}
 
+PanelData = {
+"XANGLES": [0],"YANGLES" : [0],"NoClusters":1,
+"numberHorizontal":0,"numberVertical":0,"panelOffset":400,"panelSize":400,"panelSpacing":500, "panelGridSize" : 25}
 	
 if __name__=='__main__':
     
-    ASFtest = ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+    ASFtest = ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
     ASFtest.SolveASF()
 
     print ASFtest.yearlyData

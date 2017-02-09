@@ -27,7 +27,7 @@ class ASF_Simulation(object):
             BuildingData = 
             {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200, "BuildingOrientation" : 0},
             BuildingProperties = 
-            {"glass_solar_transmitance" : 0.691,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
+            {"glass_solar_transmitance" : 0.691,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.6,\
             "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
             "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1,
             'COP_H': 3, 'COP_C':3},
@@ -494,26 +494,26 @@ class ASF_Simulation(object):
                 else:
                     pass
 
-                if self.start == 0 and self.end == 8760:
-                    if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
-                        if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
-    					#save figures
-                            self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.pdf'))
-                            self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.pdf'))
-                            self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.png'))
-                            self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.png'))
-                    else:
-                        pass
-                    
-                    if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
-    				if ('SolarEnergy' and 'Lighting') in self.optimization_Types:           
-    					#save figures
-    					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.pdf'))
-    					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.pdf'))
-    					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.png'))
-    					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.png'))
-                    else:
-                         pass
+                
+                if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
+                    if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
+					#save figures
+                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.pdf'))
+                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.pdf'))
+                        self.fig['fig1'].savefig(os.path.join(self.paths['pdf'], 'figure1' + '.png'))
+                        self.fig['fig2'].savefig(os.path.join(self.paths['pdf'], 'figure2' + '.png'))
+                else:
+                    pass
+                
+                if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
+				if ('SolarEnergy' and 'Lighting') in self.optimization_Types:           
+					#save figures
+					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.pdf'))
+					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.pdf'))
+					self.fig['figB'].savefig(os.path.join(self.paths['pdf'], 'figureB' + '.png'))
+					self.fig['figC'].savefig(os.path.join(self.paths['pdf'], 'figureC' + '.png'))
+                else:
+                     pass
                  
                 for ii in self.optimization_Types:
 				if ii == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):

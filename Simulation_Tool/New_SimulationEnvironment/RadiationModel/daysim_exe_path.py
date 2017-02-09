@@ -221,7 +221,7 @@ def calc_radiation(geometry_table_name = None, sen_list=None, sensor_geometries_
     geometry_table = pd.read_csv(os.path.join(paths['input'], geometry_table_name+".csv"), index_col='name')
 
     # =============================== Simulation =============================== #
-    geometry2radiance(arad = rad, ageometry_table = geometry_table,  project_path = paths['main'], project_folder = paths['project'], STLFolder = paths['STL'])
+    geometry2radiance(arad = rad, ageometry_table = geometry_table,  project_path = paths['project_folder'], project_folder = paths['project'], STLFolder = paths['STL'])
     rad.create_rad_input_file()
     
     
@@ -306,15 +306,15 @@ if __name__ == '__main__':
             RadianceData = 'rad_data'
             
             paths = {}
-            paths['main'] = ProjectFolder
-            paths['weather_folder'] = os.path.join(paths['main'], 'WeatherData')
-            paths['project_SubFolder'] = os.path.join(paths['main'], ProjectSubFolder)
+            paths['project_folder'] = ProjectFolder
+            paths['weather_folder'] = os.path.join(paths['project_folder'], 'WeatherData')
+            paths['project_SubFolder'] = os.path.join(paths['project_folder'], ProjectSubFolder)
             paths['project'] = os.path.join(paths['project_SubFolder'], Project)
             paths['input'] = os.path.join(paths['project'], 'input')
             paths['pathFile'] = os.path.join(os.path.join(os.path.join(paths['project'], Project),'output\Window'), 'res\Window.csv')
             paths['Location'] = os.path.join(paths['weather_folder'], geoLocation)
-            paths['STL'] = os.path.join(paths['main'], STLFolder)
-            paths['Radiance'] = os.path.join(paths['main'], RadianceData)
+            paths['STL'] = os.path.join(paths['project_folder'], STLFolder)
+            paths['Radiance'] = os.path.join(paths['project_folder'], RadianceData)
             
             #3
             rad_params = Library(RadianceValues = RadianceValues)

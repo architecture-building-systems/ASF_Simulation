@@ -78,7 +78,6 @@ PanelPoints = pd.read_csv(paths['PanelData'])
 TotalHOY = SunData['HOY'].tolist()
 
 
-
 RadiationTilt = {}
 RadiationASF = {}
 RadiationWindow = {}
@@ -86,6 +85,7 @@ Percentage = {}
 theta_dict = {}
 LatShading = {}
 LongShading = {}
+WindowTilt = {}
 
 #gamma_s = sun azimuth angle
 #alpha_s = sun altitude angle
@@ -115,17 +115,24 @@ xArray= 6 # Number of Panels in x direction
 yArray= 9 # number of rows
 
 
-XANGLES = [0,30,45,60]
-YANGLES = [-45,0,15,30]
+XANGLES = [0,15,30,45,60,75,90]
+YANGLES = [-45,-30,-15,0,15,30,45]
 
-TimePeriod = range(4473,4477)
+
+#TimePeriod1 = range(175,191)
+TimePeriod2 = range(173,189)
+
+TimePeriod =  TimePeriod2
+
+print TimePeriod
 
 showFig = True
 
 for HOY in TimePeriod:
     
-    RadiationTilt[int(HOY)] = {}
-    RadiationASF[int(HOY)] = {}
+    RadiationTilt[HOY] = {}
+    RadiationASF[HOY] = {}
+    WindowTilt[HOY] = {}
 
     
     RadiationWindow[int(HOY)] = {}
@@ -160,13 +167,22 @@ for HOY in TimePeriod:
                 
                 if SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
             
-                    #Calculate Radiation on tilt surface
+                    #Calculate Radiation on tilt ASF surface
                     Rad_tilt = RadTilt (I_dirnor = 0, I_dif = radiation['difhorrad_Whm2'][HOY], ref = reflectance, theta = np.nan, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ind])          
                     RadiationTilt[HOY][str(x_angle) + str(y_angle)] = Rad_tilt
+                    
+                    #Calculate Radiation on Window surface
+                    Win_tilt = RadTilt (I_dirnor = 0, I_dif = radiation['difhorrad_Whm2'][HOY], ref = reflectance, theta = np.nan, beta = beta, sunAlti = SunAngles['Altitude'][ind])          
+                    WindowTilt[HOY][str(x_angle) + str(y_angle)] = Win_tilt
+                    
                 else:
-                    #Calculate Radiation on tilt surface
+                    #Calculate Radiation on tilt ASF surface
                     Rad_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = reflectance, theta = theta, beta = (beta - x_angle), sunAlti = SunAngles['Altitude'][ind])          
                     RadiationTilt[HOY][str(x_angle) + str(y_angle)] = Rad_tilt
+                    
+                    #Calculate Radiation on tilt ASF surface
+                    Win_tilt = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], ref = reflectance, theta = theta, beta = beta, sunAlti = SunAngles['Altitude'][ind])          
+                    WindowTilt[HOY][str(x_angle) + str(y_angle)] = Win_tilt
                
                 
                 #Set Sun Position
@@ -174,7 +190,7 @@ for HOY in TimePeriod:
                 sunAlt=math.radians(SunAngles['Altitude'][ind])
             
             	   #Set Panel Position (note that this should be an array in the future)
-                panelAz=math.radians(-y_angle)
+                panelAz=math.radians(y_angle)
                 panelAlt=math.radians(x_angle) # beta - x_angle
                 
                 #Calculate ASF Geometry
@@ -234,10 +250,10 @@ for HOY in TimePeriod:
                 
 
                 elif SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
-    
                     #no direct radiation, therefore no overlap
                     Percentage[HOY][str(x_angle) + str(y_angle)] = 1
-                    
+    
+                
                 else: 
                     print "\nStart Geometry Analysis"
     
@@ -250,7 +266,7 @@ for HOY in TimePeriod:
                 
                 #Calculate Radiation on ASF
                 RadiationASF[HOY][str(x_angle) + str(y_angle)] = round(PanelNum * (PanelSize**2/10**(6)) * Percentage[HOY][str(x_angle) + str(y_angle)] * RadiationTilt[int(HOY)][str(x_angle) + str(y_angle)] * 0.001 ,3) # area in m2 * Wh/m2 in KWh
-                RadiationWindow[HOY][str(x_angle) + str(y_angle)] = round((WindowArea - PanelNum * (PanelSize**2/10**(6)) * Percentage[HOY][str(x_angle) + str(y_angle)]) * RadiationTilt[int(HOY)][str(x_angle) + str(y_angle)] * 0.001 * Percentage[HOY][str(x_angle) + str(y_angle)],3) # area in m2 * Wh/m2 in KWh
+                RadiationWindow[HOY][str(x_angle) + str(y_angle)] = round((WindowArea - (PanelNum * PanelSize**2/(10**(6)) * Percentage[HOY][str(x_angle) + str(y_angle)])) * WindowTilt[HOY][str(x_angle) + str(y_angle)] * 0.001 ,3) # area in m2 * Wh/m2 in KWh
                
                 toc = time.time() - tic
                 print 'time passed (sec): ' + str(round(toc,2))
@@ -282,8 +298,8 @@ PowerLoss = pd.read_csv(os.path.join(paths, 'powerloss.csv'))
 PowerLoss.columns = [range(50)]
 
 #PowerLoss2 = np.matrix(PowerLoss)
-#logitude2 = np.matrix(longitude)
-#latidude2 = np.matrix(latitude)
+#logitudeMatrix = np.matrix(longitude)
+#latidudeMatrix = np.matrix(latitude)
 
 Long = np.array(range(0,100,2))/100.
 Lat = np.array(range(0,100,2))/100.
@@ -299,44 +315,69 @@ def round_up_to_even(number):
     
 PV = {}
 PV2 = {}
+shading_loss = {}
+Window = {}
+
 
 for HOY in TimePeriod:
-    PV[HOY] = []
+    PV[HOY] = np.array([])
     PV2[HOY] = {}
+    shading_loss[HOY] = {}
+    Window[HOY] = np.array([])
+    
     for x_angle in XANGLES:
         for y_angle in YANGLES:
+            shading_loss[HOY][str(x_angle) + str(y_angle)] = {}
             
             PV_sum = 0
             if Percentage[HOY][str(x_angle) + str(y_angle)] == 1:
                 PV_sum = RadiationASF[HOY][str(x_angle) + str(y_angle)] * n_panel
             else:                
+                #TODO: Radiation on a panel is averaged               
                 Radiation = RadiationASF[HOY][str(x_angle) + str(y_angle)]/float(PanelNum)
                 LatNum = LatShading[HOY][str(x_angle) + str(y_angle)] 
                 LongNum = LongShading[HOY][str(x_angle) + str(y_angle)]
     
                 for ind in range(PanelNum):
+                    shading_loss[HOY][str(x_angle) + str(y_angle)][ind] = {}
                     if LatNum[ind] > 0.98:
-                        n_shading = 100
+                        n_shading = 90
                     elif LongNum[ind] > 0.98:
-                        n_shading = 100
+                        n_shading = 90
                     else:
+                        #shading is rounded up to the next even number
                         valueLat = round_up_to_even(LatNum[ind] *100)
                         lat_index = Lat.index(valueLat/100.)
-                    
+                        
+                        #shading is rounded up to the next even number
                         valueLong = round_up_to_even(LongNum[ind] *100)
                         long_index = Lat.index(valueLong/100.)
                     
                         n_shading = PowerLoss[long_index][lat_index]
+                        
+                    shading_loss[HOY][str(x_angle) + str(y_angle)][ind] = n_shading    
                     print 'shading', n_shading
-                    print 'panel', n_panel
-                    print 'Radiaiton', Radiation
-                    PV_sum += (n_panel * (1-n_shading/100.) * Radiation) 
+                    
+                    print 'Radiaiton', Radiation                    
                     print 'PV',PV_sum
+                    #PV_sum += (n_panel * (1-n_shading/100.) * Radiation) 
+                    PV_sum += (n_panel * (1) * Radiation) 
+                    
             PV2[HOY][str(x_angle) + str(y_angle)] = round(PV_sum * 1000,3) 
-            PV[HOY].append(round(PV_sum * 1000,3))
-                
+            
+            PV[HOY] = np.append(PV[HOY], PV_sum * 1000)
+            Window[HOY] = np.append(Window[HOY], RadiationWindow[HOY][str(x_angle) + str(y_angle)] * 1000)
+            
+           
 
-Hallo = PV2
+PV_dict = PV2
+PV_list = PV
+Window_list = Window
+
+
+#np.save('PV_geo.npy',PV_list)    
+#np.save('Window_geo.npy',Window_list)        
+   
 
 """
 #ResultAnalysis = pd.concat([radiation['glohorrad_Whm2'], SolarData_df['00'], ResultASF_df['00'], SolarData_df['0-45'], ResultASF_df['0-45'],   SolarData_df['045'], ResultASF_df['045']], axis=1)

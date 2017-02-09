@@ -66,7 +66,7 @@ def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
 	#The difference is relative to the flat panel position
 	y=(math.sin(sunAlt-panelAlt/2)/(math.sin(math.pi/2-sunAlt)))*h*math.sin(panelAlt/2) 
 	#print y
-	x=(math.sin(sunAz-panelAz/2)/(math.sin(math.pi/2-sunAz)))*h*math.sin(panelAz/2)
+	x=(math.sin(sunAz+panelAz/2)/(math.sin(math.pi/2-sunAz)))*h*math.sin(-panelAz/2)
 	#print x
 
 	
