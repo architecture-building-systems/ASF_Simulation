@@ -53,7 +53,7 @@ def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title, TotalHOY):
     ax1.set_xlabel('Hour of Day', fontsize = 16)
     #ax1.set_yticks([z_min,z_min + diff/4, z_min + 2* diff/4, z_max - diff/4, z_max])
     
-    ax1.set_yticks([-800,-400,0,400,800,1200])
+    ax1.set_yticks([-1200,-600,0,600,1200])
     #ax1.set_xticks(range(6,24,3))
     # Make the y-axis label and tick labels match the line color.
     ax1.set_ylabel('Net Energy Demand [Wh]', fontsize = 16)

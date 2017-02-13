@@ -86,6 +86,7 @@ theta_dict = {}
 LatShading = {}
 LongShading = {}
 WindowTilt = {}
+InterPoints = {}
 
 #gamma_s = sun azimuth angle
 #alpha_s = sun altitude angle
@@ -111,6 +112,8 @@ DistWindow = 300 #Distance from the Glazed Surface
 
 panelSpacing = 500 # in x y dirction[mm]
 
+
+
 xArray= 6 # Number of Panels in x direction
 yArray= 9 # number of rows
 
@@ -118,11 +121,15 @@ yArray= 9 # number of rows
 XANGLES = [0,15,30,45,60,75,90]
 YANGLES = [-45,-30,-15,0,15,30,45]
 
+#Select shading cases which schould be evaluated
 
-#TimePeriod1 = range(175,191)
-TimePeriod2 = range(173,189)
+ShadingCase = ['1','2','3']
 
-TimePeriod =  TimePeriod2
+
+TimePeriod1 = range(170,191)
+TimePeriod2 = range(4475,4485)
+
+TimePeriod =  TimePeriod2 + TimePeriod1
 
 print TimePeriod
 
@@ -130,17 +137,23 @@ showFig = True
 
 for HOY in TimePeriod:
     
+    #HOY -= 1
+    
+    ReCalcPanelSpacing = math.sqrt(2*(panelSpacing **2))
+    panelSpacing = int(ReCalcPanelSpacing)
+    
+    panelSpacing = 566
+    print panelSpacing
+    
     RadiationTilt[HOY] = {}
     RadiationASF[HOY] = {}
-    WindowTilt[HOY] = {}
-
-    
-    RadiationWindow[int(HOY)] = {}
-
+    WindowTilt[HOY] = {}    
+    RadiationWindow[HOY] = {}
     Percentage[HOY] = {}
     theta_dict[HOY] = {}
     LatShading[HOY] = {}
     LongShading[HOY] = {}
+    InterPoints[HOY] = {}
     
     if HOY in TotalHOY:
         
@@ -196,6 +209,8 @@ for HOY in TimePeriod:
                 #Calculate ASF Geometry
                 #The adaptive solar facade is represented by an array of coordinates and panel size
                 h=math.sqrt(2*(PanelSize/2)**2) #distance from centre of panel to corner [mm]
+                
+               
 
                 ASFArray=[] # create array with all panel centerpoints with x and y-coordination
                 for ii in range(yArray):
@@ -245,11 +260,8 @@ for HOY in TimePeriod:
                 PanelNum = len(ASF_dict_prime)
                 WindowArea = room_width/1000.0 * room_height/1000.0 * gpH * gpW
                 
-                if y_angle == 0 and x_angle == 0:
-                    Percentage[HOY][str(x_angle) + str(y_angle)] = 1                    
-                
 
-                elif SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
+                if SunAngles['Azimuth'][ind] > 270 or SunAngles['Azimuth'][ind] < 90:
                     #no direct radiation, therefore no overlap
                     Percentage[HOY][str(x_angle) + str(y_angle)] = 1
     
@@ -258,10 +270,10 @@ for HOY in TimePeriod:
                     print "\nStart Geometry Analysis"
     
                     if SunAngles['Azimuth'][ind] >= 180: 
-                        Percentage[HOY][str(x_angle) + str(y_angle)], LatShading[HOY][str(x_angle) + str(y_angle)], LongShading[HOY][str(x_angle) + str(y_angle)] = CaseA (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray)
+                        Percentage[HOY][str(x_angle) + str(y_angle)], LatShading[HOY][str(x_angle) + str(y_angle)], LongShading[HOY][str(x_angle) + str(y_angle)], InterPoints[HOY][str(x_angle) + str(y_angle)] = CaseA (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray, Case = ShadingCase)
                         
                     elif SunAngles['Azimuth'][ind] < 180: 
-                        Percentage[HOY][str(x_angle) + str(y_angle)], LatShading[HOY][str(x_angle) + str(y_angle)], LongShading[HOY][str(x_angle) + str(y_angle)] = CaseB (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray)
+                        Percentage[HOY][str(x_angle) + str(y_angle)], LatShading[HOY][str(x_angle) + str(y_angle)], LongShading[HOY][str(x_angle) + str(y_angle)] = CaseB (ind = ind, SunAngles = SunAngles, ASF_dict_prime = ASF_dict_prime, PanelNum = PanelNum, row2 = yArray, col = xArray, Case = ShadingCase)
                 
                 
                 #Calculate Radiation on ASF
@@ -281,17 +293,15 @@ for HOY in TimePeriod:
                 RadiationASF[HOY][str(x_angle) + str(y_angle)] = 0
                 Percentage[HOY][str(x_angle) + str(y_angle)] = 1
                 RadiationWindow[HOY][str(x_angle) + str(y_angle)] = 0
-  
+
+
 ResultASF_df = pd.DataFrame(RadiationASF).T
 ResultWindow_df = pd.DataFrame(RadiationWindow).T
-
-
 
 n_panel = 0.1 # 10 Precent
 
 
-paths = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-PowerLoss = pd.read_csv(os.path.join(paths, 'powerloss.csv'))
+PowerLoss = pd.read_csv(os.path.join(paths['RadModel'], 'powerloss.csv'))
 #longitude = pd.read_csv(os.path.join(paths, 'longitude.csv'))
 #latitude = pd.read_csv(os.path.join(paths, 'latitude.csv'))
 
@@ -310,14 +320,17 @@ Lat = Lat.tolist()
 import math
 
 def round_up_to_even(number):
-    return math.ceil(number / 2.) * 2
-    
+    return math.ceil(number/ 2.) * 2
+
+def round_down_to_even(number):
+    return math.ceil(number/ 2.) * 2 - 2    
     
 PV = {}
 PV2 = {}
 shading_loss = {}
 Window = {}
 
+shading = True
 
 for HOY in TimePeriod:
     PV[HOY] = np.array([])
@@ -340,6 +353,7 @@ for HOY in TimePeriod:
     
                 for ind in range(PanelNum):
                     shading_loss[HOY][str(x_angle) + str(y_angle)][ind] = {}
+                    
                     if LatNum[ind] > 0.98:
                         n_shading = 90
                     elif LongNum[ind] > 0.98:
@@ -356,13 +370,17 @@ for HOY in TimePeriod:
                         n_shading = PowerLoss[long_index][lat_index]
                         
                     shading_loss[HOY][str(x_angle) + str(y_angle)][ind] = n_shading    
-                    print 'shading', n_shading
+#                    print 'shading', n_shading
+#                    print 'Radiaiton', Radiation                    
+#                    print 'PV',PV_sum
                     
-                    print 'Radiaiton', Radiation                    
-                    print 'PV',PV_sum
-                    #PV_sum += (n_panel * (1-n_shading/100.) * Radiation) 
-                    PV_sum += (n_panel * (1) * Radiation) 
-                    
+                    if shading == True:
+                        
+                        PV_sum += (n_panel * (1-n_shading/100.) * Radiation) 
+                        
+                    else:
+                        PV_sum += (n_panel * 1 * Radiation) 
+                        
             PV2[HOY][str(x_angle) + str(y_angle)] = round(PV_sum * 1000,3) 
             
             PV[HOY] = np.append(PV[HOY], PV_sum * 1000)
@@ -374,54 +392,80 @@ PV_dict = PV2
 PV_list = PV
 Window_list = Window
 
+"""
+saveNPY = True
 
-#np.save('PV_geo.npy',PV_list)    
-#np.save('Window_geo.npy',Window_list)        
+if saveNPY == True:
+
+#    np.save('RadPanels_geo2.npy',RadiationASF)    
+#    np.save('RadWindow_geo2.npy',RadiationWindow)        
+    
+    
+    np.save('PV_geo2no_powerloss.npy',PV_list)    
+    np.save('Window_geo2no_powerloss.npy',Window_list)        
+
    
 
-"""
+
+fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(16, 8))
+
+
 #ResultAnalysis = pd.concat([radiation['glohorrad_Whm2'], SolarData_df['00'], ResultASF_df['00'], SolarData_df['0-45'], ResultASF_df['0-45'],   SolarData_df['045'], ResultASF_df['045']], axis=1)
 #
-PlotData1 = pd.concat([SolarData_df['00']/ResultASF_df['00']], axis = 1)
+PlotData1 = pd.concat([SolarData_df['00'][TimePeriod]/ResultASF_df['00']], axis = 1)
 PlotData1.columns = ['rad00']
-df = PlotData1[PlotData1.rad00 <= 2]
-df.plot()
+#df = PlotData1[PlotData1.rad00 <= 2]
+PlotData1.plot(ax=axes[0,0])
 
 
-PlotData2 = pd.concat([SolarData_df['0-45']/ResultASF_df['0-45']], axis = 1)
+
+PlotData2 = pd.concat([SolarData_df['0-45'][TimePeriod]/ResultASF_df['0-45']], axis = 1)
 PlotData2.columns = ['rad0_45']
-df = PlotData2[PlotData2.rad0_45 <= 2]
-df.plot()
+#df = PlotData2[PlotData2.rad0_45 <= 2]
+PlotData2.plot(ax=axes[0,1])
 
 
-PlotData3 = pd.concat([SolarData_df['045']/ResultASF_df['045']], axis = 1)
+
+PlotData3 = pd.concat([SolarData_df['045'][TimePeriod]/ResultASF_df['045']], axis = 1)
 PlotData3.columns = ['rad045']
-df = PlotData3[PlotData3.rad045 <= 2]
-df.plot()
+#df = PlotData3[PlotData3.rad045 <= 2]
+PlotData3.plot(ax=axes[0,2])
+
+PlotData3b = pd.concat([SolarData_df['450'][TimePeriod]/ResultASF_df['450']], axis = 1)
+PlotData3b.columns = ['rad450']
+#df = PlotData3[PlotData3.rad045 <= 2]
+PlotData3b.plot(ax=axes[0,3])
 
 
-PlotData4 = pd.concat([ResultASF_df['045'],SolarData_df['045'][TimePeriod]], axis = 1)
-PlotData4.columns = ['Geo045', 'LB']
-PlotData4.plot()
+PlotData3a = pd.concat([SolarData_df['900'][TimePeriod]/ResultASF_df['900']], axis = 1)
+PlotData3a.columns = ['rad900']
+#df = PlotData3[PlotData3.rad045 <= 2]
+PlotData3a.plot(ax=axes[0,4])
 
-PlotData5 = pd.concat([ResultASF_df['0-45'],SolarData_df['0-45'][TimePeriod]], axis = 1)
-PlotData5.columns = ['Geo0-45', 'LB']
-PlotData5.plot()
+"""
+
+
 
 PlotData6 = pd.concat([ResultASF_df['00'],SolarData_df['00'][TimePeriod]], axis = 1)
 PlotData6.columns = ['Geo00', 'LB']
-PlotData6.plot()
+PlotData6.plot(ax=axes[1,0])
+
+PlotData5 = pd.concat([ResultASF_df['0-45'],SolarData_df['0-45'][TimePeriod]], axis = 1)
+PlotData5.columns = ['Geo0-45', 'LB']
+PlotData5.plot(ax=axes[1,1])
+
+PlotData4 = pd.concat([ResultASF_df['045'],SolarData_df['045'][TimePeriod]], axis = 1)
+PlotData4.columns = ['Geo045', 'LB']
+PlotData4.plot(ax=axes[1,2])
 
 PlotData7 = pd.concat([ResultASF_df['450'],SolarData_df['450'][TimePeriod]], axis = 1)
 PlotData7.columns = ['Geo450', 'LB']
-PlotData7.plot()
+PlotData7.plot(ax=axes[1,3])
 
 PlotData8 = pd.concat([ResultASF_df['900'],SolarData_df['900'][TimePeriod]], axis = 1)
 PlotData8.columns = ['Geo900', 'LB']
-PlotData8.plot()
+PlotData8.plot(ax=axes[1,4])
 
-#pathSave = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-#ResultAnalysis[4200:4400].to_csv(os.path.join(pathSave, 'ResultProPJ.csv'))
+fig.savefig(os.path.join(paths['RadModel'], 'SunnySummerDayComparison2.pdf'), format='pdf')
 
 
-"""

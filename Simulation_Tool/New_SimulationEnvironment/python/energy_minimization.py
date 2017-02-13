@@ -19,6 +19,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     from buildingPhysics import Building #Importing Building Class
     from read_occupancy import Equate_Ill, BuildingData
     from optimzeTemperatureFunction import optimzeTemp, checkEqual
+    from ActuationEnergyCalc import ActuationDemand
     
     print 'H', BuildingProperties['COP_H']
     print 'C', BuildingProperties['COP_C']
@@ -68,6 +69,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
     BuildingSimulationELEC = {}
     E_tot = {}
     E_HCL = {}
+    Acuation = {}
     
     Data_H_elec = {}
     Data_C_elec = {}
@@ -117,6 +119,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         Data_Cooling_HOY[hour_of_year] = {}    
         Data_Lighting_HOY[hour_of_year] =  {}   
         Data_T_in_HOY[hour_of_year] = {}
+        Acuation[hour_of_year] = {}
         
         Data_H_elec[hour_of_year] = {}
         Data_C_elec[hour_of_year] = {}
@@ -138,17 +141,21 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         hourlyData[hour_of_year]['T_in'] = []
         hourlyData[hour_of_year]['AngleComb'] = []
         hourlyData[hour_of_year]['PV'] = PV[hour_of_year]
+        hourlyData[hour_of_year]['AcuationEnergy'] = []
         
         hourlyData[hour_of_year]['H_elec'] = [] 
         hourlyData[hour_of_year]['C_elec'] = [] 
         hourlyData[hour_of_year]['E_tot_elec'] = []
         hourlyData[hour_of_year]['E_HCL_elec'] = []
+        
+        
     
             
         results_building_simulation[hour_of_year]['E_tot'] = np.nan
         results_building_simulation[hour_of_year]['E_HCL'] = np.nan
         results_building_simulation[hour_of_year]['H']  = np.nan
         results_building_simulation[hour_of_year]['C']  = np.nan
+        results_building_simulation[hour_of_year]['ActuationEnergy'] = np.nan
         
         BuildingSimulationELEC[hour_of_year]['E_tot_elec'] = np.nan
         BuildingSimulationELEC[hour_of_year]['E_HCL_elec'] = np.nan
@@ -163,6 +170,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         results_building_simulation[hour_of_year]['T_out'] = np.nan
         results_building_simulation[hour_of_year]['RadiationWindow'] = np.nan
         results_building_simulation[hour_of_year]['UncomfHour'] = np.nan
+        
     
     tic = time.time()
     #run for every hour of year the RC-Model    
@@ -224,6 +232,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
                 Data_Heating_HOY[hour_of_year][comb] = 0
                 Data_Cooling_HOY[hour_of_year][comb] = 0
                 
+            
+            
             
             #determine best combination for the evaluated HOY
             #integrate the needed actuation energy to calculate the real total energy demand 
@@ -565,6 +575,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         BuildingSimulationELEC[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
         BuildingSimulationELEC[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
         
+
+        
         if BestCombKey == NumberCombinations:
             results_building_simulation[hour_of_year]['OptAngles'] = (np.nan,np.nan)
             BuildingSimulationELEC[hour_of_year]['OptAngles'] = (np.nan, np.nan)
@@ -572,6 +584,12 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
             results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
             BuildingSimulationELEC[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
         
+        if hour_of_year >= 1:        
+            OldAngles = results_building_simulation[hour_of_year-1]['OptAngles']
+            print OldAngles
+            results_building_simulation[hour_of_year]['ActuationEnergy'] = ActuationDemand (oldX = OldAngles[0], newX = combinationAngles[BestComb][0], oldY = OldAngles[1], newY = combinationAngles[BestComb][1], PanelNum = 50)
+            print results_building_simulation[hour_of_year]['ActuationEnergy']
+            
         #show which HOY is calculated
         if hour_of_year % 1000 == 0 and hour_of_year != 0:
             print 'HOY:', hour_of_year

@@ -159,482 +159,459 @@ def Area(Dict):
     return resultASF
     
 
-def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
+def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
     
-    Shadow = {}
-    ASFArea = {}
-    
+   
     #SunAngles['Azimuth'][ind] >= 180
-    print '\nCase 1a'
+    
                                 
     print 'Altitude', SunAngles['Altitude'][ind]
     print 'Azimuth', SunAngles['Azimuth'][ind]
     
-    result1 = Area(Dict = ASF_dict_prime[0])
-    print "\nPanel:  0", "- Area: ", result1
-    print "Intersection with panel to the left: No"
-    
-       
-    Shadow[0] = 0
-    ASFArea[0] = result1
-    
-    SumArea = 0
-    
-    
-    ShadowLong = {}
-    ShadowLat = {}
-    
-    ShadowLong[0] = 0
-    ShadowLat[0] = 0
-     
-    for ii in range(1,PanelNum):
-        
-        #case: if far right point of panel is within the panel to the right
-        p = Polygon((ASF_dict_prime[ii][0][0],ASF_dict_prime[ii][0][1]),
-                    (ASF_dict_prime[ii][1][0],ASF_dict_prime[ii][1][1]),
-                    (ASF_dict_prime[ii][2][0],ASF_dict_prime[ii][2][1]),
-                    (ASF_dict_prime[ii][3][0],ASF_dict_prime[ii][3][1]))
-        
-        if p.encloses_point(Point(ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1])):
-            #if Point is in polygon p, than true will be returned
-            #test if far right point of asf porjection lies in the panel right to the existing one
-            
-            #Calculate Intersection     
-           
-            p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][1]), 
-                                 (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][1]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][1])])
-    
-    
-            p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[ii-1][0][0], ASF_dict_prime[ii-1][0][1]), (ASF_dict_prime[ii-1][1][0], ASF_dict_prime[ii-1][1][1]),
-                                 (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (ASF_dict_prime[ii-1][3][0], ASF_dict_prime[ii-1][3][1])])
-    
-            poly1 = Polygon(p1, p2, p3, p4)
-            poly2 = Polygon(p5, p6, p7, p8)
-    
-            a =  poly1.intersection(poly2)
-            SP1 = a[0]
-            SP2 = a[1]
-            
-
-            resultShadow = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (SP1[0],SP1[1]),
-                        (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])).area)
-            
-            resultASF = abs(poly1.area)
-            
-            Dis1 = Distance(P1 = ASF_dict_prime[ii][0], P2 =  SP2) # latitudinal shading length
-            Dis2 = Distance(P1 = ASF_dict_prime[ii][0] , P2 =  ASF_dict_prime[ii][3]) # latitudinal panel length
-            ShadowLat[ii] = float(Dis1 / Dis2) # percentage latitudinal shading
-            
-            print float(Dis1/Dis2)
-            
-            Dis3 = Distance(P1 = ASF_dict_prime[ii][0], P2 = SP1 )
-            Dis4 = Distance(P1 = ASF_dict_prime[ii][0] , P2 =  ASF_dict_prime[ii][1])
-            ShadowLong[ii] = float(Dis3 / Dis4)            
-            
-            totalArea = resultASF - resultShadow
-    
-            Shadow[ii]= float(resultShadow)
-            ASFArea[ii] = resultASF
-            
-            SumArea += resultASF            
-            print "Panel: ", ii , "- Area: ", round(totalArea,3)
-            print "Intersection with panel to the left: Yes"    
-            
-        else:
-            
-                                        
-            result = Area(Dict = ASF_dict_prime[ii])
-            print "Panel: ", ii , "- Area: ", round(result,3)
-            print "Intersection with panel to the left: No"
-            
-            SumArea += result 
-        
-            Shadow[ii]= 0 
-            ASFArea[ii] = result
-            ShadowLat[ii] = 0
-            ShadowLong[ii] = 0
-    
-    print '\nCase 2a1'
-    for ii in range(1,row2): 
-        #case: check if the lowest edge of  a panel is intersection with panel below
-        for colNum in range(col): 
-        
-                            
-            if (colNum + ii *col) < PanelNum: #skip the last panels 
-            
-                p = Polygon((ASF_dict_prime[colNum + ii *col][0][0],ASF_dict_prime[colNum + ii *col][0][1]),
-                            (ASF_dict_prime[colNum + ii *col][1][0],ASF_dict_prime[colNum + ii *col][1][1]),
-                            (ASF_dict_prime[colNum + ii *col][2][0],ASF_dict_prime[colNum + ii *col][2][1]),
-                            (ASF_dict_prime[colNum + ii *col][3][0],ASF_dict_prime[colNum + ii *col][3][1]))
-    
-            
-                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])):
-                    #if Point is in polygon p, than true will be returned
-                
-    
-                    #Calculate Intersection               
-                    p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[colNum + ii *col][0][0], ASF_dict_prime[colNum + ii *col][0][1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), 
-                                         (ASF_dict_prime[colNum + ii *col][2][0], ASF_dict_prime[colNum + ii *col][2][1]), (ASF_dict_prime[colNum + ii *col][3][0], ASF_dict_prime[colNum + ii *col][3][1])])
-            
-            
-                    p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][1]),
-                                         (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])])
-            
-                    poly1 = Polygon(p1, p2, p3, p4)
-                    poly2 = Polygon(p5, p6, p7, p8)
-            
-                    a =  poly1.intersection(poly2)
-                    SP1 = a[0]
-                    SP2 = a[1]
-                    
-#                    print 'SP1_0', float(SP1[0])
-#                    print 'SP1_1', float(SP1[1])  
-#                    
-#                    print 'SP2_0', float(SP2[0])
-#                    print 'SP2_1', float(SP2[1])     
-                    
-                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), (SP1[0],SP1[1]),
-                                             (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])).area)
-            
-                            
-                    Shadow[colNum + ii *col] += float(resultShadow2)
-                    
-                    Dis1 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  SP2) # latitudinal shading length
-                    Dis2 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  ASF_dict_prime[colNum + ii *col][2]) # latitudinal panel length
-                    ShadowLat[colNum + ii *col] += float(Dis1/Dis2) # percentage latitudinal shading
-            
-                    Dis3 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  SP1)
-                    Dis4 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1] ,P2 =  ASF_dict_prime[colNum + ii *col][0])
-                    ShadowLong[colNum + ii *col] += float(Dis3/Dis4)      
-            
-            
-                        
-                    print "Panel: ", colNum + ii *col
-                    print "Intersection with upper panel: Yes" 
-                    
-                else:
-                    result1 = Area(Dict = ASF_dict_prime[colNum + ii *col])
-                    print "Panel: ", colNum + ii *col
-                    print "Intersection with upper panel: No"
-                    Shadow[colNum + ii *col]+= 0
-            else:
-                pass
-                   
-                    
-    print '\nCase 2a2'              
-                      
-    for ii in range(2,row2): #row2 = yArray, col = xArray
-    
-            #case: check if the lowest edge of  a panel is intersection with panel below
-        for colNum in range(col): 
-        
-            if (colNum + ii *col-1) < PanelNum: #skip the last panels 
-                
-                dot = colNum + ii *col -1
-            
-                p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
-                            (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
-                            (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
-                            (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
-                
-            
-                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])):
-                    #if Point is in polygon p, than true will be returned
-                
-    
-                    #Calculate Intersection               
-                    p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
-                                         (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
-            
-            
-                    p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-2) *col)][0][0], ASF_dict_prime[(colNum + (ii-2) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][1][0], ASF_dict_prime[(colNum + (ii-2) *col)][1][1]),
-                                         (ASF_dict_prime[(colNum + (ii-2) *col)][2][0], ASF_dict_prime[(colNum + (ii-2) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])])
-            
-                    poly1 = Polygon(p1, p2, p3, p4)
-                    poly2 = Polygon(p5, p6, p7, p8)
-            
-                    a =  poly1.intersection(poly2)
-                    SP1 = a[0]
-                    SP2 = a[1]
-                    
-   
-                    
-                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP1[0],SP1[1]),
-                                             (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])).area)
-            
-                    
-                    Shadow[dot] += float(resultShadow2)
-                    
-                    Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP2) # latitudinal shading length
-                    Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
-                    ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
-            
-                    Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP1)
-                    Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
-                    ShadowLong[dot] += float(Dis3 / Dis4)
-                        
-                    print "Panel: ", dot
-                    print "Intersection with second upper panel: Yes" 
-                    
-    
-                    
-                else:
-                    result1 = Area(Dict = ASF_dict_prime[dot])
-                    print "Panel: ", dot
-                    print "Intersection with second upper panel: No"
-                    Shadow[dot]+= 0
-            else:
-                pass
-            
-    #print '\nSummary of Solar Radiation Analysis'                
-                        
-    sumArea = 0
-    for ii in range(PanelNum):       
-           #print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
-           sumArea += ASFArea[ii]-Shadow[ii]
-           
-    
-    #Calculate Percentage of overlapped area
-    BestKey = max(ASFArea, key=ASFArea.get)
-    Percentage = round(sumArea/(ASFArea[BestKey] * PanelNum),4)
-    
-
-    
-    return Percentage, ShadowLat, ShadowLong   
-    
-
-def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col):
 
     Shadow = {}
     ASFArea = {}
+    ShadowLong = {}
+    ShadowLat = {}
+    IntersectionPoints = {}
+
+    
+    for zz in range(PanelNum):    
+        Shadow[zz] = 0
+        ShadowLong[zz] = 0
+        ShadowLat[zz] = 0
+        IntersectionPoints[zz] = [None]
+        
+        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[zz][0][0], ASF_dict_prime[zz][0][1]), (ASF_dict_prime[zz][1][0], ASF_dict_prime[zz][1][1]), 
+                                 (ASF_dict_prime[zz][2][0], ASF_dict_prime[zz][2][1]), (ASF_dict_prime[zz][3][0], ASF_dict_prime[zz][3][1])])
+                                 
+        ASFArea[zz] = abs(Polygon(p1, p2, p3, p4).area)
+    
+        
+    
+    if '1' in Case:
+        print '\nCase A1'
+        
+     
+        for ii in range(1,PanelNum):
+            IntersectionPoints[ii] = []
+            
+            #case: if far right point of panel is within the panel to the right
+            p = Polygon((ASF_dict_prime[ii][0][0],ASF_dict_prime[ii][0][1]),
+                        (ASF_dict_prime[ii][1][0],ASF_dict_prime[ii][1][1]),
+                        (ASF_dict_prime[ii][2][0],ASF_dict_prime[ii][2][1]),
+                        (ASF_dict_prime[ii][3][0],ASF_dict_prime[ii][3][1]))
+            
+            if p.encloses_point(Point(ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1])):
+                #if Point is in polygon p, than true will be returned
+                #test if far right point of asf porjection lies in the panel right to the existing one
+                
+                #Calculate Intersection     
+               
+                p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][1]), 
+                                     (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][1]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][1])])
+        
+        
+                p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[ii-1][0][0], ASF_dict_prime[ii-1][0][1]), (ASF_dict_prime[ii-1][1][0], ASF_dict_prime[ii-1][1][1]),
+                                     (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (ASF_dict_prime[ii-1][3][0], ASF_dict_prime[ii-1][3][1])])
+        
+                poly1 = Polygon(p1, p2, p3, p4)
+                poly2 = Polygon(p5, p6, p7, p8)
+        
+                a =  poly1.intersection(poly2)
+                SP1 = a[0]
+                SP2 = a[1]
+                IntersectionPoints[ii].append(SP1)
+                IntersectionPoints[ii].append(SP2)
+                
+    
+                resultShadow = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (SP1[0],SP1[1]),
+                            (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])).area)
+                
+                Shadow[ii]= float(resultShadow)
+                
+                Dis1 = Distance(P1 = ASF_dict_prime[ii][0], P2 =  SP2) # latitudinal shading length
+                Dis2 = Distance(P1 = ASF_dict_prime[ii][0] , P2 =  ASF_dict_prime[ii][3]) # latitudinal panel length
+                ShadowLat[ii] = float(Dis1 / Dis2) # percentage latitudinal shading
+                
+                
+                Dis3 = Distance(P1 = ASF_dict_prime[ii][0], P2 = SP1 )
+                Dis4 = Distance(P1 = ASF_dict_prime[ii][0] , P2 =  ASF_dict_prime[ii][1])
+                ShadowLong[ii] = float(Dis3 / Dis4)            
+                
+      
+                print "Panel: ", ii 
+                print "Intersection with panel to the left: Yes"    
+                
+            else:
+                
+                print "Panel: ", ii
+                print "Intersection with panel to the left: No"
+                
+                
+    if '2' in Case:
+            
+        print '\nCase A2'
+        for ii in range(1,row2): 
+            #case: check if the lowest edge of  a panel is intersection with panel below
+            for colNum in range(col): 
+            
+                                
+                if (colNum + ii *col) < PanelNum: #skip the last panels 
+                
+                    p = Polygon((ASF_dict_prime[colNum + ii *col][0][0],ASF_dict_prime[colNum + ii *col][0][1]),
+                                (ASF_dict_prime[colNum + ii *col][1][0],ASF_dict_prime[colNum + ii *col][1][1]),
+                                (ASF_dict_prime[colNum + ii *col][2][0],ASF_dict_prime[colNum + ii *col][2][1]),
+                                (ASF_dict_prime[colNum + ii *col][3][0],ASF_dict_prime[colNum + ii *col][3][1]))
+        
+                
+                    if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])):
+                        #if Point is in polygon p, than true will be returned
+                    
+        
+                        #Calculate Intersection               
+                        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[colNum + ii *col][0][0], ASF_dict_prime[colNum + ii *col][0][1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), 
+                                             (ASF_dict_prime[colNum + ii *col][2][0], ASF_dict_prime[colNum + ii *col][2][1]), (ASF_dict_prime[colNum + ii *col][3][0], ASF_dict_prime[colNum + ii *col][3][1])])
+                
+                
+                        p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][1]),
+                                             (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])])
+                
+                        poly1 = Polygon(p1, p2, p3, p4)
+                        poly2 = Polygon(p5, p6, p7, p8)
+                
+                        a =  poly1.intersection(poly2)
+                        SP3 = a[0]
+                        SP4 = a[1]
+                        IntersectionPoints[colNum + ii *col].append(SP3)
+                        IntersectionPoints[colNum + ii *col].append(SP4)
+                        
+    
+                        
+                        resultShadow2 = abs(Polygon((SP4[0],SP4[1]), (ASF_dict_prime[colNum + ii *col][1][0], ASF_dict_prime[colNum + ii *col][1][1]), (SP3[0],SP3[1]),
+                                                 (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])).area)
+                
+                                
+                        Shadow[colNum + ii *col] += float(resultShadow2)
+                        
+                        Dis1 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  SP4) # latitudinal shading length
+                        Dis2 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  ASF_dict_prime[colNum + ii *col][2]) # latitudinal panel length
+                        ShadowLat[colNum + ii *col] += float(Dis1/Dis2) # percentage latitudinal shading
+                
+                        Dis3 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1], P2 =  SP3)
+                        Dis4 = Distance(P1 = ASF_dict_prime[colNum + ii *col][1] ,P2 =  ASF_dict_prime[colNum + ii *col][0])
+                        ShadowLong[colNum + ii *col] += float(Dis3/Dis4)      
+                
+                            
+                        print "Panel: ", colNum + ii *col
+                        print "Intersection with upper panel: Yes" 
+                        
+                    else:
+                       
+                        print "Panel: ", colNum + ii *col
+                        print "Intersection with upper panel: No"
+                        
+                else:
+                    pass
+                   
+    if '3' in Case:                
+        print '\nCase A3'              
+                          
+        for ii in range(2,row2): #row2 = yArray, col = xArray
+        
+                #case: check if the lowest edge of  a panel is intersection with panel below
+            for colNum in range(col): 
+            
+                if (colNum + ii *col-1) < PanelNum: #skip the last panels 
+                    
+                    dot = colNum + ii *col -1
+                
+                    p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
+                                (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
+                                (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
+                                (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
+                    
+                
+                    if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])):
+                        #if Point is in polygon p, than true will be returned
+                    
+        
+                        #Calculate Intersection               
+                        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
+                                             (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
+                
+                
+                        p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[(colNum + (ii-2) *col)][0][0], ASF_dict_prime[(colNum + (ii-2) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][1][0], ASF_dict_prime[(colNum + (ii-2) *col)][1][1]),
+                                             (ASF_dict_prime[(colNum + (ii-2) *col)][2][0], ASF_dict_prime[(colNum + (ii-2) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])])
+                
+                        poly1 = Polygon(p1, p2, p3, p4)
+                        poly2 = Polygon(p5, p6, p7, p8)
+                
+                        a =  poly1.intersection(poly2)
+                        SP5 = a[0]
+                        SP6 = a[1]
+                        IntersectionPoints[dot].append(SP5)
+                        IntersectionPoints[dot].append(SP6)
+                        
+       
+                        
+                        resultShadow2 = abs(Polygon((SP6[0],SP6[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP5[0],SP5[1]),
+                                                 (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])).area)
+                
+                        
+                        Shadow[dot] += float(resultShadow2)
+                        
+                        Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP6) # latitudinal shading length
+                        Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
+                        ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
+                
+                        Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP5)
+                        Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
+                        ShadowLong[dot] += float(Dis3 / Dis4)
+                            
+                        print "Panel: ", dot
+                        print "Intersection with second upper panel: Yes" 
+
+                    else:
+                        print "Panel: ", dot
+                        print "Intersection with second upper panel: No"
+                       
+                else:
+                    pass
+            
+    #print '\nSummary of Solar Radiation Analysis'                
+    TotalArea = 0
+    NonShadedArea = 0
+    for ii in range(PanelNum):       
+           #print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
+           NonShadedArea += ASFArea[ii]-Shadow[ii]
+           TotalArea += ASFArea[ii]
+           
+    
+    #Calculate Percentage of overlapped area
+    Percentage = round(NonShadedArea/(TotalArea),4)
+
+    
+    return Percentage, ShadowLat, ShadowLong, IntersectionPoints   
+    
+
+def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
+
     
     #SunAngles['Azimuth'][ind] < 180
-    print '\nCase 1b'
+    
                             
     print 'Altitude', SunAngles['Altitude'][ind]
     print 'Azimuth', SunAngles['Azimuth'][ind]
     
-    result1 = Area(Dict = ASF_dict_prime[49])
-    print "Panel:  49", "- Area: ", result1
-    print "Intersection with panel to the right: No"
-    
-    Shadow[49] = 0
-    ASFArea[49] = result1
-    
+       
+    Shadow = {}
+    ASFArea = {}
     ShadowLong = {}
     ShadowLat = {}
-    
-    ShadowLong[49] = 0
-    ShadowLat[49] = 0
-    
-                        
-    SumArea = 0
-     
-    for ii in range(1,PanelNum):
-        #case: if far left point of panel is within the panel to the left
-        p = Polygon((ASF_dict_prime[ii-1][0][0],ASF_dict_prime[ii-1][0][1]),
-                    (ASF_dict_prime[ii-1][1][0],ASF_dict_prime[ii-1][1][1]),
-                    (ASF_dict_prime[ii-1][2][0],ASF_dict_prime[ii-1][2][1]),
-                    (ASF_dict_prime[ii-1][3][0],ASF_dict_prime[ii-1][3][1]))
-        
-        if p.encloses_point(Point(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])):
-            #if Point is in polygon p, than true will be returned
-            #test if far right point of asf porjection lies in the panel right to the existing one
-            
-            #Calculate Intersection     
-           
-            p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][1]), 
-                                 (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][1]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][1])])
-    
-    
-            p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[ii-1][0][0], ASF_dict_prime[ii-1][0][1]), (ASF_dict_prime[ii-1][1][0], ASF_dict_prime[ii-1][1][1]),
-                                 (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (ASF_dict_prime[ii-1][3][0], ASF_dict_prime[ii-1][3][1])])
-    
-            poly1 = Polygon(p1, p2, p3, p4)
-            poly2 = Polygon(p5, p6, p7, p8)
-    
-            a =  poly1.intersection(poly2)
-            SP1 = a[0]
-            SP2 = a[1]
-            
-            
-            resultShadow = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (SP1[0],SP1[1]),
-                        (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])).area)
-            
-            resultASF = abs(poly1.area)
-            
-            totalArea = resultASF - resultShadow
-    
-            Shadow[ii-1]= float(resultShadow)
-            ASFArea[ii-1] = resultASF
-            
-            Dis1 = Distance(P1 = ASF_dict_prime[ii-1][2], P2 = SP2) # latitudinal shading length
-            Dis2 = Distance(P1 = ASF_dict_prime[ii-1][2] ,P2 = ASF_dict_prime[ii-1][3]) # latitudinal panel length
-            ShadowLat[ii-1] = float(Dis1/ Dis2) # percentage latitudinal shading
-            
-            Dis3 = Distance(P1 = ASF_dict_prime[ii-1][1], P2 = SP1)
-            Dis4 = Distance(P1 = ASF_dict_prime[ii-1][1], P2 =  ASF_dict_prime[ii][2])
-            ShadowLong[ii-1] = float(Dis3 / Dis4)      
-            
-            SumArea += resultASF            
-            print "Panel: ", ii-1, "- Area: ", round(totalArea,3)
-            print "Intersection with panel to the right: Yes"    
-            
-        else:            
-            
-            result = Area(Dict = ASF_dict_prime[ii-1])
 
-            print "Panel: ", ii-1 , "- Area: ", round(result,3)
-            print "Intersection with panel to the right: No"
-            
-            SumArea += result 
-        
-            Shadow[ii-1]= 0 
-            ASFArea[ii-1] = result
-            ShadowLat[ii-1] = 0
-            ShadowLong[ii-1] = 0
-            
-   
-    print '\nCase 2b1'
     
-    for ii in range(1,row2): #2
-        #case: check if the lowest edge of  a panel is intersection with panel below
-        for colNum in range(col): #4
+    for zz in range(PanelNum):    
+        Shadow[zz] = 0
+        ShadowLong[zz] = 0
+        ShadowLat[zz] = 0
+        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[zz][0][0], ASF_dict_prime[zz][0][1]), (ASF_dict_prime[zz][1][0], ASF_dict_prime[zz][1][1]), 
+                                 (ASF_dict_prime[zz][2][0], ASF_dict_prime[zz][2][1]), (ASF_dict_prime[zz][3][0], ASF_dict_prime[zz][3][1])])
+                                 
+        ASFArea[zz] = abs(Polygon(p1, p2, p3, p4).area)
+    
+    if '1' in Case: 
+        print '\nCase B1'
+               
         
-                            
-            if (colNum-1) + ii *col < PanelNum: #skip the last panels 
+        for ii in range(1,PanelNum):
+            #case: if far left point of panel is within the panel to the left
+            p = Polygon((ASF_dict_prime[ii-1][0][0],ASF_dict_prime[ii-1][0][1]),
+                        (ASF_dict_prime[ii-1][1][0],ASF_dict_prime[ii-1][1][1]),
+                        (ASF_dict_prime[ii-1][2][0],ASF_dict_prime[ii-1][2][1]),
+                        (ASF_dict_prime[ii-1][3][0],ASF_dict_prime[ii-1][3][1]))
+            
+            if p.encloses_point(Point(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])):
+                #if Point is in polygon p, than true will be returned
+                #test if far right point of asf porjection lies in the panel right to the existing one
                 
-            
-                p = Polygon((ASF_dict_prime[(colNum-1) + ii *col][0][0],ASF_dict_prime[(colNum-1) + ii *col][0][1]),
-                            (ASF_dict_prime[(colNum-1) + ii *col][1][0],ASF_dict_prime[(colNum-1) + ii *col][1][1]),
-                            (ASF_dict_prime[(colNum-1) + ii *col][2][0],ASF_dict_prime[(colNum-1) + ii *col][2][1]),
-                            (ASF_dict_prime[(colNum-1) + ii *col][3][0],ASF_dict_prime[(colNum-1) + ii *col][3][1]))
-
-            
-                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])):
-                    #if Point is in polygon p, than true will be returned
+                #Calculate Intersection     
+               
+                p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1]), (ASF_dict_prime[ii][1][0], ASF_dict_prime[ii][1][1]), 
+                                     (ASF_dict_prime[ii][2][0], ASF_dict_prime[ii][2][1]), (ASF_dict_prime[ii][3][0], ASF_dict_prime[ii][3][1])])
+        
+        
+                p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[ii-1][0][0], ASF_dict_prime[ii-1][0][1]), (ASF_dict_prime[ii-1][1][0], ASF_dict_prime[ii-1][1][1]),
+                                     (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (ASF_dict_prime[ii-1][3][0], ASF_dict_prime[ii-1][3][1])])
+        
+                poly1 = Polygon(p1, p2, p3, p4)
+                poly2 = Polygon(p5, p6, p7, p8)
+        
+                a =  poly1.intersection(poly2)
+                SP1 = a[0]
+                SP2 = a[1]
                 
-
-                    #Calculate Intersection               
-                    p1, p2, p3, p4 = map(Point,[(ASF_dict_prime[(colNum-1) + ii *col][0][0], ASF_dict_prime[(colNum-1) + ii *col][0][1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), 
-                                         (ASF_dict_prime[(colNum-1) + ii *col][2][0], ASF_dict_prime[(colNum-1) + ii *col][2][1]), (ASF_dict_prime[(colNum-1) + ii *col][3][0], ASF_dict_prime[(colNum-1) + ii *col][3][1])])
-            
-            
-                    p5, p6, p7, p8 = map(Point,[(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][1]),
-                                         (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])])
-            
-                    poly1 = Polygon(p1, p2, p3, p4)
-                    poly2 = Polygon(p5, p6, p7, p8)
-            
-                    a =  poly1.intersection(poly2)
-                    SP1 = a[0]
-                    SP2 = a[1]
-                    
-                           
-                    
-                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), (SP1[0],SP1[1]),
-                                             (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])).area)
-            
-                            
-                    Shadow[(colNum-1) + ii *col] += float(resultShadow2)
-                    
-                    Dis1 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  SP2) # latitudinal shading length
-                    Dis2 = Distance(P1 =  ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  ASF_dict_prime[(colNum-1) + ii *col][2]) # latitudinal panel length
-                    ShadowLat[(colNum-1) + ii *col] += float(Dis1 / Dis2) # percentage latitudinal shading
-            
-                    Dis3 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  SP1)
-                    Dis4 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1] , P2 =  ASF_dict_prime[(colNum-1) + ii *col][0])
-                    ShadowLong[(colNum-1) + ii *col] += float(Dis3 / Dis4)   
-            
-                        
-                    print "Panel: ", (colNum-1) + ii *col
-                    print "Intersection with upper panel: Yes"    
-                    
-
-                    
-                else:
-                    result1 = Area(Dict = ASF_dict_prime[(colNum-1) + ii *col])
-                    print "Panel: ", (colNum-1) + ii *col
-                    print "Intersection with upper panel: No"
-                    Shadow[(colNum-1) + ii *col]+= 0
-            else:
-                pass
-            
-    print '\nCase 2b2'              
-                      
-    for ii in range(2,row2): #row2 = yArray, col = xArray
+                
+                resultShadow = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[ii-1][2][0], ASF_dict_prime[ii-1][2][1]), (SP1[0],SP1[1]),
+                            (ASF_dict_prime[ii][0][0], ASF_dict_prime[ii][0][1])).area)
+                
+                
+        
+                Shadow[ii-1]= float(resultShadow)
+                
+                
+                Dis1 = Distance(P1 = ASF_dict_prime[ii-1][2], P2 = SP2) # latitudinal shading length
+                Dis2 = Distance(P1 = ASF_dict_prime[ii-1][2] ,P2 = ASF_dict_prime[ii-1][3]) # latitudinal panel length
+                ShadowLat[ii-1] = float(Dis1/ Dis2) # percentage latitudinal shading
+                
+                Dis3 = Distance(P1 = ASF_dict_prime[ii-1][1], P2 = SP1)
+                Dis4 = Distance(P1 = ASF_dict_prime[ii-1][1], P2 =  ASF_dict_prime[ii][2])
+                ShadowLong[ii-1] = float(Dis3 / Dis4)      
+                
+                          
+                print "Panel: ", ii-1
+                print "Intersection with panel to the right: Yes"    
+                
+            else:            
     
+                print "Panel: ", ii-1 
+                print "Intersection with panel to the right: No"
+                
+                
+    if '2' in Case:
+        print '\nCase B2'
+        
+        for ii in range(1,row2): #2
             #case: check if the lowest edge of  a panel is intersection with panel below
-        for colNum in range(col): 
-        
-            if (colNum + ii *col-1) < PanelNum: #skip the last panels 
-                
-                dot = colNum + ii *col -1
+            for colNum in range(col): #4
             
-                p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
-                            (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
-                            (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
-                            (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
+                                
+                if (colNum-1) + ii *col < PanelNum: #skip the last panels 
+                    
                 
-            
-                if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])):
-                    #if Point is in polygon p, than true will be returned
-                
+                    p = Polygon((ASF_dict_prime[(colNum-1) + ii *col][0][0],ASF_dict_prime[(colNum-1) + ii *col][0][1]),
+                                (ASF_dict_prime[(colNum-1) + ii *col][1][0],ASF_dict_prime[(colNum-1) + ii *col][1][1]),
+                                (ASF_dict_prime[(colNum-1) + ii *col][2][0],ASF_dict_prime[(colNum-1) + ii *col][2][1]),
+                                (ASF_dict_prime[(colNum-1) + ii *col][3][0],ASF_dict_prime[(colNum-1) + ii *col][3][1]))
     
-                    #Calculate Intersection               
-                    p1, p2, p3, p4 = map(Point,[(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
-                                         (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
-            
-            
-                    p5, p6, p7, p8 = map(Point,[(ASF_dict_prime[(colNum + (ii-2) *col)][0][0], ASF_dict_prime[(colNum + (ii-2) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][1][0], ASF_dict_prime[(colNum + (ii-2) *col)][1][1]),
-                                         (ASF_dict_prime[(colNum + (ii-2) *col)][2][0], ASF_dict_prime[(colNum + (ii-2) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])])
-            
-                    poly1 = Polygon(p1, p2, p3, p4)
-                    poly2 = Polygon(p5, p6, p7, p8)
-            
-                    a =  poly1.intersection(poly2)
-                    SP1 = a[0]
-                    SP2 = a[1]
+                
+                    if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])):
+                        #if Point is in polygon p, than true will be returned
                     
-
-                    
-                    resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP1[0],SP1[1]),
-                                             (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])).area)
-            
-                    
-                    Shadow[dot] += float(resultShadow2)
-                    
-                    Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP2) # latitudinal shading length
-                    Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
-                    ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
-            
-                    Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP1)
-                    Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
-                    ShadowLong[dot] += float(Dis3/ Dis4) 
-            
+    
+                        #Calculate Intersection               
+                        p1, p2, p3, p4 = map(Point,[(ASF_dict_prime[(colNum-1) + ii *col][0][0], ASF_dict_prime[(colNum-1) + ii *col][0][1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), 
+                                             (ASF_dict_prime[(colNum-1) + ii *col][2][0], ASF_dict_prime[(colNum-1) + ii *col][2][1]), (ASF_dict_prime[(colNum-1) + ii *col][3][0], ASF_dict_prime[(colNum-1) + ii *col][3][1])])
+                
+                
+                        p5, p6, p7, p8 = map(Point,[(ASF_dict_prime[(colNum + (ii-1) *col)][0][0], ASF_dict_prime[(colNum + (ii-1) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][1][0], ASF_dict_prime[(colNum + (ii-1) *col)][1][1]),
+                                             (ASF_dict_prime[(colNum + (ii-1) *col)][2][0], ASF_dict_prime[(colNum + (ii-1) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])])
+                
+                        poly1 = Polygon(p1, p2, p3, p4)
+                        poly2 = Polygon(p5, p6, p7, p8)
+                
+                        a =  poly1.intersection(poly2)
+                        SP1 = a[0]
+                        SP2 = a[1]
                         
-                    print "Panel: ", dot
-                    print "Intersection with second upper panel: Yes" 
-                    
-    
-                    
+                               
+                        
+                        resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[(colNum-1) + ii *col][1][0], ASF_dict_prime[(colNum-1) + ii *col][1][1]), (SP1[0],SP1[1]),
+                                                 (ASF_dict_prime[(colNum + (ii-1) *col)][3][0], ASF_dict_prime[(colNum + (ii-1) *col)][3][1])).area)
+                
+                                
+                        Shadow[(colNum-1) + ii *col] += float(resultShadow2)
+                        
+                        Dis1 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  SP2) # latitudinal shading length
+                        Dis2 = Distance(P1 =  ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  ASF_dict_prime[(colNum-1) + ii *col][2]) # latitudinal panel length
+                        ShadowLat[(colNum-1) + ii *col] += float(Dis1 / Dis2) # percentage latitudinal shading
+                
+                        Dis3 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1], P2 =  SP1)
+                        Dis4 = Distance(P1 = ASF_dict_prime[(colNum-1) + ii *col][1] , P2 =  ASF_dict_prime[(colNum-1) + ii *col][0])
+                        ShadowLong[(colNum-1) + ii *col] += float(Dis3 / Dis4)   
+                
+                            
+                        print "Panel: ", (colNum-1) + ii *col
+                        print "Intersection with upper panel: Yes"    
+                    else:
+            
+                        print "Panel: ", (colNum-1) + ii *col
+                        print "Intersection with upper panel: No"
+                        
                 else:
-                    result1 = Area(Dict = ASF_dict_prime[dot])
-                    print "Panel: ", dot
-                    print "Intersection with second upper panel: No"
-                    Shadow[dot]+= 0
-            else:
-                pass
-    #print '\nSummary of Solar Radiation Analysis'                
+                    pass
+    if '3' in Case:        
+        print '\nCase B3'              
+                          
+        for ii in range(2,row2): #row2 = yArray, col = xArray
+        
+                #case: check if the lowest edge of  a panel is intersection with panel below
+            for colNum in range(col): 
+            
+                if (colNum + ii *col-1) < PanelNum: #skip the last panels 
+                    
+                    dot = colNum + ii *col -1
+                
+                    p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
+                                (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
+                                (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
+                                (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
+                    
+                
+                    if p.encloses_point(Point(ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])):
+                        #if Point is in polygon p, than true will be returned
+                    
+        
+                        #Calculate Intersection               
+                        p1, p2, p3, p4 = map(Point,[(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
+                                             (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
+                
+                
+                        p5, p6, p7, p8 = map(Point,[(ASF_dict_prime[(colNum + (ii-2) *col)][0][0], ASF_dict_prime[(colNum + (ii-2) *col)][0][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][1][0], ASF_dict_prime[(colNum + (ii-2) *col)][1][1]),
+                                             (ASF_dict_prime[(colNum + (ii-2) *col)][2][0], ASF_dict_prime[(colNum + (ii-2) *col)][2][1]), (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])])
+                
+                        poly1 = Polygon(p1, p2, p3, p4)
+                        poly2 = Polygon(p5, p6, p7, p8)
+                
+                        a =  poly1.intersection(poly2)
+                        SP1 = a[0]
+                        SP2 = a[1]
                         
-    sumArea = 0
+    
+                        
+                        resultShadow2 = abs(Polygon((SP2[0],SP2[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP1[0],SP1[1]),
+                                                 (ASF_dict_prime[(colNum + (ii-2) *col)][3][0], ASF_dict_prime[(colNum + (ii-2) *col)][3][1])).area)
+                
+                        
+                        Shadow[dot] += float(resultShadow2)
+                        
+                        Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP2) # latitudinal shading length
+                        Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
+                        ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
+                
+                        Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP1)
+                        Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
+                        ShadowLong[dot] += float(Dis3/ Dis4) 
+                
+                        print "Panel: ", dot
+                        print "Intersection with second upper panel: Yes" 
+                        
+                    else:
+                        print "Panel: ", dot
+                        print "Intersection with second upper panel: No"
+                        
+                else:
+                    pass
+    #print '\nSummary of Solar Radiation Analysis'                
+    TotalArea = 0
+    NonShadedArea = 0
     for ii in range(PanelNum):       
            #print "Panel: ", ii, "- Area: ", round(ASFArea[ii]-Shadow[ii],3)
-           sumArea += ASFArea[ii]-Shadow[ii]
+           NonShadedArea += ASFArea[ii]-Shadow[ii]
+           TotalArea += ASFArea[ii]
            
     
     #Calculate Percentage of overlapped area
-    BestKey = max(ASFArea, key=ASFArea.get)
-    Percentage = round(sumArea/(ASFArea[BestKey] * PanelNum),4)
+    Percentage = round(NonShadedArea/(TotalArea),4)
     
     return Percentage, ShadowLat, ShadowLong                                  

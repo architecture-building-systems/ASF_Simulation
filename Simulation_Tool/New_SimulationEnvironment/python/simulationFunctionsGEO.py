@@ -14,7 +14,7 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def initializeSimulation(SimulationData):
+def initializeSimulation(SimulationData, building_data, BuildingProperties):
            
     #check if E_total is selcted
     count = 0
@@ -37,40 +37,17 @@ def initializeSimulation(SimulationData):
     "DataNameWin": SimulationData['DataName']  
     }
     
-    #Save parameters to be imported into grasshopper
-    with open('FolderName.json','w') as f:
-        f.write(json.dumps(FolderName))    
-            
-    
-    return FolderName
 
-def initializeASF(panel_data):
-  
-    #Save parameters to be imported into grasshopper
-    with open('panel.json','w') as f:
-        f.write(json.dumps(panel_data))
-        
-
-def setBuildingParameters(building_data):
-    
-    #Save parameters to be imported into grasshopper
-    with open('building.json','w') as f:
-        f.write(json.dumps(building_data))
-    
-    roomFloorArea = building_data['room_width']/1000.0 * building_data['room_depth']/1000.0 #[m^2] floor area
-    
-    return roomFloorArea
-    
-    
-def initializeBuildingSimulation(building_data, BuildingProperties):
     #set building properties for the RC-Model analysis 
     BuildingProperties.update({
             "Fenst_A": building_data['room_width']/1000.0*building_data['room_height']/1000.0*building_data['glazing_percentage_h']*building_data['glazing_percentage_w'],
             "Room_Depth": building_data['room_depth']/1000.0,
             "Room_Width": building_data['room_width']/1000.0,
             "Room_Height":building_data['room_height']/1000.0})                
-        
-    return BuildingProperties
+     
+    now = time.time()
+    
+    return BuildingProperties,FolderName, now
     
     
 def setPaths(geoLocation, Occupancy, FolderName):
@@ -86,8 +63,8 @@ def setPaths(geoLocation, Occupancy, FolderName):
     paths['python'] = os.path.join(paths['main'], 'python')
     paths['aux_files'] = os.path.join(paths['python'], 'aux_files')
     
-    paths['radiation_results'] = os.path.join(paths['main'],'radiation_results_' + FolderName['DataNamePV'])
-    paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_' + FolderName['DataNamePV'])
+#    paths['radiation_results'] = os.path.join(paths['main'],'radiation_results_' + FolderName['DataNamePV'])
+#    paths['radiation_wall'] = os.path.join(paths['main'],  'radiation_wall_' + FolderName['DataNamePV'])
     paths['PV'] = os.path.join(paths['main'], 'PV_results')
 
     paths['save_results_path'] = paths['PV']
@@ -108,11 +85,11 @@ def setPaths(geoLocation, Occupancy, FolderName):
     
     
     #radiation subfolder is created, there the radiation_results are saved
-    if not os.path.isdir(paths['radiation_results']):
-            os.makedirs(paths['radiation_results'])
-    
-    if not os.path.isdir(paths['radiation_wall']):
-            os.makedirs(paths['radiation_wall'])
+#    if not os.path.isdir(paths['radiation_results']):
+#            os.makedirs(paths['radiation_results'])
+#    
+#    if not os.path.isdir(paths['radiation_wall']):
+#            os.makedirs(paths['radiation_wall'])
     
     # define path of geographical location:
     paths['geo_location'] = os.path.join(paths['data'], 'geographical_location')
@@ -127,18 +104,6 @@ def setPaths(geoLocation, Occupancy, FolderName):
     # create sun data based on grasshopper file, this is only possible with the ladybug component SunPath
     SunTrackingData = SunAnglesTackingAndTemperature(paths = paths,
                                                      weatherData = weatherData)  
-    
-    # calculate and save lookup table if it does not yet exist:
-    paths['data_python'] = os.path.join(paths['data'], 'python')
-    paths['electrical_simulation'] = os.path.join(paths['data_python'], 'electrical_simulation') 
-   
-    
-    if not os.path.isfile(os.path.join(paths['electrical_simulation'], 'curr_model_submod_lookup.npy')): 
-        if not os.path.isdir(paths['electrical_simulation']):
-            os.makedirs(paths['electrical_simulation'])
-        execfile(os.path.join(paths['aux_files'], 'create_lookup_table.py'))
-    else:
-        print 'lookup table not created as it already exists'
     
     
     # load sunTrackingData used for the LadyBug simulation:
@@ -163,14 +128,10 @@ def CalculateVariables(SunTrackingData, building_data, XANGLES, YANGLES):
     
     daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
     
-    from hourRadiation import hourRadiation, hourRadiation_calculated, sumHours
-    
-    
+    from hourRadiation import hourRadiation
     hourRadiation = hourRadiation(hour_in_month, daysPerMonth)
-    hourRadiation_calculated = hourRadiation_calculated(hour_in_month,daysPerMonth)
-    sumHours = sumHours(daysPerMonth)
-
     
+
     #Make a list of all angle combinations
     ANGLES= [(x, y) for x in XANGLES for y in YANGLES]
     
@@ -187,9 +148,7 @@ def CalculateVariables(SunTrackingData, building_data, XANGLES, YANGLES):
     
     NumberCombinations = len(XANGLES)*len(YANGLES) #*NoClusters
     
-    return ANGLES, hour_in_month, NumberCombinations, combinationAngles, daysPerMonth, hourRadiation, hourRadiation_calculated, sumHours
-    
-
+    return ANGLES, hour_in_month, NumberCombinations, combinationAngles, daysPerMonth, hourRadiation
     
 
 
@@ -198,8 +157,13 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                             NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES,\
                             start, end, Temp_start, SimulationPeriod):
                                 
-    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo.npy').item()
-    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo.npy').item()
+    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo2.npy').item()
+    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo2.npy').item()
+    
+    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo2no_powerloss.npy').item()
+    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo2no_powerloss.npy').item()
+    
+    print PV
     
     # add python_path to system path, so that all files are available:
     sys.path.insert(0, paths['5R1C_ISO_simulator'])     
@@ -266,7 +230,7 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
 def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  ResultsBuildingSimulation, BuildingProperties, x_angles, y_angles, SimulationData, start, end, TotalHOY, TotalHourlyData):
     
     from hourlyPlotFunction import PlotHour 
-    from Function3dPlot import create3Dplot, create3Dplot2       
+#    from Function3dPlot import create3Dplot, create3Dplot2       
     
     fig = {}
       
@@ -274,24 +238,9 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
         
         
         fig[ii] = PlotHour(E = ResultsBuildingSimulation[ii]['E_tot'], PV = ResultsBuildingSimulation[ii]['PV'], L = ResultsBuildingSimulation[ii]['L'], 
-                       H = ResultsBuildingSimulation[ii]['H'], C = ResultsBuildingSimulation[ii]['C'], x_angle = x_angles[ii], y_angle = y_angles[ii], 
-                        start = start, end = end, title = ii, TotalHOY = TotalHOY)
+                           H = ResultsBuildingSimulation[ii]['H'], C = ResultsBuildingSimulation[ii]['C'], x_angle = x_angles[ii], y_angle = y_angles[ii], 
+                           start = start, end = end, title = ii, TotalHOY = TotalHOY)
     
-    
-    
-    figA = {}
-    figB = {}
-    
-   
-    
-#    for jj in range(start,end+1):
-#       
-#       figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
-        #figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
-       
-    
-    
-    #figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = 4472, end  = 4481)  
    
    
     RBS_ELEC = {}
@@ -316,40 +265,36 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
         
         # create folder where results will be saved:
         paths['result_folder'] = os.path.join(paths['main'], 'Results') 
-        paths['result']= os.path.join(paths['result_folder'], 'Results_' + geoLocation + '_date_' + now + '_name_' + SimulationData['DataName'])
+        paths['result']= os.path.join(paths['result_folder'], 'Results_' + geoLocation + '_date_' + str(now) + '_name_' + SimulationData['DataName'])
         
         
         
         if not os.path.isdir(paths['result']):
             os.makedirs(paths['result'])    
         
-#        for jj in range(start,end+1):
-#        
-#            figA[jj].savefig(os.path.join(paths['result'], 'figure_Energy_' + str(jj) + '.pdf'))  
-        #figC.savefig(os.path.join(paths['result'], 'figure_Energy.pdf'))
-       
        
         for ii in optimization_Types:
             # save results 
             #ResultsBuildingSimulation[ii] = ResultsBuildingSimulation[ii].T
             ResultsBuildingSimulation[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.csv'))
             RBS_ELEC[ii].to_csv(os.path.join(paths['result'], 'BuildingSimulationELEC_'+ ii + '.csv'))
+            
+            fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii + '.pdf'))
+            fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii +  '.png'))
+            
 
             np.save(os.path.join(os.path.join(paths['result'], 'BuildingSimulation_'+ ii + '.npy')), ResultsBuildingSimulation[ii])
             
-#            np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
+#       np.save(os.path.join(os.path.join(paths['result'], 'hourlyData_' + ii + '.npy')), hourlyData[ii].T)
         hourlyData = pd.DataFrame(hourlyData['E_total'].T)
         hourlyData.to_csv(os.path.join(paths['result'], 'hourlyData_E.csv'))
             
-            #fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii + '.pdf'))
-            #fig[ii].savefig(os.path.join(paths['result'], 'figure_' + ii +  '.png'))
+            
         
         
         TotalHourlyData = pd.DataFrame(TotalHourlyData)
         TotalHourlyData.to_csv(os.path.join(paths['result'], 'HourlyTotalData.csv'))
-        
-        
-        #fig.savefig(os.path.join(paths['result'],'BuildingSimulation.pdf'), format='pdf')       
+         
         
         BuildingProperties["heatingSystem"] = str(BuildingProperties["heatingSystem"])
         BuildingProperties["coolingSystem"] = str(BuildingProperties["coolingSystem"])

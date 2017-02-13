@@ -272,8 +272,10 @@ def calc_radiation(geometry_table_name = None, sen_list=None, sensor_geometries_
 if __name__ == '__main__': 
     
    
-    XANGLES = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90]
-    YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]
+#    XANGLES = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90]
+#    YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]
+    XANGLES = [0]
+    YANGLES = [45]
 
     
     print '\nStart radiation calculation with daysim'
@@ -297,7 +299,7 @@ if __name__ == '__main__':
             
             #1
             geoLocation = 'Zuerich_Kloten_2013.epw'            
-            RadianceValues = 'Default'
+            RadianceValues = 'Default' #'MaxRad' #
             
             ProjectFolder = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
             ProjectSubFolder = 'Mat02'

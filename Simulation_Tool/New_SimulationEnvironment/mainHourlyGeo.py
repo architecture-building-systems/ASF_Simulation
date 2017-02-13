@@ -85,7 +85,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
     sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'python'))
     
-    from simulationFunctionsGEO import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables 
+    from simulationFunctionsGEO import initializeSimulation, setPaths, CalculateVariables 
     from simulationFunctionsGEO import runBuildingSimulation, SaveResults
     from calculateHOY import calcHOY
     
@@ -97,20 +97,11 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     print "\nThe simulation starts at the hour of the year: " + str(start) + " and ends at: " + str(end) + "\n"
     
     
-    FolderName = initializeSimulation(SimulationData = SimulationData)
-                                            
-            
-    initializeASF(panel_data = PanelData)
-   
-    
-    roomFloorArea = setBuildingParameters(
-                             building_data = BuildingData)
-                            
-    
-    BuildingProperties = initializeBuildingSimulation(
-                             building_data = BuildingData,    
-                             BuildingProperties = BuildingProperties)
-                    
+    BuildingProperties, FolderName, now = initializeSimulation(
+                                SimulationData = SimulationData, 
+                                building_data = BuildingData,
+                                BuildingProperties = BuildingProperties)
+                                                               
     
     paths, weatherData, SunTrackingData = setPaths(
                               geoLocation = SimulationData['geoLocation'], 
@@ -119,7 +110,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     
     
     ANGLES, hour_in_month, NumberCombinations, combinationAngles, daysPerMonth, \
-    hourRadiation, hourRadiation_calculated, sumHours = CalculateVariables(
+    hourRadiation = CalculateVariables(
                             SunTrackingData = SunTrackingData, 
                             building_data = BuildingData, 
                             XANGLES = PanelData['XANGLES'], 
@@ -148,7 +139,7 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     
     ResultsBuildingSimulation, rbsELEC = SaveResults(
                             hourlyData = hourlyData,
-                            now = '09022017', 
+                            now = now, 
                             Save = SimulationData['Save'], 
                             geoLocation = SimulationData['geoLocation'], 
                             paths = paths, 
@@ -201,14 +192,37 @@ elif season == 'summer':
     #Set simulation data
     SimulationData= {
     'optimizationTypes' : ['E_total', 'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting', 'Heating'],
-    'DataName' : 'ZH13_49comb_Notcloudy_6_7',#
+    'DataName' : 'ZH13_49comb_SummerSunnyDay_geo',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : True}
 
+elif season == 'summer2':    
+    SimulationPeriod = {
+    'FromMonth': 7,#7, #1,
+    'ToMonth': 7,#7, #1,
+    'FromDay': 6,#6, #8,
+    'ToDay': 6, #8,
+    'FromHour': 11,#5
+    'ToHour': 17,
+    'Temp_start' : 22}#20
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total', 'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting', 'Heating'],
+    'DataName' : 'ZH13_49comb_SummerSunnyDay_geo',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : True}
 
-
-PanelData = {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,
-"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500, "panelGridSize" : 25}
+PanelData = {
+"XANGLES": [0, 15, 30, 45, 60, 75, 90],
+"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
+"NoClusters":1,
+"numberHorizontal":6,
+"numberVertical":9,
+"panelOffset":400,
+"panelSize":400,
+"panelSpacing":500, 
+"panelGridSize" : 25}
 
 #Set Building Parameters in [mm]
 BuildingData={
