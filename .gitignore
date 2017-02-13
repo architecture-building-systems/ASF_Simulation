@@ -139,6 +139,7 @@ sympy-plots-for-*.tex/
 !SolarData.npy
 !SolarData2.npy
 !SolarData3.npy
+!powerloss.csv
 *.json
 *.npy
 
