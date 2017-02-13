@@ -355,8 +355,7 @@ class ASF_Simulation(object):
            
             # add python_path to system path, so that all files are available:
             sys.path.insert(0, self.paths['5R1C_ISO_simulator'])
-            self.setBackTempH = self.SimulationOptions['setBackTempH']
-            self.setBackTempC = self.SimulationOptions['setBackTempC']     
+                 
             		
             from energy_minimization import RC_Model
             from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC
@@ -390,15 +389,13 @@ class ASF_Simulation(object):
                                                                          optimization_type = optimizationType, 
                                                                          paths = self.paths,
                                                                          building_data = self.BuildingData, 
-                                                                         weatherData = self.weatherData, 
-                                                                         hourRadiation = self.hourRadiation, 
+                                                                         weatherData = self.weatherData,  
                                                                          BuildingRadiationData_HOY = self.BuildingRadiationData_HOY, 
                                                                          PV = self.PV, 
                                                                          NumberCombinations = self.NumberCombinations, 
                                                                          combinationAngles = self.combinationAngles,
                                                                          BuildingProperties = self.BuildingProperties,
-                                                                         setBackTempH = self.setBackTempH,
-                                                                         setBackTempC = self.setBackTempC,
+                                                                         SimulationOptions = self.SimulationOptions,
                                                                          occupancy = occupancy,
                                                                          Q_human = Q_human
                                                                          )

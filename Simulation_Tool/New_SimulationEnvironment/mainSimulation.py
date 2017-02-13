@@ -82,7 +82,7 @@ from SimulationClass import ASF_Simulation
 
 
 SimulationData = {
-'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+'optimizationTypes' : ['E_total'],
 'DataFolderName' : 'ZH13_49comb', #'ZH13_49comb',
 'FileName': 'ZH13_49comb',
 'geoLocation' : 'Zuerich_Kloten_2013',
@@ -133,7 +133,7 @@ SimulationOptions= {
 'setBackTempH' : 4.,
 'setBackTempC' : 4.,
 'Occupancy' : 'Occupancy_COM.csv',
-'ActuationEnergy' : False}
+'ActuationEnergy' : True}
 
 	
 if __name__=='__main__':
