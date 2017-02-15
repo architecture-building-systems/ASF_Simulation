@@ -1,28 +1,25 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Feb 03 09:41:42 2017
-
 @author: Assistenz
 """
 
 from sympy import Point, Polygon
 import numpy as np
 import math
-import time
 
-def Theta2directions (sunAlt, sunAzi , panelAlt, panelAzi):
+def Theta2directions (sunAlti, sunAzi , beta, panelAzi):
 
-    sunAlt = np.deg2rad(sunAlt)
-    panelAlt = np.deg2rad(panelAlt) # panelAlti
+    sunAlti = np.deg2rad(sunAlti)
+    beta = np.deg2rad(beta) # panelAlti
     sunAzi = np.deg2rad(sunAzi)
     panelAzi = np.deg2rad(panelAzi)
     
       
-    theta2 = np.arccos(np.cos(sunAlt) * np.cos(sunAzi-panelAzi) * np.sin(panelAlt) + np.sin(sunAlt)* np.cos(panelAlt))
+    theta2 = np.arccos(np.cos(sunAlti) * np.cos(sunAzi-panelAzi) * np.sin(beta) + np.sin(sunAlti)* np.cos(beta))
     
     if sunAzi >= np.deg2rad(90) or sunAzi <= np.deg2rad(-90):
         theta2 = np.nan
-        print "Warning, sun position is behind the facade. Setting incident angle to nan"
     else:
         theta2 = np.rad2deg(theta2)
    
@@ -30,30 +27,28 @@ def Theta2directions (sunAlt, sunAzi , panelAlt, panelAzi):
 
 
 
-def RadTilt (I_dirnor, I_dif, ref, theta, panelAlt, sunAlt):
+def RadTilt (I_dirnor, I_dif, ref, theta, beta, sunAlti):
     #calculate radiation on tilt surface
     theta = np.deg2rad(theta)
-    panelAlt = np.deg2rad(panelAlt)
-    sunAlt = np.deg2rad(sunAlt)
+    beta = np.deg2rad(beta)
+    alpha_s = np.deg2rad(sunAlti)
 
-    #Radiation on the horizontal surface: Used for reflectance calculation
-    I_h = I_dif + I_dirnor * np.sin(sunAlt) # simplified, formula with view factor should be applied
+    I_tot = I_dif + I_dirnor * np.sin(alpha_s)
     
-    #If the sun is behind the context surface and there is diffuse radiation 
     if math.isnan(theta) and I_dif != 0:
-        Rad_tilt = I_dif * ((1+np.cos(panelAlt))/2) + I_h * ref * ((1- np.cos(panelAlt))/2)
-    #If there is no diffuse radiation and the sun is behind the context surface
-    elif math.isnan(theta) and I_dif == 0:
-        Rad_tilt=0
-    #If the sun is in front of the context surface
+        Rad_tilt = I_dif * ((1+np.cos(beta))/2) + I_tot * ref * ((1- np.cos(beta))/2)
+    
+    elif math.isnan(theta) and I_dif != 0:
+        Rad_tilt = 0
+        
     else:
-        Rad_tilt = I_dirnor * np.cos(theta) + I_dif * ((1+np.cos(panelAlt))/2) + I_h * ref * ((1- np.cos(panelAlt))/2)
-
+        Rad_tilt = I_dirnor * np.cos(theta) + I_dif * ((1+np.cos(beta))/2) + I_tot * ref * ((1- np.cos(beta))/2)
+    
     if Rad_tilt < 0:
         Rad_tilt = 0
     
-    
     return Rad_tilt # W/m2
+    
 
 
   
@@ -70,9 +65,10 @@ def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
 	#The difference is relative to the flat panel position
 	y=(math.sin(sunAlt-panelAlt/2)/(math.sin(math.pi/2-sunAlt)))*h*math.sin(panelAlt/2) 
 	#print y
-	x=(math.sin(sunAz-panelAz/2)/(math.sin(math.pi/2-sunAz)))*h*math.sin(panelAz/2)
+	x=(math.sin(sunAz+panelAz/2)/(math.sin(math.pi/2-sunAz)))*h*math.sin(-panelAz/2)
 	#print x
-     
+
+	
 #	     S2
 #	    /\
 #	   /S0\
@@ -166,7 +162,7 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
     
    
     #SunAngles['Azimuth'][ind] >= 180
-    Case_tic=time.time()
+    
                                 
     print 'Altitude', SunAngles['Altitude'][ind]
     print 'Azimuth', SunAngles['Azimuth'][ind]
@@ -178,9 +174,8 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
     ShadowLat = {}
     IntersectionPoints = {}
 
-    #7 seconds of computational time
-    for zz in range(PanelNum): 
-        looptic=time.time()   
+    
+    for zz in range(PanelNum):    
         Shadow[zz] = 0
         ShadowLong[zz] = 0
         ShadowLat[zz] = 0
@@ -188,13 +183,11 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
         
         p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[zz][0][0], ASF_dict_prime[zz][0][1]), (ASF_dict_prime[zz][1][0], ASF_dict_prime[zz][1][1]), 
                                  (ASF_dict_prime[zz][2][0], ASF_dict_prime[zz][2][1]), (ASF_dict_prime[zz][3][0], ASF_dict_prime[zz][3][1])])
-        print 'area maping', time.time()-looptic                         
+                                 
         ASFArea[zz] = abs(Polygon(p1, p2, p3, p4).area)
-        print 'absolute function', time.time()-looptic
+    
         
-    print 'time after ASF area', time.time()-Case_tic
-
-    #10 seconds of computational time
+    
     if '1' in Case:
         print '\nCase A1'
         
@@ -254,9 +247,7 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                 print "Panel: ", ii
                 print "Intersection with panel to the left: No"
                 
-    print 'time after Case 1', time.time()-Case_tic   
-
-    #10 seconds of computational time         
+                
     if '2' in Case:
             
         print '\nCase A2'
@@ -321,9 +312,7 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                         
                 else:
                     pass
-    print 'time after Case 2', time.time()-Case_tic 
-
-    #10 seconds of computational time               
+                   
     if '3' in Case:                
         print '\nCase A3'              
                           
@@ -388,7 +377,7 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                        
                 else:
                     pass
-    print 'time after Case 3', time.time()-Case_tic         
+            
     #print '\nSummary of Solar Radiation Analysis'                
     TotalArea = 0
     NonShadedArea = 0
@@ -413,30 +402,23 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                             
     print 'Altitude', SunAngles['Altitude'][ind]
     print 'Azimuth', SunAngles['Azimuth'][ind]
-    Case_tic=time.time()
+    
        
     Shadow = {}
     ASFArea = {}
     ShadowLong = {}
     ShadowLat = {}
 
-    # 7 seconds of computational time
-    for zz in range(PanelNum):
-        looptic=time.time()     
+    
+    for zz in range(PanelNum):    
         Shadow[zz] = 0
         ShadowLong[zz] = 0
         ShadowLat[zz] = 0
-        #Takes 0.16s per itteration
         p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[zz][0][0], ASF_dict_prime[zz][0][1]), (ASF_dict_prime[zz][1][0], ASF_dict_prime[zz][1][1]), 
                                  (ASF_dict_prime[zz][2][0], ASF_dict_prime[zz][2][1]), (ASF_dict_prime[zz][3][0], ASF_dict_prime[zz][3][1])])
-        print 'area mapping', time.time()-looptic  
-        looptic=time.time() 
-        #Takes 0.01 seconds per itteration                       
+                                 
         ASFArea[zz] = abs(Polygon(p1, p2, p3, p4).area)
-        print 'absolute function', time.time()-looptic
-    print 'time after area calc', time.time()-Case_tic 
-
-    #10 seconds of computational time
+    
     if '1' in Case: 
         print '\nCase B1'
                
@@ -494,9 +476,7 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                 print "Panel: ", ii-1 
                 print "Intersection with panel to the right: No"
                 
-    print 'time after Case 1', time.time()-Case_tic  
-
-    #10 seconds of computational time           
+                
     if '2' in Case:
         print '\nCase B2'
         
@@ -559,9 +539,6 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                         
                 else:
                     pass
-    print 'time after Case 2', time.time()-Case_tic 
-
-    #10 seconds of computational time
     if '3' in Case:        
         print '\nCase B3'              
                           
@@ -624,7 +601,6 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                         
                 else:
                     pass
-    print 'time after Case 3', time.time()-Case_tic 
     #print '\nSummary of Solar Radiation Analysis'                
     TotalArea = 0
     NonShadedArea = 0

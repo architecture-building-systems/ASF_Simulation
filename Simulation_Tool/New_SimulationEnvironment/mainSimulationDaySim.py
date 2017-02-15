@@ -97,7 +97,7 @@ Analysis = {
 
 Mat = 'Winter02'
 
-for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer02', 'Winter02']:
+for Mat in ['02short']:# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer02', 'Winter02']:
     
     if Mat == '0':
         SimulationData = {
@@ -106,6 +106,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13YearMat0', 
         'FileName': 'DaySimZH13YearMat0', 
         'ProjectName': 'Mat0',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -130,6 +131,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13SummerMat0', 
         'FileName': 'DaySimZH13SummerMat0', 
         'ProjectName': 'Mat0',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -153,6 +155,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13WinterMat0', 
         'FileName': 'DaySimZH13WinterMat0', 
         'ProjectName': 'Mat0',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -177,6 +180,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13YearMat02long', 
         'FileName': 'DaySimZH13YearMat02long', 
         'ProjectName': 'Mat02',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -201,6 +205,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13Year2', 
         'FileName': 'DaySimZH13Year2', 
         'ProjectName': 'Mat02',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -225,6 +230,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13WinterMat02long', 
         'FileName': 'DaySimZH13WinterMat02long', 
         'ProjectName': 'Mat02',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -249,6 +255,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13SummerMat02long', 
         'FileName': 'DaySimZH13SummerMat02long', 
         'ProjectName': 'Mat02',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -265,7 +272,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'ASF' : 0.2,
         'Window': 0.2}
     
-    if Mat == 'Summer02':
+    elif Mat == 'Summer02':
         
         SimulationData = {
         'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
@@ -273,6 +280,7 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'DataFolderName' : 'DaySimZH13SummerMat02', 
         'FileName': 'DaySimZH13SummerMat02', 
         'ProjectName': 'Mat02',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -289,13 +297,14 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'ASF' : 0,
         'Window': 0}
     
-    if Mat == 'Winter02':
+    elif Mat == 'Winter02':
         SimulationData = {
         'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
         
         'DataFolderName' : 'DaySimZH13WinterMat02', 
         'FileName': 'DaySimZH13WinterMat02', 
         'ProjectName': 'Mat02',
+        'SubFolder': '2ASF',
         
         'Save' : True,
         'ShowFig': True,
@@ -312,20 +321,45 @@ for Mat in ['02long']# 'Summer0', 'Winter0','longWinter', 'longSummer', 'Summer0
         'ASF' : 0,
         'Window': 0}
     
+    elif Mat == '02static':
+        
+        SimulationData = {
+        'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
+        
+        'DataFolderName' : 'DaySimZH13Year02_static', 
+        'FileName': 'DaySimZH13Year02_static', 
+        'ProjectName': 'Mat02',
+        'SubFolder': '2ASF',
+        
+        'Save' : True,
+        'ShowFig': True,
+        
+        'Temp_start' : 20,
+        'start' : 0,
+        'end': 8760} #8760
+        
+        PanelData = {
+        "XANGLES": [45],
+        "YANGLES" :[0]}
+        
+        Material = {
+        'ASF' : 0.2,
+        'Window': 0.2}
     BuildingProperties = {"glass_solar_transmitance" : 0.691,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
     "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
     "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1,
-    'COP_H': 3, 'COP_C':3},
+    'COP_H': 3, 'COP_C':3}
+    
     SimulationOptions= {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}
     
-    ASFtest = None
+    ASF = None
     
     if __name__=='__main__':
-        ASFtest = ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, Material = Material)
-        ASFtest.SolveASF()
-        #yearlyData = ASFtest.yearlyData
-        results = ASFtest.ResultsBuildingSimulation
-        rad = ASFtest1.radiation
+        ASF = ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, Material = Material, BuildingProperties = BuildingProperties)
+        ASF.SolveASF()
+        yearlyData = ASFtest.yearlyData
+        results = ASF.ResultsBuildingSimulation
+        rad = ASF.radiation
         
         #print yearlyData 
  

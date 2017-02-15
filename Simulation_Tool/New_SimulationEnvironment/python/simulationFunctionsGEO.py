@@ -157,11 +157,16 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
                             NumberCombinations, combinationAngles, BuildingProperties, setBackTemp, daysPerMonth, ANGLES,\
                             start, end, Temp_start, SimulationPeriod):
                                 
-    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo2.npy').item()
-    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo2.npy').item()
+#    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo2.npy').item()
+#    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo2.npy').item()
+#    
+#    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo2no_powerloss.npy').item()
+#    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo2no_powerloss.npy').item()
     
-    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_geo2no_powerloss.npy').item()
-    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_geo2no_powerloss.npy').item()
+   
+    
+    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_Winter.npy').item()
+    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_Winter.npy').item()
     
     print PV
     

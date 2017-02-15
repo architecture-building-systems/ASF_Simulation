@@ -89,7 +89,7 @@ def prepareResults (Building_Simulation_df):
     monthlyData['C'] = sum_monthly(X = np.array(Building_Simulation_df['C']) *0.001)
     monthlyData['H'] = sum_monthly(X = np.array(Building_Simulation_df['H']) *0.001)
     monthlyData['PV'] = -1* sum_monthly(X = np.array(Building_Simulation_df['PV']) *0.001)
-    monthlyData['AE'] = sum_monthly(X = np.array(Building_Simulation_df['AE']) *0.001)
+    
     
     #in kWh/year
     yearlyData['E'] = monthlyData['E'].sum() 
@@ -98,6 +98,8 @@ def prepareResults (Building_Simulation_df):
     yearlyData['H'] = monthlyData['H'].sum() 
     yearlyData['C'] = monthlyData['C'].sum() 
     yearlyData['L'] =monthlyData['L'].sum() 
+
+    monthlyData['AE'] = sum_monthly(X = np.array(Building_Simulation_df['AE']) *0.001)
     yearlyData['AE'] = monthlyData['AE'].sum()
     
     return  monthlyData, yearlyData

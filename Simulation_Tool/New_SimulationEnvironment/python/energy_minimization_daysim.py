@@ -133,42 +133,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         results_building_simulation[hour_of_year] = {}
         BuildingSimulationELEC[hour_of_year] = {}        
         
-        hourlyData[hour_of_year]= {}
-        hourlyData[hour_of_year]['HC'] = []
-        hourlyData[hour_of_year]['H'] = [] 
-        hourlyData[hour_of_year]['C'] = [] 
-        hourlyData[hour_of_year]['L'] = []       
-        hourlyData[hour_of_year]['E_tot'] = []
-        hourlyData[hour_of_year]['E_HCL'] = []
-        hourlyData[hour_of_year]['T_out'] = []
-        hourlyData[hour_of_year]['T_in'] = []
-        hourlyData[hour_of_year]['AngleComb'] = []
+        hourlyData[hour_of_year] = {}
+        
         hourlyData[hour_of_year]['PV'] = PV[hour_of_year]
         
-        hourlyData[hour_of_year]['H_elec'] = [] 
-        hourlyData[hour_of_year]['C_elec'] = [] 
-        hourlyData[hour_of_year]['E_tot_elec'] = []
-        hourlyData[hour_of_year]['E_HCL_elec'] = []
-    
-            
-        results_building_simulation[hour_of_year]['E_tot'] = np.nan
-        results_building_simulation[hour_of_year]['E_HCL'] = np.nan
-        results_building_simulation[hour_of_year]['H']  = np.nan
-        results_building_simulation[hour_of_year]['C']  = np.nan
-        
-        BuildingSimulationELEC[hour_of_year]['E_tot_elec'] = np.nan
-        BuildingSimulationELEC[hour_of_year]['E_HCL_elec'] = np.nan
-        BuildingSimulationELEC[hour_of_year]['H_elec']  = np.nan
-        BuildingSimulationELEC[hour_of_year]['C_elec']  = np.nan
-        
-        results_building_simulation[hour_of_year]['L']  = np.nan
-        results_building_simulation[hour_of_year]['PV']  = np.nan
-        results_building_simulation[hour_of_year]['OptAngles'] = np.nan
-        results_building_simulation[hour_of_year]['BestCombKey'] = np.nan
-        results_building_simulation[hour_of_year]['T_in'] = np.nan
-        results_building_simulation[hour_of_year]['T_out'] = np.nan
-        results_building_simulation[hour_of_year]['RadiationWindow'] = np.nan
-        results_building_simulation[hour_of_year]['UncomfHour'] = np.nan
     
     tic = time.time()
     #run for every hour of year the RC-Model    
@@ -557,6 +525,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
         results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
+        results_building_simulation[hour_of_year]['AE']  = 0
            
         
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]

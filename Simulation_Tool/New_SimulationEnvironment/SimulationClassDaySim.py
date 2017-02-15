@@ -21,7 +21,7 @@ class ASF_Simulation(object):
 
 	def __init__(self,
             SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'Save' : True, 'ShowFig': False, 'Temp_start' : 20,'start':0 , 'end': 0, 'ProjectName' : 'Mat02'},
+            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'Save' : True, 'ShowFig': False, 'Temp_start' : 20,'start':0 , 'end': 0, 'ProjectName' : 'Mat02', 'SubFolder': '2ASF'},
             PanelData = 
             {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45]},
             Material = 
@@ -34,8 +34,7 @@ class ASF_Simulation(object):
             SimulationOptions= 
             {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
             
-                
-            
+
             BuildingData = {
             "room_width": 4900, 
             "room_height":3100, 
@@ -111,6 +110,8 @@ class ASF_Simulation(object):
 		self.project_folder = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
 		self.project_folder = os.path.join(self.project_folder,self.SimulationData['ProjectName'])
 		print 'Project Folder', self.project_folder
+  
+		
   
 		self.path_script = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
   
@@ -226,7 +227,8 @@ class ASF_Simulation(object):
              for y_angle in self.YANGLES:
                     
                 #project_name = 'ASF_' + str(x_angle) + '_' + str(y_angle)
-                project_name = '2ASF_' + str(x_angle) + '_' + str(y_angle)
+                project_name = self.SimulationData['SubFolder'] + '_' + str(x_angle) + '_' + str(y_angle)
+                
                 print project_name
                 #check if file is there, if not create and save it
                 
@@ -423,7 +425,7 @@ class ASF_Simulation(object):
 			
                       # prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], self.yearlyData [kWh/year]
 				self.monthlyData[optimizationType], self.yearlyData[optimizationType] = prepareResults(Building_Simulation_df = self.ResultsBuildingSimulation[optimizationType])
-				print self.yearlyData[optimizationType]
+				#print self.yearlyData[optimizationType]
 			
 			if optimizationType == 'E_total_elec' or optimizationType =='Heating_elec' or optimizationType =='Cooling_elec'  or optimizationType =='E_HCL_elec':                                                           
 				self.monthlyData[optimizationType], self.yearlyData[optimizationType] = prepareResultsELEC(Building_Simulation_df = self.BuildingSimulationELEC[optimizationType])
@@ -505,19 +507,6 @@ class ASF_Simulation(object):
                 self.fig.update({ii : figProxy})
             
             
-#            figD = {}
-#            figE = {}
-#            
-           
-            
-        #    for jj in range(start,end+1):
-        #       
-        #       figA[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['E_tot'], title = jj)
-                #figB[jj] = create3Dplot(Data = hourlyData['E_total'][jj]['PV'], title = jj)
-               
-            
-            
-            #figC = create3Dplot2(Data2 =  hourlyData['E_total'], title = 'Net Energy Demand', start = 4472, end  = 4481)  
            
            
 
@@ -609,19 +598,19 @@ class ASF_Simulation(object):
                 y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))
                 			
                 #convert heating/cooling system variables into strings			
-#                self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
-#                self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
+                self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
+                self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
                 self.BuildingProperties["start"] = self.start
                 self.BuildingProperties["end"] = self.end
                 self.BuildingProperties["T_start"] = self.SimulationData['Temp_start']
                 self.BuildingProperties["SetBack_H"] = self.SimulationOptions['setBackTempH']
                 self.BuildingProperties["SetBack_C"] = self.SimulationOptions['setBackTempC']
                 				        
-                """    
+                 
                 #save building properties in json files
                 with open(os.path.join(self.paths['result'], 'BuildingProperties.json'), 'w') as f:
                 				f.write(json.dumps(self.BuildingProperties))
-                """		
+                		
                 print '\nResults are saved!'    
 		
           print "\nSimulation end: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
@@ -651,7 +640,7 @@ class ASF_Simulation(object):
                			
             self.SaveResults()
             
-            print self.yearlyData
+            #print self.yearlyData
 
 								
 
