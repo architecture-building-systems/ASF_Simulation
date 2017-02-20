@@ -197,17 +197,26 @@ def runRadiationCalculation(SimulationPeriode, paths, XANGLES, YANGLES, hour_in_
     now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 #    print "simulation start: " + now    
     
-    from RadiationCalculation_hourly import CalculateRadiationData
+    #from RadiationCalculation_hourly import CalculateRadiationData
+    #Calculate the Radiation on the solar panels and window with ladybug
+#    HourlyRadiation = CalculateRadiationData(SimulationPeriode = SimulationPeriode,
+#                                            XANGLES = XANGLES, 
+#                                            YANGLES = YANGLES, 
+#                                            paths = paths, 
+#                                            DataNamePV = FolderName['DataNamePV'],
+#                                            DataNameWin = FolderName['DataNameWin'])
     
+    
+    
+    
+    from RadiationGridSize import CalculateRadiationData
     
     
     #Calculate the Radiation on the solar panels and window with ladybug
     HourlyRadiation = CalculateRadiationData(SimulationPeriode = SimulationPeriode,
                                             XANGLES = XANGLES, 
                                             YANGLES = YANGLES, 
-                                            paths = paths, 
-                                            DataNamePV = FolderName['DataNamePV'],
-                                            DataNameWin = FolderName['DataNameWin'])
+                                            paths = paths) # change back
     
     
     

@@ -86,7 +86,7 @@ def calcShadow(P0,sunAz,sunAlt,panelAz,panelAlt,h,d):
 	S1=[S0[0]-h-x,S0[1]]
 
 
-	return S0,S1,S2,S3,S4
+	return S0,S1,S2,S3,S4,y,x
       
 def Distance (P1,P2):
     p1, p2 = Point(P1[0], P1[1]), Point(P2[0], P2[1])
@@ -188,11 +188,11 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
         
         p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[zz][0][0], ASF_dict_prime[zz][0][1]), (ASF_dict_prime[zz][1][0], ASF_dict_prime[zz][1][1]), 
                                  (ASF_dict_prime[zz][2][0], ASF_dict_prime[zz][2][1]), (ASF_dict_prime[zz][3][0], ASF_dict_prime[zz][3][1])])
-        print 'area maping', time.time()-looptic                         
+        #print 'area maping', time.time()-looptic                         
         ASFArea[zz] = abs(Polygon(p1, p2, p3, p4).area)
-        print 'absolute function', time.time()-looptic
+        #print 'absolute function', time.time()-looptic
         
-    print 'time after ASF area', time.time()-Case_tic
+    #print 'time after ASF area', time.time()-Case_tic
 
     #10 seconds of computational time
     if '1' in Case:
@@ -250,9 +250,9 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                 print "Intersection with panel to the left: Yes"    
                 
             else:
-                
-                print "Panel: ", ii
-                print "Intersection with panel to the left: No"
+                pass
+#                print "Panel: ", ii
+#                print "Intersection with panel to the left: No"
                 
     print 'time after Case 1', time.time()-Case_tic   
 
@@ -315,9 +315,9 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                         print "Intersection with upper panel: Yes" 
                         
                     else:
-                       
-                        print "Panel: ", colNum + ii *col
-                        print "Intersection with upper panel: No"
+                        pass
+#                        print "Panel: ", colNum + ii *col
+#                        print "Intersection with upper panel: No"
                         
                 else:
                     pass
@@ -383,12 +383,151 @@ def CaseA(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                         print "Intersection with second upper panel: Yes" 
 
                     else:
-                        print "Panel: ", dot
-                        print "Intersection with second upper panel: No"
+                        pass
+#                        print "Panel: ", dot
+#                        print "Intersection with second upper panel: No"
                        
                 else:
                     pass
-    print 'time after Case 3', time.time()-Case_tic         
+    print 'time after Case 3', time.time()-Case_tic
+
+#    if '4' in Case:                
+#        print '\nCase A4'              
+#                          
+#        for ii in range(3,row2): #row2 = yArray, col = xArray
+#        
+#                #case: check if the lowest edge of  a panel is intersection with panel below
+#            for colNum in range(col): 
+#            
+#                if (colNum + ii *col-1) < PanelNum: #skip the last panels 
+#                    
+#                    dot = colNum + ii *col -1
+#                    print dot
+#                    dotCheck =  colNum + (ii-3) *col
+#                    print dotCheck
+#                
+#                    p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
+#                                (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
+#                                (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
+#                                (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
+#                    
+#                
+#                    if p.encloses_point(Point(ASF_dict_prime[dotCheck][3][0], ASF_dict_prime[dotCheck][3][1])):
+#                        #if Point is in polygon p, than true will be returned
+#                    
+#        
+#                        #Calculate Intersection               
+#                        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
+#                                             (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
+#                
+#                
+#                        p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[dotCheck][0][0], ASF_dict_prime[dotCheck][0][1]), (ASF_dict_prime[dotCheck][1][0], ASF_dict_prime[dotCheck][1][1]),
+#                                             (ASF_dict_prime[dotCheck][2][0], ASF_dict_prime[dotCheck][2][1]), (ASF_dict_prime[dotCheck][3][0], ASF_dict_prime[dotCheck][3][1])])
+#                
+#                        poly1 = Polygon(p1, p2, p3, p4)
+#                        poly2 = Polygon(p5, p6, p7, p8)
+#                
+#                        a =  poly1.intersection(poly2)
+#                        SP5 = a[0]
+#                        SP6 = a[1]
+#                        IntersectionPoints[dot].append(SP5)
+#                        IntersectionPoints[dot].append(SP6)
+#                        
+#       
+#                        
+#                        resultShadow2 = abs(Polygon((SP6[0],SP6[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP5[0],SP5[1]),
+#                                                 (ASF_dict_prime[dotCheck][3][0], ASF_dict_prime[dotCheck][3][1])).area)
+#                
+#                        
+#                        Shadow[dot] += float(resultShadow2)
+#                        
+#                        Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP6) # latitudinal shading length
+#                        Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
+#                        ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
+#                
+#                        Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP5)
+#                        Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
+#                        ShadowLong[dot] += float(Dis3 / Dis4)
+#                            
+#                        print "Panel: ", dot
+#                        print "Intersection with thrid upper panel: Yes" 
+#
+#                    else:
+#                        pass
+##                        print "Panel: ", dot
+##                        print "Intersection with third upper panel: No"
+#                       
+#                else:
+#                    pass
+#    if '5' in Case:                
+#        print '\nCase A5'              
+#                          
+#        for ii in range(4,row2): #row2 = yArray, col = xArray
+#        
+#                #case: check if the lowest edge of  a panel is intersection with panel below
+#            for colNum in range(col): 
+#            
+#                if (colNum + ii *col-1) < PanelNum: #skip the last panels 
+#                    
+#                    dot = colNum + ii *col -1
+#                    print dot
+#                    dotCheck = colNum + (ii-4) *col + 1 
+#                    print dotCheck
+#                
+#                    p = Polygon((ASF_dict_prime[dot][0][0],ASF_dict_prime[dot][0][1]),
+#                                (ASF_dict_prime[dot][1][0],ASF_dict_prime[dot][1][1]),
+#                                (ASF_dict_prime[dot][2][0],ASF_dict_prime[dot][2][1]),
+#                                (ASF_dict_prime[dot][3][0],ASF_dict_prime[dot][3][1]))
+#                    
+#                
+#                    if p.encloses_point(Point(ASF_dict_prime[dotCheck][3][0], ASF_dict_prime[dotCheck][3][1])):
+#                        #if Point is in polygon p, than true will be returned
+#                    
+#        
+#                        #Calculate Intersection               
+#                        p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[dot][0][0], ASF_dict_prime[dot][0][1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), 
+#                                             (ASF_dict_prime[dot][2][0], ASF_dict_prime[dot][2][1]), (ASF_dict_prime[dot][3][0], ASF_dict_prime[dot][3][1])])
+#                
+#                
+#                        p5, p6, p7, p8 = map(Point, [(ASF_dict_prime[dotCheck][0][0], ASF_dict_prime[dotCheck][0][1]), (ASF_dict_prime[dotCheck][1][0], ASF_dict_prime[dotCheck][1][1]),
+#                                             (ASF_dict_prime[dotCheck][2][0], ASF_dict_prime[dotCheck][2][1]), (ASF_dict_prime[dotCheck][3][0], ASF_dict_prime[dotCheck][3][1])])
+#                
+#                        poly1 = Polygon(p1, p2, p3, p4)
+#                        poly2 = Polygon(p5, p6, p7, p8)
+#                
+#                        a =  poly1.intersection(poly2)
+#                        SP5 = a[0]
+#                        SP6 = a[1]
+#                        IntersectionPoints[dot].append(SP5)
+#                        IntersectionPoints[dot].append(SP6)
+#                        
+#       
+#                        
+#                        resultShadow2 = abs(Polygon((SP6[0],SP6[1]), (ASF_dict_prime[dot][1][0], ASF_dict_prime[dot][1][1]), (SP5[0],SP5[1]),
+#                                                 (ASF_dict_prime[dotCheck][3][0], ASF_dict_prime[dotCheck][3][1])).area)
+#                
+#                        
+#                        Shadow[dot] += float(resultShadow2)
+#                        
+#                        Dis1 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP6) # latitudinal shading length
+#                        Dis2 = Distance(P1 =  ASF_dict_prime[dot][1], P2 =  ASF_dict_prime[dot][2]) # latitudinal panel length
+#                        ShadowLat[dot] += float(Dis1 / Dis2) # percentage latitudinal shading
+#                
+#                        Dis3 = Distance(P1 = ASF_dict_prime[dot][1], P2 =  SP5)
+#                        Dis4 = Distance(P1 = ASF_dict_prime[dot][1] , P2 =  ASF_dict_prime[dot][0])  
+#                        ShadowLong[dot] += float(Dis3 / Dis4)
+#                            
+#                        print "Panel: ", dot
+#                        print "Intersection with fourth upper panel: Yes" 
+#
+#                    else:
+#                        pass
+##                        print "Panel: ", dot
+##                        print "Intersection with fourth upper panel: No"
+#                       
+#                else:
+#                    pass
+         
     #print '\nSummary of Solar Radiation Analysis'                
     TotalArea = 0
     NonShadedArea = 0
@@ -429,12 +568,12 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
         #Takes 0.16s per itteration
         p1, p2, p3, p4 = map(Point, [(ASF_dict_prime[zz][0][0], ASF_dict_prime[zz][0][1]), (ASF_dict_prime[zz][1][0], ASF_dict_prime[zz][1][1]), 
                                  (ASF_dict_prime[zz][2][0], ASF_dict_prime[zz][2][1]), (ASF_dict_prime[zz][3][0], ASF_dict_prime[zz][3][1])])
-        print 'area mapping', time.time()-looptic  
+        #print 'area mapping', time.time()-looptic  
         looptic=time.time() 
         #Takes 0.01 seconds per itteration                       
         ASFArea[zz] = abs(Polygon(p1, p2, p3, p4).area)
-        print 'absolute function', time.time()-looptic
-    print 'time after area calc', time.time()-Case_tic 
+        #print 'absolute function', time.time()-looptic
+    #print 'time after area calc', time.time()-Case_tic 
 
     #10 seconds of computational time
     if '1' in Case: 
@@ -490,9 +629,9 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                 print "Intersection with panel to the right: Yes"    
                 
             else:            
-    
-                print "Panel: ", ii-1 
-                print "Intersection with panel to the right: No"
+                pass
+#                print "Panel: ", ii-1 
+#                print "Intersection with panel to the right: No"
                 
     print 'time after Case 1', time.time()-Case_tic  
 
@@ -553,9 +692,9 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                         print "Panel: ", (colNum-1) + ii *col
                         print "Intersection with upper panel: Yes"    
                     else:
-            
-                        print "Panel: ", (colNum-1) + ii *col
-                        print "Intersection with upper panel: No"
+                        pass
+#                        print "Panel: ", (colNum-1) + ii *col
+#                        print "Intersection with upper panel: No"
                         
                 else:
                     pass
@@ -619,8 +758,9 @@ def CaseB(ind, SunAngles, ASF_dict_prime, PanelNum, row2, col, Case):
                         print "Intersection with second upper panel: Yes" 
                         
                     else:
-                        print "Panel: ", dot
-                        print "Intersection with second upper panel: No"
+                        pass
+#                        print "Panel: ", dot
+#                        print "Intersection with second upper panel: No"
                         
                 else:
                     pass

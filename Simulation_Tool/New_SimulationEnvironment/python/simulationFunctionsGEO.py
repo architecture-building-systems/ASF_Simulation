@@ -165,8 +165,8 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     
    
     
-    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_Winter.npy').item()
-    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_Winter.npy').item()
+    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_Winter_15_2.npy').item()
+    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_Winter_15_2.npy').item()
     
     print PV
     
@@ -239,13 +239,16 @@ def SaveResults(hourlyData,now, Save, geoLocation, paths, optimization_Types,  R
     
     fig = {}
       
+#    fig = plt.figure(figsize=(4, 20))
+    
+    #count = 1
     for ii in optimization_Types:
         
-        
+#        plt.subplot(6,1,count)
         fig[ii] = PlotHour(E = ResultsBuildingSimulation[ii]['E_tot'], PV = ResultsBuildingSimulation[ii]['PV'], L = ResultsBuildingSimulation[ii]['L'], 
                            H = ResultsBuildingSimulation[ii]['H'], C = ResultsBuildingSimulation[ii]['C'], x_angle = x_angles[ii], y_angle = y_angles[ii], 
                            start = start, end = end, title = ii, TotalHOY = TotalHOY)
-    
+        #count += 1
    
    
     RBS_ELEC = {}

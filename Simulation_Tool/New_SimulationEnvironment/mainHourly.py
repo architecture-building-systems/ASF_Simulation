@@ -188,7 +188,9 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                     
     return ResultsBuildingSimulation, hourlyData, UncomfortableH, BuildingRadiationHOY, TotalHourlyData 
 
-season = 'winter'
+
+season = 'GridSizeWindow'
+#season = 'winter'
 #season = 'winter'                 
       
 #season = '900' 
@@ -354,6 +356,24 @@ elif season == 'Spacing':
     "panelSize":400,
     "panelSpacing":600,
     "panelGridSize": 25}
+    
+elif season == 'GridSizeWindow':    
+    SimulationPeriod = {
+    'FromMonth': 7,#7, #1,
+    'ToMonth': 7,#7, #1,
+    'FromDay': 6,#6, #8,
+    'ToDay': 6, #8,
+    'FromHour': 5,#5
+    'ToHour': 20,
+    'Temp_start' : 22}#20
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_GridSizeWindow',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : True}    
+    
 
 else:
     pass   

@@ -85,8 +85,8 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
     sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'python'))
     
-    from simulationFunctionsGEO import initializeSimulation, setPaths, CalculateVariables 
-    from simulationFunctionsGEO import runBuildingSimulation, SaveResults
+    from simulationFunctionsHourly import initializeSimulation, initializeASF, setBuildingParameters, initializeBuildingSimulation, setPaths, CalculateVariables 
+    from simulationFunctionsHourly import PrepareRadiationData, runBuildingSimulation, SaveResults, runRadiationCalculation 
     from calculateHOY import calcHOY
     
   
@@ -97,11 +97,20 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     print "\nThe simulation starts at the hour of the year: " + str(start) + " and ends at: " + str(end) + "\n"
     
     
-    BuildingProperties, FolderName, now = initializeSimulation(
-                                SimulationData = SimulationData, 
-                                building_data = BuildingData,
-                                BuildingProperties = BuildingProperties)
-                                                               
+    FolderName = initializeSimulation(SimulationData = SimulationData)
+                                            
+            
+    initializeASF(panel_data = PanelData)
+   
+    
+    roomFloorArea = setBuildingParameters(
+                             building_data = BuildingData)
+                            
+    
+    BuildingProperties = initializeBuildingSimulation(
+                             building_data = BuildingData,    
+                             BuildingProperties = BuildingProperties)
+                    
     
     paths, weatherData, SunTrackingData = setPaths(
                               geoLocation = SimulationData['geoLocation'], 
@@ -110,12 +119,34 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
     
     
     ANGLES, hour_in_month, NumberCombinations, combinationAngles, daysPerMonth, \
-    hourRadiation = CalculateVariables(
+    hourRadiation, hourRadiation_calculated, sumHours = CalculateVariables(
                             SunTrackingData = SunTrackingData, 
                             building_data = BuildingData, 
                             XANGLES = PanelData['XANGLES'], 
                             YANGLES = PanelData['YANGLES'])
     
+    PV_electricity_results, PV_detailed_results, HourlyRadiation, now = runRadiationCalculation(
+                            SimulationPeriode = SimulationPeriod,
+                            paths = paths, 
+                            XANGLES = PanelData['XANGLES'], 
+                            YANGLES = PanelData['YANGLES'], 
+                            hour_in_month = hour_in_month, 
+                            FolderName = FolderName,
+                            panel_data = PanelData, 
+                            NumberCombinations = NumberCombinations, 
+                            createPlots = False, 
+                            start = start, end = end,
+                            weatherData = weatherData)
+                    
+
+    #rearrange the Radiation Data on PV and Window into HOY form
+    PV_Data, BuildingRadiationHOY = PrepareRadiationData(
+                            HourlyRadiation = HourlyRadiation, 
+                            PV_electricity_results = PV_electricity_results, 
+                            NumberCombinations = NumberCombinations,
+                            SimulationPeriod = SimulationPeriod,
+                            start = start, end = end)
+                            
     
                
     hourlyData, ResultsBuildingSimulation, BestKey, x_angles, y_angles, UncomfortableH, TotalHOY, TotalHourlyData = runBuildingSimulation(
@@ -125,6 +156,8 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             building_data =  BuildingData, 
                             weatherData = weatherData, 
                             hourRadiation = hourRadiation, 
+                            BuildingRadiationData_HOY = BuildingRadiationHOY, 
+                            PV = PV_Data, 
                             NumberCombinations = NumberCombinations, 
                             combinationAngles = combinationAngles, 
                             BuildingProperties = BuildingProperties, 
@@ -153,11 +186,17 @@ def MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, 
                             TotalHourlyData = TotalHourlyData)
     print "calucation is finished"
                     
-    return ResultsBuildingSimulation, hourlyData, UncomfortableH,TotalHourlyData 
-
-season = 'winter'
+    return ResultsBuildingSimulation, hourlyData, UncomfortableH, BuildingRadiationHOY, TotalHourlyData 
 
 
+season = 'GridSizeWindow'
+#season = 'winter'
+#season = 'winter'                 
+      
+#season = '900' 
+#season = '450' 
+#season = 'winter2'
+   #'summer'#
 #DefaultValues
 ###############################################################################
 if season == 'winter':    
@@ -166,15 +205,15 @@ if season == 'winter':
     'ToMonth': 1,#7, #1,
     'FromDay': 8, #6, #8,
     'ToDay': 8, #8,
-    'FromHour': 7, # originally 5
+    'FromHour': 5,#5
     'ToHour': 20,
     'Temp_start' : 18}#20
     
     
     #Set simulation data
     SimulationData= {
-    'optimizationTypes' :['E_total', 'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting', 'Heating'],
-    'DataName' : 'ZH13_49comb_WinterSunnyDay_geo',#
+    'optimizationTypes' : ['E_total', 'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting', 'Heating'],
+    'DataName' : 'ZH13_49comb_WinterSunnyDay',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : True}    
     
@@ -192,47 +231,165 @@ elif season == 'summer':
     #Set simulation data
     SimulationData= {
     'optimizationTypes' : ['E_total', 'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting', 'Heating'],
-    'DataName' : 'ZH13_49comb_SummerSunnyDay_geo',#
+    'DataName' : 'ZH13_49comb_Notcloudy_6_7',#
     'geoLocation' : 'Zuerich_Kloten_2013',
     'Save' : True}
 
-elif season == 'summer2':    
+elif season == 'weekSummer':    
+    
+    for Day in range(5,6):
+        SimulationPeriod = {
+        'FromMonth': 7,#7, #1,
+        'ToMonth': 7,#7, #1,
+        'FromDay': Day,#6, #8,
+        'ToDay': Day, #8,
+        'FromHour': 5,#5 #1 to 24
+        'ToHour': 20,
+        'Temp_start' : 22}#20
+        
+        #Set simulation data
+        SimulationData= {
+        'optimizationTypes' : ['E_total','Cooling', 'SolarEnergy', 'E_HCL', 'Lighting'],
+        'DataName' : 'ZH13_49comb_weekAnalysis',#
+        'geoLocation' : 'Zuerich_Kloten_2013',
+        'Save' : False}
+
+if season == 'winter2':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 12,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 28, #28,
+    'FromHour': 6,#5
+    'ToHour': 20, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_3comb_year',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}  
+    
+
+elif season == '450':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 12,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 28, #28,
+    'FromHour': 8,#5
+    'ToHour': 18, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_45_0',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}
+    
+elif season == '900':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 12,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 28, #28,
+    'FromHour': 8,#5
+    'ToHour': 18, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_90_0Test',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}
+
+elif season == 'Test':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 1,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 1, #28,
+    'FromHour': 1,#5
+    'ToHour': 22, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_45_0Test2',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False} 
+
+elif season == 'Spacing':    
+    SimulationPeriod = {
+    'FromMonth': 1, #7, #1,
+    'ToMonth': 12,#7, #1,
+    'FromDay': 1, #6, #8,
+    'ToDay': 28, #28,
+    'FromHour': 6,#5
+    'ToHour': 20, #20
+    'Temp_start' : 18}#20
+    
+    
+    #Set simulation data
+    SimulationData= {
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_9comb_Spacing',#
+    'geoLocation' : 'Zuerich_Kloten_2013',
+    'Save' : False}            
+
+    #Set panel data
+    PanelData={
+    "XANGLES": [0,45,90],
+    "YANGLES" : [-45,0,45],#[0],
+    "NoClusters":1,
+    "numberHorizontal":6,
+    "numberVertical":1,
+    "panelOffset":400,
+    "panelSize":400,
+    "panelSpacing":600,
+    "panelGridSize": 25}
+    
+elif season == 'GridSizeWindow':    
     SimulationPeriod = {
     'FromMonth': 7,#7, #1,
     'ToMonth': 7,#7, #1,
     'FromDay': 6,#6, #8,
     'ToDay': 6, #8,
-    'FromHour': 11,#5
-    'ToHour': 17,
+    'FromHour': 5,#5
+    'ToHour': 20,
     'Temp_start' : 22}#20
     
     #Set simulation data
     SimulationData= {
-    'optimizationTypes' : ['E_total', 'Cooling', 'SolarEnergy', 'E_HCL', 'Lighting', 'Heating'],
-    'DataName' : 'ZH13_49comb_SummerSunnyDay_geo',#
+    'optimizationTypes' : ['E_total'],
+    'DataName' : 'ZH13_GridSizeWindow',#
     'geoLocation' : 'Zuerich_Kloten_2013',
-    'Save' : True}
+    'Save' : True}    
+    
+    PanelData = {"XANGLES": [0, 45, 90],"YANGLES" : [-45, 0, 45],"NoClusters":1,"numberHorizontal":6,
+                 "numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500, "panelGridSize" : 400}
 
-PanelData = {
-"XANGLES": [0, 15, 30, 45, 60, 75, 90],
-"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
-"NoClusters":1,
-"numberHorizontal":6,
-"numberVertical":9,
-"panelOffset":400,
-"panelSize":400,
-"panelSpacing":500, 
-"panelGridSize" : 25}
+    #Set Building Parameters in [mm]
+    BuildingData={
+    "room_width": 4900,     
+    "room_height":3100,
+    "room_depth":7000,
+    "glazing_percentage_w": 0.92,
+    "glazing_percentage_h": 0.97,
+    "WindowGridSize" : None,
+    "BuildingOrientation" : 0}
 
-#Set Building Parameters in [mm]
-BuildingData={
-"room_width": 4900,     
-"room_height":3100,
-"room_depth":7000,
-"glazing_percentage_w": 0.92,
-"glazing_percentage_h": 0.97,
-"WindowGridSize" : 200,
-"BuildingOrientation" : 0}
+else:
+    pass   
+ 
 
 BuildingProperties={
 "glass_solar_transmitance" : 0.691 ,
@@ -265,6 +422,6 @@ SimulationOptions= {
 'ActuationEnergy' : False}
    
 
-ResultsBuildingSimulation, hourlyData, UncomfortableH, TotalHourlyData = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
+ResultsBuildingSimulation, hourlyData, UncomfortableH, BuildingRadiationHOY, TotalHourlyData = MainCalculateASF(SimulationPeriod, SimulationData, PanelData, BuildingData, BuildingProperties, SimulationOptions)
         
         

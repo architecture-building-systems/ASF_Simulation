@@ -10,40 +10,34 @@ import json
 import csv
 import numpy as np
 
-def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNamePV, DataNameWin, GridSize):
+def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths):
 
-                   
-#    if not os.path.isfile(os.path.join(paths['PV'], 'HourlyPV_electricity_results_' + DataNamePV + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'HourlyBuildingRadiationData_' + DataNameWin + '.npy')):    
-#        if not os.path.isdir(paths['PV']):
-#            os.makedirs(paths['PV'])
-    
-    # create dicitionary to save optimal angles:
-    BuilRadData = {}
-    
-    comb = 0        
+
     
     print '\nStart radiation calculation with ladybug'
     print 'Time: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-
-    tic = time.time()
     
     
-    #GridSize = [12.5]
     
-    for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth']+1): #month:
-         for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
-             
-            for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):
-
-                #BuilRadData[hour]= {}
-                             
-                for x_angle in XANGLES:
-                    for y_angle in YANGLES:
-
-                        #BuilRadData[hour][comb] = {}                            
-                        comb +=1                            
+    result = np.array([])
+    GridSize = [400,200,100,50,25,12]
+    
+    for size in GridSize:
+        for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth']+1): #month:
+             for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
+                 
+                for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):
+        
+                    #BuilRadData[hour]= {}
+                    comb = -1             
+                    for x_angle in XANGLES:
+                        for y_angle in YANGLES:
+                            comb += 1
+                                            
+                                                 
                         
-                        for size in GridSize:
+                        
+                            tic = time.time()
                             
                             #BuilRadData[hour][comb][size] = {}
                             
@@ -59,32 +53,50 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
                             with open('comb.json','w') as f:
                                 f.write(json.dumps(comb_data))
                                 
-                            print size, hour, day, monthi, x_angle, y_angle
-                            toc = time.time() - tic
-                            print 'time passed (min): ' + str(toc/60.)
+                            
                             
                                                                                             
                             #read total radition on wall and save it in BuildingRadiationData              
                             while not os.path.exists(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(hour) + '_' + str(day) + '_'+ str(size) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv')):
                                 time.sleep(0.5)
                             else:
-                                pass
-#                                    with open(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(hour) + '_' + str(day) + '_' + str(size) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv'), 'r') as csvfile:
-#                                        reader = csv.reader(csvfile)
-#                                        for idx,line in enumerate(reader):
-#                                            if idx == 1:
-#                                                BuilRadData[hour][comb][size] = float(line[0]) *1000.
-#                                                break
-#    
-#                    
-#                        
-#    
-#        np.save(os.path.join(paths['save_results_path'],'HourlyBuildingRadiationData_' + DataNameWin + '.npy'), BuilRadData)
-#        print "\nEnd of radiation calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-
-#    else:
-#        BuilRadData = np.load(os.path.join(paths['PV'], 'HourlyBuildingRadiationData_' + DataNameWin + '.npy')).item()
-#        print '\nLadyBug data loaded from Folder:'
-#        print 'radiation_wall_'+ DataNameWin   
-    
-    return BuilRadData
+                               
+                                print size, hour, day, monthi, x_angle, y_angle
+                                toc = time.time() - tic
+                                print 'time passed (sec): ' + str(toc)
+                                
+                               
+                    
+                            
+    return 2
+#
+#paths = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_GridSizeWindow'
+#day = 6
+#result = np.array([])
+#GridSize = [400,200,100,50,25]#,12.5]
+#
+#ii = 0
+#for hour in range(5,20 + 1):
+#
+#    comb = -1             
+#    for x_angle in [0,45,90]:
+#        for y_angle in [-45,0,45]:
+#
+#            comb += 1
+#
+#            for size in GridSize:                            
+#
+#                with open(os.path.join(paths, 'RadiationWall' + '_' + str(hour) + '_' + str(day) + '_' + str(size) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv'), 'r') as csvfile: 
+#                   reader = csv.reader(csvfile)
+#                   for idx,line in enumerate(reader):
+#                       if idx == 1:
+#                           value = float(line[0])
+#                           break
+#
+#
+#                result[ii]= [hour, comb, size, value]
+#                ii += 1
+#                
+#import pandas as pd 
+#df = pd.DataFrame(result)
+#df.to_csv("C:\Users\Assistenz\Desktop\Mauro\GridSizeAnalysis\GridSizeWindow.csv")

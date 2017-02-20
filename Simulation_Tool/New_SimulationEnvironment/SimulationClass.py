@@ -419,7 +419,7 @@ class ASF_Simulation(object):
 	def createAllPlots(self):
             #create energy- and angle- carpet plots
 		
-		from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
+		from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles, createCarpetPlotXAngles2, createCarpetPlotYAngles2
 		
 		self.fig = {}    
 		
@@ -445,6 +445,9 @@ class ASF_Simulation(object):
 				#create the angles carpet plots for the opimised simulation option, this option needs all simulation types
 				fig1 = createCarpetPlotXAngles(self.x_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
 				fig2 = createCarpetPlotYAngles(self.y_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
+				
+				fig3 = createCarpetPlotXAngles2(self.x_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
+				fig4 = createCarpetPlotYAngles2(self.y_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
 				
 				self.fig.update({'fig1' : fig1, 'fig2' : fig2})
 		

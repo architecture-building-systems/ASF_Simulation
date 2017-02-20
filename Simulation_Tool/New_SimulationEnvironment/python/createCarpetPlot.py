@@ -66,32 +66,31 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     return fig
 
 
-
 def createCarpetPlotXAngles(x_angle_array, hour_in_month, H, C, E, E_HCL):  
    
     fig = plt.figure(figsize=(16, 8))
     #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
     plt.subplot(2,3,1)
-    carpetPlotMask(X = x_angle_array[H], z_min = 0, z_max= 90, title = '(a) Heating Demand', hour_in_month = hour_in_month)
+    carpetPlotMask(X = x_angle_array[H], z_min = 0, z_max= 90, title = '(a) Heating Optimization', hour_in_month = hour_in_month)
     plt.ylabel("Hour of the Day",size=14)
     
     plt.subplot(2,3,2)
-    carpetPlotMask(X = x_angle_array[C], z_min = 0, z_max= 90, title = '(b) Cooling Demand', hour_in_month = hour_in_month)
+    carpetPlotMask(X = x_angle_array[C], z_min = 0, z_max= 90, title = '(b) Cooling Optimization', hour_in_month = hour_in_month)
     
     plt.subplot(2,3,3)
-    carpetPlotMask(X = x_angle_array['Lighting'], z_min = 0, z_max= 90, title = '(c) Lighting Demand', hour_in_month = hour_in_month)
+    carpetPlotMask(X = x_angle_array['Lighting'], z_min = 0, z_max= 90, title = '(c) Lighting Optimization', hour_in_month = hour_in_month)
     
     plt.subplot(2,3,4)
-    carpetPlotMask(X = x_angle_array['SolarEnergy'], z_min = 0, z_max= 90, title = '(d) PV Supply', hour_in_month = hour_in_month)
+    carpetPlotMask(X = x_angle_array['SolarEnergy'], z_min = 0, z_max= 90, title = '(d) PV Optimization', hour_in_month = hour_in_month)
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     
     plt.subplot(2,3,5)
-    carpetPlotMask(X = x_angle_array[E_HCL], z_min = 0, z_max= 90, title = '(e) Total Thermal/Lighting Demand', hour_in_month = hour_in_month)
+    carpetPlotMask(X = x_angle_array[E_HCL], z_min = 0, z_max= 90, title = '(e) Total Thermal/Lighting Optimization', hour_in_month = hour_in_month)
     plt.xlabel("Month of the Year",size=14)    
     
     plt.subplot(2,3,6)   
-    carpetPlotMask(X = x_angle_array[E], z_min = 0, z_max= 90, title = '(f) Net Demand Including PV', hour_in_month = hour_in_month)
+    carpetPlotMask(X = x_angle_array[E], z_min = 0, z_max= 90, title = '(f) Net Optimization Including PV', hour_in_month = hour_in_month)
     plt.xlabel("Month of the Year",size=14)
 
 
@@ -115,53 +114,58 @@ def createCarpetPlotXAngles(x_angle_array, hour_in_month, H, C, E, E_HCL):
                 
     return fig
     
-#def createCarpetPlotXAnglesELEC(x_angle_array, hour_in_month):  
-#   
-#    fig = plt.figure(figsize=(16, 8))
-#    #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
-#    plt.subplot(2,3,1)
-#    carpetPlotMask(X = x_angle_array['Heating_elec'], z_min = 0, z_max= 90, title = '(a) Heating Demand', hour_in_month = hour_in_month)
-#    plt.ylabel("Hour of the Day",size=14)
-#    
-#    plt.subplot(2,3,2)
-#    carpetPlotMask(X = x_angle_array['Cooling_elec'], z_min = 0, z_max= 90, title = '(b) Cooling Demand', hour_in_month = hour_in_month)
-#    
-#    plt.subplot(2,3,3)
-#    carpetPlotMask(X = x_angle_array['Lighting'], z_min = 0, z_max= 90, title = '(c) Lighting Demand', hour_in_month = hour_in_month)
-#    
-#    plt.subplot(2,3,4)
-#    carpetPlotMask(X = x_angle_array['SolarEnergy'], z_min = 0, z_max= 90, title = '(d) PV Supply', hour_in_month = hour_in_month)
-#    plt.xlabel("Month of the Year",size=14)
-#    plt.ylabel("Hour of the Day",size=14)
-#    
-#    plt.subplot(2,3,5)
-#    carpetPlotMask(X = x_angle_array['E_HCL_elec'], z_min = 0, z_max= 90, title = '(e) Total Thermal/Lighting Demand', hour_in_month = hour_in_month)
-#    plt.xlabel("Month of the Year",size=14)    
-#    
-#    plt.subplot(2,3,6)   
-#    carpetPlotMask(X = x_angle_array['E_total_elec'], z_min = 0, z_max= 90, title = '(f) Net Demand Including PV', hour_in_month = hour_in_month)
-#    plt.xlabel("Month of the Year",size=14)
-#
-#
-#    #space between the y-axes of the plots
-#    #fig.tight_layout()
-#    fig.subplots_adjust(right = 0.8)
-#    
-#    #setting for the legend
-#    cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-#    cbar = plt.colorbar(cax=cbar_ax, ticks = [0,15,30,45,60,75,90])
-#    cbar.ax.set_yticklabels(['0 (closed)', '15', '30', '45', '60', '75', '90 (open)'])
-#    cbar.solids.set_rasterized(True) 
-#    cbart = plt.title("Altitude Angle [deg]", fontsize=14)
-#    cbart.set_position((1.1,1.02))
-##        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
-#        #cbar.ax.set_yticklabels(AnglesString)
-#    cbar.ax.tick_params(labelsize=14)
-#    plt.show()       
-#    
-#                
-#    return fig
+def createCarpetPlotXAngles2(x_angle_array, hour_in_month, H, C, E, E_HCL):  
+    
+    """
+    6 plots in row
+    """
+   
+    fig = plt.figure(figsize=(4, 30))
+    #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
+    plt.subplot(6,1,1)
+    carpetPlotMask(X = x_angle_array[H], z_min = 0, z_max= 90, title = '(a) Heating Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)
+    
+    plt.subplot(6,1,2)
+    carpetPlotMask(X = x_angle_array[C], z_min = 0, z_max= 90, title = '(b) Cooling Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)
+    
+    plt.subplot(6,1,3)
+    carpetPlotMask(X = x_angle_array['Lighting'], z_min = 0, z_max= 90, title = '(c) Lighting Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)    
+    
+    plt.subplot(6,1,4)
+    carpetPlotMask(X = x_angle_array['SolarEnergy'], z_min = 0, z_max= 90, title = '(d) PV Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)
+    
+    plt.subplot(6,1,5)
+    carpetPlotMask(X = x_angle_array[E_HCL], z_min = 0, z_max= 90, title = '(e) Total Thermal/Lighting Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)    
+    
+    plt.subplot(6,1,6)   
+    carpetPlotMask(X = x_angle_array[E], z_min = 0, z_max= 90, title = '(f) Net Optimization Including PV', hour_in_month = hour_in_month)
+    plt.xlabel("Month of the Year",size=14)
+    plt.ylabel("Hour of the Day",size=14)
 
+    #space between the y-axes of the plots
+    fig.tight_layout()
+    fig.subplots_adjust(right = 0.8)
+    
+    #setting for the legend
+    cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+    cbar = plt.colorbar(cax=cbar_ax, ticks = [0,15,30,45,60,75,90])
+    cbar.ax.set_yticklabels(['0 (closed)', '15', '30', '45', '60', '75', '90 (open)'])
+    cbar.solids.set_rasterized(True) 
+    cbart = plt.title("Altitude Angle [deg]", fontsize=14)
+    cbart.set_position((1.1,1.02))
+#        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
+        #cbar.ax.set_yticklabels(AnglesString)
+    cbar.ax.tick_params(labelsize=14)
+    #plt.tight_layout()
+    plt.show()       
+    
+                
+    return fig
    
 
 def createCarpetPlotYAngles(y_angle_array, hour_in_month, H, C, E, E_HCL):  
@@ -169,26 +173,26 @@ def createCarpetPlotYAngles(y_angle_array, hour_in_month, H, C, E, E_HCL):
     fig = plt.figure(figsize=(16, 8))
     #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
     plt.subplot(2,3,1)
-    carpetPlotMask(X = y_angle_array[H], z_min = -45, z_max= 45, title = '(a) Heating Demand', hour_in_month = hour_in_month)
+    carpetPlotMask(X = y_angle_array[H], z_min = -45, z_max= 45, title = '(a) Heating Optimization', hour_in_month = hour_in_month)
     plt.ylabel("Hour of the Day",size=14)
     
     plt.subplot(2,3,2)
-    carpetPlotMask(X = y_angle_array[C], z_min = -45, z_max= 45, title = '(b) Cooling Demand',hour_in_month = hour_in_month)
+    carpetPlotMask(X = y_angle_array[C], z_min = -45, z_max= 45, title = '(b) Cooling Optimization',hour_in_month = hour_in_month)
     
     plt.subplot(2,3,3)
-    carpetPlotMask(X = y_angle_array['Lighting'],z_min = -45, z_max= 45, title = '(c) Lighting Demand', hour_in_month = hour_in_month)
+    carpetPlotMask(X = y_angle_array['Lighting'],z_min = -45, z_max= 45, title = '(c) Lighting Optimization', hour_in_month = hour_in_month)
     
     plt.subplot(2,3,4)
-    carpetPlotMask(X = y_angle_array['SolarEnergy'], z_min = -45, z_max= 45, title = '(d) PV Supply', hour_in_month = hour_in_month)
+    carpetPlotMask(X = y_angle_array['SolarEnergy'], z_min = -45, z_max= 45, title = '(d) PV Optimization', hour_in_month = hour_in_month)
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     
     plt.subplot(2,3,5)
-    carpetPlotMask(X = y_angle_array[E_HCL], z_min = -45, z_max= 45, title = '(e) Total Thermal/Lighting Demand', hour_in_month = hour_in_month)
+    carpetPlotMask(X = y_angle_array[E_HCL], z_min = -45, z_max= 45, title = '(e) Total Thermal/Lighting Optimization', hour_in_month = hour_in_month)
     plt.xlabel("Month of the Year",size=14)    
     
     plt.subplot(2,3,6)   
-    carpetPlotMask(X = y_angle_array[E], z_min = -45, z_max= 45, title = '(f) Net Demand Including PV', hour_in_month = hour_in_month)
+    carpetPlotMask(X = y_angle_array[E], z_min = -45, z_max= 45, title = '(f) Net Optimization Including PV', hour_in_month = hour_in_month)
     plt.xlabel("Month of the Year",size=14)
 
 
@@ -211,82 +215,39 @@ def createCarpetPlotYAngles(y_angle_array, hour_in_month, H, C, E, E_HCL):
     
                 
     return fig
-    
-#    
-#def createCarpetPlotYAnglesELEC(y_angle_array, hour_in_month):  
-#   
-#    fig = plt.figure(figsize=(16, 8))
-#    #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
-#    plt.subplot(2,3,1)
-#    carpetPlotMask(X = y_angle_array['Heating_elec'], z_min = -45, z_max= 45, title = '(a) Heating Demand', hour_in_month = hour_in_month)
-#    plt.ylabel("Hour of the Day",size=14)
-#    
-#    plt.subplot(2,3,2)
-#    carpetPlotMask(X = y_angle_array['Cooling_elec'], z_min = -45, z_max= 45, title = '(b) Cooling Demand',hour_in_month = hour_in_month)
-#    
-#    plt.subplot(2,3,3)
-#    carpetPlotMask(X = y_angle_array['Lighting'],z_min = -45, z_max= 45, title = '(c) Lighting Demand', hour_in_month = hour_in_month)
-#    
-#    plt.subplot(2,3,4)
-#    carpetPlotMask(X = y_angle_array['SolarEnergy'], z_min = -45, z_max= 45, title = '(d) PV Supply', hour_in_month = hour_in_month)
-#    plt.xlabel("Month of the Year",size=14)
-#    plt.ylabel("Hour of the Day",size=14)
-#    
-#    plt.subplot(2,3,5)
-#    carpetPlotMask(X = y_angle_array['E_HCL_elec'], z_min = -45, z_max= 45, title = '(e) Total Thermal/Lighting Demand', hour_in_month = hour_in_month)
-#    plt.xlabel("Month of the Year",size=14)    
-#    
-#    plt.subplot(2,3,6)   
-#    carpetPlotMask(X = y_angle_array['E_total_elec'], z_min = -45, z_max= 45, title = '(f) Net Demand Including PV', hour_in_month = hour_in_month)
-#    plt.xlabel("Month of the Year",size=14)
-#
-#
-#    #space between the y-axes of the plots
-#    #fig.tight_layout()
-#    fig.subplots_adjust(right = 0.8)
-#    
-#    #setting for the legend
-#    cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-#    cbar = plt.colorbar(cax=cbar_ax, ticks = [-45,-30,-15,0,15,30,45])
-#    cbar.ax.set_yticklabels(['-45 (SW)', '-30', '-15', '0 (S)', '15', '30', '45 (SE)'])
-#    cbar.solids.set_rasterized(True) 
-#    cbart = plt.title("Azimuth Angle [deg]", fontsize=14)
-#    cbart.set_position((1.1,1.02))
-##        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
-#        #cbar.ax.set_yticklabels(AnglesString)
-#    cbar.ax.tick_params(labelsize=14)
-#    plt.show()       
-#    
-#                
-#    return fig
 
-def createCarpetPlotSensitivityBuilding(x_angle_array, hour_in_month, a, b, c, d, e, f):  
+def createCarpetPlotYAngles2(y_angle_array, hour_in_month, H, C, E, E_HCL): 
+    
+    """
+    6 plots in row
+    """
    
-    fig = plt.figure(figsize=(16, 8))
+    fig = plt.figure(figsize=(4, 30))
     #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
-    plt.subplot(2,3,1)
-    carpetPlotMask(X = x_angle_array[a], z_min = 0, z_max= 90, title = '(a) Baseline', hour_in_month = hour_in_month)
+    plt.subplot(6,1,1)
+    carpetPlotMask(X = y_angle_array[H], z_min = -45, z_max= 45, title = '(a) Heating Optimization', hour_in_month = hour_in_month)
     plt.ylabel("Hour of the Day",size=14)
     
-    plt.subplot(2,3,2)
-    carpetPlotMask(X = x_angle_array[b], z_min = 0, z_max= 90, title = '(b) Cooling Demand', hour_in_month = hour_in_month)
-    
-    plt.subplot(2,3,3)
-    carpetPlotMask(X = x_angle_array[c], z_min = 0, z_max= 90, title = '(c) Lighting Demand', hour_in_month = hour_in_month)
-    
-    plt.subplot(2,3,4)
-    carpetPlotMask(X = x_angle_array[d], z_min = 0, z_max= 90, title = '(d) PV Supply', hour_in_month = hour_in_month)
-    plt.xlabel("Month of the Year",size=14)
+    plt.subplot(6,1,2)
+    carpetPlotMask(X = y_angle_array[C], z_min = -45, z_max= 45, title = '(b) Cooling Optimization',hour_in_month = hour_in_month)
     plt.ylabel("Hour of the Day",size=14)
     
-    plt.subplot(2,3,5)
-    carpetPlotMask(X = x_angle_array[e], z_min = 0, z_max= 90, title = '(e) Total Thermal/Lighting Demand', hour_in_month = hour_in_month)
-    plt.xlabel("Month of the Year",size=14)    
+    plt.subplot(6,1,3)
+    carpetPlotMask(X = y_angle_array['Lighting'],z_min = -45, z_max= 45, title = '(c) Lighting Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)
     
-    plt.subplot(2,3,6)   
-    carpetPlotMask(X = x_angle_array[f], z_min = 0, z_max= 90, title = '(f) Net Demand Including PV', hour_in_month = hour_in_month)
+    plt.subplot(6,1,4)
+    carpetPlotMask(X = y_angle_array['SolarEnergy'], z_min = -45, z_max= 45, title = '(d) PV Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)
+    
+    plt.subplot(6,1,5)
+    carpetPlotMask(X = y_angle_array[E_HCL], z_min = -45, z_max= 45, title = '(e) Total Thermal/Lighting Optimization', hour_in_month = hour_in_month)
+    plt.ylabel("Hour of the Day",size=14)
+    
+    plt.subplot(6,1,6)   
+    carpetPlotMask(X = y_angle_array[E], z_min = -45, z_max= 45, title = '(f) Net Optimization Including PV', hour_in_month = hour_in_month)
     plt.xlabel("Month of the Year",size=14)
-
+    plt.ylabel("Hour of the Day",size=14)
 
     #space between the y-axes of the plots
     fig.tight_layout()
@@ -294,10 +255,10 @@ def createCarpetPlotSensitivityBuilding(x_angle_array, hour_in_month, a, b, c, d
     
     #setting for the legend
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-    cbar = plt.colorbar(cax=cbar_ax, ticks = [0,15,30,45,60,75,90])
-    cbar.ax.set_yticklabels(['0 (closed)', '15', '30', '45', '60', '75', '90 (open)'])
+    cbar = plt.colorbar(cax=cbar_ax, ticks = [-45,-30,-15,0,15,30,45])
+    cbar.ax.set_yticklabels(['-45 (SW)', '-30', '-15', '0 (S)', '15', '30', '45 (SE)'])
     cbar.solids.set_rasterized(True) 
-    cbart = plt.title("Altitude Angle [deg]", fontsize=14)
+    cbart = plt.title("Azimuth Angle [deg]", fontsize=14)
     cbart.set_position((1.1,1.02))
 #        cbar = plt.colorbar(cax=cbar_ax, ticks=range(0,len(allAngles[0])))
         #cbar.ax.set_yticklabels(AnglesString)
@@ -307,3 +268,4 @@ def createCarpetPlotSensitivityBuilding(x_angle_array, hour_in_month, a, b, c, d
     
                 
     return fig
+        

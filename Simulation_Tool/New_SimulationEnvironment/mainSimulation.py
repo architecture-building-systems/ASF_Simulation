@@ -24,10 +24,11 @@ HOW TO USE:
 - start simulation, for a new loaction an error with ..SunPosition.csv not found, just wait 1 min for GH to create it, then start simulation again
 - after all radiation files are calculated (radiaion_results and radtion_wall) - the number should be equal comb*hour_in_month - close GH to avoid interaction with it 
 
-if LadyBug once has calculated all the radiation data, they will be stored in the folder with the corresponding DataName. 
-Also the Data of the PV producation and radiation hitting the window will be saved and can be loaded again, with the same DataName.
+When LadyBug once has calculated all the radiation data (ASF and Window), they will be stored in the folder with the corresponding 'DataFolderName'. 
+The PV porduction is saved with the corresponding 'filename', this makes it possible to use the same radiaiton data for different combination analysis.
 
-- Calculation without the ASF, set XANGLES and YANGLES equal [0], set numberHorizontal and numberVertical to 0 in the PanelData settings
+Calculation without the ASF: 
+set XANGLES and YANGLES equal [0], set numberHorizontal and numberVertical to 0 in the PanelData settings
 
 
 VARIABLE DEFINITION
@@ -35,7 +36,17 @@ VARIABLE DEFINITION
    geoLocation: set the location which should be evaluated, make sure the correspoding .epw file is saved in the WeatherData folder
    Save: decide weather you want to save (True) or not save (False) the results
    optimization_Types: Decide for which energy demand type, you want to do the optimisation for
-   DataName: choose the name for the stored data
+   DataFolderName: choose the name for the stored data
+
+    'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'],
+    'DataFolderName' : Used for ASF and Window folder names
+    'FileName': Used for PV production files
+    'geoLocation' : 
+    'EPWfile': 
+    'Save' : True,
+    'ShowFig': True,
+    'timePeriod': None} #se   
+   
    XANGLES = set the X-Angles of the ASF = [0, 15, 30, 45, 60, 75, 90] , 0 = closed, 90 = open
    YANGLES = set the Y-Angles of the ASF = [-45, -30,-15,0, 15, 30, 45] 
    NoClusters = option for using different multiple clusters
@@ -82,7 +93,7 @@ from SimulationClass import ASF_Simulation
 
 
 SimulationData = {
-'optimizationTypes' : ['E_total'],
+'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'],
 'DataFolderName' : 'ZH13_49comb', #'ZH13_49comb',
 'FileName': 'ZH13_49comb',
 'geoLocation' : 'Zuerich_Kloten_2013',
@@ -133,71 +144,17 @@ SimulationOptions= {
 'setBackTempH' : 4.,
 'setBackTempC' : 4.,
 'Occupancy' : 'Occupancy_COM.csv',
-'ActuationEnergy' : True}
+'ActuationEnergy' : False}
 
 	
 if __name__=='__main__':
     
     ASFtest = ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
     ASFtest.SolveASF()
+    yearlyData = ASFtest.yearlyData
+    Results = ASFtest.ResultsBuildingSimulation
 
     print ASFtest.yearlyData
 
-    yearlyData = ASFtest.yearlyData
-    results = ASFtest.ResultsBuildingSimulation
-    rad = ASFtest.radiation
-    monthlyData = ASFtest.monthlyData
-    E = ASFtest.monthlyData['E_total']['E']     
-"""    
- 
-
-import pandas as pd
-from pandas import DataFrame
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-
-
-df = results['E_total']
-df1 = df['PV']
-df2 = rad['dirnorrad_Whm2']
-df3 = rad['difhorrad_Whm2']
-df4 = rad['glohorrad_Whm2']
-df5 = df['BestCombKey']
-
-test = plt.figure().gca(projection='3d')
-test.scatter(df.index, df['PV'], df2)
-test.set_xlabel('Index')
-test.set_ylabel('PV')
-test.set_zlabel('directRad')
-plt.show() 
-
-#
-#test = plt.figure().gca(projection='3d')
-#test.scatter(df.index, df3, df2, color='k')
-#test.set_xlabel('Index')
-#test.set_ylabel('diffuseRad')
-#test.set_zlabel('directRad')
-#plt.show() 
-
-test = plt.figure().gca(projection='3d')
-test.scatter(df['PV'], df3, df2, color='r')
-test.set_xlabel('PV')
-test.set_ylabel('diffuseRad')
-test.set_zlabel('directRad')
-plt.show() 
-
-test = plt.figure().gca(projection='3d')
-test.scatter(df.index, df4, df1, color='m')
-test.set_xlabel('index')
-test.set_ylabel('gloRad')
-test.set_zlabel('PV')
-plt.show() 
     
-    
-test = plt.figure().gca(projection='3d')
-test.scatter(df.index, df4, df5, color='y')
-test.set_xlabel('index')
-test.set_ylabel('gloRad')
-test.set_zlabel('Comb')
-plt.show()  
-"""
+   

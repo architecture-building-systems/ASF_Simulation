@@ -279,9 +279,9 @@ if Plot == True:
     
     fig2 = plt.figure(figsize=(6, 6))
 
-    plt.suptitle("Grid Convergence for the Illuminance Calculation", size=16)
+    #plt.suptitle("Grid Convergence for the Illuminance Calculation", size=16)
 
-    plt.style.use('ggplot')
+    plt.style.use('seaborn-white')
     
     #plt.subplot(2,1,2)
     #plt.subplot(1,2,2)   
@@ -292,7 +292,7 @@ if Plot == True:
     
     xindex = [1,2,3,4,5] #[800, 400, 200 , 100 , 50]
     
-    box = plt.boxplot(data, notch= False, patch_artist=True)
+    box = plt.boxplot(data, notch= False, patch_artist=True, whis = [5,95])
     
     plt.xticks(xindex,('800','400', '200','100','50'),size = 14)
     
@@ -307,29 +307,31 @@ if Plot == True:
     
     #plt.tight_layout()
     plt.subplots_adjust(hspace=0.22, wspace=0.54, right=0.98, left=0.08, bottom=0.11)
+    plt.tight_layout()
     plt.grid()
     plt.show()
 
     
-Save = False      
+Save = True      
    
 if Plot == True and Save == True:   
 
     paths['result']= os.path.join(paths['illuminance'], 'Results_' + str(now))
+    paths['thesis'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\PlotThesis'
     
-    os.makedirs(paths['result'])    
-    
-    ill_avg_df.to_csv(paths['result'] + '\\illuminance_gridSizeAnalysis_averageValues.csv')
-    ill_norm_df.to_csv(paths['result'] + '\\illuminance_gridSizeAnalysis_normalisedValues.csv')                                   
+#    os.makedirs(paths['result'])    
+#    
+#    ill_avg_df.to_csv(paths['result'] + '\\illuminance_gridSizeAnalysis_averageValues.csv')
+#    ill_norm_df.to_csv(paths['result'] + '\\illuminance_gridSizeAnalysis_normalisedValues.csv')                                   
     
     
     #create folder to save figures as png:
     paths['png'] =paths['result'] + '\\png'
     
     os.makedirs(paths['png'])
-    fig0.savefig(paths['png'] + '\\figure0' + '.png')
-    fig1.savefig(paths['png'] + '\\figure1' + '.png')
-    fig2.savefig(paths['png'] + '\\figure2' + '.png')
+#    fig0.savefig(paths['png'] + '\\figure0' + '.png')
+#    fig1.savefig(paths['png'] + '\\figure1' + '.png')
+    fig2.savefig(paths['thesis'] + '\\figure2' + '.png')
 
     print '\nResults are saved!'
     

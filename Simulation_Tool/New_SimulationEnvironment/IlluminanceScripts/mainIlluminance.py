@@ -203,7 +203,7 @@ y = GH[0]
 plt.title('Closed ASF')
 plt.plot(x, y, "ro")
 plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
-plt.ylabel('HoneyBee/ Radiance [Lux]', fontsize = 14)
+plt.ylabel('HoneyBee/Radiance [Lux]', fontsize = 14)
 #plt.xticks([0,4000,8000,12000])
 plt.xticks([0,3000,6000,9000,12000])
 plt.yticks([0,3000,6000,9000,12000])
@@ -234,7 +234,7 @@ y = GH[0]
 plt.title('Closed ASF')
 plt.plot(x, y, "ro")
 plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
-plt.ylabel('HoneyBee/ Radiance [Lux]', fontsize = 14)
+plt.ylabel('HoneyBee/Radiance [Lux]', fontsize = 14)
 plt.ylim(0,1500)
 plt.xlim(0,1500)
 plt.xticks([0,300,600,900,1200,1500])
@@ -273,7 +273,7 @@ if Plot == True:
     
     plt.subplot(2,2,1)
     
-    carpetPlotIlluminance(z =illuGH[0], z_min = z_min, z_max= z_max, title = '(a) HoneyBee/ Radiance (closed)')
+    carpetPlotIlluminance(z =illuGH[0], z_min = z_min, z_max= z_max, title = '(a) HoneyBee/Radiance (closed ASF)')
     plt.ylabel("Hour of the Day",size=14)
     
 #    plt.subplot(2,2,2)
@@ -281,11 +281,11 @@ if Plot == True:
     
     
     plt.subplot(2,2,2)
-    carpetPlotIlluminance(z = illuFun[0], z_min = z_min, z_max= z_max, title = "(b) Total Flux Method (closed)")
+    carpetPlotIlluminance(z = illuFun[0], z_min = z_min, z_max= z_max, title = "(b) Total Flux Method (closed ASF)")
     
     
     plt.subplot(2,2,3)
-    carpetPlotIlluminance(z = illuGH[90],  z_min = z_min, z_max= z_max, title = "(c) HoneyBee/ Radiance (open)")
+    carpetPlotIlluminance(z = illuGH[90],  z_min = z_min, z_max= z_max, title = "(c) HoneyBee/Radiance (open ASF)")
     plt.xlabel("Month of the Year",size=14)
     plt.ylabel("Hour of the Day",size=14)
     
@@ -295,7 +295,7 @@ if Plot == True:
 #    
     
     plt.subplot(2,2,4)
-    carpetPlotIlluminance(z = illuFun[90], z_min = z_min, z_max= z_max, title = "(d) Total Flux Method (open)")
+    carpetPlotIlluminance(z = illuFun[90], z_min = z_min, z_max= z_max, title = "(d) Total Flux Method (open ASF)")
     plt.xlabel("Month of the Year",size=14)    
     
     

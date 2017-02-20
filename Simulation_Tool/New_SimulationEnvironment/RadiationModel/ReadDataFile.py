@@ -95,14 +95,15 @@ def LB2():
     paths = {}
     
 
-    paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_49comb_Notcloudy_6_7'
+    #paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_49comb_Notcloudy_6_7'
+    paths['radiation_wall'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\radiation_wall_ZH13_49comb_WinterSunnyDay'
     
     
     SimulationPeriod = {
-    'FromMonth': 7,#7, #1,
-    'ToMonth': 7,#7, #1,
-    'FromDay': 6,#6, #8,
-    'ToDay': 6, #8,
+    'FromMonth': 1,#7, #1,
+    'ToMonth': 1,#7, #1,
+    'FromDay': 8,#6, #8,
+    'ToDay': 8, #8,
     'FromHour': 5,#5
     'ToHour': 20}#20
     
@@ -151,8 +152,8 @@ def LB2():
     
     BuildingData_df = pd.DataFrame(BuilData)        
     BuildingData_df = BuildingData_df.T
-    np.save(os.path.join(pathSave,'BuildingData2.npy'),BuilData) 
-    BuildingData_df.to_csv(os.path.join(pathSave, 'BuildingData2.csv'))
+    np.save(os.path.join(pathSave,'BuildingData3.npy'),BuilData) 
+    BuildingData_df.to_csv(os.path.join(pathSave, 'BuildingData3.csv'))
     
     #return SolarData_df, SolarData #, BuilData, BuildingData_df
     return BuilData, BuildingData_df
@@ -466,7 +467,7 @@ result045Bounce.columns = ['AB = 1', 'AB = 2','AB = 4','AB = 6','AB = 8']
 data,fig = BoxPlot(data =result045Bounce, title = 'Yearly Analysis of Ambient Bounces - Combination 0/45', index = ('AB = 1', 'AB = 2','AB = 4','AB = 6','AB = 8'))
 
 pathSave = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-fig.savefig(os.path.join(pathSave, 'AB.pdf'))
+fig.savefig(os.path.join(pathSave, 'AB.png'))
 #2
 
 #different material values for one combination
@@ -475,9 +476,11 @@ result045Mat.columns = ['Con = 0', 'Con = 0.66', 'Con = 1', 'Win = 0', 'Win = 1'
 data, fig = BoxPlot(data =result045Mat, title = 'Yearly Material Reflectance Analysis - Combination 0/45', index = ('Con = 0', 'Con = 0.66', 'Con = 1', 'Win = 0', 'Win = 1', 'ASF = 0', 'ASF = 1', 'ASF = 0.2'))
 
 pathSave = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-fig.savefig(os.path.join(pathSave, 'MatRef.pdf'))
+fig.savefig(os.path.join(pathSave, 'MaterialReflectance.png'))
 
 """
+
+pathSave = r'C:\Users\Assistenz\Desktop\Mauro\Report\Latex_Templates\MasterThesisTemplate\Images'
 
 #sunny day 6. july
 start = 4460
@@ -486,60 +489,107 @@ end = 4491
 start = 4390
 end = 4490
 
-#3
+#3 Material ASF Context
 
 fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
-fig.subplots_adjust(right=0.8)
+fig.subplots_adjust(right=0.7)
 
 result045_Mat = pd.concat([ASF_0_45_Con1,  ASF_0_45_Con066, ASF_0_45_Con0,  ASF_0_45_ASF1, ASF_0_45_AM, ASF_0_45_ASF0], axis=1) #ASF_0_45_Win1, ASF_0_45_Win0,
-result045_Mat.columns = ['Con = 1', 'Con = 0.66', 'Con = 0', 'ASF = 1', 'ASF = 0.2', 'ASF = 0']
+result045_Mat.columns = ['Context = 1', 'Context = 0.66', 'Context = 0', 'ASF = 1', 'ASF = 0.2', 'ASF = 0']
 
 result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[0], legend = False) 
 
 
-plt.ylabel('Solar Radiaiton [Wh]')
-plt.legend(loc= 2, fontsize = 10)
-
-
-
 
 result045_Mat = pd.concat([ASF_0_45_Con1/ASF_0_45_AM,  ASF_0_45_Con066/ASF_0_45_AM, ASF_0_45_Con0/ASF_0_45_AM, ASF_0_45_ASF1/ASF_0_45_AM, ASF_0_45_ASF0/ASF_0_45_AM, ASF_0_45_AM/ASF_0_45_AM], axis=1)
-result045_Mat.columns = ['Con = 1', 'Con = 0.66', 'Con = 0',  'ASF = 1', 'ASF = 0.2', 'ASF = 0']
+result045_Mat.columns = ['Context = 1', 'Context = 0.66', 'Context = 0',  'ASF = 1', 'ASF = 0.2', 'ASF = 0']
 result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[1], legend = False) 
 
-plt.xlabel('Hour of Day')
-plt.ylabel('Normalized Radiaiton [-]')
 
 plt.style.use('seaborn-white')
 
 axes[1].set_xlabel('Hour of Year')
-axes[0].set_ylabel('Solar Radiaiton [Wh]')
-axes[1].set_ylabel('Normalized Radiaiton [-]')
+axes[0].set_ylabel('Solar Radiation [Wh]',fontsize = 14)
+axes[1].set_ylabel('Normalized Radiation [-]',fontsize = 14)
 axes[0].legend(bbox_to_anchor=(1.05, 0.25), loc='upper left', borderaxespad=0.)
 
-pathSave = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-fig.savefig(os.path.join(pathSave, 'Mataterial.png'))
 
-"""
+fig.savefig(os.path.join(pathSave, 'Material.png'))
+
+
+
+
+
+#3b Material Window Room
+
+fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
+fig.subplots_adjust(right=0.7)
+
+result045_Mat = pd.concat([ASF_0_45_Ro1,  ASF_0_45_Ro0, ASF_0_45_Win1,  ASF_0_45_Win0, ASF_0_45_AM], axis=1) #ASF_0_45_Win1, ASF_0_45_Win0,
+result045_Mat.columns = ['Room = 1', 'Room = 0', 'Window = 1', 'Window = 0' , 'ASF = 0.2']
+
+result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[0], legend = False) 
+
+
+
+
+
+
+result045_Mat = pd.concat([ASF_0_45_Ro1/ ASF_0_45_AM,  ASF_0_45_Ro0/ ASF_0_45_AM, ASF_0_45_Win1/ ASF_0_45_AM,  ASF_0_45_Win0/ ASF_0_45_AM, ASF_0_45_AM/ ASF_0_45_AM], axis=1)
+result045_Mat.columns = ['Room = 1', 'Room = 0', 'Window = 1', 'Window = 0' , 'ASF = 0.2']
+result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[1], legend = False) 
+
+
+plt.style.use('seaborn-white')
+
+axes[1].set_xlabel('Hour of Year', fontsize = 14)
+axes[0].set_ylabel('Solar Radiation [Wh]', fontsize = 14)
+axes[1].set_ylabel('Normalized Radiation [-]', fontsize = 14)
+axes[0].legend(bbox_to_anchor=(1.05, 0.25), loc='upper left', borderaxespad=0.)
+
+
+fig.savefig(os.path.join(pathSave, 'Material2.png'))
+
+
+
+
+
+
 
 #4
 
+start = 4390
+end = 4490
 
 
 
-result045Bounce_2 = pd.concat([ASF_0_45_AB1/ASF_0_45_AB4, ASF_0_45_AB2/ASF_0_45_AB4, ASF_0_45_AB4/ASF_0_45_AB4, ASF_0_45_AB6/ASF_0_45_AB4, ASF_0_45_AB8/ASF_0_45_AB4], axis=1)
-result045Bounce_2.columns = ['AB = 1', 'AB = 2','AB = 4','AB = 6','AB = 8']
-ax2 = result045Bounce_2[start:end].plot(kind='line', title = 'Yearly Analysis of Ambient Bounces - Combination 0/45', grid = True) 
+fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
+fig.subplots_adjust(right=0.8)
 
-plt.xlabel('Hour of Day')
-plt.ylabel('Normalized Radiaiton [-]')
-plt.legend(loc= 2, fontsize = 12)
+result045_Mat = pd.concat([ASF_0_45_AB1, ASF_0_45_AB2, ASF_0_45_AB4, ASF_0_45_AB6, ASF_0_45_AB8], axis=1) 
+result045_Mat.columns = ['AB = 1', 'AB = 2','AB = 4','AB = 6','AB = 8']
+
+result045_Mat[start:end].plot(kind='line',  title = '(a) Absolute Radiation on the ASF for different Ambient Bounces values', grid = True, ax=axes[0], legend = False) 
+
+
+
+result045_Mat = pd.concat([ASF_0_45_AB1/ASF_0_45_AB4, ASF_0_45_AB2/ASF_0_45_AB4, ASF_0_45_AB4/ASF_0_45_AB4, ASF_0_45_AB6/ASF_0_45_AB4, ASF_0_45_AB8/ASF_0_45_AB4], axis=1)
+result045_Mat.columns = ['AB = 1', 'AB = 2','AB = 4','AB = 6','AB = 8']
+result045_Mat[start:end].plot(kind='line',  title = '(b) Normalized Radiation on the ASF for different Ambient Bounces values', grid = True, ax=axes[1], legend = False) 
+
+
+
 plt.style.use('seaborn-white')
 
-fig = ax2.get_figure()
+axes[1].set_xlabel('Hour of Year', fontsize = 14)
+axes[0].set_ylabel('Solar Radiation [Wh]',fontsize = 14)
+axes[1].set_ylabel('Normalized Radiation [-]',fontsize = 14)
+axes[0].legend(bbox_to_anchor=(1.05, 0.25), loc='upper left', borderaxespad=0.)
 
-pathSave = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
-fig.savefig(os.path.join(pathSave, 'AB_LinePlots.pdf'))
+fig.savefig(os.path.join(pathSave, 'AmbientBounces.png'))
+
+
+
 
 
 
@@ -712,7 +762,7 @@ fig.savefig('YearlyCompDaySim.png')
 #fig = ax.get_figure()
 #fig.savefig('/path/to/figure.pdf')
 
-"""
+
 
 
 

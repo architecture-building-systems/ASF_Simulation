@@ -105,40 +105,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
         results_building_simulation[hour_of_year] = {}
         hourlyData[hour_of_year]= {}
-        hourlyData[hour_of_year]['HC'] = []
-        hourlyData[hour_of_year]['H'] = [] 
-        hourlyData[hour_of_year]['C'] = [] 
-        hourlyData[hour_of_year]['L'] = []       
-        hourlyData[hour_of_year]['E_tot'] = []
-        hourlyData[hour_of_year]['E_HCL'] = []
-        hourlyData[hour_of_year]['T_out'] = []
-        hourlyData[hour_of_year]['T_in'] = []
-        hourlyData[hour_of_year]['AngleComb'] = []
         hourlyData[hour_of_year]['PV'] = PV[hour_of_year]
         
-        hourlyData[hour_of_year]['H_elec'] = [] 
-        hourlyData[hour_of_year]['C_elec'] = [] 
-        hourlyData[hour_of_year]['E_tot_elec'] = []
-        hourlyData[hour_of_year]['E_HCL_elec'] = []
-    
-            
-        results_building_simulation[hour_of_year]['E_tot'] = np.nan
-        results_building_simulation[hour_of_year]['E_HCL'] = np.nan
-        results_building_simulation[hour_of_year]['H']  = np.nan
-        results_building_simulation[hour_of_year]['C']  = np.nan
         
-        results_building_simulation[hour_of_year]['E_tot_elec'] = np.nan
-        results_building_simulation[hour_of_year]['E_HCL_elec'] = np.nan
-        results_building_simulation[hour_of_year]['H_elec']  = np.nan
-        results_building_simulation[hour_of_year]['C_elec']  = np.nan
-        
-        results_building_simulation[hour_of_year]['L']  = np.nan
-        results_building_simulation[hour_of_year]['PV']  = np.nan
-        results_building_simulation[hour_of_year]['OptAngles'] = np.nan
-        results_building_simulation[hour_of_year]['BestCombKey'] = np.nan
-        results_building_simulation[hour_of_year]['T_in'] = np.nan
-        results_building_simulation[hour_of_year]['T_out'] = np.nan
-        results_building_simulation[hour_of_year]['RadiationWindow'] = np.nan
     
     tic = time.time()
     #run for every hour of year the RC-Model    
@@ -533,7 +502,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, hourRadiatio
         
     
         #count uncomfortable hours
-        if (T_in > (Tmax + 0.1) or T_in < (Tmin + 0.1)):
+        if T_in  > Tmax * 1.2 or T_in  < Tmin * 0.8:
             print 'occupancy', occupancy['People'][hour_of_year]
             if occupancy['People'][hour_of_year] != 0:               
                 uncomf_hours += 1
