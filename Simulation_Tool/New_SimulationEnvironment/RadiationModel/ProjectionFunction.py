@@ -50,7 +50,9 @@ def RadTilt (I_dirnor, I_dif, ref, theta, panelAlt, sunAlt):
         Rad_tilt = I_dirnor * np.cos(theta) + I_dif * ((1+np.cos(panelAlt))/2) + I_h * ref * ((1- np.cos(panelAlt))/2)
 
     if Rad_tilt < 0:
-        Rad_tilt = 0
+        print 'Yes!'
+        #Rad_tilt = 0
+        Rad_tilt = I_dif * ((1+np.cos(panelAlt))/2) + I_h * ref * ((1- np.cos(panelAlt))/2)
     
     
     return Rad_tilt # W/m2

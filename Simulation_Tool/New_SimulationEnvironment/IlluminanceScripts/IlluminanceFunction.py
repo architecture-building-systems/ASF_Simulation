@@ -26,7 +26,7 @@ def IlluminanceFunction():
     # define path of weather file:
     paths['weather'] = 'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\WeatherData\Zuerich_Kloten_2013.epw' #paths['epw_name']
     
-    paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+    paths['main'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment'
     
     # define paths of subfolders:
     paths['data'] =os.path.join(paths['main'], 'data')
@@ -138,7 +138,7 @@ def IlluminanceFunction():
                 #Illuminance after transmitting through the window 
                 
                 #1 set up
-                Lighting_Utilisation_Factor = 0.7
+                Lighting_Utilisation_Factor = 0.75
                 Lighing_maintencance_factor = 0.9
                 glass_light_transmittance = 0.68 # visible light transmittance window
                 

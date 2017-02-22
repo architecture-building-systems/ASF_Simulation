@@ -200,7 +200,7 @@ plt.subplot(1,2,1)
 
 x= Fun[0]
 y = GH[0]
-plt.title('Closed ASF')
+plt.title('(a) Closed ASF')
 plt.plot(x, y, "ro")
 plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
 plt.ylabel('HoneyBee/Radiance [Lux]', fontsize = 14)
@@ -213,7 +213,7 @@ plt.subplot(1,2,2)
 x1= Fun[90]
 y1 = GH[90]
 
-plt.title('Open ASF')
+plt.title('(b) Open ASF')
 plt.plot(x1, y1, "ko")
 plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
 plt.xticks([0,3000,6000,9000,12000])
@@ -231,7 +231,7 @@ plt.subplot(1,2,1)
 
 x= Fun[0]
 y = GH[0]
-plt.title('Closed ASF')
+plt.title('(a) Closed ASF')
 plt.plot(x, y, "ro")
 plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
 plt.ylabel('HoneyBee/Radiance [Lux]', fontsize = 14)
@@ -246,7 +246,7 @@ plt.subplot(1,2,2)
 x1= Fun[90]
 y1 = GH[90]
 
-plt.title('Open ASF')
+plt.title('(b) Open ASF')
 plt.plot(x1, y1, "ko")
 plt.xlabel('Total Flux Method [Lux]', fontsize = 12)
 plt.ylim(0,1500)
@@ -340,7 +340,7 @@ if Save == True and Plot == True:
     fig1.savefig(paths['png'] + '\\figure1' + '.png')
     fig2.savefig(paths['png'] + '\\figure2' + '.png')
     
-    path = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\PlotMidTerm'
+    path = r'C:\Users\Assistenz\Desktop\Mauro\MasterThesis\Latex_Templates\MasterThesisTemplate\Images'
     fig.savefig(path + '\\figure0' + '.pdf')
     fig1.savefig(path + '\\figure1' + '.pdf')
     fig2.savefig(path + '\\figure2' + '.pdf')

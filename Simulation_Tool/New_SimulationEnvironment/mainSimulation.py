@@ -99,8 +99,7 @@ SimulationData = {
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
-'ShowFig': True,
-'timePeriod': None} #setting for asf_elec_production function
+'ShowFig': True}
 
 #SimulationData = {
 #'optimizationTypes' : ['E_total'],
@@ -113,13 +112,14 @@ SimulationData = {
 #'timePeriod': None}
 
 
+
 ##Set building properties for RC-Model simulator
 BuildingProperties={
 "glass_solar_transmitance" : 0.691 ,
-"glass_light_transmitance" : 0.744 ,
+"glass_light_transmitance" : 0.744 ,#0.68
 "lighting_load" : 11.74 ,
 "lighting_control" : 300,
-"Lighting_Utilisation_Factor" :  0.6,
+"Lighting_Utilisation_Factor" : 0.6,# 0.75,
 "Lighting_MaintenanceFactor" : 0.9,
 "U_em" : 0.2, 
 "U_w" : 1.1,

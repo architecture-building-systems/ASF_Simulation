@@ -411,7 +411,29 @@ class TestMainSimulation(unittest.TestCase):
 																					 
 		self.assertEqual(round(AcuationEnergyASF.yearlyData['E_total']['E'],2),492)
 		self.assertEqual(round(AcuationEnergyASF.yearlyData['E_total']['AE'],2),2.74)
-		self.assertEqual(AcuationEnergyASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],0)
+		self.assertEqual(AcuationEnergyASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],38)
+  
+	def test_MainPaper(self):
+          
+		print 'running AcuationEnergy test'
+		SimulationData= {
+		'optimizationTypes' : ['E_total'],
+		'DataFolderName' : 'ZH13_49comb',
+		'FileName': 'ZH13_49comb',
+		'geoLocation' : 'Zuerich_Kloten_2013',
+		'EPWfile' : 'Zuerich_Kloten_2013.epw',
+		'Save' : False,
+		'ShowFig': False}
+		
+
+		
+		MainASF=ASF_Simulation(SimulationData = SimulationData)
+		MainASF.SolveASF()
+
+																					 
+		self.assertEqual(round(MainASF.yearlyData['E_total']['E'],2),490.42)
+		self.assertEqual(round(MainASF.yearlyData['E_total']['PV'],2),-831)
+		self.assertEqual(MainASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],38)
 		
   
   

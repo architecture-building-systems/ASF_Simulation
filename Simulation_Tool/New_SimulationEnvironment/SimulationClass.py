@@ -21,7 +21,7 @@ class ASF_Simulation(object):
 
 	def __init__(self,
             SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod':None},
+            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},
             PanelData = 
             {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500, "panelGridSize" : 25},
             BuildingData = 
@@ -419,7 +419,7 @@ class ASF_Simulation(object):
 	def createAllPlots(self):
             #create energy- and angle- carpet plots
 		
-		from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles, createCarpetPlotXAngles2, createCarpetPlotYAngles2
+		from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
 		
 		self.fig = {}    
 		
@@ -446,8 +446,6 @@ class ASF_Simulation(object):
 				fig1 = createCarpetPlotXAngles(self.x_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
 				fig2 = createCarpetPlotYAngles(self.y_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
 				
-				fig3 = createCarpetPlotXAngles2(self.x_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
-				fig4 = createCarpetPlotYAngles2(self.y_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
 				
 				self.fig.update({'fig1' : fig1, 'fig2' : fig2})
 		
