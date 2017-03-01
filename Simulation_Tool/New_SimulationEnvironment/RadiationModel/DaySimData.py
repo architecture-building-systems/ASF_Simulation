@@ -3,6 +3,8 @@
 Created on Thu Jan 05 14:31:30 2017
 
 @author: Mauro
+
+Reshape Daysim radiation results so they fit for the simulation framework
 """
 import numpy as np
 import pandas as pd
@@ -113,30 +115,6 @@ def ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_an
     print 'time passed (min): ' + str(round(toc/60.,2))
     print 'Data Sucessfully Saved\n'
         
-    #return  ASF_AVG, ASF_HOY   
+       
     
-    
-
-"""
-project_folder =  r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
-project_name = 'ASF_0_0'
-path_save =  r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\DaySimData'
-start = 0 
-end =  8760
-x_angle = 0 
-y_angle = 0
-
-dataAVG, dataHOY = ShapeData(project_folder, project_name, path_save, start, end, x_angle, y_angle)
-
-jan= {}
-
-SuM = {}
-for hour in range(24):
-    Summe = 0
-    for ii in range(31):
-        jan[ii] = dataHOY[hour+24*ii]
-        Summe += jan[ii][0][0]/31.
-    SuM[hour] = Summe
-    print Summe
-    
-"""
+  

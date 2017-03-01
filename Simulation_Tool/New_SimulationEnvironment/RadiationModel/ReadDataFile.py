@@ -572,7 +572,10 @@ fig.savefig(os.path.join(pathSave, 'MaterialReflectance.png'))
 
 """
 
-pathSave = r'C:\Users\Assistenz\Desktop\Mauro\Report\Latex_Templates\MasterThesisTemplate\Images'
+
+"""
+
+pathSave = r'C:\Users\Assistenz\Desktop\Mauro\MasterThesis\Latex_Templates\MasterThesisTemplate\Images'
 
 #sunny day 6. july
 start = 4460
@@ -583,22 +586,24 @@ end = 4490
 
 #3 Material ASF Context
 
+plt.rcParams['lines.linewidth'] = 1.2
+
 fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
 fig.subplots_adjust(right=0.7)
+plt.style.use('seaborn-white')
 
 result045_Mat = pd.concat([ASF_0_45_Con1,  ASF_0_45_Con066, ASF_0_45_Con0,  ASF_0_45_ASF1, ASF_0_45_AM, ASF_0_45_ASF0], axis=1) #ASF_0_45_Win1, ASF_0_45_Win0,
 result045_Mat.columns = ['Context = 1', 'Context = 0.66', 'Context = 0', 'ASF = 1', 'ASF = 0.2', 'ASF = 0']
 
-result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[0], legend = False) 
+result045_Mat[start:end].plot(kind='line',  title = '(a)', grid = True, ax=axes[0], legend = False) 
 
 
 
 result045_Mat = pd.concat([ASF_0_45_Con1/ASF_0_45_AM,  ASF_0_45_Con066/ASF_0_45_AM, ASF_0_45_Con0/ASF_0_45_AM, ASF_0_45_ASF1/ASF_0_45_AM, ASF_0_45_ASF0/ASF_0_45_AM, ASF_0_45_AM/ASF_0_45_AM], axis=1)
 result045_Mat.columns = ['Context = 1', 'Context = 0.66', 'Context = 0',  'ASF = 1', 'ASF = 0.2', 'ASF = 0']
-result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[1], legend = False) 
+result045_Mat[start:end].plot(kind='line',  title = '(b)', grid = True, ax=axes[1], legend = False) 
 
 
-plt.style.use('seaborn-white')
 
 axes[1].set_xlabel('Hour of Year')
 axes[0].set_ylabel('Solar Radiation [Wh]',fontsize = 14)
@@ -616,11 +621,12 @@ fig.savefig(os.path.join(pathSave, 'Material.png'))
 
 fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
 fig.subplots_adjust(right=0.7)
+plt.style.use('seaborn-white')
 
 result045_Mat = pd.concat([ASF_0_45_Ro1,  ASF_0_45_Ro0, ASF_0_45_Win1,  ASF_0_45_Win0, ASF_0_45_AM], axis=1) #ASF_0_45_Win1, ASF_0_45_Win0,
 result045_Mat.columns = ['Room = 1', 'Room = 0', 'Window = 1', 'Window = 0' , 'ASF = 0.2']
 
-result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[0], legend = False) 
+result045_Mat[start:end].plot(kind='line',   title = '(a)', grid = True, ax=axes[0], legend = False) 
 
 
 
@@ -629,10 +635,10 @@ result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[0], legend = Fa
 
 result045_Mat = pd.concat([ASF_0_45_Ro1/ ASF_0_45_AM,  ASF_0_45_Ro0/ ASF_0_45_AM, ASF_0_45_Win1/ ASF_0_45_AM,  ASF_0_45_Win0/ ASF_0_45_AM, ASF_0_45_AM/ ASF_0_45_AM], axis=1)
 result045_Mat.columns = ['Room = 1', 'Room = 0', 'Window = 1', 'Window = 0' , 'ASF = 0.2']
-result045_Mat[start:end].plot(kind='line',  grid = True, ax=axes[1], legend = False) 
+result045_Mat[start:end].plot(kind='line',   title = '(b)', grid = True, ax=axes[1], legend = False) 
 
 
-plt.style.use('seaborn-white')
+
 
 axes[1].set_xlabel('Hour of Year', fontsize = 14)
 axes[0].set_ylabel('Solar Radiation [Wh]', fontsize = 14)
@@ -658,9 +664,9 @@ end = 4490
 fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))
 fig.subplots_adjust(right=0.8)
 
+plt.style.use('seaborn-white')
 result045_Mat = pd.concat([ASF_0_45_AB1, ASF_0_45_AB2, ASF_0_45_AB4, ASF_0_45_AB6, ASF_0_45_AB8], axis=1) 
 result045_Mat.columns = ['AB = 1', 'AB = 2','AB = 4','AB = 6','AB = 8']
-
 result045_Mat[start:end].plot(kind='line',  title = '(a)', grid = True, ax=axes[0], legend = False) 
 
 
@@ -668,10 +674,6 @@ result045_Mat[start:end].plot(kind='line',  title = '(a)', grid = True, ax=axes[
 result045_Mat = pd.concat([ASF_0_45_AB1/ASF_0_45_AB4, ASF_0_45_AB2/ASF_0_45_AB4, ASF_0_45_AB4/ASF_0_45_AB4, ASF_0_45_AB6/ASF_0_45_AB4, ASF_0_45_AB8/ASF_0_45_AB4], axis=1)
 result045_Mat.columns = ['AB = 1', 'AB = 2','AB = 4','AB = 6','AB = 8']
 result045_Mat[start:end].plot(kind='line',  title = '(b)', grid = True, ax=axes[1], legend = False) 
-
-
-
-plt.style.use('seaborn-white')
 
 axes[1].set_xlabel('Hour of Year', fontsize = 14)
 axes[0].set_ylabel('Solar Radiation [Wh]',fontsize = 14)
@@ -692,13 +694,16 @@ fig.savefig(os.path.join(pathSave, 'AmbientBounces.png'))
 #Result['WLB'][4474:4480].plot(kind='line', title = 'WindowLB', grid = True) 
 
 
+
+pathSave = r'C:\Users\Assistenz\Desktop\Mauro\MasterThesis\Latex_Templates\MasterThesisTemplate\Images'
+
 #sunny day 6. july
 start = 4460
 end = 4491
 
 Result = {}
 
-fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(16, 8))
+fig, axes = plt.subplots(nrows=1, ncols=5, figsize=(18, 5))
 
 fig.subplots_adjust(right=0.8)
 plt.style.use('seaborn-white')
@@ -707,88 +712,126 @@ plt.rcParams['axes.grid'] = True
 plt.rcParams['axes.grid.which'] = 'both'
 plt.rcParams['xtick.minor.visible'] = True
 
+plt.rcParams['lines.linewidth'] = 1.
+label_size = 10
+plt.rcParams['xtick.labelsize'] = label_size 
+plt.rcParams['ytick.labelsize'] = label_size 
 
+label_size = 12
+plt.rcParams['axes.labelsize'] = 14 
+plt.rcParams['axes.titlesize'] = 13
 
 
 Result['00'] = pd.concat([ASF_0_0_AM,  ASF_0_0_All0, SolarData_df['00']], axis=1)
 Result['00'].columns = ['ASF0/0_AM','ASF0/0_All0','LB-0/0']
-Result['00'][start:end].plot(kind='line', title = '(a) ASF 0/0', grid = True, ax=axes[0,1], legend = False)
+Result['00'][start:end].plot(kind='line', title = '(b) ASF 0/0', grid = True, ax=axes[1], legend = False, color=['b','g','r'])
 
 Result['045'] = pd.concat([ASF_0_45_AM, ASF_0_45_All0, SolarData_df['045']], axis=1)
 Result['045'].columns = ['ASF0/45_AM', 'ASF0/45_All0','LB-0/45']
-Result['045'][start:end].plot(kind='line', title = '(b) ASF 0/45', grid = True, ax=axes[0,0], legend = False)
+Result['045'][start:end].plot(kind='line', title = '(a) ASF 0/45', grid = True, ax=axes[0], legend = False, color=['b','g','r'])
 
 Result['0-45'] = pd.concat([ASF_0_Minus45_AM, ASF_0_Minus45_All0, SolarData_df['0-45']], axis=1)
 Result['0-45'].columns = ['ASF0/-45_AM',  'ASF0/-45_All0','LB-0/-45']
-Result['0-45'][start:end].plot(kind='line', title = '(c) ASF 0/-45', grid = True, ax=axes[0,2], legend = False)
+Result['0-45'][start:end].plot(kind='line', title = '(c) ASF 0/-45', grid = True, ax=axes[2], legend = False, color=['b','g','r'])
 
 
 Result['450'] = pd.concat([ ASF_45_0_AM, ASF_45_0_All0,  SolarData_df['450']] , axis=1)
 Result['450'].columns = ['ASF45/0_AlbedoMix','ASF45/0_All0',  'LB-45/0']
-Result['450'][start:end].plot(kind='line', title = '(d) ASF 45/0', grid = True, ax=axes[0,3], legend = False)
+Result['450'][start:end].plot(kind='line', title = '(d) ASF 45/0', grid = True, ax=axes[3], legend = False, color=['b','g','r'])
 
 
 
 Result['900'] = pd.concat([ ASF_90_0_AM, ASF_90_0_All0,  SolarData_df['900']] , axis=1)
 Result['900'].columns = ['DaySim - Ref = 0.2' ,'DaySim - Ref = 0', 'LadyBug - Ref = 0']
-Result['900'][start:end].plot(kind='line', title = '(e) ASF 90/0', grid = True, ax=axes[0,4], legend = False)
+Result['900'][start:end].plot(kind='line', title = '(e) ASF 90/0', grid = True, ax=axes[4], legend = False, color=['b','g','r'])
+
+
+axes[0].set_ylabel('Solar Radiation [Wh]')
+axes[0].set_xlabel('Hour of Year')
+axes[1].set_xlabel('Hour of Year')
+axes[2].set_xlabel('Hour of Year')
+axes[3].set_xlabel('Hour of Year')
+axes[4].set_xlabel('Hour of Year')
+axes[0].set_xticks(range(4460,4500,10))
+axes[1].set_xticks(range(4460,4500,10))
+axes[2].set_xticks(range(4460,4500,10))
+axes[3].set_xticks(range(4460,4500,10))
+axes[4].set_xticks(range(4460,4500,10))
+
+axes[4].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0.)
+
+
+fig.savefig(os.path.join(pathSave, 'DaySimASF.png'))
+
+fig, axes = plt.subplots(nrows=1, ncols=5, figsize=(18, 5))
+
+fig.subplots_adjust(right=0.8)
+plt.style.use('seaborn-white')
+
+plt.rcParams['axes.grid'] = True
+plt.rcParams['axes.grid.which'] = 'both'
+plt.rcParams['xtick.minor.visible'] = True
+
+plt.rcParams['lines.linewidth'] = 1.
+label_size = 10
+plt.rcParams['xtick.labelsize'] = label_size 
+plt.rcParams['ytick.labelsize'] = label_size 
+
+label_size = 12
+plt.rcParams['axes.labelsize'] = 14 
+plt.rcParams['axes.titlesize'] = 13
+
+
 
 Result['W00'] = pd.concat([Win_0_0,  Win_0_0_All0, BuildingRad2_df['00']], axis=1)
 Result['W00'].columns = ['Win0/0_AM','Win0/0_All0', 'LB']
-Result['W00'][start:end].plot(kind='line', title = '(f) Window 0/0', grid = True, ax=axes[1,1], legend = False) 
+Result['W00'][start:end].plot(kind='line', title = '(b) Window 0/0', grid = True, ax=axes[1], legend = False, color=['b','g','r']) 
 
 
 Result['W045'] = pd.concat([Win_0_45, Win_0_45_All0, BuildingRad2_df['045']], axis=1)
 Result['W045'].columns = ['Win0/45_AM', 'Win0/45_All0', 'LB']
-Result['W045'][start:end].plot(kind='line', title = '(g) Window 0/45', grid = True, ax=axes[1,0], legend = False) 
+Result['W045'][start:end].plot(kind='line', title = '(a) Window 0/45', grid = True, ax=axes[0], legend = False, color=['b','g','r']) 
 
 
 Result['W0-45'] = pd.concat([Win_0_Minus45, Win_0_Minus45_All0, BuildingRad2_df['0-45']], axis=1)
 Result['W0-45'].columns = ['Win0/-45_AM',  'Win0/-45_All0', 'LB']
-Result['W0-45'][start:end].plot(kind='line', title = '(h) Window 0/-45', grid = True, ax=axes[1,2], legend = False) 
+Result['W0-45'][start:end].plot(kind='line', title = '(c) Window 0/-45', grid = True, ax=axes[2], legend = False, color=['b','g','r']) 
 
 
 
 Result['W450'] = pd.concat([ Win_45_0, Win_45_0_All0, BuildingRad2_df['450']] , axis=1)
 Result['W450'].columns = ['Win45/0_AlbedoMix','Win45/0_All0', 'LB']
-Result['W450'][start:end].plot(kind='line', title = '(i) Window 45/0', grid = True, ax=axes[1,3], legend = False) 
+Result['W450'][start:end].plot(kind='line', title = '(d) Window 45/0', grid = True, ax=axes[3], legend = False, color=['b','g','r']) 
 
 
 
 Result['W900'] = pd.concat([ Win_90_0, Win_90_0_All0, BuildingRad2_df['900']] , axis=1)
-Result['W900'].columns = ['DaySim - Ref = 0.2' ,'DaySim - Ref = 0', 'LadyBug - Ref = 0']
-Result['W900'][start:end].plot(kind='line', title = '(j) Window 90/0', grid = True, ax=axes[1,4], legend = False) 
+Result['W900'].columns = ['DaySim - Ref = 0.2' ,'DaySim - Ref = 0', 'Ladybug - Ref = 0']
+Result['W900'][start:end].plot(kind='line', title = '(e) Window 90/0', grid = True, ax=axes[4], legend = False, color=['b','g','r']) 
 
 
 
 
 
-#plt.xlabel('Hour of Year')
-#plt.legend(loc= 2, fontsize = 12)
+axes[0].set_ylabel('Solar Radiation [Wh]')
+axes[0].set_xlabel('Hour of Year')
+axes[1].set_xlabel('Hour of Year')
+axes[2].set_xlabel('Hour of Year')
+axes[3].set_xlabel('Hour of Year')
+axes[4].set_xlabel('Hour of Year')
+axes[0].set_xticks(range(4460,4500,10))
+axes[1].set_xticks(range(4460,4500,10))
+axes[2].set_xticks(range(4460,4500,10))
+axes[3].set_xticks(range(4460,4500,10))
+axes[4].set_xticks(range(4460,4500,10))
 
-
-axes[0,0].set_ylabel('Solar Radiation [Wh]')
-axes[1,0].set_ylabel('Solar Radiation [Wh]')
-axes[1,0].set_xlabel('Hour of Year')
-axes[1,1].set_xlabel('Hour of Year')
-axes[1,2].set_xlabel('Hour of Year')
-axes[1,3].set_xlabel('Hour of Year')
-axes[1,4].set_xlabel('Hour of Year')
-axes[1,0].set_xticks(range(4460,4500,10))
-axes[1,1].set_xticks(range(4460,4500,10))
-axes[1,2].set_xticks(range(4460,4500,10))
-axes[1,3].set_xticks(range(4460,4500,10))
-axes[1,4].set_xticks(range(4460,4500,10))
-axes[0,0].set_xticks(range(4460,4500,10))
-axes[0,1].set_xticks(range(4460,4500,10))
-axes[0,2].set_xticks(range(4460,4500,10))
-axes[0,3].set_xticks(range(4460,4500,10))
-axes[0,4].set_xticks(range(4460,4500,10))
-axes[0,4].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0.)
+axes[4].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0.)
 #axes[1,4].legend(bbox_to_anchor=(1.05, 0), loc='upper left', borderaxespad=0.)
 
-fig.savefig('RadiationDaySim2.pdf')
-fig.savefig('RadiationDaySim2.png')
+fig.savefig(os.path.join(pathSave, 'DaysimWindow.png'))
+
+
+"""
 
 start = 4460
 end = 4491

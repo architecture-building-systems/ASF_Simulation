@@ -165,8 +165,8 @@ def runBuildingSimulation(geoLocation, paths, optimization_Types, building_data,
     
    
     
-    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_Winter_15_2.npy').item()
-    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_Winter_15_2.npy').item()
+    PV = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\PV_Final.npy').item()
+    BuildingRadiationData_HOY = np.load(r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel\Window_Final.npy').item()
     
     print PV
     

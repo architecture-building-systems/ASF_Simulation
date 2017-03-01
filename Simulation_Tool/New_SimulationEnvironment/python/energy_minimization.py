@@ -21,15 +21,15 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     from optimzeTemperatureFunction import optimzeTemp, checkEqual
     from ActuationEnergyCalc import ActuationDemand
     
-    setBackTempH = SimulationOptions['setBackTempH']
-    setBackTempC = SimulationOptions['setBackTempC']
     
     print 'H', BuildingProperties['COP_H']
     print 'C', BuildingProperties['COP_C']
-    #print PV
+ 
     
     #Temperature value, to start the simulation with
-    T_in = 20
+    T_in = SimulationOptions['Temp_start']
+    setBackTempH = SimulationOptions['setBackTempH']
+    setBackTempC = SimulationOptions['setBackTempC']
     
     Tmax = BuildingProperties['theta_int_c_set'] 
     Tmin = BuildingProperties['theta_int_h_set']
@@ -44,7 +44,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     #outside Temperatur
     T_out = weatherData['drybulb_C']
     
-    #Values form the HoNR building
     
     #additional internal gains
     Q_equipment = 4 * roomFloorArea #4 W/m2 * FloorArea
@@ -123,7 +122,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         Data_Lighting_HOY[hour_of_year] =  {}   
         Data_T_in_HOY[hour_of_year] = {}
         Actuation[hour_of_year] = {}
-        
         Data_H_elec[hour_of_year] = {}
         Data_C_elec[hour_of_year] = {}
         E_tot_elec[hour_of_year] = {}
@@ -152,21 +150,14 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))
         for comb in range(0, NumberCombinations):
-            
-            
-            #print "Rad", BuildingRadiationData_HOY[hour_of_year][comb]
+    
                     
             Q_internal = (Q_human[hour_of_year] + Q_equipment)
-            
-            #print "HOY" + str(hour_of_year) + "comb" + str(comb) + "Bui" + str(BuildingRadiationData_HOY[hour_of_year][comb])
-            
             Office.solve_building_energy(phi_int = Q_internal, #internal heat gains, humans and equipment [W]
                                          phi_sol = BuildingRadiationData_HOY[hour_of_year][comb], #W
                                          theta_e = T_out[hour_of_year], 
                                          theta_m_prev = T_in)
         
-                    
-            
             
             #Calculate Illuminance in the room. 
             fenstIll=BuildingRadiationData_HOY[hour_of_year][comb]*Ill_Eq[0] #Lumens.  Note that the constant has been ignored because it should be 0
@@ -180,7 +171,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             
             
             #save all combination results for one HOY
-            
             Data_Lighting_HOY[hour_of_year][comb] = Office.lighting_demand # Watts
             Data_HC_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac #achtung heating und cooling 
             Data_T_in_HOY[hour_of_year][comb] = Office.theta_m
@@ -223,18 +213,13 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         hourlyData[hour_of_year]['HC'] = Data_HC_HOY[hour_of_year]
         hourlyData[hour_of_year]['H'] = Data_Heating_HOY[hour_of_year]
         hourlyData[hour_of_year]['H_elec'] = Data_H_elec[hour_of_year]
-
         hourlyData[hour_of_year]['C'] = Data_Cooling_HOY[hour_of_year]    
         hourlyData[hour_of_year]['C_elec'] =Data_C_elec[hour_of_year]
-
         hourlyData[hour_of_year]['L'] = Data_Lighting_HOY[hour_of_year]       
-
         hourlyData[hour_of_year]['E_tot'] = E_tot[hour_of_year]
         hourlyData[hour_of_year]['E_tot_elec'] = E_tot_elec[hour_of_year]
-
         hourlyData[hour_of_year]['E_HCL'] = E_HCL[hour_of_year]
         hourlyData[hour_of_year]['E_HCL_elec'] = E_HCL_elec[hour_of_year]
-
         hourlyData[hour_of_year]['T_out'] =T_out[hour_of_year]
         hourlyData[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year]
         hourlyData[hour_of_year]['AngleComb'] = combinationAngles
@@ -512,10 +497,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
     
         #count uncomfortable hours
-        # with 20 Precent range
+        # with 10 Precent range
         UncomfHour = None
         if occupancy['People'][hour_of_year] != 0: 
-            if T_in  > Tmax * 1.2 or T_in  < Tmin * 0.8:
+            if T_in  > Tmax * 1.1 or T_in  < Tmin * 0.9:
                 uncomf_hours += 1
                 uncomf_hours_HOY.append(hour_of_year)
                 UncomfHour = True
@@ -529,11 +514,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         results_building_simulation[hour_of_year]['HC']  = hourlyData[hour_of_year]['HC'][BestComb]
         results_building_simulation[hour_of_year]['H']  = hourlyData[hour_of_year]['H'][BestComb]
         results_building_simulation[hour_of_year]['C']  = hourlyData[hour_of_year]['C'][BestComb]
-        
         results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
         results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
         results_building_simulation[hour_of_year]['AE'] = hourlyData[hour_of_year]['AE'][BestComb]        
-        
         results_building_simulation[hour_of_year]['BestCombKey'] = BestCombKey
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
@@ -543,14 +526,13 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         BuildingSimulationELEC[hour_of_year]['E_HCL_elec'] =hourlyData[hour_of_year]['E_HCL_elec'][BestComb]
         BuildingSimulationELEC[hour_of_year]['H_elec']  = hourlyData[hour_of_year]['H_elec'][BestComb]
         BuildingSimulationELEC[hour_of_year]['C_elec']  = hourlyData[hour_of_year]['C_elec'][BestComb]
-        
         BuildingSimulationELEC[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
         BuildingSimulationELEC[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
-    
         BuildingSimulationELEC[hour_of_year]['BestCombKey'] = BestCombKey
         BuildingSimulationELEC[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         BuildingSimulationELEC[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
         BuildingSimulationELEC[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year][BestComb] #W
+        BuildingSimulationELEC[hour_of_year]['AE'] = hourlyData[hour_of_year]['AE'][BestComb]
         
 
         
@@ -571,7 +553,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             
     
     #store results of the best angle combinations in DataFrame   
-    Building_Simulation_df= pd.DataFrame(results_building_simulation).T 
+    BuildingSimulation_df= pd.DataFrame(results_building_simulation).T 
     BuildingSimulationELEC_df = pd.DataFrame(BuildingSimulationELEC).T
     hourlyData_df = pd.DataFrame(hourlyData)
      
@@ -579,6 +561,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     print "uncomfortable Hours: ", uncomf_hours
     
     
-    return  hourlyData_df, Building_Simulation_df, BuildingSimulationELEC_df
+    return  hourlyData_df, BuildingSimulation_df, BuildingSimulationELEC_df
     
     

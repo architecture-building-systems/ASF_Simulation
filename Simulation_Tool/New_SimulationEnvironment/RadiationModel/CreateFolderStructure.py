@@ -5,7 +5,7 @@ Created on Tue Jan 03 10:49:26 2017
 @author: Mauro
 """
 
-import shutil
+
 import sys, os
 import json
 import numpy as np
@@ -13,22 +13,27 @@ import csv
 import time
 
 """
-open SensorPoints.GH file
+Create Folder structure for the DAYSIM radiation calculation
+
+-open SensorPoints.GH file
+
 """
 
 
-def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
+def CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelDat, BuildingData, paths):
     
     print '\ncreate Folder: ', project_name
 
-    paths = {}
-    paths['folder'] = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
-    paths['project'] = os.path.join(paths['folder'], project_name)
-    paths['input'] = os.path.join(paths['project'], 'input')
-    paths['output'] = os.path.join(paths['project'], 'output')
-    paths['py2radiance_data'] = os.path.join(paths['input'],'py2radiance_data')
-    paths['source'] = source
-    paths['Simulation_Environment'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment' 
+    print paths
+    Project = os.path.join(paths['folder'], project_name)
+    Input = os.path.join(Project, 'input')
+    Output = os.path.join(Project, 'output')
+    
+    paths.update({'project': Project ,
+                    'input': Input,
+                    'output': Output})
+    #paths['py2radiance_data'] = os.path.join(paths['input'],'py2radiance_data')
+    
     
     comb_data={}
     with open(os.path.join(paths['Simulation_Environment'],'comb.json'),'w') as f:
@@ -42,27 +47,9 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
         os.makedirs(paths['project'])
         os.makedirs(paths['input'])
         os.makedirs(paths['output'])
-        os.makedirs(paths['py2radiance_data'])
+        #os.makedirs(paths['py2radiance_data'])
     
     
-#        src= os.path.join(paths['source'],'Room.stl')
-#        shutil.copy(src, paths['input'])
-#        
-#        src= os.path.join(paths['source'], 'Window.stl')
-#        shutil.copy(src, paths['input'])
-#        
-#        src= os.path.join(paths['source'],'Context.stl')
-#        shutil.copy(src, paths['input'])
-        
-#        src= os.path.join(paths['source'], 'base.rad')
-#        shutil.copy(src, paths['input'])
-#        
-#        
-#        src= os.path.join(os.path.join(paths['source'], 'py2radiance_data'), 'command.txt')
-#        shutil.copy(src, paths['py2radiance_data'])
-#        
-#        src= os.path.join(os.path.join(paths['source'], 'py2radiance_data'), 'geometry.rad')
-#        shutil.copy(src, paths['py2radiance_data'])
         
         
         with open(os.path.join(paths['input'],'background_geometries.csv'), 'wb') as csvfile:
@@ -70,38 +57,20 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
             writer.writeheader()
-            writer.writerow({'name': project_name , 'mat_name': '0_6', 'mat_value': MaterialDict['ASF']})
-            writer.writerow({'name': 'Window', 'mat_name': '0_7', 'mat_value': MaterialDict['Window']})
-            writer.writerow({'name': 'Room', 'mat_name': '0_8', 'mat_value': 0.2})
-            writer.writerow({'name': 'Context', 'mat_name': '0_8', 'mat_value': MaterialDict['Context']})
+            writer.writerow({'name': project_name , 'mat_name': '0_name', 'mat_value': MaterialDict['ASF']})
+            writer.writerow({'name': 'Window', 'mat_name': '0_name', 'mat_value': MaterialDict['Window']})
+            writer.writerow({'name': 'Room', 'mat_name': '0_name', 'mat_value': MaterialDict['Room']})
+            writer.writerow({'name': 'Context', 'mat_name': '0_name', 'mat_value': MaterialDict['Context']})
     
-        PanelData = {
+        PanelData.update({
         "XANGLES": x_angle,
-        "YANGLES" : y_angle,
-        "NoClusters":1,
-        "numberHorizontal":6,
-        "numberVertical":9,
-        "panelOffset":400,
-        "panelSize":400,
-        "panelSpacing":500,
-        "panelGridSize" : 25}
+        "YANGLES" : y_angle})
         
-        BuildingData = {
-        "room_width": 4900, 
-        "room_height":3100, 
-        "room_depth":7000, 
-        "glazing_percentage_w": 0.92,
-        "glazing_percentage_h": 0.97, 
-        "WindowGridSize": 200,
-        "BuildingOrientation" : 0} #building orientation of 0 corresponds to south facing, 90 is east facing, -90 is west facing
-
        
         comb_data={
         "x_angle":x_angle,
-        "y_angle":y_angle,
-        "Hour": 12,
-        "Day":  1,
-        "Month": 1}
+        "y_angle":y_angle
+        }
         
         #Save parameters to be imported into grasshopper
         with open('panel.json','w') as f:
@@ -135,38 +104,24 @@ def CreateFolder(x_angle, y_angle, MaterialDict, source, project_name):
         'Folder Already Exists!'
 
 
-def STLFolder(x_angle, y_angle):
+def STLFolder(x_angle, y_angle, PanelData, BuildingData, paths):
        
     print '\ncreate Folder: ', project_name
 
-    paths = {}
-    paths['folder'] = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
-    paths['STL'] = os.path.join(paths['folder'], 'STL')
-    paths['Simulation_Environment'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment' 
+    
+    
+    paths.update({'STL' : os.path.join(paths['folder'], 'STL')})
+    
     
      
     if not os.path.isdir(paths['STL']):
         os.makedirs(paths['STL'])
-      
-    PanelData = {
+        
+    PanelData.update({
     "XANGLES": x_angle,
-    "YANGLES" : y_angle,
-    "NoClusters":1,
-    "numberHorizontal":6,
-    "numberVertical":9,
-    "panelOffset":400,
-    "panelSize":400,
-    "panelSpacing":500,
-    "panelGridSize" : 25}
+    "YANGLES" : y_angle})
+      
     
-    BuildingData = {
-    "room_width": 4900, 
-    "room_height":3100, 
-    "room_depth":7000, 
-    "glazing_percentage_w": 0.92,
-    "glazing_percentage_h": 0.97, 
-    "WindowGridSize": 200,
-    "BuildingOrientation" : 0} #building orientation of 0 corresponds to south facing, 90 is east facing, -90 is west facing
    
     comb_data={
     "x_angle":x_angle,
@@ -212,16 +167,38 @@ def STLFolder(x_angle, y_angle):
 #YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]
 
 XANGLES = [3]
-YANGLES = [-7]
+YANGLES = [-1]
 
 # set material reflectance valcue of ASF and Window (from 0 to 1)
 MaterialDict = {
 'ASF': 0.2,
 'Window': 0.2,
-'Context' : 0.2}
+'Context' : 0.2,
+'Room': 0.2}
 
-source = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization\ASF_0_0_AM\input' 
-path_project = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'   
+
+PanelData = {
+"NoClusters":1,
+"numberHorizontal":6,
+"numberVertical":9,
+"panelOffset":400,
+"panelSize":400,
+"panelSpacing":500,
+"panelGridSize" : 25}
+
+BuildingData = {
+"room_width": 4900, 
+"room_height":3100, 
+"room_depth":7000, 
+"glazing_percentage_w": 0.92,
+"glazing_percentage_h": 0.97, 
+"WindowGridSize": 200,
+"BuildingOrientation" : 0} #building orientation of 0 corresponds to south facing, 90 is east facing, -90 is west facing
+
+paths = {}
+paths['folder'] = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
+paths['Simulation_Environment'] = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment' 
+
 
 for x_angle in XANGLES:
     for y_angle in YANGLES:
@@ -229,9 +206,10 @@ for x_angle in XANGLES:
         #1 set a project name        
         project_name = '2ASF_' + str(x_angle) + '_' + str(y_angle)
         
+        
         #2 create STL files and folder
-        #STLFolder(x_angle, y_angle)
+        #STLFolder(x_angle, y_angle, PanelData, BuildingData, paths)
         
         #3 create Folder structure for all ASF combiantions
-        CreateFolder(x_angle, y_angle, MaterialDict, source, project_name)
+        CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelData, BuildingData, paths)
         

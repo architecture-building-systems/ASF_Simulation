@@ -39,14 +39,7 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
             x_angle_array = np.append(x_angle_array, comb_array[jj][0])
             y_angle_array = np.append(y_angle_array, comb_array[jj][1])
             
-#    x_angle = {}
-#    y_angle = {}        
-#    
-#    for HOY in TotalHOY:    
-#        for  jj in range(0,len(comb_array)):
-#        
-#            x_angle[HOY + jj] = x_angle_array[jj]
-#            y_angle[HOY + jj] = y_angle_array[jj]
+
     
     #create DataFrame with the evaluated keys        
     BestKey = key_dict
@@ -60,17 +53,14 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
     E = np.array(Building_Simulation_df['E_tot'] *0.001) 
     PV =np.array(Building_Simulation_df['PV'] *0.001) 
     E_HCL = np.array(Building_Simulation_df['E_HCL'] *0.001)
-    
-    """
-    
+    AE = np.array(Building_Simulation_df['AE'] *0.001)
     H_elec = np.array(Building_Simulation_df['H_elec'] *0.001)
     C_elec = np.array(Building_Simulation_df['C_elec'] *0.001)
     E_elec = np.array(Building_Simulation_df['E_tot_elec'] *0.001)
     E_HCL_elec = np.array(Building_Simulation_df['E_HCL_elec'] *0.001)
-    
-    """
-    
+
     HourlyTotalData = {}
+    HourlyTotalDataELEC = {}
     
     #in kWh for all analysed hours
     HourlyTotalData['H'] = H.sum()
@@ -79,15 +69,19 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
     HourlyTotalData['E'] = E.sum()
     HourlyTotalData['E_HCL'] = E_HCL.sum()
     HourlyTotalData['PV'] = PV.sum()
+    HourlyTotalData['AE'] = AE.sum()
     
-    """
-    HourlyTotalData['H_elec'] = H_elec.sum()
-    HourlyTotalData['C_elec'] = C_elec.sum()
-    HourlyTotalData['E_elec'] = E_elec.sum()
-    HourlyTotalData['E_HCL_elec'] = E_HCL_elec.sum()
-    """
-            
-    return BestKey, x_angle_array, y_angle_array, HourlyTotalData
+    
+    
+    HourlyTotalDataELEC['H_elec'] = H_elec.sum()
+    HourlyTotalDataELEC['C_elec'] = C_elec.sum()
+    HourlyTotalDataELEC['E_elec'] = E_elec.sum()
+    HourlyTotalDataELEC['E_HCL_elec'] = E_HCL_elec.sum()
+    HourlyTotalDataELEC['L'] = L.sum()
+    HourlyTotalDataELEC['PV'] = PV.sum()
+    HourlyTotalDataELEC['AE'] = AE.sum()
+        
+    return BestKey, x_angle_array, y_angle_array, HourlyTotalData, HourlyTotalDataELEC
     
    
     

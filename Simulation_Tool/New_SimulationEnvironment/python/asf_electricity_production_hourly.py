@@ -19,7 +19,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                                    
     import sys,os                               
     # add python_path to system path, so that all files are available:
-    sys.path.insert(0, paths['aux_files'])                               
+                          
   
     import json
     import numpy as np
@@ -39,23 +39,13 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     filename = ('RadiationResults')
     filetype = ('.csv')
     
-    # load irradiance lookup table
-    # load('curr_model_submod_lookup2')
-    # load('curr_model_submod_lookup2_constTemp')
-    #load('C:/Users/Assistenz/ASF_Simulation/Python/curr_model_submod_lookup.npy','r')
+    
     curr_model_submod_lookup = np.load(os.path.join(lookup_table_path, 'curr_model_submod_lookup.npy'),'r')
     pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
-    #curr_model_submod_lookup2 = curr_model_submod_lookup3(mslice[:], 9)
-    #print 'points', pointsPerLookupCurve
-    #print curr_model_submod_lookup   
-
+   
     
     
-    # load weather file data corresponding to Simulation Data:
-    with open(os.path.join(geo_path,'SunTrackingData.json'), 'r') as fp:
-        SunTrackingData = json.load(fp)
-        fp.close()
-        
+    
         
     #simulation for 1 hour
     
@@ -350,10 +340,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         print 'iteration number: ' + str(SimulationNumber + 1) + ' of ' + str(numASFit)
     
     
-    PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'Hour' : hour, 'Day': day, 'Month':monthi}
+    PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr,  'Hour' : hour, 'Day': day, 'Month':monthi}
     np.save(os.path.join(save_results_path,'HourlyPV_electricity_results_'  + DataNamePV + '.npy'),PV_electricity_results)    
     
-    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'hour_in_month': SunTrackingData['HoursInMonthTracking'], 'month':  SunTrackingData['MonthTracking'],'days_per_month':days_per_month, 'Hour': hour, 'Day': day, 'Month':monthi}
+    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'Hour': hour, 'Day': day, 'Month':monthi}
     np.save(os.path.join(save_results_path,'HourlyPV_detailed_results_' + DataNamePV + '.npy'),PV_detailed_results)    
     
    

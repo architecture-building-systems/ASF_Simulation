@@ -89,6 +89,9 @@ SunAngles['Azimuth'] = SunAngles['Azimuth']-180
 
 TotalHOY = SunAngles['HOY'].tolist()
 
+"""
+
+
 RadiationTilt = {}
 RadiationASF = {}
 RadiationWindow = {}
@@ -131,8 +134,8 @@ xArray= 6 # Number of Panels in x direction
 yArray= 9 # number of rows
 
 
-XANGLES = [0,45,90]
-YANGLES = [-45,0,45]
+XANGLES = [0,15,30,45,60,75,90]
+YANGLES = [-45,-30,-15,0,15,30,45]
 
 
 
@@ -142,14 +145,14 @@ ShadingCase = ['1','2','3']
 
 TimePeriod1 = range(170,201)
 #TimePeriod2 = range(175,184)
-#TimePeriod2 = range(4460, 4486)
-TimePeriod2 = range(4465, 4485)
+TimePeriod2 = range(4460, 4486)
+#TimePeriod2 = range(4465, 4485)
 
-TimePeriod = TimePeriod2 #+ TimePeriod1 
+TimePeriod = TimePeriod2 + TimePeriod1 
 
 print TimePeriod
 
-showFig = True
+showFig = False
 
 for HOY in TimePeriod:
     
@@ -273,40 +276,6 @@ for HOY in TimePeriod:
     
 				WindowArea = room_width/1000.0 * room_height/1000.0 * gpH * gpW
 				ASFArea = PanelNum * PanelSize**2/(10**(6))
-				
-#    				gap = panelSpacing - 2* h
-#    
-#    				X=[-panelSpacing/2, gap/2]
-#    				Y=[0, WindowArea/ASFArea]
-#                    
-#    				#Aquire best fit vector of coefficients. 1st order
-#    				Eq = np.polyfit(X,Y,1)
-#                    
-#    				print 'equation:', Eq
-#                    
-#    				a = Eq[0]
-#    				b = Eq[1]    
-#    				
-#    				ReductionASF = a * (abs(DeltaX)+ abs(DeltaY)) + b #
-#        
-#    				if ReductionASF > WindowArea/ASFArea:
-#    					ReductionASF = WindowArea/ASFArea
-#         
-#        				#only diffuse radiation
-#        				WindowTilt[HOY][str(x_angle) + str(y_angle)] = RadTilt (I_dirnor = radiation['dirnorrad_Whm2'][HOY], I_dif = radiation['difhorrad_Whm2'][HOY], 
-#                                                                                    ref = reflectance, theta = np.nan, panelAlt = 90, sunAlt = SunAngles['Altitude'][ind])    
-#        				RadiationWindow[HOY][str(x_angle) + str(y_angle)] =  WindowArea * WindowTilt[HOY][str(x_angle) + str(y_angle)] * 0.001  # area in m2 * Wh/m2 in KWh
-#    				
-#    				elif ReductionASF < 0:
-#    					ReductionASF = 0	
-#    					RadiationWindow[HOY][str(x_angle) + str(y_angle)] = (WindowArea - (ASFArea * ReductionASF)) * WindowTilt[HOY][str(x_angle) + str(y_angle)] * 0.001  # area in m2 * Wh/m2 in KWh
-#    				else:
-#    					RadiationWindow[HOY][str(x_angle) + str(y_angle)] = (WindowArea - (ASFArea * ReductionASF)) * WindowTilt[HOY][str(x_angle) + str(y_angle)] * 0.001  # area in m2 * Wh/m2 in KWh
-#
-#   			
-#
-
-
 
 #2
 
@@ -357,8 +326,8 @@ Lat = Lat.tolist()
 def round_up_to_even(number):
 	return math.ceil(number/ 2.) * 2
 
-def round_down_to_even(number):
-	return math.ceil(number/ 2.) * 2 - 2    
+#def round_down_to_even(number):
+#	return math.ceil(number/ 2.) * 2 - 2    
 	
 PV = {}
 PV2 = {}
@@ -425,9 +394,17 @@ PV_dict = PV2
 PV_list = PV
 Window_list = Window
 
+
 """
 
-fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(16, 8))
+
+#Summer
+
+
+TimePeriod2 = range(4460, 4486)
+TimePeriod2Plot = range(4460, 4491,10)
+
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(12, 6))
 
 fig.subplots_adjust(right=0.8)
 plt.style.use('seaborn-white')
@@ -437,251 +414,45 @@ plt.rcParams['axes.grid.which'] = 'both'
 plt.rcParams['xtick.minor.visible'] = True
 
 #
-#TimePeriod = range(4470,4481)
-#TimePeriod2 = range(4469,4480)
-#TimePeriod = range(4460, 4490)
+label_size = 11
+plt.rcParams['xtick.labelsize'] = label_size 
+plt.rcParams['ytick.labelsize'] = label_size
 
-PlotData6 = pd.concat([ResultASF_df['00'][TimePeriod],SolarData_df['00'][TimePeriod]], axis = 1)
+label_size = 12
+plt.rcParams['axes.labelsize'] = 13 
+plt.rcParams['axes.titlesize'] = 13
+plt.rcParams['lines.linewidth'] = 1.3
+
+
+PlotData6 = pd.concat([ResultASF_df['00'][TimePeriod2], SummerASF_df['00'][TimePeriod2]], axis = 1)
 PlotData6.columns = ['Geo00', 'LB']
 PlotData6.plot(ax=axes[0,0], kind='line', title = '(a) ASF 0/0', legend = False, grid = True)
 
-PlotData5 = pd.concat([ResultASF_df['0-45'][TimePeriod],SolarData_df['0-45'][TimePeriod]], axis = 1)
+PlotData5 = pd.concat([ResultASF_df['0-45'][TimePeriod2], SummerASF_df['0-45'][TimePeriod2]], axis = 1)
 PlotData5.columns = ['Geo0-45', 'LB']
 PlotData5.plot(ax=axes[0,1], kind='line', title = '(b) ASF 0/-45', legend = False, grid = True)
 
-PlotData4 = pd.concat([ResultASF_df['045'][TimePeriod],SolarData_df['045'][TimePeriod]], axis = 1)
-PlotData4.columns = ['Geo045', 'LB']
+PlotData4 = pd.concat([ResultASF_df['045'][TimePeriod2],SummerASF_df['045'][TimePeriod2]], axis = 1)
+PlotData4.columns = ['PlanarProjection', 'Ladybug']
 PlotData4.plot(ax=axes[0,2], kind='line', title = '(c) ASF 0/45', legend = False, grid = True)
 
 #    
-PlotData7 = pd.concat([ResultASF_df['450'][TimePeriod],SolarData_df['450'][TimePeriod]], axis = 1)
+PlotData7 = pd.concat([ResultASF_df['450'][TimePeriod2],SummerASF_df['450'][TimePeriod2]], axis = 1)
 PlotData7.columns = ['Geo450', 'LB']
-PlotData7.plot(ax=axes[0,3], kind='line', title = '(d) ASF 45/0', legend = False, grid = True)
+PlotData7.plot(ax=axes[1,0], kind='line', title = '(d) ASF 45/0', legend = False, grid = True)
 
-PlotData8 = pd.concat([ResultASF_df['900'][TimePeriod],SolarData_df['900'][TimePeriod]], axis = 1)
+PlotData8 = pd.concat([ResultASF_df['900'][TimePeriod2],SummerASF_df['900'][TimePeriod2]], axis = 1)
 PlotData8.columns = ['Planar Projection', 'LadyBug']
-PlotData8.plot(ax=axes[0,4], kind='line', title = '(e) ASF 90/0', legend = False, grid = True)
+PlotData8.plot(ax=axes[1,1], kind='line', title = '(e) ASF 90/0', legend = False, grid = True)
 
+#PlotData7 = pd.concat([ResultASF_df['4545'][TimePeriod2],SummerASF_df['4545'][TimePeriod2]], axis = 1)
+#PlotData7.columns = ['Geo4545', 'LB']
+#PlotData7.plot(ax=axes[0,5], kind='line', title = '(-) ASF 45/45', legend = False, grid = True)
 
-PlotData1 = pd.concat([ResultWindow_df['00'][TimePeriod], BuildingLB2_df['00'][TimePeriod]], axis = 1)
-PlotData1.columns = ['Geo00', 'LB']
-PlotData1.plot(ax=axes[1,0], kind='line', title = '(f) Window 0/0', legend = False, grid = True)
-
-
-PlotData2 = pd.concat([ResultWindow_df['0-45'][TimePeriod], BuildingLB2_df['0-45'][TimePeriod]], axis = 1)
-PlotData2.columns = ['Geo0-45', 'LB']
-PlotData2.plot(ax=axes[1,1], kind='line', title = '(g) Window 0/-45', legend = False, grid = True)
-
-
-PlotData3 = pd.concat([ResultWindow_df['045'][TimePeriod], BuildingLB2_df['045'][TimePeriod]], axis = 1)
-PlotData3.columns = ['Geo045', 'LB']
-PlotData3.plot(ax=axes[1,2], kind='line', title = '(h) Window 0/45', legend = False, grid = True)
-
-#    
-PlotData3b = pd.concat([ResultWindow_df['450'][TimePeriod], BuildingLB2_df['450'][TimePeriod]], axis = 1)
-PlotData3b.columns = ['Geo450', 'LB']
-PlotData3b.plot(ax=axes[1,3], kind='line', title = '(i) Window 45/0', legend = False, grid = True)
-
-
-PlotData3a = pd.concat([ResultWindow_df['900'][TimePeriod], BuildingLB2_df['900'][TimePeriod]], axis = 1)
-PlotData3a.columns = ['Geo900', 'LB']
-PlotData3a.plot(ax=axes[1,4], kind='line', title = '(j) Window 90/0', legend = False, grid = True)
-
-
-
-
-axes[1,0].set_ylabel('Solar Radiation [Wh]', fontsize = 14)
-axes[0,0].set_ylabel('Solar Radiation [Wh]', fontsize = 14)
-axes[1,0].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,1].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,2].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,3].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,4].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,0].set_xticks(TimePeriod)
-axes[1,1].set_xticks(TimePeriod)
-axes[1,2].set_xticks(TimePeriod)
-axes[1,3].set_xticks(TimePeriod)
-axes[1,4].set_xticks(TimePeriod)
-axes[0,0].set_xticks(TimePeriod)
-axes[0,1].set_xticks(TimePeriod)
-axes[0,2].set_xticks(TimePeriod)
-axes[0,3].set_xticks(TimePeriod)
-axes[0,4].set_xticks(TimePeriod)
-axes[0,4].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0.)
-
-
-
-
-fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(16, 8))
-
-fig.subplots_adjust(right=0.8)
-plt.style.use('seaborn-white')
-
-plt.rcParams['axes.grid'] = True
-plt.rcParams['axes.grid.which'] = 'both'
-plt.rcParams['xtick.minor.visible'] = True
-
-
-#TimePeriod = range(4470,4481)
-#TimePeriod2 = range(4469,4480)
-
-
-PlotData6 = pd.concat([ResultWindow_df['450'][TimePeriod],SummerWindow['450'][TimePeriod]], axis = 1)
-PlotData6.columns = ['Geo00', 'LB']
-PlotData6.plot(ax=axes[0,0], kind='line', title = '(a) W 45/0', legend = False, grid = True)
-
-PlotData5 = pd.concat([ResultWindow_df['45-45'][TimePeriod],BuildingLB2_df['45-45'][TimePeriod]], axis = 1)
-PlotData5.columns = ['Geo0-45', 'LB']
-PlotData5.plot(ax=axes[0,1], kind='line', title = '(b) W 45/-45', legend = False, grid = True)
-
-PlotData4 = pd.concat([ResultWindow_df['4545'][TimePeriod],BuildingLB2_df['4545'][TimePeriod]], axis = 1)
-PlotData4.columns = ['Geo045', 'LB']
-PlotData4.plot(ax=axes[0,2], kind='line', title = '(c) W 45/45', legend = False, grid = True)
-
-#    
-PlotData7 = pd.concat([ResultWindow_df['900'][TimePeriod],BuildingLB2_df['900'][TimePeriod]], axis = 1)
-PlotData7.columns = ['Geo450', 'LB']
-PlotData7.plot(ax=axes[0,3], kind='line', title = '(d) w 90/0', legend = False, grid = True)
-
-PlotData8 = pd.concat([ResultWindow_df['90-45'][TimePeriod],BuildingLB2_df['90-45'][TimePeriod]], axis = 1)
+PlotData8 = pd.concat([ResultASF_df['9045'][TimePeriod2],SummerASF_df['9045'][TimePeriod2]], axis = 1)
 PlotData8.columns = ['Planar Projection', 'LadyBug']
-PlotData8.plot(ax=axes[0,4], kind='line', title = '(e) Window 90/-45', legend = False, grid = True)
+PlotData8.plot(ax=axes[1,2], kind='line', title = '(f) ASF 90/45', legend = False, grid = True)
 
-
-PlotData1 = pd.concat([ResultWindow_df['9045'][TimePeriod], BuildingLB2_df['9045'][TimePeriod]], axis = 1)
-PlotData1.columns = ['Geo00', 'LB']
-PlotData1.plot(ax=axes[1,0], kind='line', title = '(f) Window 90/45', legend = False, grid = True)
-
-
-PlotData2 = pd.concat([ResultWindow_df['0-45'][TimePeriod], BuildingLB2_df['0-45'][TimePeriod]], axis = 1)
-PlotData2.columns = ['Geo0-45', 'LB']
-PlotData2.plot(ax=axes[1,1], kind='line', title = '(g) Window 0/-45', legend = False, grid = True)
-
-
-PlotData3 = pd.concat([ResultWindow_df['045'][TimePeriod], BuildingLB2_df['045'][TimePeriod]], axis = 1)
-PlotData3.columns = ['Geo045', 'LB']
-PlotData3.plot(ax=axes[1,2], kind='line', title = '(h) Window 0/45', legend = False, grid = True)
-
-#    
-PlotData3b = pd.concat([ResultWindow_df['450'][TimePeriod], BuildingLB2_df['450'][TimePeriod]], axis = 1)
-PlotData3b.columns = ['Geo450', 'LB']
-PlotData3b.plot(ax=axes[1,3], kind='line', title = '(i) Window 45/0', legend = False, grid = True)
-
-
-PlotData3a = pd.concat([ResultWindow_df['900'][TimePeriod], BuildingLB2_df['900'][TimePeriod]], axis = 1)
-PlotData3a.columns = ['Geo900', 'LB']
-PlotData3a.plot(ax=axes[1,4], kind='line', title = '(j) Window 90/0', legend = False, grid = True)
-
-
-
-
-axes[1,0].set_ylabel('Solar Radiation [Wh]', fontsize = 14)
-axes[0,0].set_ylabel('Solar Radiation [Wh]', fontsize = 14)
-axes[1,0].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,1].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,2].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,3].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,4].set_xlabel('Hour of Year', fontsize = 14)
-axes[1,0].set_xticks(TimePeriod)
-axes[1,1].set_xticks(TimePeriod)
-axes[1,2].set_xticks(TimePeriod)
-axes[1,3].set_xticks(TimePeriod)
-axes[1,4].set_xticks(TimePeriod)
-axes[0,0].set_xticks(TimePeriod)
-axes[0,1].set_xticks(TimePeriod)
-axes[0,2].set_xticks(TimePeriod)
-axes[0,3].set_xticks(TimePeriod)
-axes[0,4].set_xticks(TimePeriod)
-axes[0,4].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0.)
-
-
-"""
-
-
-
-fig, axes = plt.subplots(nrows=2, ncols=7, figsize=(16, 8))
-
-fig.subplots_adjust(right=0.8)
-plt.style.use('seaborn-white')
-
-plt.rcParams['axes.grid'] = True
-plt.rcParams['axes.grid.which'] = 'both'
-plt.rcParams['xtick.minor.visible'] = True
-
-
-
-#TimePeriod1 = range(170,201)
-##TimePeriod2 = range(175,184)
-#TimePeriod2 = 
-
-#TimePeriod = range(170,201)
-
-
-PlotData6 = pd.concat([ResultASF_df['00'][TimePeriod],WinterASF_df['00'][TimePeriod]], axis = 1)
-PlotData6.columns = ['Geo00', 'LB']
-PlotData6.plot(ax=axes[0,0], kind='line', title = '(a) ASF 0/0', legend = False, grid = True)
-
-PlotData5 = pd.concat([ResultASF_df['0-45'][TimePeriod],WinterASF_df['0-45'][TimePeriod]], axis = 1)
-PlotData5.columns = ['Geo0-45', 'LB']
-PlotData5.plot(ax=axes[0,1], kind='line', title = '(b) ASF 0/-45', legend = False, grid = True)
-
-PlotData4 = pd.concat([ResultASF_df['045'][TimePeriod],WinterASF_df['045'][TimePeriod]], axis = 1)
-PlotData4.columns = ['Geo045', 'LB']
-PlotData4.plot(ax=axes[0,2], kind='line', title = '(C) ASF 0/45', legend = False, grid = True)
-
-
-PlotData7 = pd.concat([ResultASF_df['450'][TimePeriod],WinterASF_df['450'][TimePeriod]], axis = 1)
-PlotData7.columns = ['Geo450', 'LB']
-PlotData7.plot(ax=axes[0,3], kind='line', title = '(d) ASF 45/0', legend = False, grid = True)
-
-PlotData8 = pd.concat([ResultASF_df['900'][TimePeriod],WinterASF_df['900'][TimePeriod]], axis = 1)
-PlotData8.columns = ['Planar Projection', 'LadyBug']
-PlotData8.plot(ax=axes[0,4], kind='line', title = '(e) ASF 90/0', legend = False, grid = True)
-
-
-PlotData8 = pd.concat([ResultASF_df['4545'][TimePeriod],WinterASF_df['4545'][TimePeriod]], axis = 1)
-PlotData8.columns = ['Planar Projection', 'LadyBug']
-PlotData8.plot(ax=axes[0,5], kind='line', title = '(e) ASF 45/45', legend = False, grid = True)
-
-PlotData8 = pd.concat([ResultASF_df['9045'][TimePeriod],WinterASF_df['9045'][TimePeriod]], axis = 1)
-PlotData8.columns = ['Planar Projection', 'LadyBug']
-PlotData8.plot(ax=axes[0,6], kind='line', title = '(e) ASF 90/45', legend = False, grid = True)
-
-
-
-
-PlotData1 = pd.concat([ResultWindow_df['00'][TimePeriod],  WinterWindow_df['00'][TimePeriod]], axis = 1)
-PlotData1.columns = ['Geo00', 'LB']
-PlotData1.plot(ax=axes[1,0], kind='line', title = '(f) Window 0/0', legend = False, grid = True)
-
-
-PlotData2 = pd.concat([ResultWindow_df['0-45'][TimePeriod], WinterWindow_df['0-45'][TimePeriod]], axis = 1)
-PlotData2.columns = ['Geo0-45', 'LB']
-PlotData2.plot(ax=axes[1,1], kind='line', title = '(g) Window 0/-45', legend = False, grid = True)
-
-
-PlotData3 = pd.concat([ResultWindow_df['045'][TimePeriod], WinterWindow_df['045'][TimePeriod]], axis = 1)
-PlotData3.columns = ['Geo045', 'LB']
-PlotData3.plot(ax=axes[1,2], kind='line', title = '(h) Window 0/45', legend = False, grid = True)
-
-
-PlotData3b = pd.concat([ResultWindow_df['450'][TimePeriod], WinterWindow_df['450'][TimePeriod]], axis = 1)
-PlotData3b.columns = ['Geo450', 'LB']
-PlotData3b.plot(ax=axes[1,3], kind='line', title = '(i) Window 45/0', legend = False, grid = True)
-
-
-PlotData3a = pd.concat([ResultWindow_df['900'][TimePeriod],  WinterWindow_df['900'][TimePeriod]], axis = 1)
-PlotData3a.columns = ['Geo900', 'LB']
-PlotData3a.plot(ax=axes[1,4], kind='line', title = '(j) Window 90/0', legend = False, grid = True)
-
-PlotData3b = pd.concat([ResultWindow_df['4545'][TimePeriod], WinterWindow_df['4545'][TimePeriod]], axis = 1)
-PlotData3b.columns = ['Geo450', 'LB']
-PlotData3b.plot(ax=axes[1,5], kind='line', title = '(i) Window 45/45', legend = False, grid = True)
-
-
-PlotData3a = pd.concat([ResultWindow_df['9045'][TimePeriod],  WinterWindow_df['9045'][TimePeriod]], axis = 1)
-PlotData3a.columns = ['Geo900', 'LB']
-PlotData3a.plot(ax=axes[1,6], kind='line', title = '(j) Window 90/45', legend = False, grid = True)
 
 
 
@@ -690,26 +461,245 @@ axes[0,0].set_ylabel('Solar Radiation [Wh]')
 axes[1,0].set_xlabel('Hour of Year')
 axes[1,1].set_xlabel('Hour of Year')
 axes[1,2].set_xlabel('Hour of Year')
-axes[1,3].set_xlabel('Hour of Year')
-axes[1,4].set_xlabel('Hour of Year')
-axes[1,0].set_xticks(TimePeriod)
-axes[1,1].set_xticks(TimePeriod)
-axes[1,2].set_xticks(TimePeriod)
-axes[1,3].set_xticks(TimePeriod)
-axes[1,4].set_xticks(TimePeriod)
-axes[0,0].set_xticks(TimePeriod)
-axes[0,1].set_xticks(TimePeriod)
-axes[0,2].set_xticks(TimePeriod)
-axes[0,3].set_xticks(TimePeriod)
-axes[0,4].set_xticks(TimePeriod)
-axes[0,4].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0.)
+
+axes[1,0].set_xticks(TimePeriod2Plot)
+axes[1,1].set_xticks(TimePeriod2Plot)
+axes[1,2].set_xticks(TimePeriod2Plot)
+axes[0,0].set_xticks(TimePeriod2Plot)
+axes[0,1].set_xticks(TimePeriod2Plot)
+axes[0,2].set_xticks(TimePeriod2Plot)
+axes[0,2].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0., fontsize = 12)
+
+save_path = r'C:\Users\Assistenz\Desktop\Mauro\MasterThesis\Latex_Templates\MasterThesisTemplate\Images'
+
+fig.savefig(os.path.join(save_path, 'ASFSummer.png'), format='png')
+
+
+
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(12, 6))
+
+fig.subplots_adjust(right=0.8)
+plt.style.use('seaborn-white')
+
+plt.rcParams['axes.grid'] = True
+plt.rcParams['axes.grid.which'] = 'both'
+plt.rcParams['xtick.minor.visible'] = True
+
+#
+label_size = 11
+plt.rcParams['xtick.labelsize'] = label_size 
+plt.rcParams['ytick.labelsize'] = label_size 
+
+label_size = 12
+plt.rcParams['axes.labelsize'] = 13 
+plt.rcParams['axes.titlesize'] = 13
+plt.rcParams['lines.linewidth'] = 1.3
+
+PlotData1 = pd.concat([ResultWindow_df['00'][TimePeriod2], SummerWindow_df['00'][TimePeriod2]], axis = 1)
+PlotData1.columns = ['Geo00', 'LB']
+PlotData1.plot(ax=axes[0,0], kind='line', title = '(a) Window 0/0', legend = False, grid = True)
+
+
+PlotData2 = pd.concat([ResultWindow_df['0-45'][TimePeriod2], SummerWindow_df['0-45'][TimePeriod2]], axis = 1)
+PlotData2.columns = ['Geo0-45', 'LB']
+PlotData2.plot(ax=axes[0,1], kind='line', title = '(b) Window 0/-45', legend = False, grid = True)
+
+
+PlotData3 = pd.concat([ResultWindow_df['045'][TimePeriod2], SummerWindow_df['045'][TimePeriod2]], axis = 1)
+PlotData3.columns = ['PlanarProjection', 'Ladybug']
+PlotData3.plot(ax=axes[0,2], kind='line', title = '(c) Window 0/45', legend = False, grid = True)
+
+#    
+PlotData3b = pd.concat([ResultWindow_df['450'][TimePeriod2], SummerWindow_df['450'][TimePeriod2]], axis = 1)
+PlotData3b.columns = ['Geo450', 'LB']
+PlotData3b.plot(ax=axes[1,0], kind='line', title = '(d) Window 45/0', legend = False, grid = True)
+
+
+PlotData3a = pd.concat([ResultWindow_df['900'][TimePeriod2], SummerWindow_df['900'][TimePeriod2]], axis = 1)
+PlotData3a.columns = ['Geo900', 'LB']
+PlotData3a.plot(ax=axes[1,1], kind='line', title = '(e) Window 90/0', legend = False, grid = True)
+
+#    
+#PlotData3b = pd.concat([ResultWindow_df['4545'][TimePeriod2], SummerWindow_df['4545'][TimePeriod2]], axis = 1)
+#PlotData3b.columns = ['Geo4545', 'LB']
+#PlotData3b.plot(ax=axes[1,5], kind='line', title = '(-) Window 45/45', legend = False, grid = True)
+
+
+PlotData3a = pd.concat([ResultWindow_df['9045'][TimePeriod2], SummerWindow_df['9045'][TimePeriod2]], axis = 1)
+PlotData3a.columns = ['Geo9045', 'LB']
+PlotData3a.plot(ax=axes[1,2], kind='line', title = '(f) Window 90/45', legend = False, grid = True)
+
+
+axes[1,0].set_ylabel('Solar Radiation [Wh]')
+axes[0,0].set_ylabel('Solar Radiation [Wh]')
+axes[1,0].set_xlabel('Hour of Year')
+axes[1,1].set_xlabel('Hour of Year')
+axes[1,2].set_xlabel('Hour of Year')
+
+axes[1,0].set_xticks(TimePeriod2Plot)
+axes[1,1].set_xticks(TimePeriod2Plot)
+axes[1,2].set_xticks(TimePeriod2Plot)
+axes[0,0].set_xticks(TimePeriod2Plot)
+axes[0,1].set_xticks(TimePeriod2Plot)
+axes[0,2].set_xticks(TimePeriod2Plot)
+axes[0,2].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0., fontsize = 12)
 
 
 
 
-#axes[1,4].legend(bbox_to_anchor=(1.05, 0), loc='upper left', borderaxespad=0.)
+fig.savefig(os.path.join(save_path, 'WindowSummer.png'), format='png')
 
-#Percentage_df.to_csv('Percentage_' + str(time.time()) + '.csv')
+#Winter
+
+
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(12, 6))
+
+fig.subplots_adjust(right=0.8)
+plt.style.use('seaborn-white')
+
+plt.rcParams['axes.grid'] = True
+plt.rcParams['axes.grid.which'] = 'both'
+plt.rcParams['xtick.minor.visible'] = True
+
+#
+label_size = 11
+plt.rcParams['xtick.labelsize'] = label_size 
+plt.rcParams['ytick.labelsize'] = label_size 
+
+label_size = 12
+plt.rcParams['axes.labelsize'] = 13 
+plt.rcParams['axes.titlesize'] = 13
+plt.rcParams['lines.linewidth'] = 1.3
+#
+
+#axes.titlesize : 24
+#axes.labelsize : 20
+#lines.linewidth : 3
+#lines.markersize : 10
+#xtick.labelsize : 16
+#ytick.labelsize : 16
+
+TimePeriod1 = range(170,191)
+TimePeriod1Plot = range(170,191,10)
+
+PlotData6 = pd.concat([ResultASF_df['00'][TimePeriod1],WinterASF_df['00'][TimePeriod1]], axis = 1)
+PlotData6.columns = ['Geo00', 'LB']
+PlotData6.plot(ax=axes[0,0], kind='line', title = '(a) ASF 0/0', legend = False, grid = True)
+
+PlotData5 = pd.concat([ResultASF_df['0-45'][TimePeriod1],WinterASF_df['0-45'][TimePeriod1]], axis = 1)
+PlotData5.columns = ['Geo0-45', 'LB']
+PlotData5.plot(ax=axes[0,1], kind='line', title = '(b) ASF 0/-45', legend = False, grid = True)
+
+PlotData4 = pd.concat([ResultASF_df['045'][TimePeriod1],WinterASF_df['045'][TimePeriod1]], axis = 1)
+PlotData4.columns = ['PlanarProjection', 'Ladybug']
+PlotData4.plot(ax=axes[0,2], kind='line', title = '(C) ASF 0/45', legend = False, grid = True)
+
+
+PlotData7 = pd.concat([ResultASF_df['450'][TimePeriod1],WinterASF_df['450'][TimePeriod1]], axis = 1)
+PlotData7.columns = ['Geo450', 'LB']
+PlotData7.plot(ax=axes[1,0], kind='line', title = '(d) ASF 45/0', legend = False, grid = True)
+
+PlotData8 = pd.concat([ResultASF_df['900'][TimePeriod1],WinterASF_df['900'][TimePeriod1]], axis = 1)
+PlotData8.columns = ['Planar Projection', 'Ladybug']
+PlotData8.plot(ax=axes[1,1], kind='line', title = '(e) ASF 90/0', legend = False, grid = True)
+
+#PlotData8 = pd.concat([ResultASF_df['4545'][TimePeriod1],WinterASF_df['4545'][TimePeriod1]], axis = 1)
+#PlotData8.columns = ['Planar Projection', 'LadyBug']
+#PlotData8.plot(ax=axes[0,5], kind='line', title = '(e) ASF 45/45', legend = False, grid = True)
+
+PlotData8 = pd.concat([ResultASF_df['9045'][TimePeriod1],WinterASF_df['9045'][TimePeriod1]], axis = 1)
+PlotData8.columns = ['Planar Projection', 'LadyBug']
+PlotData8.plot(ax=axes[1,2], kind='line', title = '(f) ASF 90/45', legend = False, grid = True)
+
+
+axes[1,0].set_ylabel('Solar Radiation [Wh]')
+axes[0,0].set_ylabel('Solar Radiation [Wh]')
+axes[1,0].set_xlabel('Hour of Year')
+axes[1,1].set_xlabel('Hour of Year')
+axes[1,2].set_xlabel('Hour of Year')
+
+axes[1,0].set_xticks(TimePeriod1Plot)
+axes[1,1].set_xticks(TimePeriod1Plot)
+axes[1,2].set_xticks(TimePeriod1Plot)
+axes[0,0].set_xticks(TimePeriod1Plot)
+axes[0,1].set_xticks(TimePeriod1Plot)
+axes[0,2].set_xticks(TimePeriod1Plot)
+axes[0,2].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0., fontsize = 12)
+
+
+
+
+fig.savefig(os.path.join(save_path, 'ASFWinter.png'), format='png')
+
+
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(12, 6))
+
+fig.subplots_adjust(right=0.8)
+plt.style.use('seaborn-white')
+
+plt.rcParams['axes.grid'] = True
+plt.rcParams['axes.grid.which'] = 'both'
+plt.rcParams['xtick.minor.visible'] = True
+
+
+
+PlotData1 = pd.concat([ResultWindow_df['00'][TimePeriod1],  WinterWindow_df['00'][TimePeriod1]], axis = 1)
+PlotData1.columns = ['Geo00', 'LB']
+PlotData1.plot(ax=axes[0,0], kind='line', title = '(a) Window 0/0', legend = False, grid = True)
+
+
+PlotData2 = pd.concat([ResultWindow_df['0-45'][TimePeriod1], WinterWindow_df['0-45'][TimePeriod1]], axis = 1)
+PlotData2.columns = ['Geo0-45', 'LB']
+PlotData2.plot(ax=axes[0,1], kind='line', title = '(b) Window 0/-45', legend = False, grid = True)
+
+
+PlotData3 = pd.concat([ResultWindow_df['045'][TimePeriod1], WinterWindow_df['045'][TimePeriod1]], axis = 1)
+PlotData3.columns = ['PlanarProjection', 'Ladybug']
+PlotData3.plot(ax=axes[0,2], kind='line', title = '(c) Window 0/45', legend = False, grid = True)
+
+
+PlotData3b = pd.concat([ResultWindow_df['450'][TimePeriod1], WinterWindow_df['450'][TimePeriod1]], axis = 1)
+PlotData3b.columns = ['Geo450', 'LB']
+PlotData3b.plot(ax=axes[1,0], kind='line', title = '(d) Window 45/0', legend = False, grid = True)
+
+
+PlotData3a = pd.concat([ResultWindow_df['900'][TimePeriod1],  WinterWindow_df['900'][TimePeriod1]], axis = 1)
+PlotData3a.columns = ['Geo900', 'LB']
+PlotData3a.plot(ax=axes[1,1], kind='line', title = '(e) Window 90/0', legend = False, grid = True)
+
+#PlotData3b = pd.concat([ResultWindow_df['4545'][TimePeriod1], WinterWindow_df['4545'][TimePeriod1]], axis = 1)
+#PlotData3b.columns = ['Geo450', 'LB']
+#PlotData3b.plot(ax=axes[1,5], kind='line', title = '(i) Window 45/45', legend = False, grid = True)
+
+
+PlotData3a = pd.concat([ResultWindow_df['9045'][TimePeriod1],  WinterWindow_df['9045'][TimePeriod1]], axis = 1)
+PlotData3a.columns = ['Geo900', 'LB']
+PlotData3a.plot(ax=axes[1,2], kind='line', title = '(f) Window 90/45', legend = False, grid = True)
+
+
+
+#plt.tight_layout()
+axes[1,0].set_ylabel('Solar Radiation [Wh]')
+axes[0,0].set_ylabel('Solar Radiation [Wh]')
+axes[1,0].set_xlabel('Hour of Year')
+axes[1,1].set_xlabel('Hour of Year')
+axes[1,2].set_xlabel('Hour of Year')
+axes[1,0].set_xticks(TimePeriod1Plot)
+axes[1,1].set_xticks(TimePeriod1Plot)
+axes[1,2].set_xticks(TimePeriod1Plot)
+axes[0,0].set_xticks(TimePeriod1Plot)
+axes[0,1].set_xticks(TimePeriod1Plot)
+axes[0,2].set_xticks(TimePeriod1Plot)
+axes[0,2].legend(bbox_to_anchor=(1.05, 0), loc='lower left', borderaxespad=0., fontsize = 12)
+
+
+
+fig.savefig(os.path.join(save_path, 'WindowWinter.png'), format='png')
+
+ResultASF_df.to_csv('ASFFinal.csv')
+ResultWindow_df.to_csv('WindowFinal.csv')
+
+
 
 #fig.savefig(os.path.join(paths['RadModel'], 'SunnyWinterDayComparisonNew.pdf'), format='pdf')
 #fig.savefig(os.path.join(paths['RadModel'], 'SunnyWinterDayComparisonNew.png'), format='png')
@@ -718,15 +708,15 @@ saveNPY = False
 
 if saveNPY == True:
 
-#    np.save('RadPanels_Both.npy',RadiationASF)    
-#    np.save('RadWindow_Both.npy',RadiationWindow)        
+    np.save('RadPanels_Final.npy',RadiationASF)    
+    np.save('RadWindow_Final.npy',RadiationWindow)        
 	
 	
-    np.save('PV_Both.npy',PV_list)    
-    np.save('Window_Both',Window_list)        
-    Percentage_df.to_csv('Percentage_' + str(time.time()) + '.csv')
+    np.save('PV_Final.npy',PV_list)    
+    np.save('Window_Final',Window_list)        
+    #Percentage_df.to_csv('Percentage_' + str(time.time()) + '.csv')
 
-    fig.savefig(os.path.join(paths['RadModel'], 'SunnySum2.pdf'), format='pdf')
-    fig.savefig(os.path.join(paths['RadModel'], 'SunnySum2.png'), format='png')
+#    fig.savefig(os.path.join(paths['RadModel'], 'SunnySum2.pdf'), format='pdf')
+#    fig.savefig(os.path.join(paths['RadModel'], 'SunnySum2.png'), format='png')
 
 

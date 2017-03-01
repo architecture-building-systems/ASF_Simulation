@@ -10,10 +10,10 @@ import json
 import csv
 import numpy as np
 
-def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNamePV, DataNameWin):
+def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderName):
 
                    
-    if not os.path.isfile(os.path.join(paths['PV'], 'HourlyPV_electricity_results_' + DataNamePV + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'HourlyBuildingRadiationData_' + DataNameWin + '.npy')):    
+    if not os.path.isfile(os.path.join(paths['PV'], 'HourlyPV_electricity_results_' + FolderName['FileName'] + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'HourlyBuildingRadiationData_' + FolderName['FileName'] + '.npy')):    
         if not os.path.isdir(paths['PV']):
             os.makedirs(paths['PV'])
     
@@ -26,22 +26,17 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
         print 'Time: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
         tic = time.time()
-        
-        daysPerMonth = np.array([31,28,31,30,31,30,31,31,30,31,30,31])
-    
+            
         for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth']+1): #month:
             
             BuilRadData[monthi]= {}
             
-            #for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
-            for day in range(SimulationPeriode['FromDay'], daysPerMonth[monthi-1] + 1): 
-                
-                print "daysPerMonth", daysPerMonth[monthi-1]
-    
+            for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
+                    
                 BuilRadData[monthi][day] = {}
                 
                 # from hour + 1?
-                for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):
+                for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour']+1):# LB calculates for hour 5: 5 to 6, HOY is defined as hour 5: 4 to 5, therefore -1 is needed
                     
                     BuildingRadiationData = np.array([])
                     
@@ -50,7 +45,7 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
                             
                             comb_data={"x_angle":x_angle,
                                        "y_angle":y_angle,
-                                       "Hour":hour,
+                                       "Hour":hour, 
                                        "Day": day,
                                        "Month":monthi
                                        }
@@ -89,12 +84,13 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, DataNameP
                         BuilRadData[monthi][day][hour]= BuildingRadiationData *1000. #W/h
                         
     
-        np.save(os.path.join(paths['save_results_path'],'HourlyBuildingRadiationData_' + DataNameWin + '.npy'), BuilRadData)
+        np.save(os.path.join(paths['save_results_path'],'HourlyBuildingRadiationData_' + FolderName['FileName'] + '.npy'), BuilRadData)
         print "\nEnd of radiation calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
     else:
-        BuilRadData = np.load(os.path.join(paths['PV'], 'HourlyBuildingRadiationData_' + DataNameWin + '.npy')).item()
+        BuilRadData = np.load(os.path.join(paths['PV'], 'HourlyBuildingRadiationData_' + FolderName['FileName'] + '.npy')).item()
         print '\nLadyBug data loaded from Folder:'
-        print 'radiation_wall_'+ DataNameWin   
-    
+        print 'radiation_wall_'+ FolderName['DataFolderName']   
+        print 'File: ', FolderName['FileName']
+        
     return BuilRadData
