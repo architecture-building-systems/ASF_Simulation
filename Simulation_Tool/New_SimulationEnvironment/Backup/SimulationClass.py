@@ -32,7 +32,7 @@ class ASF_Simulation(object):
             "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1,
             'COP_H': 3, 'COP_C':3},
             SimulationOptions= 
-            {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False, "Temp_start" : 20, 'human_heat_emission' : 0.12,}):
+            {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
                      
                             
             #define varibales of object
@@ -90,6 +90,8 @@ class ASF_Simulation(object):
 		
 	def setPaths(self): 
      
+		
+        
            #set the occupancy file, which will be used for the evaluation
 		Occupancy = self.SimulationOptions['Occupancy']
 
@@ -122,11 +124,10 @@ class ASF_Simulation(object):
 		# add python_path to system path, so that all files are available:
 		sys.path.insert(0, self.paths['python'])
 		
+		
 		from epwreader import epw_reader
 		from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature # used?
 		from create_lookup_table import lookUpTableFunction
-  
-		
   
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
@@ -229,7 +230,8 @@ class ASF_Simulation(object):
 												paths = self.paths, 
 												daysPerMonth = self.daysPerMonth, 
 												hour_in_month = self.hour_in_month,
-												FolderName = self.SimulationData)
+												DataFolderName = self.FolderName['DataFolderName'],
+												FileName = self.SimulationData['FileName'])
 			
 		
 	   #if there are no panels vertical and horizontal
@@ -277,11 +279,9 @@ class ASF_Simulation(object):
         								   geo_path = self.paths['geo'],
         								   flipOrientation= False, 
         								   SimulationData = self.SimulationData,
-        								   XANGLES = self.XANGLES, 
-        								   YANGLES= self.YANGLES, 
+        								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
         								   hour_in_month = self.hour_in_month,
-        								   paths = self.paths, 
-        								   DataNamePV = self.SimulationData['FileName'])
+        								   paths = self.paths, DataNamePV = self.SimulationData['FileName'])
         		
         		else: 
                       #if PV-results are available, they will be loaded from folder
@@ -317,6 +317,11 @@ class ASF_Simulation(object):
 				for ii in range(0,self.daysPerMonth[monthi-1]):             
 					DAY = ii*24 + int(HOD)   
 					self.BuildingRadiationData_HOY[passedHours + DAY] = self.BuildingRadiationData_HOD[monthi][DAY] #W
+		
+#		#initilize dictionary
+#		for hour_of_year in range(0,8760):
+#			self.PV[hour_of_year]= {}
+			
 			
 			  
 		count = 0
@@ -366,9 +371,14 @@ class ASF_Simulation(object):
             self.y_angles = {} #optimized y-angles
             self.BestKey_df = {} #optimized keys of the ANGLES dictionary
             		
+            		
+            #set parameters
+            human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
+            roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
+            		 
             				
             #people/m2/h, W    
-            occupancy, Q_human = read_occupancy(myfilename = self.paths['Occupancy'], human_heat_emission = self.SimulationOptions['human_heat_emission'] , floor_area = self.roomFloorArea)    
+            occupancy, Q_human = read_occupancy(myfilename = self.paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)    
             		
             				
             #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
@@ -448,7 +458,7 @@ class ASF_Simulation(object):
 				
 				self.fig.update({'figB' : figB, 'figC' : figC})
 		
-		
+		return self.fig
 
 
 
@@ -521,7 +531,7 @@ class ASF_Simulation(object):
                 #convert heating/cooling system variables into strings			
                 self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
                 self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
-                self.BuildingProperties["T_start"] = self.SimulationOptions['Temp_start'] 
+                self.BuildingProperties["T_start"] = 20
                 self.BuildingProperties["SetBack_H"] = self.SimulationOptions['setBackTempH']
                 self.BuildingProperties["SetBack_C"] = self.SimulationOptions['setBackTempC']
                 			

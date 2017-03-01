@@ -142,6 +142,12 @@ sympy-plots-for-*.tex/
 !powerloss.csv
 *.json
 *.npy
+*.stl
+*.rad
+*.ill
+*.dc
+*.hea
+*.wea
 
 # illuminance data
 *.pts

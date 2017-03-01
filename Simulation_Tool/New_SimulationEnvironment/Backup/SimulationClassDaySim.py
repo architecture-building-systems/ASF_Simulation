@@ -27,12 +27,12 @@ class ASF_Simulation(object):
             Material = 
             {'ASF' : 0.2, 'Window': 0.2},
             BuildingProperties = 
-            {"glass_solar_transmitance" : 0.691,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.6,\
+            {"glass_solar_transmitance" : 0.691,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
             "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
             "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1,
             'COP_H': 3, 'COP_C':3},
             SimulationOptions= 
-            {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False, 'human_heat_emission' : 0.12,'Temp_start' : 20}):
+            {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
             
 
             BuildingData = {
@@ -49,9 +49,6 @@ class ASF_Simulation(object):
             self.SimulationData=SimulationData
             self.PanelData=PanelData
             self.BuildingData=BuildingData
-            self.BuildingProperties=BuildingProperties
-            self.SimulationOptions=SimulationOptions
-            self.Material = Material
   
             self.PanelData.update({		  
             "NoClusters":1,
@@ -67,17 +64,19 @@ class ASF_Simulation(object):
             'EPWfile': 'Zuerich_Kloten_2013.epw'})
             
 
-        
+            self.BuildingProperties=BuildingProperties
+            self.SimulationOptions=SimulationOptions
             self.start = SimulationData['start']
             self.end = SimulationData['end']
+            self.Material = Material
+		
             self.XANGLES=self.PanelData['XANGLES']
             self.YANGLES = self.PanelData['YANGLES']		
             self.createPlots=False
             self.geoLocation = SimulationData['geoLocation']
             self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
-            self.optimization_Types = self.SimulationData['optimizationTypes']            
-            self.fig = {}
-            
+            self.optimization_Types = self.SimulationData['optimizationTypes']
+
 		#Set folder name and chosen epw-file
             self.FolderName={
 		"DataFolderName": SimulationData['DataFolderName'],
@@ -108,13 +107,13 @@ class ASF_Simulation(object):
 		self.paths['weather_folder']= os.path.join(os.path.dirname(self.paths['main']), 'WeatherData')
 		
 		
-		self.project_folder = os.path.join(self.paths['main'],'radiation_visualization')
+		self.project_folder = r'C:\Users\Assistenz\Desktop\Mauro\radiation_visualization'
 		self.project_folder = os.path.join(self.project_folder,self.SimulationData['ProjectName'])
 		print 'Project Folder', self.project_folder
   
 		
   
-		self.path_script = os.path.join(self.paths['main'], 'RadiationModel')
+		self.path_script = r'C:\Users\Assistenz\Desktop\Mauro\ASF_Simulation\Simulation_Tool\New_SimulationEnvironment\RadiationModel'
   
 		if not os.path.isdir(self.paths['DaySim']):
 			os.makedirs(self.paths['DaySim'])
@@ -181,7 +180,7 @@ class ASF_Simulation(object):
 		
 	def CalculateVariables(self):
 		#Calculate variables
-		
+		self.fig = {}
             
             #hour_in_month is dependent on the location, this dict is for ZH
 		hours = self.SunTrackingData['HoursInMonth']
@@ -376,7 +375,7 @@ class ASF_Simulation(object):
             		
             		
             #set parameters
-            human_heat_emission= self.SimulationOptions['human_heat_emission']
+            human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
             roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
             		 
             				
@@ -391,19 +390,21 @@ class ASF_Simulation(object):
                  self.BuildingSimulationELEC[optimizationType], self.TotalHOY = RC_Model (
                                                                          optimization_type = optimizationType, 
                                                                          paths = self.paths,
-                                                                         building_data = self.BuildingData,
-                                                                         SimulationOptions = self.SimulationOptions,
+                                                                         building_data = self.BuildingData, 
                                                                          weatherData = self.weatherData, 
                                                                          BuildingRadiationData_HOY = self.BuildingRadiationHOY, 
                                                                          PV = self.PV, 
+                                                                         NumberCombinations = self.NumberCombinations, 
                                                                          combinationAngles = self.combinationAngles,
                                                                          BuildingProperties = self.BuildingProperties,
+                                                                         setBackTempH = self.setBackTempH,
+                                                                         setBackTempC = self.setBackTempC,
                                                                          occupancy = self.occupancy,
                                                                          Q_human = self.Q_human,
                                                                          start = self.start, 
-                                                                         end = self.end) 
-                                                                         
-                                                                         
+                                                                         end = self.end, 
+                                                                         Temp_start = self.SimulationData['Temp_start']
+                                                                         )
         def PrepareYearlyResults(self):
 
             from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC                                                                 
@@ -496,6 +497,7 @@ class ASF_Simulation(object):
 	def createHourlyPlots(self):
     
             from hourlyPlotFunction import PlotHour 
+            from Function3dPlot import create3Dplot, create3Dplot2    
 
             for ii in self.optimization_Types:
                 
@@ -511,17 +513,9 @@ class ASF_Simulation(object):
 	def SaveResults(self):
            #method which saves the data and plots 
               
-          if self.start == 0 and self.end == 8760:
-                    
-                    self.monthlyData = pd.DataFrame(self.monthlyData)
-                    self.yearlyData = pd.DataFrame(self.yearlyData)
-
-                    
-          else:
-                    self.HourlyTotalData = pd.DataFrame(self.HourlyTotalData)
-                    
           
           
+          #BestKeyDF = pd.DataFrame(self.BestKey)    
 		
           if self.SimulationData['Save']: 
 			
@@ -578,7 +572,10 @@ class ASF_Simulation(object):
 				else:
 					pass
                        
-
+#                if self.start != 0 and self.start != 8760:
+#                    for ii in range(self.start, self.end):
+#                        hourlyData = pd.DataFrame(self.hourlyData['E_total'][ii].T)
+#                        hourlyData.to_csv(os.path.join(self.paths['result'], 'hourlyDataEtotal_' + str(ii) + '.csv'))
                        
                 
                 x_angles_df = pd.DataFrame(self.x_angles)
@@ -586,10 +583,14 @@ class ASF_Simulation(object):
                 
                 if self.start == 0 and self.end == 8760:
                     
+                    self.monthlyData = pd.DataFrame(self.monthlyData)
+                    self.yearlyData = pd.DataFrame(self.yearlyData)
+
+                    #np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
                     self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
                     self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
                 else:
-                    
+                    self.HourlyTotalData = pd.DataFrame(self.HourlyTotalData)
                     self.HourlyTotalData.to_csv(os.path.join(self.paths['result'], 'HourlyTotalData.csv'))
                     
                 #BestKeyDF.to_csv(os.path.join(self.paths['result'], 'BestKeyMonthly.csv'))                
@@ -601,7 +602,7 @@ class ASF_Simulation(object):
                 self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
                 self.BuildingProperties["start"] = self.start
                 self.BuildingProperties["end"] = self.end
-                self.BuildingProperties["T_start"] = self.SimulationOptions['Temp_start']
+                self.BuildingProperties["T_start"] = self.SimulationData['Temp_start']
                 self.BuildingProperties["SetBack_H"] = self.SimulationOptions['setBackTempH']
                 self.BuildingProperties["SetBack_C"] = self.SimulationOptions['setBackTempC']
                 				        
