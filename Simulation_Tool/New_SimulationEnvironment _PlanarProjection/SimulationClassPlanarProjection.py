@@ -86,7 +86,7 @@ class ASF_Simulation(object):
                
         
         self.paths['RadModel'] = os.path.join(self.paths['main'], 'RadiationModel')        
-        self.paths['SunAngles'] = os.path.join(self.paths['RadModel'], 'SunAngles.csv')
+        self.paths['SunAngles'] = os.path.join(self.paths['data'], 'SunAngles.csv')
         
         
         # add python_path to system path, so that all files are available:
