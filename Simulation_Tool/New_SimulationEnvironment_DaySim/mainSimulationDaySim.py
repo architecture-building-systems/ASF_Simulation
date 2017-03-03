@@ -84,76 +84,28 @@ from SimulationClassDaySim import ASF_Simulation
 
 
 SimulationData = {
-'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
-'DataFolderName' : 'DaySimZH13YearMat0', 
-'FileName': 'DaySimZH13YearMat0', 
-'ProjectName': 'Mat0',
-'SubFolder': '2ASF',
+'optimizationTypes' : ['E_total'],
+'DataFolderName' : 'test_Mat2', 
+'FileName': 'test_Mat2', 
+
+'ProjectName': 'MatTest2',
+'SubFolder': 'ASF',
 
 'Save' : True,
 'ShowFig': True,
 
 'start' : 0,
-'end': 8760} #8760
+'end': 50} #8760
 
 PanelData = {
-"XANGLES": [0,15,30,45,60,75,90],
-"YANGLES" : [-45,-30,-15,0,15,30,45]}
+"XANGLES": [45],
+"YANGLES" : [0]}
 
 Material = { # add suffix to the radiation and pv results
-'ASF' : 0,
-'Window': 0}
+'ASF' : 0.2,
+'Window': 0.2}
 
 
-
-
-#SimulationData = {
-#'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
-#'DataFolderName' : 'DaySimZH13YearMat02long', 
-#'FileName': 'DaySimZH13YearMat02long', 
-#'ProjectName': 'Mat02',
-#'SubFolder': '2ASF',
-#
-#'Save' : True,
-#'ShowFig': True,
-#
-#'Temp_start' : 20,
-#'start' : 0,
-#'end': 8760} #8760
-#
-#PanelData = {
-#"XANGLES": [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90],
-#"YANGLES" :[-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]}
-#
-#Material = {
-#'ASF' : 0.2,
-#'Window': 0.2}
-        
-
-
-
-#
-#SimulationData = {
-#'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'SolarEnergy', 'E_HCL'],
-#'DataFolderName' : 'DaySimZH13Year2', 
-#'FileName': 'DaySimZH13Year2', 
-#'ProjectName': 'Mat02',
-#'SubFolder': '2ASF',
-#
-#'Save' : True,
-#'ShowFig': True,
-#
-#'Temp_start' : 20,
-#'start' : 0,
-#'end': 8760} #8760
-#
-#PanelData = {
-#"XANGLES": [0,15,30,45,60,75,90],
-#"YANGLES" :[-45,-30,-15,0,15,30,45]}
-#
-#Material = {
-#'ASF' : 0.2,
-#'Window': 0.2}
 
 
 

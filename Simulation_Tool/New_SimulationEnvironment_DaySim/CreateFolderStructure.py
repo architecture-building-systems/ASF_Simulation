@@ -20,12 +20,12 @@ Create Folder structure for the DAYSIM radiation calculation
 """
 
 
-def CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelDat, BuildingData, paths, ProjectSubFolder):
+def CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelDat, BuildingData, paths, ProjectFolder):
     
     print '\ncreate Folder: ', project_name
 
-    SubFol_path = os.path.join(paths['folder'], ProjectSubFolder)
-    Project = os.path.join(SubFol_path, project_name)
+    ProjectFolder_path = os.path.join(paths['DaySimFolder'], ProjectFolder)
+    Project = os.path.join(ProjectFolder_path, project_name)
     Input = os.path.join(Project, 'input')
     Output = os.path.join(Project, 'output')
     
@@ -43,8 +43,8 @@ def CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelDat, Buildin
     with open(os.path.join(paths['Simulation_Environment'],'project_folder.json'),'w') as f:
         f.write(json.dumps(empty))
     
-    if not os.path.isdir(SubFol_path):
-        os.makedirs(SubFol_path)
+    if not os.path.isdir(ProjectFolder_path):
+        os.makedirs(ProjectFolder_path)
 
     if not os.path.isdir(paths['project']):
         os.makedirs(paths['project'])
@@ -99,7 +99,7 @@ def CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelDat, Buildin
             with open(os.path.join(paths['Simulation_Environment'],'comb.json'),'w') as f:
                 f.write(json.dumps(comb_data))               
 
-        time.sleep(40)     
+        time.sleep(50)     
         print 'Folder Sucessfully Created!' 
         
 
@@ -113,7 +113,7 @@ def STLFiles(x_angle, y_angle, PanelData, BuildingData, paths):
 
     
     
-    paths.update({'STL' : os.path.join(paths['folder'], 'STL')})
+    paths.update({'STL' : os.path.join(paths['DaySimFolder'], 'STL')})
     
     
      
@@ -167,7 +167,7 @@ def STLFiles(x_angle, y_angle, PanelData, BuildingData, paths):
 #XANGLES = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90]
 #YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]
 
-XANGLES = [15]
+XANGLES = [45]
 YANGLES = [0]
 
 # set material reflectance valcue of ASF and Window (from 0 to 1)
@@ -197,20 +197,21 @@ BuildingData = {
 "BuildingOrientation" : 0} #building orientation of 0 corresponds to south facing, 90 is east facing, -90 is west facing
 
 
-ProjectSubFolder = 'MatTest'
+ProjectFolder = 'MatTest2'
+SubFolder = 'ASF'
 
 paths = {}
 paths['Simulation_Environment'] =  os.path.abspath(os.path.dirname(sys.argv[0]))
-paths['folder'] = os.path.join(os.path.dirname(paths['Simulation_Environment']), 'DaySimFolder')
+paths['DaySimFolder'] = os.path.join(os.path.dirname(paths['Simulation_Environment']), 'DaySimFolder')
 
 for x_angle in XANGLES:
     for y_angle in YANGLES:
         
         #1 set a project name        
-        project_name = 'ASF_' + str(x_angle) + '_' + str(y_angle)
+        project_name = SubFolder + '_' + str(x_angle) + '_' + str(y_angle)
         
         #2 create Folder structure for all ASF combiantions
-        #CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelData, BuildingData, paths, ProjectSubFolder)
+        #CreateFolder(x_angle, y_angle, MaterialDict, project_name, PanelData, BuildingData, paths, ProjectFolder)
         
         #3 create STL files and folder
         STLFiles(x_angle, y_angle, PanelData, BuildingData, paths)

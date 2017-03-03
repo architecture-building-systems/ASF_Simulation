@@ -27,7 +27,7 @@ def PlotHour(E, PV, L, H, C, x_angle, y_angle, start, end, title, TotalHOY):
     
      
 
-    x= TotalHOY
+    x= range(start,end)
    
     z_max = round(max(E),-2)
     z_min = round(min(PV),-2)

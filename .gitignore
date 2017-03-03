@@ -141,6 +141,9 @@ sympy-plots-for-*.tex/
 !base.rad
 !command.txt
 !geometry.rad
+!SunPosition.csv
+!SunTrackingData.json
+!TempTracking.json
 
 *.json
 *.npy

@@ -274,13 +274,15 @@ if __name__ == '__main__':
    
 #    XANGLES = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90]
 #    YANGLES = [-45,-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45]
-    XANGLES = [15]
+    XANGLES = [45]
     YANGLES = [0]
     
-    ProjectSubFolder = 'MatTest'
+    ProjectFolder = 'MatTest2'
     STLFolder = 'STL'
+    SubFolder = 'ASF'
+    
     geoLocation = 'Zuerich_Kloten_2013.epw'            
-    RadianceValues = 'Default' #'MaxRad' #
+    #RadianceValues = 'Default' 
 
     
     print '\nStart radiation calculation with daysim'
@@ -306,7 +308,7 @@ if __name__ == '__main__':
                         
            
             
-            Project = 'ASF_' + str(x_angle) + '_' + str(y_angle) # used as project folder name
+            Project = SubFolder + '_' + str(x_angle) + '_' + str(y_angle) # used as project folder name
             RadianceData = 'rad_data' # radiance data for daysim
             
             
@@ -318,8 +320,8 @@ if __name__ == '__main__':
             paths['main'] = os.path.join(os.path.dirname(paths['Simulation_Environment']), 'DaySimFolder')
                         
             
-            paths['project_SubFolder'] = os.path.join(paths['main'], ProjectSubFolder)
-            paths['project'] = os.path.join(paths['project_SubFolder'], Project)
+            paths['ProjectFolder'] = os.path.join(paths['main'], ProjectFolder)
+            paths['project'] = os.path.join(paths['ProjectFolder'], Project)
             paths['input'] = os.path.join(paths['project'], 'input')
             paths['Location'] = os.path.join(paths['weather_folder'], geoLocation)
             paths['STL'] = os.path.join(paths['main'], STLFolder)

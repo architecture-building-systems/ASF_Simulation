@@ -523,7 +523,7 @@ def RC_Model (optimization_type, paths ,building_data, SimulationOptions, weathe
         results_building_simulation[hour_of_year]['H']  = hourlyData[hour_of_year]['H'][BestComb]
         results_building_simulation[hour_of_year]['C']  = hourlyData[hour_of_year]['C'][BestComb]
         results_building_simulation[hour_of_year]['L']  = hourlyData[hour_of_year]['L'][BestComb]
-        results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb]
+        results_building_simulation[hour_of_year]['PV']  = hourlyData[hour_of_year]['PV'][BestComb] *(-1)
         results_building_simulation[hour_of_year]['AE'] = hourlyData[hour_of_year]['AE'][BestComb]  
         results_building_simulation[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year][BestComb]
         results_building_simulation[hour_of_year]['T_out'] = hourlyData[hour_of_year]['T_out']
