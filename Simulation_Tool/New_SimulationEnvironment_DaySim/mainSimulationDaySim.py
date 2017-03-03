@@ -85,8 +85,8 @@ from SimulationClassDaySim import ASF_Simulation
 
 SimulationData = {
 'optimizationTypes' : ['E_total'],
-'DataFolderName' : 'test_Mat2', 
-'FileName': 'test_Mat2', 
+'DataFolderName' : 'test_Mat22', 
+'FileName': 'test_Mat22', 
 
 'ProjectName': 'MatTest2',
 'SubFolder': 'ASF',
@@ -95,7 +95,7 @@ SimulationData = {
 'ShowFig': True,
 
 'start' : 0,
-'end': 50} #8760
+'end': 8760} #8760
 
 PanelData = {
 "XANGLES": [45],

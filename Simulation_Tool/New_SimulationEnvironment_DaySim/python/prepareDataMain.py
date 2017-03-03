@@ -88,8 +88,8 @@ def prepareResults (Building_Simulation_df):
     monthlyData['E_HCL'] = sum_monthly(X = np.array(Building_Simulation_df['E_HCL']) *0.001)
     monthlyData['C'] = sum_monthly(X = np.array(Building_Simulation_df['C']) *0.001)
     monthlyData['H'] = sum_monthly(X = np.array(Building_Simulation_df['H']) *0.001)
-    monthlyData['PV'] = -1* sum_monthly(X = np.array(Building_Simulation_df['PV']) *0.001)
-    
+    monthlyData['PV'] = sum_monthly(X = np.array(Building_Simulation_df['PV']) *0.001)
+    monthlyData['AE'] = sum_monthly(X = np.array(Building_Simulation_df['AE']) *0.001)
     
     #in kWh/year
     yearlyData['E'] = monthlyData['E'].sum() 
@@ -98,8 +98,6 @@ def prepareResults (Building_Simulation_df):
     yearlyData['H'] = monthlyData['H'].sum() 
     yearlyData['C'] = monthlyData['C'].sum() 
     yearlyData['L'] =monthlyData['L'].sum() 
-
-    monthlyData['AE'] = sum_monthly(X = np.array(Building_Simulation_df['AE']) *0.001)
     yearlyData['AE'] = monthlyData['AE'].sum()
     
     return  monthlyData, yearlyData
@@ -116,11 +114,12 @@ def prepareResultsELEC (Building_Simulation_df):
     
     #in kWh/DaysPerMonth
     monthlyData['L'] = sum_monthly(X = np.array(Building_Simulation_df['L'] *0.001))
-    monthlyData['PV'] = -1 * sum_monthly(X = np.array(Building_Simulation_df['PV'] *0.001))
+    monthlyData['PV'] = sum_monthly(X = np.array(Building_Simulation_df['PV'] *0.001))
     monthlyData['H_elec'] = sum_monthly(X = np.array(Building_Simulation_df['H_elec'] *0.001))
     monthlyData['C_elec'] = sum_monthly(X = np.array(Building_Simulation_df['C_elec'] *0.001))
     monthlyData['E_elec'] = sum_monthly(X = np.array(Building_Simulation_df['E_tot_elec'] *0.001))
     monthlyData['E_HCL_elec'] = sum_monthly(X = np.array(Building_Simulation_df['E_HCL_elec'] *0.001))
+    monthlyData['AE'] = sum_monthly(X = np.array(Building_Simulation_df['AE']) *0.001)
     
     #in kWh/year
     yearlyData['PV'] =  monthlyData['PV'].sum() 
@@ -129,7 +128,7 @@ def prepareResultsELEC (Building_Simulation_df):
     yearlyData['E_HCL_elec'] =  monthlyData['E_HCL_elec'].sum()
     yearlyData['C_elec'] =  monthlyData['C_elec'].sum() 
     yearlyData['H_elec'] =  monthlyData['H_elec'].sum() 
-    
+    yearlyData['AE'] = monthlyData['AE'].sum()
 
     return  monthlyData, yearlyData
     
