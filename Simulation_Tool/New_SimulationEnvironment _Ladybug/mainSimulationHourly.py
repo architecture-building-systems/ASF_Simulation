@@ -129,14 +129,25 @@ SimulationPeriod = {
 #Set simulation data 
 SimulationData= {
 'optimizationTypes' : ['E_total'], 
-'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 
-'FileName' : 'ZH13_49comb_WinterSunnyDayNew7',
-'geoLocation' : 'Zuerich_Kloten_2013', 
-'EPWfile': 'Zuerich_Kloten_2013.epw',
+'DataFolderName' : 'USA_WinterSunnyDay', 
+'FileName' : 'USA_WinterSunnyDayNew7',
+'geoLocation' : 'USA_IL_Chicago-OHare.Intl.AP.725300_TMY3', 
+'EPWfile': 'USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw',
 'Save' : True, 
 'ShowFig': False
-}  
- 
+} 
+
+##Set simulation data 
+#SimulationData= {
+#'optimizationTypes' : ['E_total'], 
+#'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 
+#'FileName' : 'ZH13_49comb_WinterSunnyDayNew7',
+#'geoLocation' : 'Zuerich_Kloten_2013', 
+#'EPWfile': 'Zuerich_Kloten_2013.epw',
+#'Save' : True, 
+#'ShowFig': False
+#}   
+# 
 PanelData = {
 "XANGLES": [0, 15, 30, 45, 60, 75, 90],
 "YANGLES" : [-45, -30,-15,0, 15, 30, 45],

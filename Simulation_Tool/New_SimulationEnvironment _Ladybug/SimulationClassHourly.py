@@ -117,7 +117,6 @@ class ASF_Simulation(object):
         from create_lookup_table import lookUpTableFunction
         from epwreader import epw_reader
         from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature
-        from calculateHOY import calcHOY
         
         
         self.paths['radiation_results'] = os.path.join(self.paths['RadiationData'],'radiation_results_' + self.SimulationData['DataFolderName'])
@@ -135,6 +134,9 @@ class ASF_Simulation(object):
         
         #read epw file of needed destination
         self.weatherData = epw_reader(self.paths['weather'])
+        
+        if not os.path.isdir(self.paths['PV']):
+		os.makedirs(self.paths['PV']) 
         
         
         if not os.path.isdir(self.paths['RadiationData']):

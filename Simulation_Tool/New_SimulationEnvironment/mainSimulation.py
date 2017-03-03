@@ -120,6 +120,16 @@ SimulationData = {
 
 
 
+SimulationData = {
+'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'],
+'DataFolderName' : 'GE_49comb', #'ZH13_49comb',
+'FileName': 'GE_49comb',
+'geoLocation' : 'CHE_Geneva.067000_IWEC',
+'EPWfile': 'CHE_Geneva.067000_IWEC.epw',
+'Save' : True,
+'ShowFig': True}
+
+
 PanelData = {
 "XANGLES": [0, 15, 30, 45, 60, 75, 90],
 "YANGLES" : [-45, -30,-15,0, 15, 30, 45],

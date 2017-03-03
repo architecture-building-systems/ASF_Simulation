@@ -132,7 +132,8 @@ class ASF_Simulation(object):
 		self.weatherData = epw_reader(self.paths['weather'])
 		self.radiation = self.weatherData[['year', 'month', 'day', 'hour','dirnorrad_Whm2', 'difhorrad_Whm2','glohorrad_Whm2','totskycvr_tenths']]
   
-		
+		if not os.path.isdir(self.paths['PV']):
+				os.makedirs(self.paths['PV']) 
  
 		if not os.path.isdir(self.paths['RadiationData']):
 				os.makedirs(self.paths['RadiationData'])

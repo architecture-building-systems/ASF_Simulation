@@ -109,12 +109,22 @@ from buildingSystem import *
 from SimulationClass import ASF_Simulation
 
 
+#SimulationData = {
+#'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'],
+#'DataFolderName' : 'ZH13_49comb', #'ZH13_49comb',
+#'FileName': 'ZH13_49comb',
+#'geoLocation' : 'Zuerich_Kloten_2013',
+#'EPWfile': 'Zuerich_Kloten_2013.epw',
+#'Save' : True,
+#'ShowFig': True}
+
+
 SimulationData = {
 'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'],
-'DataFolderName' : 'ZH13_49comb', #'ZH13_49comb',
-'FileName': 'ZH13_49comb',
-'geoLocation' : 'Zuerich_Kloten_2013',
-'EPWfile': 'Zuerich_Kloten_2013.epw',
+'DataFolderName' : 'GE_49comb', #'ZH13_49comb',
+'FileName': 'GE_49comb',
+'geoLocation' : 'CHE_Geneva.067000_IWEC',
+'EPWfile': 'CHE_Geneva.067000_IWEC.epw',
 'Save' : True,
 'ShowFig': True}
 
