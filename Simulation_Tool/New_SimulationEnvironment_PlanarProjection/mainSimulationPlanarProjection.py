@@ -18,20 +18,22 @@ Description of the code
 
 
 HOW TO USE:
--set values and run mainSimulationPlanarProjection file
+- install sympy python module
+- set values and run mainSimulationPlanarProjection file
 
 
 
 VARIABLE DEFINITION
 
-PlanarProjectionSettings:
+    PlanarProjectionSettings:
+
     ShadingCase = set shading cases, which shall be included in the radiation calculation. '1' = horizontal, '2' = diagonal, '3' = vertical (['1','2','3'])
-    reflectance = set a reflectance value for the radiaiton calculation
+    reflectance = set a reflectance value for the radiation calculation
     DistWindow = set the distance of the ASF from the glazed surface
     shadingPV = include shading in the PV calculation (True) or not (False)
 
 
-SimulationPeriod: # set analysis period
+    SimulationPeriod: 
 
     FromMonth = start month
     ToMonth = end month (for example to select only january, FromMonth = 1, Tomonth = 1)
@@ -41,7 +43,7 @@ SimulationPeriod: # set analysis period
     ToHour': end hour of a day (last hour is not included)
 
 
-SimulationData:
+    SimulationData:
    
    optimization_Types = Decide for which energy demand type, you want to do the optimisation for, multiple options are possible.  ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'] 
                        If all otpimization types are chosen, the azimuth and altitude angle plots are created as well. 
@@ -55,7 +57,7 @@ SimulationData:
    ShowFig = decide if you want to create (True) or not create (False) the figures
    Save =  decide if you want to save (True) or not save (False) the results
    
-PanelData:
+   PanelData:
    
    XANGLES = set the X-Angles of the ASF = [0, 15, 30, 45, 60, 75, 90] , 0 = closed, 90 = open
    YANGLES = set the Y-Angles of the ASF = [-45, -30,-15,0, 15, 30, 45] 
@@ -68,7 +70,7 @@ PanelData:
    
    
    
-BuildingData:
+   BuildingData:
    
    room_width, room_height, room_depth = room dimensons in mm
    glazing_percentage_w = perecentage of glazing of the total room width [%]
@@ -77,7 +79,7 @@ BuildingData:
    
 	
    
-BuildingProperties:
+   BuildingProperties:
    
    glass_solar_transmitance: Fraction of Radiation transmitting through the window []
    glass_light_transmitance: Fraction of visible light (luminance) transmitting through the window []
@@ -97,7 +99,7 @@ BuildingProperties:
    COP_C = cooling cop
 
    
-SimulationOptions
+   SimulationOptions
    
    setBackTempH' = chose a setBackTemperature, it determines to what extend the building can heat up, when no people are in the building [°C]
    setBackTempC' = chose a setBackTemperature, it determines to what extend the building can cool down, when no people are in the building [°C]

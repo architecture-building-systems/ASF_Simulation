@@ -32,7 +32,8 @@ Calculation without the ASF:
 
 VARIABLE DEFINITION
 
-SimulationPeriod: # set analysis period
+    SimulationPeriod: 
+
     FromMonth = start month
     ToMonth = end month (for example to select only january, FromMonth = 1, Tomonth = 1)
     FromDay =  start day within a month
@@ -40,7 +41,7 @@ SimulationPeriod: # set analysis period
     FromHour': start hour of a day
     ToHour': end hour of a day (last hour is not included)
 
-SimulationData:
+    SimulationData:
    
    optimization_Types = Decide for which energy demand type, you want to do the optimisation for, multiple options are possible.  ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'] 
                        If all otpimization types are chosen, the azimuth and altitude angle plots are created as well. 
@@ -54,7 +55,7 @@ SimulationData:
    ShowFig = decide if you want to create (True) or not create (False) the figures
    Save =  decide if you want to save (True) or not save (False) the results
    
-PanelData:
+   PanelData:
    
    XANGLES = set the X-Angles of the ASF = [0, 15, 30, 45, 60, 75, 90] , 0 = closed, 90 = open
    YANGLES = set the Y-Angles of the ASF = [-45, -30,-15,0, 15, 30, 45] 
@@ -67,7 +68,7 @@ PanelData:
    panelGridSize = grid size on panel surface used for the solar radiaiton analysis with ladybug [mm]
    
    
-BuildingData:
+   BuildingData:
    
    room_width, room_height, room_depth = room dimensons in mm
    glazing_percentage_w = perecentage of glazing of the total room width [%]
@@ -76,7 +77,7 @@ BuildingData:
    WindowGridSize = select grid Size for the solar irradiation on the window surface calculated with ladybug [mm]
 	
    
-BuildingProperties:
+   BuildingProperties:
    
    glass_solar_transmitance: Fraction of Radiation transmitting through the window []
    glass_light_transmitance: Fraction of visible light (luminance) transmitting through the window []
@@ -96,7 +97,7 @@ BuildingProperties:
    COP_C = cooling cop
 
    
-SimulationOptions
+   SimulationOptions
    
    setBackTempH' = chose a setBackTemperature, it determines to what extend the building can heat up, when no people are in the building [°C]
    setBackTempC' = chose a setBackTemperature, it determines to what extend the building can cool down, when no people are in the building [°C]
@@ -118,36 +119,27 @@ from SimulationClassHourly import ASF_Simulation
 
     
 SimulationPeriod = {
-'FromMonth': 1, #7, #1,
-'ToMonth': 1,#7, #1,
-'FromDay': 8, #6, #8,
-'ToDay': 8, #8,
-'FromHour': 6,#5
-'ToHour': 18}#20
+'FromMonth': 7, #7, #1,
+'ToMonth': 7,#7, #1,
+'FromDay': 6, #6, #8,
+'ToDay': 6, #8,
+'FromHour': 5,#5
+'ToHour': 20}#20
+
 
 
 #Set simulation data 
 SimulationData= {
-'optimizationTypes' : ['E_total'], 
-'DataFolderName' : 'USA_WinterSunnyDay', 
-'FileName' : 'USA_WinterSunnyDayNew7',
-'geoLocation' : 'USA_IL_Chicago-OHare.Intl.AP.725300_TMY3', 
-'EPWfile': 'USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw',
+'optimizationTypes' : ['E_total', 'Cooling'], 
+'DataFolderName' : 'ZH13test', 
+'FileName' : 'ZH13test',
+'geoLocation' : 'Zuerich_Kloten_2013', 
+'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True, 
-'ShowFig': False
-} 
+'ShowFig': True
+}   
 
-##Set simulation data 
-#SimulationData= {
-#'optimizationTypes' : ['E_total'], 
-#'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 
-#'FileName' : 'ZH13_49comb_WinterSunnyDayNew7',
-#'geoLocation' : 'Zuerich_Kloten_2013', 
-#'EPWfile': 'Zuerich_Kloten_2013.epw',
-#'Save' : True, 
-#'ShowFig': False
-#}   
-# 
+
 PanelData = {
 "XANGLES": [0, 15, 30, 45, 60, 75, 90],
 "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
@@ -200,7 +192,7 @@ SimulationOptions= {
 'setBackTempC' : 4.,
 'Occupancy' : 'Occupancy_COM.csv',
 'ActuationEnergy' : False,
-'Temp_start' : 18,
+'Temp_start' : 22,
 'human_heat_emission' : 0.12} #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
    
 if __name__=='__main__':

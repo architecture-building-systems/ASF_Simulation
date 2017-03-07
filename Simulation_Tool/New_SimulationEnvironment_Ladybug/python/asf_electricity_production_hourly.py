@@ -74,7 +74,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                 for x_angle in XANGLES:
                     for y_angle in YANGLES:
                         # filenames.append(filename + str(i) + filetype)
-                        filenames.append(filename + '_' + str(int(hour)) + '_' + str(day) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
+                        filenames.append(filename + '_' + str(int(hour-1)) + '_' + str(day) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
                         temp_amb.append(weatherData['drybulb_C'][HOY])
     
     print "numHours: ", numHours

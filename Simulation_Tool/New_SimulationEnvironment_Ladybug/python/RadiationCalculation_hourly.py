@@ -45,7 +45,7 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderNam
                             
                             comb_data={"x_angle":x_angle,
                                        "y_angle":y_angle,
-                                       "Hour":hour, 
+                                       "Hour":hour-1, 
                                        "Day": day,
                                        "Month":monthi
                                        }
@@ -59,7 +59,7 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderNam
                             print 'time passed (min): ' + str(toc/60.)
 
                             #Wait until the radiation_results were created    
-                            while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_' +  str(hour) + '_' + str(day) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
+                            while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_' +  str(hour-1) + '_' + str(day) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                                 time.sleep(1)
                                                
                             else:
@@ -67,10 +67,10 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderNam
                                 resultsdetected += 1
                                                                                                 
                                 #read total radition on wall and save it in BuildingRadiationData              
-                                while not os.path.exists(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(hour) + '_' + str(day) + '_'+ str(monthi) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv')):
+                                while not os.path.exists(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(hour-1) + '_' + str(day) + '_'+ str(monthi) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv')):
                                     time.sleep(1)
                                 else:
-                                    with open(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(hour) + '_' + str(day) + '_' + str(monthi) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv'), 'r') as csvfile:
+                                    with open(os.path.join(paths['radiation_wall'], 'RadiationWall' + '_' + str(hour-1) + '_' + str(day) + '_' + str(monthi) + '_' + str(x_angle) + '_' + str(y_angle) + '.csv'), 'r') as csvfile:
                                         reader = csv.reader(csvfile)
                                         for idx,line in enumerate(reader):
                                             if idx == 1:

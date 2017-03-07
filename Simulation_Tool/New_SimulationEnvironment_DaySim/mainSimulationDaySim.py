@@ -11,11 +11,22 @@ main file for simulation environment
 
 02.11.2016
 
+HOW TO USE:
+- checkout the DAYSIM simulation wiki
 
 	
-INPUT PARAMETER DEFINITION 
+INPUT PARAMETER DEFINITION
 
-SimulationData:
+    SimulationPeriod: 
+
+    FromMonth = start month
+    ToMonth = end month (for example to select only january, FromMonth = 1, Tomonth = 1)
+    FromDay =  start day within a month
+    ToDay = end day within a month (15. day of a month, FromDay = 15, ToDay = 15)
+    FromHour': start hour of a day
+    ToHour': end hour of a day (last hour is not included) 
+
+   SimulationData:
    
    optimization_Types = Decide for which energy demand type, you want to do the optimisation for. Multiple options are possible.  ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'] 
                            If all otpimization types are chosen, the azimuth and altitude angle plots are created as well. 
@@ -32,17 +43,17 @@ SimulationData:
    start = set start hour of analysis, for yearly analysis = 0
    end = set end hour of analysis, for yearly analysis = 8760
    
-PanelData
+   PanelData:
 
-    XANGLES, YANGLES = only use combinations, from which the daysim data is pre calculated
+   XANGLES, YANGLES = only use combinations, from which the daysim data is pre calculated
     
-Material
+   Material:
 
-    ASF = set suffix for the saved results, so different material values can be evaluated
-    Window = set suffix for the saved results, so different material values can be evaluated
+   ASF = set suffix for the saved results, so different material values can be evaluated
+   Window = set suffix for the saved results, so different material values can be evaluated
  
    
- BuildingProperties:
+   BuildingProperties:
    
    glass_solar_transmitance: Fraction of Radiation transmitting through the window []
    glass_light_transmitance: Fraction of visible light (luminance) transmitting through the window []
@@ -62,7 +73,7 @@ Material
    COP_C = cooling cop   
    
    
- SimulationOptions
+   SimulationOptions:
    
    setBackTempH' = chose a setBackTemperature, it determines to what extend the building can heat up, when no people are in the building [°C]
    setBackTempC' = chose a setBackTemperature, it determines to what extend the building can cool down, when no people are in the building [°C]

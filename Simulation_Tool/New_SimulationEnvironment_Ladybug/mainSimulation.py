@@ -19,7 +19,7 @@ Description of the code
 
 
 HOW TO USE:
-- Open the main_new.GH file in Grasshopper
+- Open the mainNew.GH file in Grasshopper
 - Set both red framed boolean toggles to true 
 - Set all needed values for evaluation at the beginning of the main.py script
 - start simulation, for a new loaction an error with ..SunPosition.csv not found, just wait 1 min for GH to create it, then start simulation again
@@ -29,12 +29,13 @@ When LadyBug once has calculated all the radiation data (ASF and Window), they w
 The PV porduction is saved with the corresponding 'filename', this makes it possible to use the same radiaiton data for different combination analysis.
 
 Calculation without the ASF: 
-    set XANGLES and YANGLES equal [0], set numberHorizontal and numberVertical to 0 in the PanelData settings
+
+- set XANGLES and YANGLES equal [0], set numberHorizontal and numberVertical to 0 in the PanelData settings
 
 
 VARIABLE DEFINITION
 
-SimulationData:
+    SimulationData:
    
    optimization_Types = Decide for which energy demand type, you want to do the optimisation for, multiple options are possible.  ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'] 
                        If all otpimization types are chosen, the azimuth and altitude angle plots are created as well. 
@@ -48,7 +49,7 @@ SimulationData:
    ShowFig = decide if you want to create (True) or not create (False) the figures
    Save =  decide if you want to save (True) or not save (False) the results
    
-PanelData:
+   PanelData:
    
    XANGLES = set the X-Angles of the ASF = [0, 15, 30, 45, 60, 75, 90] , 0 = closed, 90 = open
    YANGLES = set the Y-Angles of the ASF = [-45, -30,-15,0, 15, 30, 45] 
@@ -61,7 +62,7 @@ PanelData:
    panelGridSize = grid size on panel surface used for the solar radiaiton analysis with ladybug [mm]
    
    
-BuildingData:
+   BuildingData:
    
    room_width, room_height, room_depth = room dimensons in mm
    glazing_percentage_w = perecentage of glazing of the total room width [%]
@@ -70,7 +71,7 @@ BuildingData:
    WindowGridSize = select grid Size for the solar irradiation on the window surface calculated with ladybug [mm]
 	
    
-BuildingProperties:
+   BuildingProperties:
    
    glass_solar_transmitance: Fraction of Radiation transmitting through the window []
    glass_light_transmitance: Fraction of visible light (luminance) transmitting through the window []
@@ -90,7 +91,7 @@ BuildingProperties:
    COP_C = cooling cop
 
    
-SimulationOptions
+   SimulationOptions
    
    setBackTempH' = chose a setBackTemperature, it determines to what extend the building can heat up, when no people are in the building [°C]
    setBackTempC' = chose a setBackTemperature, it determines to what extend the building can cool down, when no people are in the building [°C]
