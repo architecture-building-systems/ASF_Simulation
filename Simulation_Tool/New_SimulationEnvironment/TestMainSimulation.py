@@ -30,7 +30,7 @@ class TestMainSimulation(unittest.TestCase):
 		'geoLocation' : 'Zuerich_Kloten_2005',
 		'EPWfile' : 'Zuerich_Kloten_2005.epw',
 		'Save' : False,
-		'ShowFig': True}
+		'ShowFig': False}
 		
 		#Set panel data
 		PanelData={
@@ -87,8 +87,8 @@ class TestMainSimulation(unittest.TestCase):
 		ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
 		ASFtest.SolveASF()
 		
-		self.assertEqual(round(ASFtest.yearlyData['E_total']['E'],2), 1182.15)
-		self.assertEqual(round(ASFtest.yearlyData['E_total']['PV'],2), -709.19)
+		self.assertEqual(round(ASFtest.yearlyData['E_total']['E'],2), 1182.16)
+		self.assertEqual(round(ASFtest.yearlyData['E_total']['PV'],2), -709.2)
 		#self.assertEqual(round(monthlyData['H'][0],2),3.56)
 		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total']['BestCombKey'][38],39)
 		
@@ -161,8 +161,8 @@ class TestMainSimulation(unittest.TestCase):
 		ASFtest.SolveASF()
 		
 																					 
-		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['E_elec'],2), 1419.44)
-		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['PV'],2), -723.97)
+		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['E_elec'],2), 1419.46)
+		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['PV'],2), -723.99)
 		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],46)
   
 	def test_COPHeating(self):
@@ -205,12 +205,12 @@ class TestMainSimulation(unittest.TestCase):
 		
 
 		
-		ASFtest=ASF_Simulation(SimulationData = SimulationData,BuildingProperties = BuildingProperties)
-		ASFtest.SolveASF()
+		ASFtest2=ASF_Simulation(SimulationData = SimulationData,BuildingProperties = BuildingProperties)
+		ASFtest2.SolveASF()
 		
 																					 
-		self.assertEqual(round(ASFtest.yearlyData['E_total']['E'],2), 1049.13)
-		self.assertEqual(round(ASFtest.yearlyData['E_total']['H'],2), 315.12)
+		self.assertEqual(round(ASFtest2.yearlyData['E_total']['E'],2), 1049.13)
+		self.assertEqual(round(ASFtest2.yearlyData['E_total']['H'],2), 315.13)
 		
   
 	def test_COPCooling(self):
@@ -259,8 +259,8 @@ class TestMainSimulation(unittest.TestCase):
 		ASF_COP_C.SolveASF()
 		
 																					 
-		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['E'],2), 681.31)
-		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['C'],2), 376.68)
+		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['E'],2), 681.32)
+		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['C'],2), 376.69)
 		
 	def test_NoASF(self):
           
@@ -285,11 +285,34 @@ class TestMainSimulation(unittest.TestCase):
             "panelOffset":400,
             "panelSize":400,
             "panelSpacing":500}
+            
+            #Set building properties for RC-Model simulator
+		BuildingProperties={
+		"glass_solar_transmitance" : 0.687 ,
+		"glass_light_transmitance" : 0.744 ,
+		"lighting_load" : 11.74 ,
+		"lighting_control" : 300,
+		"Lighting_Utilisation_Factor" :  0.45,
+		"Lighting_MaintenanceFactor" : 0.9,
+		"U_em" : 0.2, 
+		"U_w" : 1.2,
+		"ACH_vent" : 1.5,
+		"ACH_infl" :0.5,
+		"ventilation_efficiency" : 0.6 ,
+		"c_m_A_f" : 165 * 10**3,
+		"theta_int_h_set" : 20,
+		"theta_int_c_set" : 26,
+		"phi_c_max_A_f": -np.inf,
+		"phi_h_max_A_f": np.inf,
+		"heatingSystem" : DirectHeater, 
+		"coolingSystem" : DirectCooler, 
+		"heatingEfficiency" : 1,
+		"coolingEfficiency" :1,
+           "COP_H": 1,
+           "COP_C":1}
 		
-		
-		
-		
-		NoASF=ASF_Simulation(SimulationData = SimulationData,PanelData = PanelData)
+
+		NoASF=ASF_Simulation(SimulationData = SimulationData,PanelData = PanelData, BuildingProperties= BuildingProperties)
 		NoASF.SolveASF()
 		
 																					 
@@ -321,17 +344,96 @@ class TestMainSimulation(unittest.TestCase):
             "panelOffset":400,
             "panelSize":400,
             "panelSpacing":500}
+            
+            #Set building properties for RC-Model simulator
+		BuildingProperties={
+		"glass_solar_transmitance" : 0.687 ,
+		"glass_light_transmitance" : 0.744 ,
+		"lighting_load" : 11.74 ,
+		"lighting_control" : 300,
+		"Lighting_Utilisation_Factor" :  0.45,
+		"Lighting_MaintenanceFactor" : 0.9,
+		"U_em" : 0.2, 
+		"U_w" : 1.2,
+		"ACH_vent" : 1.5,
+		"ACH_infl" :0.5,
+		"ventilation_efficiency" : 0.6 ,
+		"c_m_A_f" : 165 * 10**3,
+		"theta_int_h_set" : 20,
+		"theta_int_c_set" : 26,
+		"phi_c_max_A_f": -np.inf,
+		"phi_h_max_A_f": np.inf,
+		"heatingSystem" : DirectHeater, 
+		"coolingSystem" : DirectCooler, 
+		"heatingEfficiency" : 1,
+		"coolingEfficiency" :1,
+           "COP_H": 1,
+           "COP_C":1}
 		
 		
 		
 		
-		OneASF=ASF_Simulation(SimulationData = SimulationData,PanelData = PanelData)
+		OneASF=ASF_Simulation(SimulationData = SimulationData,PanelData = PanelData, BuildingProperties=BuildingProperties)
 		OneASF.SolveASF()
 		
 																					 
 		self.assertEqual(round(OneASF.yearlyData['E_total']['E'],2), 2601.4)
 		self.assertEqual(round(OneASF.yearlyData['E_total']['PV'],2),-658.0)
 		self.assertEqual(OneASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],0)
+  
+	def test_AcuationEnergy(self):
+          
+		print 'running AcuationEnergy test'
+		SimulationData= {
+		'optimizationTypes' : ['E_total'],
+		'DataFolderName' : 'ZH13_49comb',
+		'FileName': 'ZH13_49comb',
+		'geoLocation' : 'Zuerich_Kloten_2013',
+		'EPWfile' : 'Zuerich_Kloten_2013.epw',
+		'Save' : False,
+		'ShowFig': False}
+		
+				
+
+		#Set simulation Properties
+		SimulationOptions= {
+		'setBackTempH' : 4.,
+		'setBackTempC': 4,
+		'Occupancy' : 'Occupancy_COM.csv',
+		'ActuationEnergy' : True}
+		
+		
+		
+		
+		AcuationEnergyASF=ASF_Simulation(SimulationData = SimulationData, SimulationOptions = SimulationOptions)
+		AcuationEnergyASF.SolveASF()
+		
+																					 
+		self.assertEqual(round(AcuationEnergyASF.yearlyData['E_total']['E'],2),492)
+		self.assertEqual(round(AcuationEnergyASF.yearlyData['E_total']['AE'],2),2.74)
+		self.assertEqual(AcuationEnergyASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],38)
+  
+	def test_MainPaper(self):
+          
+		print 'running AcuationEnergy test'
+		SimulationData= {
+		'optimizationTypes' : ['E_total'],
+		'DataFolderName' : 'ZH13_49comb',
+		'FileName': 'ZH13_49comb',
+		'geoLocation' : 'Zuerich_Kloten_2013',
+		'EPWfile' : 'Zuerich_Kloten_2013.epw',
+		'Save' : False,
+		'ShowFig': False}
+		
+
+		
+		MainASF=ASF_Simulation(SimulationData = SimulationData)
+		MainASF.SolveASF()
+
+																					 
+		self.assertEqual(round(MainASF.yearlyData['E_total']['E'],2),490.42)
+		self.assertEqual(round(MainASF.yearlyData['E_total']['PV'],2),-831)
+		self.assertEqual(MainASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],38)
 		
   
   

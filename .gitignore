@@ -131,9 +131,28 @@ sympy-plots-for-*.tex/
 *.csv
 !Occupancy_COM.csv
 !Temperature.csv
+
+!SunAngles.csv
+
+!powerloss.csv
+!Context.stl
+!Room.stl
+!Window.stl
+!base.rad
+!command.txt
+!geometry.rad
 !SunPosition.csv
+!SunTrackingData.json
+!TempTracking.json
+
 *.json
 *.npy
+*.stl
+*.rad
+*.ill
+*.dc
+*.hea
+*.wea
 
 # illuminance data
 *.pts

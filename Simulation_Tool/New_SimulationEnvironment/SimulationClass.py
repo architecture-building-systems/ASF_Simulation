@@ -21,19 +21,19 @@ class ASF_Simulation(object):
 
 	def __init__(self,
             SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod':None},
+            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},
             PanelData = 
-            {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500},
+            {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500, "panelGridSize" : 25},
             BuildingData = 
-            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200},
+            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200, "BuildingOrientation" : 0},
             BuildingProperties = 
-            {"glass_solar_transmitance" : 0.687,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.45,\
-            "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.2,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 20,\
+            {"glass_solar_transmitance" : 0.691,"glass_light_transmitance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.6,\
+            "Lighting_MaintenanceFactor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
             "theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSystem" : DirectHeater,"coolingSystem" : DirectCooler, "heatingEfficiency" : 1,"coolingEfficiency" :1,
-            'COP_H': 1, 'COP_C':1},
+            'COP_H': 3, 'COP_C':3},
             SimulationOptions= 
-            {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False}):
-                            
+            {'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False, "Temp_start" : 20, 'human_heat_emission' : 0.12,}):
+                     
                             
             #define varibales of object
 		self.SimulationData=SimulationData
@@ -90,8 +90,6 @@ class ASF_Simulation(object):
 		
 	def setPaths(self): 
      
-		
-        
            #set the occupancy file, which will be used for the evaluation
 		Occupancy = self.SimulationOptions['Occupancy']
 
@@ -119,18 +117,23 @@ class ASF_Simulation(object):
 		self.paths['weather_folder']= os.path.join(os.path.dirname(self.paths['main']), 'WeatherData')
 		print self.geoLocation
 		self.paths['weather'] = os.path.join(self.paths['weather_folder'], self.geoLocation + '.epw')
+  
 		
 		# add python_path to system path, so that all files are available:
 		sys.path.insert(0, self.paths['python'])
-		
 		
 		from epwreader import epw_reader
 		from SunAnglesTrackingAndTemperatureFunction import SunAnglesTackingAndTemperature # used?
 		from create_lookup_table import lookUpTableFunction
   
+		
+  
 		#read epw file of needed destination
 		self.weatherData = epw_reader(self.paths['weather'])
+		self.radiation = self.weatherData[['year', 'month', 'day', 'hour','dirnorrad_Whm2', 'difhorrad_Whm2','glohorrad_Whm2','totskycvr_tenths']]
+  
 		
+ 
 		if not os.path.isdir(self.paths['RadiationData']):
 				os.makedirs(self.paths['RadiationData'])
   
@@ -218,7 +221,7 @@ class ASF_Simulation(object):
 	def runRadiationCalculation(self):
 		 
          from RadiationCalculation import CalculateRadiationData
-         from asf_electricity_production_mauro_3 import asf_electricity_production
+         from asf_electricity_production_2 import asf_electricity_production
 
 	   #Calculate the Radiation on the solar panels and window with ladybug
          self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
@@ -226,8 +229,7 @@ class ASF_Simulation(object):
 												paths = self.paths, 
 												daysPerMonth = self.daysPerMonth, 
 												hour_in_month = self.hour_in_month,
-												DataFolderName = self.FolderName['DataFolderName'],
-												FileName = self.SimulationData['FileName'])
+												FolderName = self.SimulationData)
 			
 		
 	   #if there are no panels vertical and horizontal
@@ -275,9 +277,11 @@ class ASF_Simulation(object):
         								   geo_path = self.paths['geo'],
         								   flipOrientation= False, 
         								   SimulationData = self.SimulationData,
-        								   XANGLES = self.XANGLES, YANGLES= self.YANGLES, 
+        								   XANGLES = self.XANGLES, 
+        								   YANGLES= self.YANGLES, 
         								   hour_in_month = self.hour_in_month,
-        								   paths = self.paths, DataNamePV = self.SimulationData['FileName'])
+        								   paths = self.paths, 
+        								   DataNamePV = self.SimulationData['FileName'])
         		
         		else: 
                       #if PV-results are available, they will be loaded from folder
@@ -313,37 +317,31 @@ class ASF_Simulation(object):
 				for ii in range(0,self.daysPerMonth[monthi-1]):             
 					DAY = ii*24 + int(HOD)   
 					self.BuildingRadiationData_HOY[passedHours + DAY] = self.BuildingRadiationData_HOD[monthi][DAY] #W
-		
-		#initilize dictionary
-		for hour_of_year in range(0,8760):
-			self.PV[hour_of_year]= {}
-			self.PV[hour_of_year]['PV']= []
 			
 			  
 		count = 0
 		DAY = 0
+		passedHours = 0
              #check if no panels are selected, if so, than PV-Production is zero
 		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
                
                  for hour_of_year in range(0,8760):
-                     self.PV[int(hour_of_year)]['PV']= [0]
+                     self.PV[int(hour_of_year)] = [0]
 		else:		
         		for monthi in range(1,13):
-        			if monthi == 1:
-        				passedHours = 0
-        			else:
-        				passedHours = sumHours[monthi-2]
-        				
         			for HOD in self.hour_in_month[monthi]:
         					for jj in range(0,self.daysPerMonth[monthi-1]):
-        						DAY = jj*24 + HOD     
-        						self.PV[passedHours + DAY]['PV'] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
+        						DAY = passedHours + jj*24 + HOD     
+        						self.PV[DAY] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
         					count +=self.NumberCombinations
-		#add the window radiation data to the specific HOY			
+        			passedHours += self.daysPerMonth[monthi-1]*24
+		
+          
+          #add the window radiation data to the specific HOY			
 		for hour_of_year in range(0,8760):
 			if hour_of_year not in hourRadiation:
 					self.BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
-					self.PV[int(hour_of_year)]['PV'] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
+					self.PV[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
 		   
 		
 		
@@ -352,8 +350,7 @@ class ASF_Simulation(object):
            
             # add python_path to system path, so that all files are available:
             sys.path.insert(0, self.paths['5R1C_ISO_simulator'])
-            self.setBackTempH = self.SimulationOptions['setBackTempH']
-            self.setBackTempC = self.SimulationOptions['setBackTempC']     
+                 
             		
             from energy_minimization import RC_Model
             from prepareDataMain import prepareAngles, prepareResults, prepareResultsELEC
@@ -369,14 +366,9 @@ class ASF_Simulation(object):
             self.y_angles = {} #optimized y-angles
             self.BestKey_df = {} #optimized keys of the ANGLES dictionary
             		
-            		
-            #set parameters
-            human_heat_emission=0.12 #[kWh] heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. Porges
-            roomFloorArea = self.BuildingData['room_width']/1000.0 * self.BuildingData['room_depth']/1000.0 #[m^2] floor area
-            		 
             				
             #people/m2/h, W    
-            occupancy, Q_human = read_occupancy(myfilename = self.paths['Occupancy'], human_heat_emission = human_heat_emission, floor_area = roomFloorArea)    
+            occupancy, Q_human = read_occupancy(myfilename = self.paths['Occupancy'], human_heat_emission = self.SimulationOptions['human_heat_emission'] , floor_area = self.roomFloorArea)    
             		
             				
             #run the RC-Model for the needed optimization Type and save RC-Model results in dictionaries for every optimization type analysed
@@ -387,15 +379,13 @@ class ASF_Simulation(object):
                                                                          optimization_type = optimizationType, 
                                                                          paths = self.paths,
                                                                          building_data = self.BuildingData, 
-                                                                         weatherData = self.weatherData, 
-                                                                         hourRadiation = self.hourRadiation, 
+                                                                         weatherData = self.weatherData,  
                                                                          BuildingRadiationData_HOY = self.BuildingRadiationData_HOY, 
                                                                          PV = self.PV, 
                                                                          NumberCombinations = self.NumberCombinations, 
                                                                          combinationAngles = self.combinationAngles,
                                                                          BuildingProperties = self.BuildingProperties,
-                                                                         setBackTempH = self.setBackTempH,
-                                                                         setBackTempC = self.setBackTempC,
+                                                                         SimulationOptions = self.SimulationOptions,
                                                                          occupancy = occupancy,
                                                                          Q_human = Q_human
                                                                          )
@@ -446,6 +436,7 @@ class ASF_Simulation(object):
 				fig1 = createCarpetPlotXAngles(self.x_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
 				fig2 = createCarpetPlotYAngles(self.y_angles, self.hour_in_month, H = 'Heating', C = 'Cooling', E = 'E_total', E_HCL = 'E_HCL')
 				
+				
 				self.fig.update({'fig1' : fig1, 'fig2' : fig2})
 		
 		if ('E_total_elec' and 'Heating_elec' and 'Cooling_elec'  and 'E_HCL_elec' ) in self.optimization_Types:
@@ -457,7 +448,7 @@ class ASF_Simulation(object):
 				
 				self.fig.update({'figB' : figB, 'figC' : figC})
 		
-		return self.fig
+		
 
 
 
@@ -490,8 +481,8 @@ class ASF_Simulation(object):
                     self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.png'))
                 else:
                     pass
-			
-			
+
+                
                 if ('E_total' and 'Heating' and 'Cooling' and 'E_HCL') in self.optimization_Types: 
                     if ('SolarEnergy' and 'Lighting') in self.optimization_Types:                          
 					#save figures
@@ -530,6 +521,9 @@ class ASF_Simulation(object):
                 #convert heating/cooling system variables into strings			
                 self.BuildingProperties["heatingSystem"] = str(self.BuildingProperties["heatingSystem"])
                 self.BuildingProperties["coolingSystem"] = str(self.BuildingProperties["coolingSystem"])
+                self.BuildingProperties["T_start"] = self.SimulationOptions['Temp_start'] 
+                self.BuildingProperties["SetBack_H"] = self.SimulationOptions['setBackTempH']
+                self.BuildingProperties["SetBack_C"] = self.SimulationOptions['setBackTempC']
                 			
                 				 
                 #save building properties in json files
