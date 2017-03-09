@@ -226,11 +226,11 @@ class ASF_Simulation(object):
 
 	   #Calculate the Radiation on the solar panels and window with ladybug
          self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
-                                                                    YANGLES = self.YANGLES, 
-												paths = self.paths, 
-												daysPerMonth = self.daysPerMonth, 
-												hour_in_month = self.hour_in_month,
-												FolderName = self.SimulationData)
+                                                                YANGLES = self.YANGLES, 
+                                                                paths = self.paths,
+                                                                daysPerMonth = self.daysPerMonth, 
+                                                                hour_in_month = self.hour_in_month,
+                                                                FolderName = self.SimulationData)
 			
 		
 	   #if there are no panels vertical and horizontal

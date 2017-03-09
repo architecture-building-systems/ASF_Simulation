@@ -73,15 +73,17 @@ class TestMainSimulation(unittest.TestCase):
 		"coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
 		"heatingEfficiency" : 1,
 		"coolingEfficiency" :1,
-           "COP_H": 1,
-           "COP_C":1}
+		"COP_H": 1,
+		"COP_C":1}
 		
 		#Set simulation Properties
 		SimulationOptions= {
-		'setBackTempH' : 4.,
-		'setBackTempC': 4,
-		'Occupancy' : 'Occupancy_COM.csv',
-		'ActuationEnergy' : False}
+            'setBackTempH' : 4.,
+            'setBackTempC' : 4., 
+            'Occupancy' : 'Occupancy_COM.csv',
+            'ActuationEnergy' : False, 
+            "Temp_start" : 20, 
+            'human_heat_emission' : 0.12,}
 		
 		
 		ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
@@ -146,15 +148,18 @@ class TestMainSimulation(unittest.TestCase):
 		"coolingSystem" : DirectCooler, 
 		"heatingEfficiency" : 1,
 		"coolingEfficiency" :1,
-           "COP_H": 1,
-           "COP_C":1}
+		"COP_H": 1,
+		"COP_C":1}
 		
 		#Set simulation Properties
 		SimulationOptions= {
-		'setBackTempH' : 4.,
-		'setBackTempC': 4,
-		'Occupancy' : 'Occupancy_COM.csv',
-		'ActuationEnergy' : False}
+            'setBackTempH' : 4.,
+            'setBackTempC' : 4., 
+            'Occupancy' : 'Occupancy_COM.csv',
+            'ActuationEnergy' : False, 
+            "Temp_start" : 20, 
+            'human_heat_emission' : 0.12,}
+                     
 		
 		
 		ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
@@ -199,8 +204,8 @@ class TestMainSimulation(unittest.TestCase):
 		"coolingSystem" : DirectCooler, 
 		"heatingEfficiency" : 1,
 		"coolingEfficiency" :1,
-           "COP_H": 4,
-           "COP_C":1}		
+		"COP_H": 4,
+		"COP_C":1}		
 
 		
 
@@ -249,8 +254,8 @@ class TestMainSimulation(unittest.TestCase):
 		"coolingSystem" : DirectCooler, 
 		"heatingEfficiency" : 1,
 		"coolingEfficiency" :1,
-           "COP_H": 1,
-           "COP_C":3}
+		"COP_H": 1,
+		"COP_C":3}
 		
 		
 		
@@ -262,64 +267,7 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['E'],2), 681.32)
 		self.assertEqual(round(ASF_COP_C.yearlyData['E_total']['C'],2), 376.69)
 		
-	def test_NoASF(self):
-          
-		#Set simulation data
-		print 'test NoASF'
-		SimulationData= {
-		'optimizationTypes' : ['E_total'],
-  		'DataFolderName' : 'ZH13_NoASF',
-		'FileName': 'ZH13_NoASF',
-		'geoLocation' : 'Zuerich_Kloten_2013',
-		'EPWfile' : 'Zuerich_Kloten_2013.epw',
-		'Save' : False,
-		'ShowFig': False}
-		
-				
-		PanelData={
-            "XANGLES": [0],
-            "YANGLES" : [0],
-            "NoClusters":1,
-            "numberHorizontal":0,
-            "numberVertical":0,
-            "panelOffset":400,
-            "panelSize":400,
-            "panelSpacing":500}
-            
-            #Set building properties for RC-Model simulator
-		BuildingProperties={
-		"glass_solar_transmitance" : 0.687 ,
-		"glass_light_transmitance" : 0.744 ,
-		"lighting_load" : 11.74 ,
-		"lighting_control" : 300,
-		"Lighting_Utilisation_Factor" :  0.45,
-		"Lighting_MaintenanceFactor" : 0.9,
-		"U_em" : 0.2, 
-		"U_w" : 1.2,
-		"ACH_vent" : 1.5,
-		"ACH_infl" :0.5,
-		"ventilation_efficiency" : 0.6 ,
-		"c_m_A_f" : 165 * 10**3,
-		"theta_int_h_set" : 20,
-		"theta_int_c_set" : 26,
-		"phi_c_max_A_f": -np.inf,
-		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, 
-		"coolingSystem" : DirectCooler, 
-		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1,
-           "COP_H": 1,
-           "COP_C":1}
-		
-
-		NoASF=ASF_Simulation(SimulationData = SimulationData,PanelData = PanelData, BuildingProperties= BuildingProperties)
-		NoASF.SolveASF()
-		
-																					 
-		self.assertEqual(round(NoASF.yearlyData['E_total']['E'],2), 5147.59)
-		self.assertEqual(round(NoASF.yearlyData['E_total']['PV'],2), 0.00)
-		self.assertEqual(NoASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],1)
-		self.assertEqual(NoASF.ResultsBuildingSimulation['E_total']['BestCombKey'][4000],1)
+	
   
 	def test_1comb(self):
           
@@ -367,8 +315,8 @@ class TestMainSimulation(unittest.TestCase):
 		"coolingSystem" : DirectCooler, 
 		"heatingEfficiency" : 1,
 		"coolingEfficiency" :1,
-           "COP_H": 1,
-           "COP_C":1}
+		"COP_H": 1,
+		"COP_C":1}
 		
 		
 		
@@ -397,10 +345,12 @@ class TestMainSimulation(unittest.TestCase):
 
 		#Set simulation Properties
 		SimulationOptions= {
-		'setBackTempH' : 4.,
-		'setBackTempC': 4,
-		'Occupancy' : 'Occupancy_COM.csv',
-		'ActuationEnergy' : True}
+            'setBackTempH' : 4.,
+            'setBackTempC' : 4., 
+            'Occupancy' : 'Occupancy_COM.csv',
+            'ActuationEnergy' : True, 
+            "Temp_start" : 20, 
+            'human_heat_emission' : 0.12,}
 		
 		
 		
@@ -409,13 +359,13 @@ class TestMainSimulation(unittest.TestCase):
 		AcuationEnergyASF.SolveASF()
 		
 																					 
-		self.assertEqual(round(AcuationEnergyASF.yearlyData['E_total']['E'],2),492)
+		self.assertEqual(round(AcuationEnergyASF.yearlyData['E_total']['E'],2),492.0)
 		self.assertEqual(round(AcuationEnergyASF.yearlyData['E_total']['AE'],2),2.74)
 		self.assertEqual(AcuationEnergyASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],38)
   
 	def test_MainPaper(self):
           
-		print 'running AcuationEnergy test'
+		print 'running AcuationEnergy test, but acuation not included'
 		SimulationData= {
 		'optimizationTypes' : ['E_total'],
 		'DataFolderName' : 'ZH13_49comb',
