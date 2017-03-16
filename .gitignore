@@ -172,6 +172,7 @@ sympy-plots-for-*.tex/
 
 # Results Folder
 /Simulation_Tool/New_Simulation_Environment/Results/*
+/Simulation_Tool/New_Simulation_Environment_Ladybug/Results/*
 
 Simulation_Tool/New_SimulationEnvironment/radiation_results_ZH13_49comb/LayoutAndCombinations.txt
 *.txt
