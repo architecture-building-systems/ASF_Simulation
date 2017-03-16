@@ -84,6 +84,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     print "\noptimization", optimization_type
     
     #class Building   
+    ##@Michael: This will need to be modified to fit your code
     Office=Building (
                     Fenst_A = BuildingProperties['Fenst_A'],
                     Room_Depth = BuildingProperties['Room_Depth'],
@@ -171,6 +172,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             
             
             #save all combination results for one HOY
+            ##@Michael: The next 20 lines will need to be modified to ensure that the correct output is being used
             Data_Lighting_HOY[hour_of_year][comb] = Office.lighting_demand # Watts
             Data_HC_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac #achtung heating und cooling 
             Data_T_in_HOY[hour_of_year][comb] = Office.theta_m

@@ -153,6 +153,7 @@ BuildingData = {
 
 
 ##Set building properties for RC-Model simulator
+##>@Michael: This will need to be modified to match your code
 BuildingProperties={
 "glass_solar_transmitance" : 0.691 ,
 "glass_light_transmitance" : 0.744 ,#0.68

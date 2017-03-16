@@ -161,7 +161,7 @@ BuildingData={
 "WindowGridSize" : 200,
 "BuildingOrientation" : 0} 
 
-
+##@Michael: This will need to be modified to fit your model
 BuildingProperties={
 "glass_solar_transmitance" : 0.691 ,
 "glass_light_transmitance" : 0.744 ,

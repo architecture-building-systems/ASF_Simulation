@@ -19,6 +19,7 @@ from buildingSystem import *
 class ASF_Simulation(object):
     #initilize ASF_simulation class
 
+    #@Michael: This initialisation will need to be modified to fit your code
 	def __init__(self,
             SimulationData = 
             {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},
