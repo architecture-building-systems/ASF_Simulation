@@ -99,11 +99,11 @@ VARIABLE DEFINITION
    
    SimulationOptions
    
-   setBackTempH' = chose a setBackTemperature, it determines to what extend the building can heat up, when no people are in the building [°C]
-   setBackTempC' = chose a setBackTemperature, it determines to what extend the building can cool down, when no people are in the building [°C]
+   setBackTempH' = chose a setBackTemperature, it determines to what extend the building can heat up, when no people are in the building [C]
+   setBackTempC' = chose a setBackTemperature, it determines to what extend the building can cool down, when no people are in the building [C]
    Occupancy'  = select occupancy profile file, 'Occupancy_COM.csv'
    ActuationEnergy = choose whether you want to include the the needed actuation energy for the ASF adjustment
-   Temp_start = simulation starting Temperature [°C] 
+   Temp_start = simulation starting Temperature [C] 
    human_heat_emissions = heat emitted by a human body per hour. Source: HVAC Engineers Handbook, F. 
 
 """
