@@ -1,5 +1,5 @@
 # ASF_Simulation
-This repository details the development of an ASF Simulation Framework
+This repository details the development of an ASF Simulation Framework for the CISBAT paper
 
 Information on running the software can be found here https://github.com/architecture-building-systems/ASF_Simulation/wiki
 
