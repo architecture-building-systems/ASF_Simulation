@@ -14,7 +14,8 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
-sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))    
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))
+print sys.argv[0]
     
 from buildingPhysics import Building #Importing Building Class
 from supplySystem import *  
@@ -334,6 +335,7 @@ class ASF_Simulation(object):
                     
                     #HOY = start + passedHours
                     HOY = calcHOY(month= monthi, day = day, hour= hour)
+
                     self.BuildingRadiationHOY[HOY] = self.HourlyRadiation[monthi][day][hour] #W
                     
                     #print 'HOY: ' + str(HOY) + ' of ' + str(end)
