@@ -7,8 +7,13 @@ Created on Wed Nov 09 11:53:33 2016
 import unittest
 import sys,os
 import numpy as np
-from buildingSystem import *  
 from SimulationClass import ASF_Simulation
+
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))    
+    
+from buildingPhysics import Building #Importing Building Class
+from supplySystem import *  
+from emissionSystem import *
 
 
 class TestMainSimulation2(unittest.TestCase):
@@ -47,12 +52,12 @@ class TestMainSimulation2(unittest.TestCase):
 		
 		#Set building properties for RC-Model simulator
 		BuildingProperties={
-		"glass_solar_transmitance" : 0.687 ,
-		"glass_light_transmitance" : 0.744 ,
+		"glass_solar_transmittance" : 0.687 ,
+		"glass_light_transmittance" : 0.744 ,
 		"lighting_load" : 11.74 ,
 		"lighting_control" : 300,
 		"Lighting_Utilisation_Factor" :  0.45,
-		"Lighting_MaintenanceFactor" : 0.9,
+		"Lighting_Maintenance_Factor" : 0.9,
 		"U_em" : 0.2, 
 		"U_w" : 1.2,
 		"ACH_vent" : 1.5,
@@ -63,12 +68,11 @@ class TestMainSimulation2(unittest.TestCase):
 		"theta_int_c_set" : 26,
 		"phi_c_max_A_f": -np.inf,
 		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, 
-		"coolingSystem" : DirectCooler, 
-		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1,
-		"COP_H": 1,
-		"COP_C":1}
+		"heatingSupplySystem" : DirectHeater,
+        "coolingSupplySystem" : DirectCooler,
+        "heatingEmissionSystem" : AirConditioning,
+        "coolingEmissionSystem" : AirConditioning,
+        }
 		
 		#Set simulation Properties
 		SimulationOptions= {
@@ -84,7 +88,7 @@ class TestMainSimulation2(unittest.TestCase):
 		ASFtest=ASF_Simulation(SimulationData = SimulationData, PanelData = PanelData, BuildingData = BuildingData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
 		ASFtest.SolveASF()
 		
-																					 
+		print ASFtest.yearlyData['E_total_elec']['E_elec'] 																			 
 		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['E_elec'],2), 1419.46)
 		self.assertEqual(round(ASFtest.yearlyData['E_total_elec']['PV'],2), -723.99)
 		self.assertEqual(ASFtest.ResultsBuildingSimulation['E_total_elec']['BestCombKey'][38],46)
@@ -94,4 +98,3 @@ class TestMainSimulation2(unittest.TestCase):
 if __name__ == '__main__':
 	unittest.main()
 
-	

@@ -7,8 +7,14 @@ Created on Wed Nov 09 11:53:33 2016
 import unittest
 import sys,os
 import numpy as np
-from buildingSystem import *  
+
 from SimulationClass import ASF_Simulation
+
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))    
+    
+from buildingPhysics import Building #Importing Building Class
+from supplySystem import *  
+from emissionSystem import *
 
 #sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))        
 #from mainSimulation import MainCalculateASF
@@ -53,12 +59,12 @@ class TestMainSimulation(unittest.TestCase):
 		
 		#Set building properties for RC-Model simulator
 		BuildingProperties={
-		"glass_solar_transmitance" : 0.687 ,
-		"glass_light_transmitance" : 0.744 ,
+		"glass_solar_transmittance" : 0.687 ,
+		"glass_light_transmittance" : 0.744 ,
 		"lighting_load" : 11.74 ,
 		"lighting_control" : 300,
 		"Lighting_Utilisation_Factor" :  0.45,
-		"Lighting_MaintenanceFactor" : 0.9,
+		"Lighting_Maintenance_Factor" : 0.9,
 		"U_em" : 0.2, 
 		"U_w" : 1.2,
 		"ACH_vent" : 1.5,
@@ -69,12 +75,10 @@ class TestMainSimulation(unittest.TestCase):
 		"theta_int_c_set" : 26,
 		"phi_c_max_A_f": -np.inf,
 		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
-		"coolingSystem" : DirectCooler, #DirectCooler, #HeatPumpCooler
-		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1,
-		"COP_H": 1,
-		"COP_C":1}
+		"heatingSupplySystem" : DirectHeater,
+        "coolingSupplySystem" : DirectCooler,
+        "heatingEmissionSystem" : AirConditioning,
+        "coolingEmissionSystem" : AirConditioning,}
 		
 		#Set simulation Properties
 		SimulationOptions= {
@@ -128,12 +132,12 @@ class TestMainSimulation(unittest.TestCase):
 		
 		#Set building properties for RC-Model simulator
 		BuildingProperties={
-		"glass_solar_transmitance" : 0.687 ,
-		"glass_light_transmitance" : 0.744 ,
+		"glass_solar_transmittance" : 0.687 ,
+		"glass_light_transmittance" : 0.744 ,
 		"lighting_load" : 11.74 ,
 		"lighting_control" : 300,
 		"Lighting_Utilisation_Factor" :  0.45,
-		"Lighting_MaintenanceFactor" : 0.9,
+		"Lighting_Maintenance_Factor" : 0.9,
 		"U_em" : 0.2, 
 		"U_w" : 1.2,
 		"ACH_vent" : 1.5,
@@ -144,12 +148,10 @@ class TestMainSimulation(unittest.TestCase):
 		"theta_int_c_set" : 26,
 		"phi_c_max_A_f": -np.inf,
 		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, 
-		"coolingSystem" : DirectCooler, 
-		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1,
-		"COP_H": 1,
-		"COP_C":1}
+		"heatingSupplySystem" : DirectHeater,
+        "coolingSupplySystem" : DirectCooler,
+        "heatingEmissionSystem" : AirConditioning,
+        "coolingEmissionSystem" : AirConditioning,}
 		
 		#Set simulation Properties
 		SimulationOptions= {
@@ -184,12 +186,12 @@ class TestMainSimulation(unittest.TestCase):
 		
 		#Set building properties for RC-Model simulator
 		BuildingProperties={
-		"glass_solar_transmitance" : 0.687 ,
-		"glass_light_transmitance" : 0.744 ,
+		"glass_solar_transmittance" : 0.687 ,
+		"glass_light_transmittance" : 0.744 ,
 		"lighting_load" : 11.74 ,
 		"lighting_control" : 300,
 		"Lighting_Utilisation_Factor" :  0.45,
-		"Lighting_MaintenanceFactor" : 0.9,
+		"Lighting_Maintenance_Factor" : 0.9,
 		"U_em" : 0.2, 
 		"U_w" : 1.2,
 		"ACH_vent" : 1.5,
@@ -200,12 +202,10 @@ class TestMainSimulation(unittest.TestCase):
 		"theta_int_c_set" : 26,
 		"phi_c_max_A_f": -np.inf,
 		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, 
-		"coolingSystem" : DirectCooler, 
-		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1,
-		"COP_H": 4,
-		"COP_C":1}		
+		"heatingSupplySystem" : COP3Heater,
+        "coolingSupplySystem" : DirectCooler,
+        "heatingEmissionSystem" : AirConditioning,
+        "coolingEmissionSystem" : AirConditioning,}		
 
 		
 
@@ -214,8 +214,8 @@ class TestMainSimulation(unittest.TestCase):
 		ASFtest2.SolveASF()
 		
 																					 
-		self.assertEqual(round(ASFtest2.yearlyData['E_total']['E'],2), 1049.13)
-		self.assertEqual(round(ASFtest2.yearlyData['E_total']['H'],2), 315.13)
+		self.assertEqual(round(ASFtest2.yearlyData['E_total']['E'],2), 1153.42)
+		self.assertEqual(round(ASFtest2.yearlyData['E_total']['H'],2), 419.18)
 		
   
 	def test_COPCooling(self):
@@ -234,12 +234,12 @@ class TestMainSimulation(unittest.TestCase):
 				
 		#Set building properties for RC-Model simulator
 		BuildingProperties={
-		"glass_solar_transmitance" : 0.687 ,
-		"glass_light_transmitance" : 0.744 ,
+		"glass_solar_transmittance" : 0.687 ,
+		"glass_light_transmittance" : 0.744 ,
 		"lighting_load" : 11.74 ,
 		"lighting_control" : 300,
 		"Lighting_Utilisation_Factor" :  0.45,
-		"Lighting_MaintenanceFactor" : 0.9,
+		"Lighting_Maintenance_Factor" : 0.9,
 		"U_em" : 0.2, 
 		"U_w" : 1.2,
 		"ACH_vent" : 1.5,
@@ -250,12 +250,11 @@ class TestMainSimulation(unittest.TestCase):
 		"theta_int_c_set" : 26,
 		"phi_c_max_A_f": -np.inf,
 		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, 
-		"coolingSystem" : DirectCooler, 
-		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1,
-		"COP_H": 1,
-		"COP_C":3}
+		"heatingSupplySystem" : DirectHeater,
+        "coolingSupplySystem" : COP3Cooler,
+        "heatingEmissionSystem" : AirConditioning,
+        "coolingEmissionSystem" : AirConditioning,
+        }
 		
 		
 		
@@ -295,12 +294,12 @@ class TestMainSimulation(unittest.TestCase):
             
             #Set building properties for RC-Model simulator
 		BuildingProperties={
-		"glass_solar_transmitance" : 0.687 ,
-		"glass_light_transmitance" : 0.744 ,
+		"glass_solar_transmittance" : 0.687 ,
+		"glass_light_transmittance" : 0.744 ,
 		"lighting_load" : 11.74 ,
 		"lighting_control" : 300,
 		"Lighting_Utilisation_Factor" :  0.45,
-		"Lighting_MaintenanceFactor" : 0.9,
+		"Lighting_Maintenance_Factor" : 0.9,
 		"U_em" : 0.2, 
 		"U_w" : 1.2,
 		"ACH_vent" : 1.5,
@@ -311,12 +310,10 @@ class TestMainSimulation(unittest.TestCase):
 		"theta_int_c_set" : 26,
 		"phi_c_max_A_f": -np.inf,
 		"phi_h_max_A_f": np.inf,
-		"heatingSystem" : DirectHeater, 
-		"coolingSystem" : DirectCooler, 
-		"heatingEfficiency" : 1,
-		"coolingEfficiency" :1,
-		"COP_H": 1,
-		"COP_C":1}
+		"heatingSupplySystem" : DirectHeater,
+        "coolingSupplySystem" : DirectCooler,
+        "heatingEmissionSystem" : AirConditioning,
+        "coolingEmissionSystem" : AirConditioning,}
 		
 		
 		
@@ -352,10 +349,30 @@ class TestMainSimulation(unittest.TestCase):
             "Temp_start" : 20, 
             'human_heat_emission' : 0.12,}
 		
+		BuildingProperties = {
+			"glass_solar_transmittance" : 0.691,
+            "glass_light_transmittance" : 0.744,
+            "lighting_load" : 11.74,
+            "lighting_control" : 300,
+            "Lighting_Utilisation_Factor" :  0.6,
+            "Lighting_Maintenance_Factor" : 0.9,
+            "U_em" : 0.2,
+            "U_w" : 1.1,
+            "ACH_vent" : 1.5,"ACH_infl" :0.5,
+            "ventilation_efficiency" : 0.6 ,
+            "c_m_A_f" : 165 * 10**3,
+            "theta_int_h_set" : 22,
+            "theta_int_c_set" : 26,
+            "phi_c_max_A_f": -np.inf,
+            "phi_h_max_A_f":np.inf,
+            "heatingSupplySystem" : COP3Heater,
+            "coolingSupplySystem" : COP3Cooler,
+            "heatingEmissionSystem" : AirConditioning,
+            "coolingEmissionSystem" : AirConditioning,
+            }
 		
 		
-		
-		AcuationEnergyASF=ASF_Simulation(SimulationData = SimulationData, SimulationOptions = SimulationOptions)
+		AcuationEnergyASF=ASF_Simulation(SimulationData = SimulationData, SimulationOptions = SimulationOptions,  BuildingProperties=BuildingProperties)
 		AcuationEnergyASF.SolveASF()
 		
 																					 
@@ -364,7 +381,7 @@ class TestMainSimulation(unittest.TestCase):
 		self.assertEqual(AcuationEnergyASF.ResultsBuildingSimulation['E_total']['BestCombKey'][38],38)
   
 	def test_MainPaper(self):
-          
+        
 		print 'running AcuationEnergy test, but acuation not included'
 		SimulationData= {
 		'optimizationTypes' : ['E_total'],
@@ -375,9 +392,30 @@ class TestMainSimulation(unittest.TestCase):
 		'Save' : False,
 		'ShowFig': False}
 		
+		BuildingProperties = {
+			"glass_solar_transmittance" : 0.691,
+            "glass_light_transmittance" : 0.744,
+            "lighting_load" : 11.74,
+            "lighting_control" : 300,
+            "Lighting_Utilisation_Factor" :  0.6,
+            "Lighting_Maintenance_Factor" : 0.9,
+            "U_em" : 0.2,
+            "U_w" : 1.1,
+            "ACH_vent" : 1.5,"ACH_infl" :0.5,
+            "ventilation_efficiency" : 0.6 ,
+            "c_m_A_f" : 165 * 10**3,
+            "theta_int_h_set" : 22,
+            "theta_int_c_set" : 26,
+            "phi_c_max_A_f": -np.inf,
+            "phi_h_max_A_f":np.inf,
+            "heatingSupplySystem" : COP3Heater,
+            "coolingSupplySystem" : COP3Cooler,
+            "heatingEmissionSystem" : AirConditioning,
+            "coolingEmissionSystem" : AirConditioning,
+            }
 
 		
-		MainASF=ASF_Simulation(SimulationData = SimulationData)
+		MainASF=ASF_Simulation(SimulationData = SimulationData,  BuildingProperties=BuildingProperties)
 		MainASF.SolveASF()
 
 																					 

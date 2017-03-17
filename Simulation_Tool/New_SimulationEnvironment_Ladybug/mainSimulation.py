@@ -105,8 +105,14 @@ VARIABLE DEFINITION
 
 
 import numpy as np
-from buildingSystem import *  
+import sys,os
 from SimulationClass import ASF_Simulation
+
+
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))    
+from buildingPhysics import Building #Importing Building Class
+from supplySystem import *  
+from emissionSystem import *
 
 
 #SimulationData = {
@@ -155,12 +161,12 @@ BuildingData = {
 ##Set building properties for RC-Model simulator
 ##>@Michael: This will need to be modified to match your code
 BuildingProperties={
-"glass_solar_transmitance" : 0.691 ,
-"glass_light_transmitance" : 0.744 ,#0.68
+"glass_solar_transmittance" : 0.691 ,
+"glass_light_transmittance" : 0.744 ,#0.68
 "lighting_load" : 11.74 ,
 "lighting_control" : 300,
 "Lighting_Utilisation_Factor" : 0.6,# 0.75,
-"Lighting_MaintenanceFactor" : 0.9,
+"Lighting_Maintenance_Factor" : 0.9,
 "U_em" : 0.2, 
 "U_w" : 1.1,
 "ACH_vent" : 1.5,
@@ -171,12 +177,11 @@ BuildingProperties={
 "theta_int_c_set" : 26,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSystem" : DirectHeater, #DirectHeater, #DirectHeater, #ResistiveHeater #HeatPumpHeater
-"coolingSystem" : DirectCooler, #DirectCooler, #DirectCooler, #HeatPumpCooler
-"heatingEfficiency" : 1,
-"coolingEfficiency" :1,
-'COP_H': 3,
-'COP_C':3}
+"heatingSupplySystem" : COP3Heater,
+"coolingSupplySystem" : COP3Cooler,
+"heatingEmissionSystem" : AirConditioning,
+"coolingEmissionSystem" : AirConditioning,
+}
 
 #
 #Set simulation Properties
