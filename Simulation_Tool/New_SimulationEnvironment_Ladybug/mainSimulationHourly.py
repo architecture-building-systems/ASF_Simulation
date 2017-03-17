@@ -134,7 +134,7 @@ SimulationPeriod = {
 
 #Set simulation data 
 SimulationData= {
-'optimizationTypes' : ['E_total'], 
+'optimizationTypes' : ['E_total', 'Cooling'], 
 'DataFolderName' : 'ZH13test', 
 'FileName' : 'ZH13test',
 'geoLocation' : 'Zuerich_Kloten_2013', 

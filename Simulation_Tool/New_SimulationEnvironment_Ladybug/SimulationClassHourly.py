@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))
-print sys.argv[0]
     
 from buildingPhysics import Building #Importing Building Class
 from supplySystem import *  
