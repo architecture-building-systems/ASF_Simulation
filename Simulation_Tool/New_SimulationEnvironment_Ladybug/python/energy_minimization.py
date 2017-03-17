@@ -3,6 +3,10 @@
 Created on Fri Oct 28 12:40:50 2016
 
 @author: Mauro
+
+@Modified: Prageeth Jayathissa
+
+Note: _elec subscript refers to the primary energy requirement. In the case of a Gas Burner, this is the gas energy required 
 """
 
 import os, sys
@@ -111,7 +115,6 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     for hour_of_year in range(0,8760):
         
         #initilize all dictionaries for the needed data
-        ##@PJ TODO: Change Data_H_elec to Data_H
         E_tot[hour_of_year] = {}
         E_HCL [hour_of_year] = {}
         Data_HC_HOY[hour_of_year] = {}

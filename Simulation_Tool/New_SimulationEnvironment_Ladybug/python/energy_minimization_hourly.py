@@ -113,31 +113,32 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         #class Building   
         Office=Building (
-                        Fenst_A = BuildingProperties['Fenst_A'],
-                        Room_Depth = BuildingProperties['Room_Depth'],
-                        Room_Width = BuildingProperties['Room_Width'],
-            		 Room_Height = BuildingProperties['Room_Height'],              
-                        lighting_load= BuildingProperties['lighting_load'],
-                        lighting_control = BuildingProperties["lighting_control"],
-                        Lighting_Utilisation_Factor = BuildingProperties["Lighting_Utilisation_Factor"],
-                        Lighting_MaintenanceFactor = BuildingProperties["Lighting_MaintenanceFactor"], 
-                        c_m_A_f = BuildingProperties["c_m_A_f"],
-                        ACH_vent = BuildingProperties["ACH_vent"],
-                        ACH_infl = BuildingProperties["ACH_infl"],
-                        ventilation_efficiency = BuildingProperties["ventilation_efficiency"],                   
-                        phi_c_max_A_f= -np.inf,
-                        phi_h_max_A_f= np.inf,
-                        U_em= BuildingProperties["U_em"], 
-                        U_w = BuildingProperties["U_w"],
-                        glass_solar_transmitance=BuildingProperties['glass_solar_transmitance'],
-                        glass_light_transmitance = BuildingProperties["glass_light_transmitance"],
-                        theta_int_h_set = BuildingProperties['theta_int_h_set'],
-                        theta_int_c_set = BuildingProperties['theta_int_c_set'],
-                        heatingSystem = BuildingProperties["heatingSystem"],
-                        coolingSystem = BuildingProperties["coolingSystem"], 
-                        heatingEfficiency = BuildingProperties["heatingEfficiency"],
-                        coolingEfficiency = BuildingProperties["coolingEfficiency"]
-                        )         
+                Fenst_A = BuildingProperties['Fenst_A'],
+                Room_Depth = BuildingProperties['Room_Depth'],
+                Room_Width = BuildingProperties['Room_Width'],
+               Room_Height = BuildingProperties['Room_Height'],              
+                lighting_load= BuildingProperties['lighting_load'],
+                lighting_control = BuildingProperties["lighting_control"],
+                Lighting_Utilisation_Factor = BuildingProperties["Lighting_Utilisation_Factor"],
+                Lighting_Maintenance_Factor = BuildingProperties["Lighting_Maintenance_Factor"], 
+                c_m_A_f = BuildingProperties["c_m_A_f"],
+                ACH_vent = BuildingProperties["ACH_vent"],
+                ACH_infl = BuildingProperties["ACH_infl"],
+                ventilation_efficiency = BuildingProperties["ventilation_efficiency"],                   
+                U_em= BuildingProperties["U_em"], 
+                U_w = BuildingProperties["U_w"],
+                glass_solar_transmittance=BuildingProperties['glass_solar_transmittance'],
+                glass_light_transmittance = BuildingProperties["glass_light_transmittance"],
+                theta_int_h_set = BuildingProperties['theta_int_h_set'],
+                theta_int_c_set = BuildingProperties['theta_int_c_set'],
+                phi_c_max_A_f=BuildingProperties['phi_c_max_A_f'],
+                phi_h_max_A_f=BuildingProperties['phi_h_max_A_f'],
+                heatingSupplySystem=BuildingProperties["heatingSupplySystem"],
+                coolingSupplySystem=BuildingProperties["coolingSupplySystem"],
+                heatingEmissionSystem=BuildingProperties["heatingEmissionSystem"],
+                coolingEmissionSystem=BuildingProperties["coolingEmissionSystem"],
+                )    
+
                                
         if occupancy['People'][hour_of_year] == 0:
              Office.theta_int_h_set = BuildingProperties['theta_int_h_set'] - SimulationOptions['setBackTempH']
@@ -166,7 +167,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             #Calculate Illuminance in the room. 
             fenstIll=BuildingRadiationData_HOY[hour_of_year][comb]*Ill_Eq[0] #Lumens.  Note that the constant has been ignored because it should be 0
             #Illuminance after transmitting through the window         
-            TransIll=fenstIll*Office.glass_light_transmitance
+            TransIll=fenstIll*Office.glass_light_transmittance
             
            
             Office.solve_building_lighting(ill = TransIll, 
@@ -179,15 +180,15 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             Data_Lighting_HOY[hour_of_year][comb] = Office.lighting_demand # Watts
             Data_HC_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac #achtung heating und cooling 
             Data_T_in_HOY[hour_of_year][comb] = Office.theta_m
-            Data_H_elec[hour_of_year][comb] = Office.heatingElectricity
-            Data_C_elec[hour_of_year][comb] = Office.coolingElectricity
+            Data_H_elec[hour_of_year][comb] = Office.heatingEnergy
+            Data_C_elec[hour_of_year][comb] = Office.coolingEnergy
             
             if Office.phi_hc_nd_ac > 0:
-                Data_Heating_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac/BuildingProperties['COP_H']
+                Data_Heating_HOY[hour_of_year][comb] = Office.heatingEnergy
                 Data_Cooling_HOY[hour_of_year][comb] = 0
             elif Office.phi_hc_nd_ac < 0:
                 Data_Heating_HOY[hour_of_year][comb] = 0
-                Data_Cooling_HOY[hour_of_year][comb] = -Office.phi_hc_nd_ac/BuildingProperties['COP_C']
+                Data_Cooling_HOY[hour_of_year][comb] = Office.coolingEnergy
             else:
                 Data_Heating_HOY[hour_of_year][comb] = 0
                 Data_Cooling_HOY[hour_of_year][comb] = 0
