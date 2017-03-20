@@ -52,7 +52,7 @@ for sens in np.arange(0.1,3.0,0.5):
 	
 	#Set simulation data 
 	SimulationData = {
-	'optimizationTypes' : ['E_total', 'Heating'], 
+	'optimizationTypes' : ['E_total'], 
 	'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 
 	'FileName' : 'ZH13_49comb_WinterSunnyDay',
 	'geoLocation' : 'Zuerich_Kloten_2013', 
