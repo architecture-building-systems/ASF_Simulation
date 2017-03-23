@@ -18,7 +18,9 @@ from supplySystem import *
 from emissionSystem import *
 
 
-for sens in np.arange(0.1,3.0,0.5):
+supSystems = [OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP]
+
+for supSys in supSystems:
 
 	# SimulationPeriod = {
 	# 'FromMonth': 7, #7, #1,
@@ -57,7 +59,7 @@ for sens in np.arange(0.1,3.0,0.5):
 	'FileName' : 'ZH13_49comb_WinterSunnyDay',
 	'geoLocation' : 'Zuerich_Kloten_2013', 
 	'EPWfile': 'Zuerich_Kloten_2013.epw',
-	'Save' : False, 
+	'Save' : True, 
 	'ShowFig': True, 
 		'timePeriod': None} # asf_electricity_function  
 
@@ -92,7 +94,7 @@ for sens in np.arange(0.1,3.0,0.5):
 	"Lighting_Utilisation_Factor" :  0.45, # 0.75
 	"Lighting_Maintenance_Factor" : 0.9,
 	"U_em" : 0.2, 
-	"U_w" : sens, #1.1,
+	"U_w" : 1.1, #1.1,
 	"ACH_vent" : 1.5,
 	"ACH_infl" : 0.5,
 	"ventilation_efficiency" : 0.6,
@@ -101,7 +103,7 @@ for sens in np.arange(0.1,3.0,0.5):
 	"theta_int_c_set" : 26,
 	"phi_c_max_A_f": -np.inf,
 	"phi_h_max_A_f":np.inf,
-	"heatingSupplySystem" : DirectHeater,
+	"heatingSupplySystem" : supSys,
 	"coolingSupplySystem" : DirectCooler,
 	"heatingEmissionSystem" : AirConditioning,
 	"coolingEmissionSystem" : AirConditioning,}
