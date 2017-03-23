@@ -7,8 +7,18 @@ from buildingSystem import *
 
 paths = PATHS()
 
-# TODO: convert this into a dataset or function so it doesnt confuse the code
-lighting_control_d = {  # arbitrary, since online sources only provide ranges
+
+# TODO: Rename to BuildArchetypeDict
+def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'room_depth': 7000,
+                                 'glazing_percentage_w': 0.92, 'glazing_percentage_h': 0.97}):
+    """
+    Reads the CEA database excel sheet and extracts necessary information to conduct and archetype evaluation
+    :param BuildingData: A dictionary containing the necessary room dimension
+    :return: A dataframe with archetype data for ASF evaluation
+    """
+
+    #Manually Set Lighting Control
+    lighting_control_d = {  
     "MULTI_RES": 250.,
     "SINGLE_RES": 200.,
     "HOTEL": 300.,
@@ -20,9 +30,10 @@ lighting_control_d = {  # arbitrary, since online sources only provide ranges
     "SCHOOL": 350.,
     "HOSPITAL": 400.,
     "GYM": 300.
-}
+    }
 
-mean_occupancy_d = {  # calculated  from the occupancy files
+    #Set Mean Occupancy as calculated from occupancy profiles. Maybe redundant
+    mean_occupancy_d = { 
     "MULTI_RES": 0.014355,
     "SINGLE_RES": 0.009570,
     "HOTEL": 0.034377,
@@ -34,17 +45,10 @@ mean_occupancy_d = {  # calculated  from the occupancy files
     "SCHOOL": 0.010913,
     "HOSPITAL": 0.073750,
     "GYM": 0.070977,
-}
+    }
 
 
-# TODO: Rename to BuildArchetypeDatafame
-def ArchT_build_df(BuildingData={'room_width': 4900, 'room_height': 3100, 'room_depth': 7000,
-                                 'glazing_percentage_w': 0.92, 'glazing_percentage_h': 0.97}):
-    """
-    Reads the CEA database excel sheet and extracts necessary information to conduct and archetype evaluation
-    :param BuildingData: A dictionary containing the necessary room dimension
-    :return: A dataframe with archetype data for ASF evaluation
-    """
+
     # read thermal properties for RC model
     arch = pd.read_excel(paths['Archetypes_properties'], sheetname='THERMAL')
     r = re.compile("([a-zA-Z_]+)")  # generate regular expression of letters to strip numbers
@@ -139,26 +143,10 @@ def ArchT_build_df(BuildingData={'room_width': 4900, 'room_height': 3100, 'room_
         COP_H.append(1.0)
         COP_C.append(1.0)
 
-    b_props['lighting_control'] = lighting_control
-    b_props['mean_occupancy'] = mean_occupancy
-    b_props['Qs_Wm2'] = b_props['mean_occupancy'] * b_props['Qs_Wp']  # occupancy: p/m2, qs_wp: W/p
+
+    b_props['Qs_Wm2'] = mean_occupancy * b_props['Qs_Wp']  # occupancy: p/m2, qs_wp: W/p
     b_props['Occupancy'] = occupancy
     b_props['ActuationEnergy'] = ActuationEnergy
-    b_props['glass_solar_transmitance'] = glass_solar_transmitance
-    b_props['glass_light_transmitance'] = glass_light_transmitance
-    b_props['Lighting_Utilisation_Factor'] = Lighting_Utilisation_Factor
-    b_props['Lighting_MaintenanceFactor'] = Lighting_MaintenanceFactor
-    b_props['ACH_vent'] = ACH_vent
-    b_props['ACH_infl'] = ACH_infl
-    b_props['ventilation_efficiency'] = ventilation_efficiency
-    b_props['phi_c_max_A_f'] = phi_c_max_A_f
-    b_props['phi_h_max_A_f'] = phi_h_max_A_f
-    b_props['heatingSystem'] = heatingSystem
-    b_props['coolingSystem'] = coolingSystem
-    b_props['heatingEfficiency'] = heatingEfficiency
-    b_props['coolingEfficiency'] = coolingEfficiency
-    b_props['COP_H'] = COP_H
-    b_props['COP_C'] = COP_C
 
     #convert possible intergers to floats
     b_props[['Tcs_set_C']]=b_props[['Tcs_set_C']].apply(pd.to_numeric)
@@ -202,62 +190,6 @@ def ArchT_build_df(BuildingData={'room_width': 4900, 'room_height': 3100, 'room_
     BuildingProperties = BuildingPropertiesDF.to_dict(orient='index')
 
     return BuildingProperties, SimulationOptions
-
-
-# Create dictionaries for Archetypes:
-# TODO: Rename to BuildDictsFromDF
-def MakeDicts(b_props):
-    bp_df = b_props[['Code_x',
-                     'El_Wm2',
-                     'lighting_control',
-                     'U_wall',
-                     'U_win',
-                     'Ths_set_C',
-                     'Tcs_set_C',
-                     'c_m_A_f',
-                     'Qs_Wp',  # Sensible heat gain due to occupancy [W/p]
-                     'Ea_Wm2',  # Maximum electrical consumption due to appliances per unit of gross floor area [W/m2]
-                     'glass_solar_transmitance',
-                     'glass_light_transmitance',
-                     'Lighting_Utilisation_Factor',
-                     'Lighting_MaintenanceFactor',
-                     'ACH_vent',
-                     'ACH_infl',
-                     'ventilation_efficiency',
-                     'phi_c_max_A_f',
-                     'phi_h_max_A_f',
-                     'heatingSystem',
-                     'coolingSystem',
-                     'heatingEfficiency',
-                     'coolingEfficiency',
-                     'COP_H',
-                     'COP_C']]
-
-    bp_df = bp_df.rename(index=str, columns={'Code_x': 'Code',
-                                             'El_Wm2': 'lighting_load',
-                                             'U_win': 'U_w',
-                                             'c_m_A_f': 'c_m_A_f',
-                                             'U_wall': 'U_em',
-                                             'Ths_set_C': 'theta_int_h_set',
-                                             'Tcs_set_C': 'theta_int_c_set',
-                                             })
-    bp_df = bp_df.set_index(['Code'])
-    BP_dict = bp_df.to_dict(orient='index')
-
-    so_df = b_props[['Code_x', 'setBackTempC', 'setBackTempH', 'Occupancy', 'ActuationEnergy']]
-    so_df = so_df.set_index(['Code_x'])
-
-    SO_dict = so_df.to_dict(orient='index')
-
-    return BP_dict, SO_dict
-
-
-# TODO: Rename to SortDicts (check if necessary)
-def sort_dicts(to_sort, sorted):
-    newdict = {}
-    for key in sorted:
-        newdict[key] = to_sort[key]
-    return newdict
 
 
 if __name__ == '__main__':
