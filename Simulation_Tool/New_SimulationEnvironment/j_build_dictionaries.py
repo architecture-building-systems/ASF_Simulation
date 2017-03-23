@@ -1,12 +1,13 @@
 import pandas as pd
 import re as re
 
-from j_paths import PATHS #TODO: Convert to setup.py or something equivalent http://docs.python-guide.org/en/latest/writing/structure/
+from j_paths import \
+    PATHS  # TODO: Convert to setup.py or something equivalent http://docs.python-guide.org/en/latest/writing/structure/
 from buildingSystem import *
 
 paths = PATHS()
 
-#TODO: convert this into a dataset or function so it doesnt confuse the code
+# TODO: convert this into a dataset or function so it doesnt confuse the code
 lighting_control_d = {  # arbitrary, since online sources only provide ranges
     "MULTI_RES": 250.,
     "SINGLE_RES": 200.,
@@ -35,9 +36,10 @@ mean_occupancy_d = {  # calculated  from the occupancy files
     "GYM": 0.070977,
 }
 
-#TODO: Rename to BuildArchetypeDatafame
-def ArchT_build_df(BuildingData ={'room_width': 4900, 'room_height': 3100, 'room_depth': 7000,
-                                  'glazing_percentage_w': 0.92, 'glazing_percentage_h': 0.97}):
+
+# TODO: Rename to BuildArchetypeDatafame
+def ArchT_build_df(BuildingData={'room_width': 4900, 'room_height': 3100, 'room_depth': 7000,
+                                 'glazing_percentage_w': 0.92, 'glazing_percentage_h': 0.97}):
     """
     Reads the CEA database excel sheet and extracts necessary information to conduct and archetype evaluation
     :param BuildingData: A dictionary containing the necessary room dimension
@@ -69,14 +71,14 @@ def ArchT_build_df(BuildingData ={'room_width': 4900, 'room_height': 3100, 'room
     # Combine everything into a single dataframe
     b_props = arch.merge(int_loads, how='left', left_on='code1', right_on='Code')
     b_props = b_props.merge(thermal_setpoint_ventelation, how='left', left_on='code1', right_on='Code')
-    b_props = b_props.drop(['Code_y','Code'], axis=1)
+    b_props = b_props.drop(['Code_y', 'Code'], axis=1)
 
     # Create set back temperature definition to match with the ASF_Simulation
     b_props['setBackTempC'] = b_props['Tcs_setb_C'] - b_props['Tcs_set_C']
     b_props['setBackTempH'] = b_props['Ths_set_C'] - b_props['Ths_setb_C']
 
     volume = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000) * (
-    BuildingData['room_height'] / 1000)
+        BuildingData['room_height'] / 1000)
     area = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000)
 
     b_props['ACH_vent_p'] = b_props['Ve_lps'] * 3.6 / volume
@@ -158,51 +160,52 @@ def ArchT_build_df(BuildingData ={'room_width': 4900, 'room_height': 3100, 'room
     b_props['COP_H'] = COP_H
     b_props['COP_C'] = COP_C
 
+    #convert possible intergers to floats
+    b_props[['Tcs_set_C']]=b_props[['Tcs_set_C']].apply(pd.to_numeric)
+    b_props[['Ths_set_C']]=b_props[['Ths_set_C']].apply(pd.to_numeric)
 
-    BuildingPropertiesDF=pd.DataFrame({'Code': []})
-    BuildingPropertiesDF['Code']=b_props.loc[:,'Code_x']
-    BuildingPropertiesDF.loc[:,'lighting_load']=b_props.loc[:,'El_Wm2']
-    BuildingPropertiesDF.loc[:,'lighting_control']=lighting_control
-    BuildingPropertiesDF.loc[:,'U_em']=b_props.loc[:,'U_wall']
-    BuildingPropertiesDF.loc[:,'U_w',]=b_props.loc[:,'U_win']
-    BuildingPropertiesDF.loc[:,'theta_int_h_set']=b_props.loc[:,'Ths_set_C']
-    BuildingPropertiesDF.loc[:,'theta_int_c_set']=b_props.loc[:,'Tcs_set_C']
-    BuildingPropertiesDF.loc[:,'c_m_A_f']=b_props.loc[:,'c_m_A_f'] 
-    BuildingPropertiesDF.loc[:,'Qs_Wp'] =b_props.loc[:,'Qs_Wp'] 
-    BuildingPropertiesDF.loc[:,'Ea_Wm2']=b_props.loc[:,'Ea_Wm2'] 
-    BuildingPropertiesDF.loc[:,'glass_solar_transmitance'] = glass_solar_transmitance
-    BuildingPropertiesDF.loc[:,'glass_light_transmitance'] = glass_light_transmitance
-    BuildingPropertiesDF.loc[:,'Lighting_Utilisation_Factor'] = Lighting_Utilisation_Factor
-    BuildingPropertiesDF.loc[:,'Lighting_MaintenanceFactor'] = Lighting_MaintenanceFactor
-    BuildingPropertiesDF.loc[:,'ACH_vent'] = ACH_vent
-    BuildingPropertiesDF.loc[:,'ACH_infl'] = ACH_infl
-    BuildingPropertiesDF.loc[:,'ventilation_efficiency'] = ventilation_efficiency
-    BuildingPropertiesDF.loc[:,'phi_c_max_A_f'] = phi_c_max_A_f
-    BuildingPropertiesDF.loc[:,'phi_h_max_A_f'] = phi_h_max_A_f
-    BuildingPropertiesDF.loc[:,'heatingSystem'] = heatingSystem
-    BuildingPropertiesDF.loc[:,'coolingSystem'] = coolingSystem
-    BuildingPropertiesDF.loc[:,'heatingEfficiency'] = heatingEfficiency
-    BuildingPropertiesDF.loc[:,'coolingEfficiency'] = coolingEfficiency
-    BuildingPropertiesDF.loc[:,'COP_H'] = COP_H
-    BuildingPropertiesDF.loc[:,'COP_C'] = COP_C
+    BuildingPropertiesDF = pd.DataFrame({'Code': []})
+    BuildingPropertiesDF['Code'] = b_props.loc[:, 'Code_x']
+    BuildingPropertiesDF.loc[:, 'lighting_load'] = b_props.loc[:, 'El_Wm2']
+    BuildingPropertiesDF.loc[:, 'lighting_control'] = lighting_control
+    BuildingPropertiesDF.loc[:, 'U_em'] = b_props.loc[:, 'U_wall']
+    BuildingPropertiesDF.loc[:, 'U_w', ] = b_props.loc[:, 'U_win']
+    BuildingPropertiesDF.loc[:, 'theta_int_h_set'] = b_props.loc[:, 'Ths_set_C']
+    BuildingPropertiesDF.loc[:, 'theta_int_c_set'] = b_props.loc[:, 'Tcs_set_C']
+    BuildingPropertiesDF.loc[:, 'c_m_A_f'] = b_props.loc[:, 'c_m_A_f']
+    BuildingPropertiesDF.loc[:, 'Qs_Wp'] = b_props.loc[:, 'Qs_Wp']
+    BuildingPropertiesDF.loc[:, 'Ea_Wm2'] = b_props.loc[:, 'Ea_Wm2']
+    BuildingPropertiesDF.loc[:, 'glass_solar_transmitance'] = glass_solar_transmitance
+    BuildingPropertiesDF.loc[:, 'glass_light_transmitance'] = glass_light_transmitance
+    BuildingPropertiesDF.loc[:, 'Lighting_Utilisation_Factor'] = Lighting_Utilisation_Factor
+    BuildingPropertiesDF.loc[:, 'Lighting_MaintenanceFactor'] = Lighting_MaintenanceFactor
+    BuildingPropertiesDF.loc[:, 'ACH_vent'] = ACH_vent
+    BuildingPropertiesDF.loc[:, 'ACH_infl'] = ACH_infl
+    BuildingPropertiesDF.loc[:, 'ventilation_efficiency'] = ventilation_efficiency
+    BuildingPropertiesDF.loc[:, 'phi_c_max_A_f'] = phi_c_max_A_f
+    BuildingPropertiesDF.loc[:, 'phi_h_max_A_f'] = phi_h_max_A_f
+    BuildingPropertiesDF.loc[:, 'heatingSystem'] = heatingSystem
+    BuildingPropertiesDF.loc[:, 'coolingSystem'] = coolingSystem
+    BuildingPropertiesDF.loc[:, 'heatingEfficiency'] = heatingEfficiency
+    BuildingPropertiesDF.loc[:, 'coolingEfficiency'] = coolingEfficiency
+    BuildingPropertiesDF.loc[:, 'COP_H'] = COP_H
+    BuildingPropertiesDF.loc[:, 'COP_C'] = COP_C
     BuildingPropertiesDF.set_index(['Code'], inplace=True)
 
-
-
-    SimulationOptionsDF=b_props[['Code_x', 'setBackTempC', 'setBackTempH', 'Occupancy', 'ActuationEnergy']]
+    SimulationOptionsDF = b_props[['Code_x', 'setBackTempC', 'setBackTempH', 'Occupancy', 'ActuationEnergy']]
     SimulationOptionsDF.set_index(['Code_x'], inplace=True)
 
-    SimulationOptionsDF=SimulationOptionsDF[['OFFICE5','OFFICE10']]
-    BuildingPropertiesDF=BuildingPropertiesDF[['OFFICE5','OFFICE10']]
+    SimulationOptionsDF = SimulationOptionsDF[0:2]
+    BuildingPropertiesDF=BuildingPropertiesDF[0:2]
 
-    SimulationOptions=SimulationOptionsDF.to_dict(orient='index')
+    SimulationOptions = SimulationOptionsDF.to_dict(orient='index')
     BuildingProperties = BuildingPropertiesDF.to_dict(orient='index')
 
     return BuildingProperties, SimulationOptions
 
 
 # Create dictionaries for Archetypes:
-#TODO: Rename to BuildDictsFromDF
+# TODO: Rename to BuildDictsFromDF
 def MakeDicts(b_props):
     bp_df = b_props[['Code_x',
                      'El_Wm2',
@@ -226,9 +229,9 @@ def MakeDicts(b_props):
                      'heatingSystem',
                      'coolingSystem',
                      'heatingEfficiency',
-					 'coolingEfficiency',
-					 'COP_H',
-					 'COP_C']]
+                     'coolingEfficiency',
+                     'COP_H',
+                     'COP_C']]
 
     bp_df = bp_df.rename(index=str, columns={'Code_x': 'Code',
                                              'El_Wm2': 'lighting_load',
@@ -246,10 +249,10 @@ def MakeDicts(b_props):
 
     SO_dict = so_df.to_dict(orient='index')
 
-
     return BP_dict, SO_dict
 
-#TODO: Rename to SortDicts (check if necessary)
+
+# TODO: Rename to SortDicts (check if necessary)
 def sort_dicts(to_sort, sorted):
     newdict = {}
     for key in sorted:
