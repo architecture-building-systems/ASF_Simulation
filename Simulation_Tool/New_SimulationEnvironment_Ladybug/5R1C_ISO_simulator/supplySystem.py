@@ -52,13 +52,14 @@ class SupplyBuilder:
     """ The base class in which Supply systems are built from 
     """
 
-    def __init__(self, Load, theta_e, theta_m, supplyTemperature):
-        self.Load=Load #Energy Demand of the building at that time step
-        self.theta_e=theta_e #Outdoor Air Temperature
-        self.theta_m=theta_m #Room Temperature at that timestep
-        self.supplyTemperature = supplyTemperature # Temperature required by the emission system
+    def __init__(self, Load, theta_e, heatingSupplyTemperature, coolingSupplyTemperature, has_heating_demand):
+        self.Load=Load                              #Energy Demand of the building at that time step
+        self.theta_e=theta_e                        #Outdoor Air Temperature
+        self.heatingSupplyTemperature = heatingSupplyTemperature  #Temperature required by the emission system
+        self.coolingSupplyTemperature = coolingSupplyTemperature
+        self.has_heating_demand = has_heating_demand
         
-
+    name = None
 
     def calcLoads(self): pass
 #    def calcCoolingLoads(self): pass
@@ -70,10 +71,12 @@ class OilBoilerOld(SupplyBuilder):
 
     def calcLoads(self):
         heater = SupplyOut()
-        heater.energyIn = self.Load/0.63
+        heater.fossilsIn = self.Load/0.63
+        heater.electricityIn = 0
         heater.electricityOut = 0
         return heater
-
+    
+    name = 'Old Oil Boiler'
 
 class OilBoilerMed(SupplyBuilder):
     #Classic oil boiler with fuel efficiency of 82 percent (medium of range in report of semester project M. Fehr)
@@ -81,9 +84,12 @@ class OilBoilerMed(SupplyBuilder):
     
     def calcLoads(self):
         heater = SupplyOut()
-        heater.energyIn = self.Load/0.82
+        heater.fossilsIn = self.Load/0.82
+        heater.electricityIn = 0
         heater.electricityOut = 0
         return heater
+
+    name = 'Standard Oil Boiler'
 
 
 class OilBoilerNew(SupplyBuilder):
@@ -92,120 +98,120 @@ class OilBoilerNew(SupplyBuilder):
 
     def calcLoads(self):
         heater = SupplyOut()
-        heater.energyIn = self.Load/0.98
+        heater.fossilsIn = self.Load/0.98
+        heater.electricityIn = 0
         heater.electricityOut = 0
         return heater
-
+    
+    name = 'Top-Notch Oil Boiler'
 
 class HeatPumpAir(SupplyBuilder):
     #Air-Water heat pump. epsilon_carnot = 0.4. Outside Temperature as reservoir temperature.
 
     def calcLoads(self):
-        if self.Load > 0:                                   #Heating
-            heater = SupplyOut()
-            heater.energyIn = self.Load/(0.4*(self.supplyTemperature+273)/(self.supplyTemperature-self.theta_e))
-            heater.electricityOut = 0
-        else:                                               #Cooling
-            heater = SupplyOut()
-            heater.energyIn = self.Load/(0.4*(self.supplyTemperature+273)/(self.theta_e-self.SupplyTemperature))
-            heater.electricityOut = 0
+        heater = SupplyOut()
+        elCool = self.Load/(0.4*(self.coolingSupplyTemperature+273.0)/(self.theta_e-self.coolingSupplyTemperature))
+        if self.has_heating_demand:                                   #Heating
+            heater.electricityIn = self.Load/(0.4*(self.heatingSupplyTemperature+273.0)/(self.heatingSupplyTemperature-self.theta_e))
+        elif elCool > self.Load*0.1:                                               #Cooling
+            heater.electricityIn = elCool
+        else:
+            heater.electricityIn = self.Load*0.1
+        heater.fossilsIn = 0    
+        heater.electricityOut = 0
         return heater
 
+    name = 'Air Source Heat Pump'
 
 class HeatPumpWater(SupplyBuilder):
     #Water-Water heat pump. epsilon_carnot = 0.5. Reservoir temperatures 7 degC (winter) and 12 degC (summer).
 
     def calcLoads(self):
         heater = SupplyOut()
-        if self.Load > 0:                                   #Heating
-            heater.energyIn = self.Load/(0.5*(self.supplyTemperature+273)/(self.supplyTemperature-7))
+        if self.has_heating_demand:                                   #Heating
+            heater.electricityIn = self.Load/(0.5*(self.heatingSupplyTemperature+273.0)/(self.heatingSupplyTemperature-7.0))
         else:                                               #Cooling 
-            if self.supplyTemperature > 12:                 #Only by pumping 
-                heater.energyIn = self.Load*0.1
+            if self.coolingSupplyTemperature > 11.9:                 #Only by pumping 
+                heater.electricityIn = self.Load*0.1
             else:                                           #Heat Pump active
-                heater.energyIn = self.Load/(0.5*(self.supplyTemperature+273)/(12-self.supplyTemperature))
+                heater.electricityIn = self.Load/(0.5*(self.coolingSupplyTemperature+273.0)/(12.0-self.coolingSupplyTemperature))
+        heater.fossilsIn = 0
         heater.electricityOut = 0
         return heater
 
+    name = 'Ground Water Source Heat Pump'
 
 class HeatPumpGround(SupplyBuilder):
     #Ground-Water heat pump. epsilon_carnot = 0.45. Reservoir temperatures 7 degC (winter) and 12 degC (summer). (Same as HeatPumpWater except for lower e_Carnot)
 
     def calcLoads(self):
         heater = SupplyOut()
-        if self.Load > 0:                                   #Heating
-            heater.energyIn = self.Load/(0.45*(self.supplyTemperature+273)/(self.supplyTemperature-7))
-        else:                                               #Cooling 
-            if self.supplyTemperature > 12:                 #Only by pumping 
-                heater.energyIn = self.Load*0.1
+        if self.has_heating_demand:                                   #Heating
+            heater.electricityIn = self.Load/(0.45*(self.heatingSupplyTemperature+273.0)/(self.heatingSupplyTemperature-7.0))
+        else:                                              #Cooling 
+            if self.coolingSupplyTemperature > 11.9:                 #Only by pumping 
+                heater.electricityIn = self.Load*0.1
             else:                                           #Heat Pump active
-                heater.energyIn = self.Load/(0.45*(self.supplyTemperature+273)/(12-self.supplyTemperature))
+                heater.electricityIn = self.Load/(0.45*(self.coolingSupplyTemperature+273.0)/(12.0-self.coolingSupplyTemperature))
         heater.electricityOut = 0
+        heater.fossilsIn = 0
         return heater
 
+    name = 'Ground Source Heat Pump'
 
 class ElectricHeating(SupplyBuilder):
     #Straight forward electric heating. 100 percent conversion to heat.
     
     def calcLoads(self):
         heater=SupplyOut()
-        heater.energyIn = self.Load
+        heater.electricityIn = self.Load
+        heater.fossilsIn = 0
         heater.electricityOut = 0
         return heater
     
-
+    name = 'Electric Heating'
 
 class CHP(SupplyBuilder):
-    #Combined heat and power unit with 60 percent thermal and 33 percent electrical fuel conversion.
+    #Combined heat and power unit with 60 percent thermal and 33 percent electrical fuel conversion. 93 percent overall
     
     def calcLoads(self):
         heater=SupplyOut()
-        heater.energyIn = self.Load/0.6
-        heater.electricityOut = heater.energyIn*0.33
+        heater.fossilsIn = self.Load/0.6
+        heater.electricityIn = 0
+        heater.electricityOut = heater.fossilsIn*0.33
         return heater
+
+    name = 'Combined Heat and Power'
 
 class DirectHeater(SupplyBuilder):
     #Created by PJ to check accuracy against previous simulation
     
     def calcLoads(self):
         heater=SupplyOut()
-        heater.energyIn = self.Load
+        heater.electricityIn = self.Load
+        heater.fossilsIn = 0
         heater.electricityOut = 0
         return heater
+
+    name = 'Direct Heater'
 
 class DirectCooler(SupplyBuilder):
     #Created by PJ to check accuracy against previous simulation
     
     def calcLoads(self):
         heater=SupplyOut()
-        heater.energyIn = self.Load
+        heater.electricityIn = self.Load
+        heater.fossilsIn = 0
         heater.electricityOut = 0
         return heater
 
-class COP3Heater(SupplyBuilder):
-    #Created by PJ to check accuracy against previous simulation
-    
-    def calcLoads(self):
-        heater=SupplyOut()
-        heater.energyIn = self.Load/3.0
-        heater.electricityOut = 0
-        return heater
-
-class COP3Cooler(SupplyBuilder):
-    #Created by PJ to check accuracy against previous simulation
-    
-    def calcLoads(self):
-        heater=SupplyOut()
-        heater.energyIn = self.Load/3.0
-        heater.electricityOut = 0
-        return heater
-
+    name = 'Direct Cooler'
 
 class SupplyOut:
     #The System class which is used to output the final results
-    energyIn = None
+    fossilsIn = None
+    electricityIn = None
     electricityOut = None
-
 
 
 

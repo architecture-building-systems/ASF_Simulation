@@ -510,6 +510,8 @@ class Building(object):
                 self.electricityOut=supplyOut.electricityOut
 
         self.sysTotalEnergy = self.heatingSysElectricity + self.heatingSysFossils + self.coolingSysElectricity + self.coolingSysFossils
+        self.heatingEnergy = self.heatingSysElectricity + self.heatingSysFossils
+        self.coolingEnergy = self.coolingSysElectricity + self.coolingSysFossils
         
         return
 
