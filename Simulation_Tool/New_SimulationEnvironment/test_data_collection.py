@@ -9,7 +9,7 @@ import unittest
 import sys
 import os
 import numpy as np
-from j_build_dictionaries import ArchT_build_df
+import j_build_dictionaries
 
 
 class TestMainSimulation(unittest.TestCase):
@@ -25,12 +25,16 @@ class TestMainSimulation(unittest.TestCase):
 		"glazing_percentage_w": 0.92,
 		"glazing_percentage_h": 0.97}
 
-		b_dataOut = ArchT_build_df(BuildingData)
+		b_dataOut, BuildingProperties, SimulationOptions = j_build_dictionaries.ArchT_build_df(BuildingData)
+		BP_dict, SO_dict = j_build_dictionaries.MakeDicts(b_dataOut)
 		
 
 		self.assertEqual(b_dataOut.size,5148)
 		self.assertEqual(b_dataOut.Qs_Wm2[1],1.00485)
 		self.assertEqual(b_dataOut.U_wall[5],0.11)
+		self.maxDiff=None
+		self.assertEqual(BuildingProperties['GYM10'],BP_dict['GYM10'])
+		self.assertEqual(SimulationOptions,SO_dict)
 
 if __name__ == '__main__':
 	unittest.main()

@@ -158,7 +158,47 @@ def ArchT_build_df(BuildingData ={'room_width': 4900, 'room_height': 3100, 'room
     b_props['COP_H'] = COP_H
     b_props['COP_C'] = COP_C
 
-    return b_props
+
+    BuildingPropertiesDF=pd.DataFrame({'Code': []})
+    BuildingPropertiesDF['Code']=b_props.loc[:,'Code_x']
+    BuildingPropertiesDF.loc[:,'lighting_load']=b_props.loc[:,'El_Wm2']
+    BuildingPropertiesDF.loc[:,'lighting_control']=lighting_control
+    BuildingPropertiesDF.loc[:,'U_em']=b_props.loc[:,'U_wall']
+    BuildingPropertiesDF.loc[:,'U_w',]=b_props.loc[:,'U_win']
+    BuildingPropertiesDF.loc[:,'theta_int_h_set']=b_props.loc[:,'Ths_set_C']
+    BuildingPropertiesDF.loc[:,'theta_int_c_set']=b_props.loc[:,'Tcs_set_C']
+    BuildingPropertiesDF.loc[:,'c_m_A_f']=b_props.loc[:,'c_m_A_f'] 
+    BuildingPropertiesDF.loc[:,'Qs_Wp'] =b_props.loc[:,'Qs_Wp'] 
+    BuildingPropertiesDF.loc[:,'Ea_Wm2']=b_props.loc[:,'Ea_Wm2'] 
+    BuildingPropertiesDF.loc[:,'glass_solar_transmitance'] = glass_solar_transmitance
+    BuildingPropertiesDF.loc[:,'glass_light_transmitance'] = glass_light_transmitance
+    BuildingPropertiesDF.loc[:,'Lighting_Utilisation_Factor'] = Lighting_Utilisation_Factor
+    BuildingPropertiesDF.loc[:,'Lighting_MaintenanceFactor'] = Lighting_MaintenanceFactor
+    BuildingPropertiesDF.loc[:,'ACH_vent'] = ACH_vent
+    BuildingPropertiesDF.loc[:,'ACH_infl'] = ACH_infl
+    BuildingPropertiesDF.loc[:,'ventilation_efficiency'] = ventilation_efficiency
+    BuildingPropertiesDF.loc[:,'phi_c_max_A_f'] = phi_c_max_A_f
+    BuildingPropertiesDF.loc[:,'phi_h_max_A_f'] = phi_h_max_A_f
+    BuildingPropertiesDF.loc[:,'heatingSystem'] = heatingSystem
+    BuildingPropertiesDF.loc[:,'coolingSystem'] = coolingSystem
+    BuildingPropertiesDF.loc[:,'heatingEfficiency'] = heatingEfficiency
+    BuildingPropertiesDF.loc[:,'coolingEfficiency'] = coolingEfficiency
+    BuildingPropertiesDF.loc[:,'COP_H'] = COP_H
+    BuildingPropertiesDF.loc[:,'COP_C'] = COP_C
+    BuildingPropertiesDF.set_index(['Code'], inplace=True)
+
+
+
+    SimulationOptionsDF=b_props[['Code_x', 'setBackTempC', 'setBackTempH', 'Occupancy', 'ActuationEnergy']]
+    SimulationOptionsDF.set_index(['Code_x'], inplace=True)
+
+    SimulationOptionsDF=SimulationOptionsDF[['OFFICE5','OFFICE10']]
+    BuildingPropertiesDF=BuildingPropertiesDF[['OFFICE5','OFFICE10']]
+
+    SimulationOptions=SimulationOptionsDF.to_dict(orient='index')
+    BuildingProperties = BuildingPropertiesDF.to_dict(orient='index')
+
+    return BuildingProperties, SimulationOptions
 
 
 # Create dictionaries for Archetypes:
@@ -205,6 +245,8 @@ def MakeDicts(b_props):
     so_df = so_df.set_index(['Code_x'])
 
     SO_dict = so_df.to_dict(orient='index')
+
+
     return BP_dict, SO_dict
 
 #TODO: Rename to SortDicts (check if necessary)
@@ -224,4 +266,3 @@ if __name__ == '__main__':
         "glazing_percentage_h": 0.97}
 
     b_data = ArchT_build_df(BuildingData)
-    print b_data

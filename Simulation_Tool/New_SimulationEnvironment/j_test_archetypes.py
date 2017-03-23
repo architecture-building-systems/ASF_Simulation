@@ -1,16 +1,10 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import time
-import numpy as np
-import csv
-import os,sys
-
+import os
 from j_paths import PATHS
 from buildingSystem import *  
 from SimulationClass import ASF_Simulation as ASF
-from j_build_schedules import build_schedules
-from j_build_dictionaries import  ArchT_build_df, MakeDicts, sort_dicts
-import j_epw_import_tools as epw_tools
+from j_build_dictionaries import  ArchT_build_df, sort_dicts
 
 paths = PATHS()
 
@@ -19,7 +13,7 @@ paths = PATHS()
 ###Zurich South##########################################
 SimulationData_ZW= {
 	'optimizationTypes' : ['E_total'],
-	'DataName' : 'ZH13WEST_49comb',
+	'DataName' : 'ZH13_49comb',
 	'geoLocation' : 'Zuerich_Kloten_2013',
 	'EPWfile' : 'Zuerich_Kloten_2013.epw',
 	'Save' : False,
@@ -61,7 +55,7 @@ BuildingProperties_default = {
 	"phi_c_max_A_f": -np.inf,
 	"phi_h_max_A_f":np.inf,
 	"heatingSystem" : DirectHeater,
-	"coolingSystem" : DirectCooler, 
+	"coolingSystem" : DirectCooler,
 	"heatingEfficiency" : 1,
 	"coolingEfficiency" :1,
 	"COP_H": 1,
@@ -70,20 +64,13 @@ BuildingProperties_default = {
 
 SimulationOptions_default = {
 	'setBackTempH' : 4.,
-	'setBackTempC' : 4., 
+	'setBackTempC' : 4.,
 	'Occupancy' : 'schedules_occ_OFFICE.csv',
 	'ActuationEnergy' : False}
  
-b_props = ArchT_build_df(BuildingData)
+BP_dict, SO_dict = ArchT_build_df(BuildingData)
 
-#build_schedules(b_props) goes here. Currently still broken, schedules were generated using jupyter notebooks code. If the set remains the same, the existing scehdules will be sufficient.
 
-#Select subset of b_props:
-#b_props = b_props[b_props.interval =='2005-2020']
-#b_props = b_props[b_props.type == 'construction']
-
-#Generate dictionaries from dataframes
-BP_dict, SO_dict = MakeDicts(b_props)
 
 #Generate list of building names for iteration:
 keylist = []
