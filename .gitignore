@@ -158,3 +158,5 @@ sympy-plots-for-*.tex/
 Simulation_Tool/New_SimulationEnvironment/radiation_results_ZH13_49comb/LayoutAndCombinations.txt
 *.txt
 Simulation_Tool/New_SimulationEnvironment/radiation_results_ZH13_49comb/LayoutAndCombinations.txt
+
+*/.idea
