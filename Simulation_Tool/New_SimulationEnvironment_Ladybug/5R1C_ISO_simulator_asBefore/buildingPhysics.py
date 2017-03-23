@@ -182,7 +182,8 @@ class Building(object):
 #        self.heatingEfficiency=heatingEfficiency
 #        self.coolingEfficiency=coolingEfficiency
         
-
+        
+        
         
 
 
@@ -195,15 +196,14 @@ class Building(object):
        emDirector = EmissionDirector()
        #Emission System Director is called to action (setBuilder and calcFlows available)
        
-       emDirector.setBuilder(self.heatingEmissionSystem(theta_e=theta_e, phi_int=phi_int, phi_sol=phi_sol, phi_hc_nd=phi_hc_nd, A_m=self.A_m, A_t=self.A_t, h_tr_w=self.h_tr_w, theta_int_h_set=self.theta_int_h_set, theta_int_c_set=self.theta_int_c_set))  #heatingEmissionSystem chosen
+       emDirector.setBuilder(self.heatingEmissionSystem(theta_e=theta_e, phi_int=phi_int, phi_sol=phi_sol, phi_hc_nd=phi_hc_nd, A_m=self.A_m, A_t=self.A_t, h_tr_w=self.h_tr_w))  #heatingEmissionSystem chosen
        
        flows = emDirector.calcFlows()
        
        self.phi_ia = flows.phi_ia 
        self.phi_st = flows.phi_st 
        self.phi_m = flows.phi_m 
-       self.heatingSupplyTemperature = flows.heatingSupplyTemperature
-       self.coolingSupplyTemperature = flows.coolingSupplyTemperature
+       self.supplyTemperature = flows.supplyTemperature
        
        
        
@@ -464,14 +464,10 @@ class Building(object):
             # --> rc_model_function_1(...)
             self.phi_hc_nd_ac=0
             self.calc_temperatures_crank_nicolson(self.phi_hc_nd_ac, phi_int, phi_sol, theta_e, theta_m_prev)
-            self.heatingDemand=0             #Energy required by the zone
-            self.coolingDemand=0             #Energy surplus of the zone   
-            self.heatingSysElectricity=0     #Energy (in electricity) required by the supply system to provide HeatingDemand
-            self.heatingSysFossils=0         #Energy (in fossil fuel) required by the supply system to provide HeatingDemand
-            self.coolingSysElectricity=0     #Energy (in electricity) required by the supply system to get rid of CoolingDemand
-            self.coolingSysFossils=0          #Energy (in fossil fuel) required by the supply system to get rid of CoolingDemand
-            self.electricityOut=0            #Electricity produced by the supply system (e.g. CHP)
+            self.heatingEnergy=0
+            self.coolingEnergy=0
 
+           
 
         else:
 
@@ -488,36 +484,30 @@ class Building(object):
             supDirector = SupplyDirector() #Initialise Heating System Manager
 
             if self.has_heating_demand:
-                supDirector.setBuilder(self.heatingSupplySystem(Load=self.phi_hc_nd_ac, theta_e=theta_e, heatingSupplyTemperature=self.heatingSupplyTemperature, coolingSupplyTemperature=self.coolingSupplyTemperature, has_heating_demand=self.has_heating_demand))  
+                supDirector.setBuilder(self.heatingSupplySystem(Load=self.phi_hc_nd_ac, theta_e=theta_e,theta_m=self.theta_m, supplyTemperature=self.supplyTemperature))  
                 supplyOut = supDirector.calcSystem()
-                self.heatingDemand=self.phi_hc_nd_ac                       #All Variables explained underneath line 467
-                self.heatingSysElectricity=supplyOut.electricityIn
-                self.heatingSysFossils=supplyOut.fossilsIn
-                self.coolingDemand=0
-                self.coolingSysElectricity=0
-                self.coolingSysFossils=0
+                self.heatingEnergy=supplyOut.energyIn
                 self.electricityOut=supplyOut.electricityOut
+                self.coolingEnergy=0
 
             elif self.has_cooling_demand:
-                supDirector.setBuilder(self.coolingSupplySystem(Load=self.phi_hc_nd_ac*(-1), theta_e=theta_e, heatingSupplyTemperature=self.heatingSupplyTemperature, coolingSupplyTemperature=self.coolingSupplyTemperature, has_heating_demand=self.has_heating_demand))
+                supDirector.setBuilder(self.coolingSupplySystem(Load=self.phi_hc_nd_ac*(-1), theta_e=theta_e, theta_m=self.theta_m, supplyTemperature=self.supplyTemperature))
                 supplyOut = supDirector.calcSystem()
-                self.heatingDemand=0
-                self.heatingSysElectricity=0
-                self.heatingSysFossils=0
-                self.coolingDemand=self.phi_hc_nd_ac
-                self.coolingSysElectricity=supplyOut.electricityIn
-                self.coolingSysFossils=supplyOut.fossilsIn
+                self.heatingEnergy=0
                 self.electricityOut=supplyOut.electricityOut
+                self.coolingEnergy=supplyOut.energyIn
 
-        self.sysTotalEnergy = self.heatingSysElectricity + self.heatingSysFossils + self.coolingSysElectricity + self.coolingSysFossils
-        
+
+            
+
+
         return
 
     ####################################################Lighting Calculations###################################################
     def solve_building_lighting(self, ill, occupancy, probLighting=1):
 
         #Cite: Environmental Science Handbook, SV Szokolay, Section 2.2.1.3
-        Lux=(ill*self.Lighting_Utilisation_Factor*self.Lighting_Maintenance_Factor*self.glass_light_transmittance)/self.A_f #[Lux]
+        Lux=(ill*self.Lighting_Utilisation_Factor*self.Lighting_Maintenance_Factor*self.glass_light_transmittance)/self.A_f #[Lx]
 
         if Lux < self.lighting_control and occupancy>0 and probLighting>0.1:
             self.lighting_demand=self.lighting_load*self.A_f #Lighting demand for the hour
