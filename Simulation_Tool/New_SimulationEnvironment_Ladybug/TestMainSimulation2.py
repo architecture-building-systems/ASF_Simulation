@@ -9,7 +9,7 @@ import sys,os
 import numpy as np
 from SimulationClass import ASF_Simulation
 
-sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))    
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), '5R1C_ISO_simulator'))    
     
 from buildingPhysics import Building #Importing Building Class
 from supplySystem import *  

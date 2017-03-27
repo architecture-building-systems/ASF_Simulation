@@ -207,6 +207,29 @@ class DirectCooler(SupplyBuilder):
 
     name = 'Direct Cooler'
 
+class COP3Heater(SupplyBuilder):
+    #Created by PJ to check accuracy against previous simulation
+    
+    def calcLoads(self):
+        heater=SupplyOut()
+        heater.electricityIn = self.Load/3.0
+        heater.fossilsIn = 0
+        heater.electricityOut = 0
+        return heater
+
+class COP3Cooler(SupplyBuilder):
+    #Created by PJ to check accuracy against previous simulation
+    
+    def calcLoads(self):
+        heater=SupplyOut()
+        heater.electricityIn = self.Load/3.0
+        heater.fossilsIn = 0
+        heater.electricityOut = 0
+        return heater
+
+
+
+
 class SupplyOut:
     #The System class which is used to output the final results
     fossilsIn = None

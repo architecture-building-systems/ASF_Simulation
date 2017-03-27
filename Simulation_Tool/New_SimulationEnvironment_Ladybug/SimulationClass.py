@@ -104,7 +104,7 @@ class ASF_Simulation(object):
 		self.paths = {}
 		
 		# find path of current folder (simulation_environment)
-		self.paths['main'] = os.path.abspath(os.path.dirname(sys.argv[0]))
+		self.paths['main'] = os.path.abspath(os.path.dirname(__file__))
 		
 		# define self.paths of subfolders:
 		self.paths['data'] =os.path.join(self.paths['main'], 'data')
