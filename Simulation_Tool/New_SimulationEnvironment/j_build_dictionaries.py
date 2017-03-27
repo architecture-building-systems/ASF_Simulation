@@ -148,18 +148,16 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     b_props['Occupancy'] = occupancy
     b_props['ActuationEnergy'] = ActuationEnergy
 
-    #convert possible intergers to floats
-    b_props[['Tcs_set_C']]=b_props[['Tcs_set_C']].apply(pd.to_numeric)
-    b_props[['Ths_set_C']]=b_props[['Ths_set_C']].apply(pd.to_numeric)
 
+    #Build Building Properties dataframe with building inputs with the same variable definition as the ASF simulation engine
     BuildingPropertiesDF = pd.DataFrame({'Code': []})
     BuildingPropertiesDF['Code'] = b_props.loc[:, 'Code_x']
     BuildingPropertiesDF.loc[:, 'lighting_load'] = b_props.loc[:, 'El_Wm2']
     BuildingPropertiesDF.loc[:, 'lighting_control'] = lighting_control
     BuildingPropertiesDF.loc[:, 'U_em'] = b_props.loc[:, 'U_wall']
     BuildingPropertiesDF.loc[:, 'U_w', ] = b_props.loc[:, 'U_win']
-    BuildingPropertiesDF.loc[:, 'theta_int_h_set'] = b_props.loc[:, 'Ths_set_C']
-    BuildingPropertiesDF.loc[:, 'theta_int_c_set'] = b_props.loc[:, 'Tcs_set_C']
+    BuildingPropertiesDF.loc[:, 'theta_int_h_set'] =b_props.loc[:,'Ths_set_C'].apply(pd.to_numeric)
+    BuildingPropertiesDF.loc[:, 'theta_int_c_set'] = b_props.loc[:, 'Tcs_set_C'].apply(pd.to_numeric)
     BuildingPropertiesDF.loc[:, 'c_m_A_f'] = b_props.loc[:, 'c_m_A_f']
     BuildingPropertiesDF.loc[:, 'Qs_Wp'] = b_props.loc[:, 'Qs_Wp']
     BuildingPropertiesDF.loc[:, 'Ea_Wm2'] = b_props.loc[:, 'Ea_Wm2']
@@ -180,12 +178,16 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     BuildingPropertiesDF.loc[:, 'COP_C'] = COP_C
     BuildingPropertiesDF.set_index(['Code'], inplace=True)
 
+    #Build Simulation Options dataframe with the same variable definitions as the ASF Simulation tool
     SimulationOptionsDF = b_props[['Code_x', 'setBackTempC', 'setBackTempH', 'Occupancy', 'ActuationEnergy']]
     SimulationOptionsDF.set_index(['Code_x'], inplace=True)
 
+    # Temp: only analyse the first two lines for testing purposes. Delete the next two lines:
     SimulationOptionsDF = SimulationOptionsDF[0:2]
     BuildingPropertiesDF=BuildingPropertiesDF[0:2]
+    # Temp complete
 
+    #Convert dataframes to dictionaries
     SimulationOptions = SimulationOptionsDF.to_dict(orient='index')
     BuildingProperties = BuildingPropertiesDF.to_dict(orient='index')
 
@@ -200,4 +202,4 @@ if __name__ == '__main__':
         "glazing_percentage_w": 0.92,
         "glazing_percentage_h": 0.97}
 
-    b_data = ArchT_build_df(BuildingData)
+    b_data = BuildArchetypeDict(BuildingData)

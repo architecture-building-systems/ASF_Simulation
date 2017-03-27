@@ -16,6 +16,13 @@ from j_build_dictionaries import BuildArchetypeDict
 
 class TestMainSimulation(unittest.TestCase):
     def test_Standard(self):
+        """
+        Runs the ASF Simulation Analysis for multiple archetypes 
+
+        TODO: Archetypes can only be chosen in the BuildArchetypeDict function. This should be moved here as an input parameter
+
+        :Output: all_results: A dataframe of building energy requirements for each archetype evaluated
+        """
 
         paths = PATHS()
 
