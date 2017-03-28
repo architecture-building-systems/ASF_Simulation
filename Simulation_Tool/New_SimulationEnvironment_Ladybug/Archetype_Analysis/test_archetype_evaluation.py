@@ -51,6 +51,17 @@ class TestMainSimulation(unittest.TestCase):
             "glazing_percentage_w": 0.92,
             "glazing_percentage_h": 0.97}
 
+        PanelData = {
+            "XANGLES": [0, 15, 30, 45, 60, 75, 90],
+            "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
+            "NoClusters":1,
+            "numberHorizontal":6,
+            "numberVertical":9,
+            "panelOffset":400,
+            "panelSize":400,
+            "panelSpacing":500, 
+            "panelGridSize" : 25}
+
         BP_dict, SO_dict = BuildArchetypeDict(BuildingData)
 
         all_results=pd.DataFrame({'Name': []})
@@ -62,7 +73,7 @@ class TestMainSimulation(unittest.TestCase):
 
             # Run ASF simulation
             ASF_archetype = ASF_Simulation(SimulationData=SimulationData, BuildingData=BuildingData,
-                                 BuildingProperties=BP_dict[key], SimulationOptions=SO_dict[key])
+                                 BuildingProperties=BP_dict[key], SimulationOptions=SO_dict[key], PanelData=PanelData)
             ASF_archetype.SolveASF()
 
             # Add building name to dataframe and append subsequent iterations:

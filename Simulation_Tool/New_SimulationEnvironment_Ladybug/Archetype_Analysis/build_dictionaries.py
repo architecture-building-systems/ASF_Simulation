@@ -198,8 +198,8 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     SimulationOptionsDF.set_index(['Code_x'], inplace=True)
 
     # Temp: only analyse the first two lines for testing purposes. Delete the next two lines:
-    SimulationOptionsDF = SimulationOptionsDF[0:2]
-    BuildingPropertiesDF=BuildingPropertiesDF[0:2]
+    # SimulationOptionsDF = SimulationOptionsDF[0:2]
+    # BuildingPropertiesDF=BuildingPropertiesDF[0:2]
     # Temp complete
 
     #Convert dataframes to dictionaries
