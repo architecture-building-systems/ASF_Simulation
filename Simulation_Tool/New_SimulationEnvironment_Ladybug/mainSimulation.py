@@ -146,6 +146,8 @@ PanelData = {
 "panelSize":400,
 "panelSpacing":500, 
 "panelGridSize" : 25}
+
+
             
 BuildingData = {
 "room_width": 4900, 
@@ -156,6 +158,27 @@ BuildingData = {
 "WindowGridSize": 200, 
 "BuildingOrientation" : 0}
             
+# SimulationData = {
+#     'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+#     'DataFolderName' : 'ZH13_49comb_static_45_0', #'ZH13_49comb_static_45_0',
+#     'FileName': 'ZH13_49comb_static_45_0',
+#     'geoLocation' : 'Zuerich_Kloten_2013',
+#     'EPWfile': 'Zuerich_Kloten_2013.epw',
+#     'Save' : False,
+#     'ShowFig': False}
+
+
+
+# PanelData = {
+#     "XANGLES": [45],
+#     "YANGLES" : [0],
+#     "NoClusters":1,
+#     "numberHorizontal":6,
+#     "numberVertical":9,
+#     "panelOffset":400,
+#     "panelSize":400,
+#     "panelSpacing":500, 
+#     "panelGridSize" : 25}
 
 
 ##Set building properties for RC-Model simulator
@@ -177,7 +200,7 @@ BuildingProperties={
 "theta_int_c_set" : 26,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSupplySystem" : COP3Heater,
+"heatingSupplySystem" : DirectHeater,
 "coolingSupplySystem" : COP3Cooler,
 "heatingEmissionSystem" : AirConditioning,
 "coolingEmissionSystem" : AirConditioning,
@@ -196,7 +219,7 @@ SimulationOptions= {
 	
 if __name__=='__main__':
     
-    ASF = ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions)
+    ASF = ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions, PanelData=PanelData)
     ASF.SolveASF()
     yearlyData = ASF.yearlyData
     Results = ASF.ResultsBuildingSimulation

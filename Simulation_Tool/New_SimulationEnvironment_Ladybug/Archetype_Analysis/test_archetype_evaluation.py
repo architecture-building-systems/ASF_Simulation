@@ -34,10 +34,27 @@ class TestMainSimulation(unittest.TestCase):
         paths = PATHS()
 
 
+        # SimulationData = {
+        #     'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+        #     'DataFolderName' : 'ZH13_49comb', #'ZH13_49comb',
+        #     'FileName': 'ZH13_49comb',
+        #     'geoLocation' : 'Zuerich_Kloten_2013',
+        #     'EPWfile': 'Zuerich_Kloten_2013.epw',
+        #     'Save' : False,
+        #     'ShowFig': False}
+
+        # # Set Building Parameters in [mm]
+        # BuildingData = {
+        #     "room_width": 4900,
+        #     "room_height": 3100,
+        #     "room_depth": 7000,
+        #     "glazing_percentage_w": 0.92,
+        #     "glazing_percentage_h": 0.97}
+
         SimulationData = {
             'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-            'DataFolderName' : 'ZH13_49comb', #'ZH13_49comb',
-            'FileName': 'ZH13_49comb',
+            'DataFolderName' : 'ZH13_49comb_static_45_0', #'ZH13_49comb_static_45_0',
+            'FileName': 'ZH13_49comb_static_45_0',
             'geoLocation' : 'Zuerich_Kloten_2013',
             'EPWfile': 'Zuerich_Kloten_2013.epw',
             'Save' : False,
@@ -52,8 +69,8 @@ class TestMainSimulation(unittest.TestCase):
             "glazing_percentage_h": 0.97}
 
         PanelData = {
-            "XANGLES": [0, 15, 30, 45, 60, 75, 90],
-            "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
+            "XANGLES": [45],
+            "YANGLES" : [0],
             "NoClusters":1,
             "numberHorizontal":6,
             "numberVertical":9,

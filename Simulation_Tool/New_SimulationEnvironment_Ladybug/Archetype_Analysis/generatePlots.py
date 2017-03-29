@@ -17,35 +17,44 @@ from scipy.stats import kendalltau
 
 def archetypePlots():
 
-	dataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1.csv'))
-	print dataPath
-	data=pd.read_csv(dataPath)
-	data.set_index(['Name'], inplace=True)
+	ASFsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1.csv'))
+	StaticsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1_static.csv'))
+	print ASFsimDataPath
+	ASFsimData=pd.read_csv(ASFsimDataPath)
+	ASFsimData.set_index(['Name'], inplace=True)
+
+	StaticsimData=pd.read_csv(StaticsimDataPath)
+	StaticsimData.set_index(['Name'], inplace=True)
 
 
+	#Define Archetypes for plotting axis labels
 	archetypes = ["MULTI_RES", "SINGLE_RES","HOTEL","OFFICE","RETAIL","FOODSTORE","RESTAURANT","INDUSTRIAL","SCHOOL","HOSPITAL","GYM"]
-	yearsConstructed=[1000,1200,1300,1400,1500,1600]
-
-	PJlist=[]
+	
 
 
+	#Define years constructed for axes labels
+	yearsConstructed=['2020-2030', '2005-2020', '1980-2005', '1970-1980', '1920-1970', '-1920']
+	#yearsConstructed=["-1920","1920-1970","1970-1980","1980-2005","2005-2020","2020-2030"]
 
+	#prepare empty numpy array for heatmap
+	ASFResults=np.zeros([6,11])
+	StaticResults=np.zeros([6,11])
 
+	#loop through all archetypes and place into heatmap in the correct location
 	for ii,archetype in enumerate(archetypes):
 		#PJlist.append([])
-		for jj in range(1,13):
+		for jj in range(1,7):
 			selectType="{0}{1}".format(archetype,str(jj))
-			#print data.loc[selectType,["E"]]
-			#PJdataFrame.append(data.loc[selectType,["E"]])
-			#generate numpy array here
-
-	#Conver np.random.radn(5,11) with a numpy array generated from the nested forloop
-	PJdf = pd.DataFrame(np.random.randn(6,11), index=yearsConstructed, columns=archetypes)
+			ASFResults[7-jj-1,ii]=ASFsimData.loc[selectType,["E"]]
+			StaticResults[7-jj-1,ii]=StaticsimData.loc[selectType,["E"]]
 
 
-	print PJdf
+	energySaving=StaticResults-ASFResults
+	#Convert to dataframe for seaborn heatmap input
+	plottingDF = pd.DataFrame(energySaving, index=yearsConstructed, columns=archetypes)
 
-	sns.heatmap(PJdf, linewidths=.5)
+
+	ax=sns.heatmap(plottingDF, linewidths=.5, cbar_kws={'label': 'Energy Saving Potential [kWh/year]'})
 
 	plt.show()
 
