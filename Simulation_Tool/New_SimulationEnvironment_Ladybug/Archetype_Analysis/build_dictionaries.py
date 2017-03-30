@@ -145,7 +145,7 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
         phi_c_max_A_f.append(-np.inf)
         phi_h_max_A_f.append(np.inf)
         heatingSupplySystem.append(DirectHeater)  # DirectHeater, #ResistiveHeater #HeatPumpHeater
-        coolingSupplySystem.append(DirectCooler)  # DirectCooler, #HeatPumpCooler
+        coolingSupplySystem.append(COP3Cooler)  # DirectCooler, #HeatPumpCooler
         heatingEmissionSystem.append(AirConditioning)
         coolingEmissionSystem.append(AirConditioning)
         heatingEfficiency.append(1.0)

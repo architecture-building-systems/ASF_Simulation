@@ -10,15 +10,16 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+
 import pandas as pd
 import seaborn as sns
-from scipy.stats import kendalltau
+
 
 
 def archetypePlots():
 
-	ASFsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1.csv'))
-	StaticsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1_static.csv'))
+	ASFsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1_3.csv'))
+	StaticsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1_3_static.csv'))
 	print ASFsimDataPath
 	ASFsimData=pd.read_csv(ASFsimDataPath)
 	ASFsimData.set_index(['Name'], inplace=True)
@@ -40,6 +41,7 @@ def archetypePlots():
 	ASFResults=np.zeros([6,11])
 	StaticResults=np.zeros([6,11])
 
+
 	#loop through all archetypes and place into heatmap in the correct location
 	for ii,archetype in enumerate(archetypes):
 		#PJlist.append([])
@@ -52,10 +54,15 @@ def archetypePlots():
 	energySaving=StaticResults-ASFResults
 	#Convert to dataframe for seaborn heatmap input
 	plottingDF = pd.DataFrame(energySaving, index=yearsConstructed, columns=archetypes)
+	plottingDF.index.name='Year Constructed'
 
+	print plottingDF
+	fig, ax = plt.subplots(figsize=(25,10))
 
-	ax=sns.heatmap(plottingDF, linewidths=.5, cbar_kws={'label': 'Energy Saving Potential [kWh/year]'})
+	sns.set(font_scale=1.7)
+	sns.heatmap(plottingDF, linewidths=.5, cbar_kws={'label': 'Energy Saving Potential [kWh/year]'}, ax=ax)
 
+	plt.savefig('energySaving_COP1_3_static.pdf', bbox_inches='tight')
 	plt.show()
 
 
