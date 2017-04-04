@@ -12,7 +12,7 @@ import numpy as np
 
 def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month, FolderName):
                    
-    if not os.path.isfile(os.path.join(paths['PV'], 'PV_electricity_results_' + FolderName['FileName'] + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'BuildingRadiationData_' + FolderName['FileName'] + '.npy')):    
+    if not os.path.isfile(os.path.join(paths['PV'], 'BuildingRadiationData_' + FolderName['FileName'] + '.npy')) or not os.path.isfile(os.path.join(paths['PV'], 'BuildingRadiationData_' + FolderName['FileName'] + '.npy')):    
         if not os.path.isdir(paths['PV']):
             os.makedirs(paths['PV'])
 

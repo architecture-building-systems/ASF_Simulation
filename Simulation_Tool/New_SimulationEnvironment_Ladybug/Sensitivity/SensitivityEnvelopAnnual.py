@@ -63,10 +63,41 @@ class TestMainSimulation(unittest.TestCase):
         #     "panelSpacing":500, 
         #     "panelGridSize" : 25}
 
+        ##-----Static Simulatioh----
+        # SimulationData = {
+        #     'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+        #     'DataFolderName' : 'ZH13_49comb_static_45_0', #'ZH13_49comb_static_45_0',
+        #     'FileName': 'ZH13_49comb_static_45_0',
+        #     'geoLocation' : 'Zuerich_Kloten_2013',
+        #     'EPWfile': 'Zuerich_Kloten_2013.epw',
+        #     'Save' : False,
+        #     'ShowFig': False}
+
+        # # Set Building Parameters in [mm]
+        # BuildingData = {
+        #     "room_width": 4900,
+        #     "room_height": 3100,
+        #     "room_depth": 7000,
+        #     "glazing_percentage_w": 0.92,
+        #     "glazing_percentage_h": 0.97}
+
+        # PanelData = {
+        #     "XANGLES": [45],
+        #     "YANGLES" : [0],
+        #     "NoClusters":1,
+        #     "numberHorizontal":6,
+        #     "numberVertical":9,
+        #     "panelOffset":400,
+        #     "panelSize":400,
+        #     "panelSpacing":500, 
+        #     "panelGridSize" : 25}
+
+        ###----No ASF Simulatin -----
+
         SimulationData = {
             'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-            'DataFolderName' : 'ZH13_49comb_static_45_0', #'ZH13_49comb_static_45_0',
-            'FileName': 'ZH13_49comb_static_45_0',
+            'DataFolderName' : 'ZH13_NoASF', #'ZH13_49comb_static_45_0',
+            'FileName': 'ZH13_NoASF',
             'geoLocation' : 'Zuerich_Kloten_2013',
             'EPWfile': 'Zuerich_Kloten_2013.epw',
             'Save' : False,
@@ -81,11 +112,11 @@ class TestMainSimulation(unittest.TestCase):
             "glazing_percentage_h": 0.97}
 
         PanelData = {
-            "XANGLES": [45],
+            "XANGLES": [0],
             "YANGLES" : [0],
             "NoClusters":1,
-            "numberHorizontal":6,
-            "numberVertical":9,
+            "numberHorizontal":0,
+            "numberVertical":0,
             "panelOffset":400,
             "panelSize":400,
             "panelSpacing":500, 
@@ -103,14 +134,15 @@ class TestMainSimulation(unittest.TestCase):
             "Temp_start" : 20, 
             'human_heat_emission' : 0.12,}
 
-        U_wRange=np.arange(0.2,4.1,0.2)
-        print U_wRange
+        #U_Range=np.arange(0.2,4.1,0.2)
+        U_Range=np.arange(0.2,2.1,0.2)
 
-        all_results=pd.DataFrame({'U_envelope': []})
-        all_results.set_index(['U_envelope'], inplace=True)
+
+        all_results=pd.DataFrame({'Infiltration': []})
+        all_results.set_index(['Infiltration'], inplace=True)
 
         # loop through building properties and simulation options dictionaries:
-        for ii,sens in enumerate(U_wRange): #range(0, len(runlist)):
+        for ii,sens in enumerate(U_Range): #range(0, len(runlist)):
 
 
             BuildingProperties={
@@ -121,9 +153,9 @@ class TestMainSimulation(unittest.TestCase):
                 "Lighting_Utilisation_Factor" :  0.45,
                 "Lighting_Maintenance_Factor" : 0.9,
                 "U_em" : 0.2, 
-                "U_w" : sens,
+                "U_w" : 1.2,
                 "ACH_vent" : 1.5,
-                "ACH_infl" :0.5,
+                "ACH_infl" :sens,
                 "ventilation_efficiency" : 0.6 ,
                 "c_m_A_f" : 165 * 10**3,
                 "theta_int_h_set" : 20,
@@ -142,8 +174,8 @@ class TestMainSimulation(unittest.TestCase):
 
             # Add building U_envelope to dataframe and append subsequent iterations:
             current_result = ASF_archetype.yearlyData.T
-            current_result['U_envelope'] = sens
-            current_result.set_index(['U_envelope'], inplace=True)
+            current_result['Infiltration'] = sens
+            current_result.set_index(['Infiltration'], inplace=True)
             temp_list = [all_results, current_result] #TODO: Change this to one line
             all_results = pd.concat(temp_list) 
 

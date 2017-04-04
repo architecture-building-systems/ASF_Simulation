@@ -227,21 +227,22 @@ class ASF_Simulation(object):
 
 		
 	def runRadiationCalculation(self):
-		 
-         from RadiationCalculation import CalculateRadiationData
-         from asf_electricity_production_2 import asf_electricity_production
 
-	   #Calculate the Radiation on the solar panels and window with ladybug
-         self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
+		from RadiationCalculation import CalculateRadiationData
+		from asf_electricity_production_2 import asf_electricity_production
+
+	   	#Calculate the Radiation on the solar panels and window with ladybug
+		self.BuildingRadiationData_HOD = CalculateRadiationData(XANGLES = self.XANGLES, 
                                                                 YANGLES = self.YANGLES, 
                                                                 paths = self.paths,
                                                                 daysPerMonth = self.daysPerMonth, 
                                                                 hour_in_month = self.hour_in_month,
                                                                 FolderName = self.SimulationData)
 			
-		
-	   #if there are no panels vertical and horizontal
-         if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
+		print self.PanelData['numberHorizontal']
+		#if there are no panels vertical and horizontal
+		if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
+			print 'hellow'
 			self.PV_electricity_results = {}
 			
 			self.PV_electricity_results['Pmpp_sum'] = np.array(self.NumberCombinations * len(self.hour_in_month) * [0])
@@ -249,7 +250,7 @@ class ASF_Simulation(object):
 			
 		
 	   #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
-         else:
+		else:
         		if not os.path.isfile(os.path.join(self.paths['PV'], 'PV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
         			if not os.path.isdir(self.paths['PV']):
         				os.makedirs(self.paths['PV'])
@@ -550,12 +551,18 @@ class ASF_Simulation(object):
 		
 
             self.initializeASF()
-            self.setBuildingParameters()		
+            print 'setting parameters'
+            self.setBuildingParameters()
+            print 'initialising'		
             self.initializeBuildingSimulation()
             self.setPaths()				
+            print 'calc variavbles'
             self.CalculateVariables()
-            self.runRadiationCalculation()		  		 
-            self.PrepareRadiationData()													   
+            print 'run radiation calc'
+            self.runRadiationCalculation()	
+            print 'prepare rad data'	  		 
+            self.PrepareRadiationData()	
+            print 'running simulation'												   
             self.runBuildingSimulation()
             
             if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   

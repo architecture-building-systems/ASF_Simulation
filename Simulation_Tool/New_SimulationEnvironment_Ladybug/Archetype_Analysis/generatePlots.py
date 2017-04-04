@@ -20,6 +20,7 @@ def archetypePlots():
 
 	ASFsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1_3.csv'))
 	StaticsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1_3_static.csv'))
+	NoASFsimDataPath=os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..','CEA_Archetypes_CH','Archetypes_ZH_COP1_3_NoASF.csv'))
 	print ASFsimDataPath
 	ASFsimData=pd.read_csv(ASFsimDataPath)
 	ASFsimData.set_index(['Name'], inplace=True)
@@ -27,6 +28,8 @@ def archetypePlots():
 	StaticsimData=pd.read_csv(StaticsimDataPath)
 	StaticsimData.set_index(['Name'], inplace=True)
 
+	NoASFsimData=pd.read_csv(NoASFsimDataPath)
+	NoASFsimData.set_index(['Name'], inplace=True)
 
 	#Define Archetypes for plotting axis labels
 	archetypes = ["MULTI_RES", "SINGLE_RES","HOTEL","OFFICE","RETAIL","FOODSTORE","RESTAURANT","INDUSTRIAL","SCHOOL","HOSPITAL","GYM"]
@@ -40,6 +43,7 @@ def archetypePlots():
 	#prepare empty numpy array for heatmap
 	ASFResults=np.zeros([6,11])
 	StaticResults=np.zeros([6,11])
+	NoASFResults=np.zeros([6,11])
 
 
 	#loop through all archetypes and place into heatmap in the correct location
@@ -49,11 +53,14 @@ def archetypePlots():
 			selectType="{0}{1}".format(archetype,str(jj))
 			ASFResults[7-jj-1,ii]=ASFsimData.loc[selectType,["E"]]
 			StaticResults[7-jj-1,ii]=StaticsimData.loc[selectType,["E"]]
+			NoASFResults[7-jj-1,ii]=NoASFsimData.loc[selectType,["E"]]
 
 
-	energySaving=StaticResults-ASFResults
+	energySaving=StaticResults - ASFResults
+	NoASFenergySaving=NoASFResults - ASFResults
+
 	#Convert to dataframe for seaborn heatmap input
-	plottingDF = pd.DataFrame(energySaving, index=yearsConstructed, columns=archetypes)
+	plottingDF = pd.DataFrame(NoASFenergySaving, index=yearsConstructed, columns=archetypes)
 	plottingDF.index.name='Year Constructed'
 
 	print plottingDF
@@ -62,7 +69,7 @@ def archetypePlots():
 	sns.set(font_scale=1.7)
 	sns.heatmap(plottingDF, linewidths=.5, cbar_kws={'label': 'Energy Saving Potential [kWh/year]'}, ax=ax)
 
-	plt.savefig('energySaving_COP1_3_static.pdf', bbox_inches='tight')
+	plt.savefig('NoASFenergySaving_COP1_3_static.pdf', bbox_inches='tight')
 	plt.show()
 
 
