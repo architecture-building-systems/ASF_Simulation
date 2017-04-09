@@ -81,11 +81,14 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     # Combine everything into a single dataframe
     b_props = arch.merge(int_loads, how='left', left_on='code1', right_on='Code')
     b_props = b_props.merge(thermal_setpoint_ventelation, how='left', left_on='code1', right_on='Code')
+    print b_props
+
     b_props = b_props.drop(['Code_y', 'Code'], axis=1)
 
     # Create set back temperature definition to match with the ASF_Simulation
     b_props['setBackTempC'] = b_props['Tcs_setb_C'] - b_props['Tcs_set_C']
     b_props['setBackTempH'] = b_props['Ths_set_C'] - b_props['Ths_setb_C']
+    #b_props['ACH_vent']=b_props['Ve_lps']
 
     volume = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000) * (
         BuildingData['room_height'] / 1000)
@@ -205,6 +208,8 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     #Convert dataframes to dictionaries
     SimulationOptions = SimulationOptionsDF.to_dict(orient='index')
     BuildingProperties = BuildingPropertiesDF.to_dict(orient='index')
+    BuildingPropertiesDF.to_csv('Builtdictionaries2.csv')
+    SimulationOptionsDF.to_csv('SOdictionaries.csv')
 
     return BuildingProperties, SimulationOptions
 
