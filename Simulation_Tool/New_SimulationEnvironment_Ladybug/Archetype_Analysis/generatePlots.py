@@ -60,17 +60,20 @@ def archetypePlots():
 	NoASFenergySaving=NoASFResults - ASFResults
 
 	#Convert to dataframe for seaborn heatmap input
-	plottingDF = pd.DataFrame(NoASFenergySaving, index=yearsConstructed, columns=archetypes)
+	plottingDF = pd.DataFrame(energySaving, index=yearsConstructed, columns=archetypes)
 	plottingDF.index.name='Year Constructed'
 
 	print plottingDF
-	fig, ax = plt.subplots(figsize=(25,10))
+	fig, ax = plt.subplots(figsize=(10,2))
 
-	sns.set(font_scale=1.7)
+	#sns.set(font_scale=1.3)
 	sns.heatmap(plottingDF, linewidths=.5, cbar_kws={'label': 'Energy Saving Potential [kWh/year]'}, ax=ax)
 
-	plt.savefig('NoASFenergySaving_COP1_3_static.pdf', bbox_inches='tight')
-	plt.show()
+	plt.yticks(rotation=0)
+	plt.xticks(rotation=70)
+
+	plt.savefig('energySaving_COP1_3_Static.pdf', bbox_inches='tight')
+	#plt.show()
 
 
 if __name__ == '__main__':
