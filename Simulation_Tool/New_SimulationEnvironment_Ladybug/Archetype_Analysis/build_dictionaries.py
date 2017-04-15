@@ -53,7 +53,12 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     "GYM": 0.070977,
     }
 
+    #Recreated the above dictionary into a dataframe manually because im an idiot and short of time
+    mean_occupancy_df = pd.DataFrame({"Code": ["MULTI_RES", "SINGLE_RES", "HOTEL", "OFFICE", "RETAIL", "FOODSTORE", "RESTAURANT", "INDUSTRIAL", "SCHOOL", "HOSPITAL", "GYM"], "people_sqm": [0.014355,0.009570,0.034377,0.009951,0.033507,0.055845,0.072592,0.030994,0.010913,0.073750,0.070977]})
 
+    volume = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000) * (
+        BuildingData['room_height'] / 1000)
+    area = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000)
 
     # read thermal properties for RC model
     arch = pd.read_excel(paths['Archetypes_properties'], sheetname='THERMAL')
@@ -78,23 +83,28 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     # read thermal set points and ventilation rates
     thermal_setpoint_ventelation = pd.read_excel(paths['Archetypes_properties'], sheetname='INDOOR_COMFORT')
 
+    thermal_setpoint_ventelation = thermal_setpoint_ventelation.merge(mean_occupancy_df)
+
+    #Set a ventilation rate in air changes per hour. However this doesn't work with average occupancy
+    #TODO: Set a dynamic ventilation strategy in the ASF Simulation Model
+    #thermal_setpoint_ventelation['ACH_vent']=thermal_setpoint_ventelation['Ve_lps']*thermal_setpoint_ventelation['people_sqm'] * area * 3.6/volume
+
     # Combine everything into a single dataframe
     b_props = arch.merge(int_loads, how='left', left_on='code1', right_on='Code')
     b_props = b_props.merge(thermal_setpoint_ventelation, how='left', left_on='code1', right_on='Code')
-    print b_props
+
 
     b_props = b_props.drop(['Code_y', 'Code'], axis=1)
 
     # Create set back temperature definition to match with the ASF_Simulation
     b_props['setBackTempC'] = b_props['Tcs_setb_C'] - b_props['Tcs_set_C']
     b_props['setBackTempH'] = b_props['Ths_set_C'] - b_props['Ths_setb_C']
-    #b_props['ACH_vent']=b_props['Ve_lps']
 
-    volume = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000) * (
-        BuildingData['room_height'] / 1000)
-    area = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000)
 
-    b_props['ACH_vent_p'] = b_props['Ve_lps'] * 3.6 / volume
+
+    #Ventilation rate per person
+    b_props['ACH_vent'] = b_props['Ve_lps'] * 3.6 / volume
+    print b_props['ACH_vent']
 
     # Assign values for Cm from ISO13790:2008, Table 12, based on archetypes
     c_m = []
@@ -147,11 +157,11 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
         ventilation_efficiency.append(0.6)
         phi_c_max_A_f.append(-np.inf)
         phi_h_max_A_f.append(np.inf)
-        heatingSupplySystem.append(DirectHeater)  # DirectHeater, #ResistiveHeater #HeatPumpHeater
+        heatingSupplySystem.append(OilBoilerMed)  # DirectHeater, #ResistiveHeater #HeatPumpHeater
         coolingSupplySystem.append(COP3Cooler)  # DirectCooler, #HeatPumpCooler
         heatingEmissionSystem.append(AirConditioning)
         coolingEmissionSystem.append(AirConditioning)
-        heatingEfficiency.append(1.0)
+        heatingEfficiency.append(1)
         coolingEfficiency.append(1.0)
         ActuationEnergy.append(False)
         COP_H.append(1.0)

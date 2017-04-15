@@ -86,6 +86,8 @@ class ResistiveHeater(Builder):
 		return heater
 
 
+
+
 class HeatPumpHeater(Builder):
 	#The heat pump calculates a COP with an efficiency and outputs the electricty input requirement
 
