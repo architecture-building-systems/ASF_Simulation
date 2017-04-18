@@ -38,33 +38,38 @@ def sensitivityPlots():
 
 	ax1=ASFsimData.plot(y=["E","PV","C","H","L"], style=styles1)
 	ax1.legend(labels=["Net Energy", "PV Supply", "Cooling", "Heating", "Lighting"], loc=2)
-	ax1.set_ylabel('Energy Consumption [kWh/year]')
+	ax1.set_xlabel(r"U_envelope [$Wm^{-2}K^{-1}$]")
+	ax1.set_ylabel(r'Energy Consumption [$kWh/year$]')
 	plt.savefig('Sensitivity_ZH_U_env_COP3_1_ASF.pdf', bbox_inches='tight')
 
 	ax2=ASFsimDataStatic.plot(y=["E","PV","C","H","L"], style=styles1)
 	ax2.legend(labels=["Net Energy", "PV Supply", "Cooling", "Heating", "Lighting"], loc=2)
-	ax2.set_ylabel('Energy Consumption [kWh/year]')
+	ax2.set_xlabel(r"U_envelope [$Wm^{-2}K^{-1}$]")
+	ax2.set_ylabel(r'Energy Consumption [$kWh/year$]')
 	#plt.savefig('Sensitivity_ZH_U_env_COP3_1_Static.pdf', bbox_inches='tight')
 
 	ax3=ASFsimDataNoASF.plot(y=["E","PV","C","H","L"], style=styles1)
 	ax3.legend(labels=["Net Energy", "PV Supply", "Cooling", "Heating", "Lighting"], loc=2)
-	ax3.set_ylabel('Energy Consumption [kWh/year]')
+	ax3.set_xlabel(r"U_envelope [$Wm^{-2}K^{-1}$]")
+	ax3.set_ylabel(r'Energy Consumption [$kWh/year$]')
 	#plt.savefig('Sensitivity_ZH_U_env_COP3_1_NoASF.pdf', bbox_inches='tight')
 
 	ax4=EnergySavingsStatic.plot(y=["E","PV","C","H","L"], style=styles1, legend=None)
 	#ax4.legend(labels=["Net Energy", "PV Supply", "Cooling", "Heating", "Lighting"], loc=2)
-	ax4.set_ylabel('Energy Saving [kWh/year]')
+	ax4.set_xlabel(r"U_envelope [$Wm^{-2}K^{-1}$]")
+	ax4.set_ylabel(r'Energy Saving [$kWh/year$]')
 	plt.savefig('Sensitivity_ZH_U_env_COP3_1EnergySavingStatic.pdf', bbox_inches='tight')
 
 	ax5=EnergySavingsNoASF.plot(y=["E","PV","C","H","L"], style=styles1, legend=None)
 	#ax5.legend(labels=["Net Energy", "PV Supply", "Cooling", "Heating", "Lighting"], loc=1)
-	ax5.set_ylabel('Energy Saving [kWh/year]')
+	ax5.set_xlabel(r"U_envelope [$Wm^{-2}K^{-1}$]")
+	ax5.set_ylabel(r'Energy Saving [$kWh/year$]')
 	plt.savefig('Sensitivity_ZH_U_env_COP3_1EnergySavingNoASF.pdf', bbox_inches='tight')
 	print matplotlib.rcParams['font.size']
 
 	
 	#plt.savefig('energySaving_COP1_3_static.pdf', bbox_inches='tight')
-	#plt.show()
+	plt.show()
 
 
 if __name__ == '__main__':
