@@ -67,13 +67,13 @@ def archetypePlots():
 	fig, ax = plt.subplots(figsize=(10,2))
 
 	#sns.set(font_scale=1.3)
-	sns.heatmap(plottingDF, linewidths=.5, cbar_kws={'label': 'Energy Saving Potential [kWh/year]'}, ax=ax)
+	sns.heatmap(plottingDF, linewidths=.5, cbar_kws={'label': 'Energy Saving Potential [kWh/year]'}, ax=ax,)
 
 	plt.yticks(rotation=0)
 	plt.xticks(rotation=70)
 
-	plt.savefig('energySaving_COP1_3_Static.pdf', bbox_inches='tight')
-	#plt.show()
+	#plt.savefig('energySaving_COP1_3_Static.pdf', bbox_inches='tight')
+	plt.show()
 
 
 if __name__ == '__main__':
