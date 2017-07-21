@@ -55,6 +55,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         SunTrackingData = json.load(fp)
         fp.close()
         
+    print SimulationData
     # find the number of hours analysed by ladybug:
     if SimulationData['timePeriod'] == '4months':
         MonthTracking = SunTrackingData['MonthTracking']

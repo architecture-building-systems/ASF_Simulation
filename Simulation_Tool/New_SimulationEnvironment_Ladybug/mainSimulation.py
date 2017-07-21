@@ -127,12 +127,13 @@ from emissionSystem import *
 
 SimulationData = {
 'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-'DataFolderName' : 'ZH13_49comb', #'ZH13_49comb',
-'FileName': 'ZH13_49comb',
+'DataFolderName' : 'ZH_49comb_HiLo', #'ZH13_49comb',
+'FileName': 'ZH_49comb_HiLo',
 'geoLocation' : 'Zuerich_Kloten_2013',
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
-'ShowFig': True}
+'ShowFig': True,
+'timePeriod': None}
 
 
 
@@ -143,16 +144,16 @@ PanelData = {
 "numberHorizontal":6,
 "numberVertical":9,
 "panelOffset":400,
-"panelSize":400,
-"panelSpacing":500, 
+"panelSize":425,
+"panelSpacing":510, 
 "panelGridSize" : 25}
 
 
             
 BuildingData = {
-"room_width": 4900, 
-"room_height":3100, 
-"room_depth":7000, 
+"room_width": 3000, 
+"room_height":2100, 
+"room_depth":4000, 
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97, 
 "WindowGridSize": 200, 
@@ -200,7 +201,7 @@ BuildingProperties={
 "theta_int_c_set" : 26,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSupplySystem" : DirectHeater,
+"heatingSupplySystem" : COP3Heater,
 "coolingSupplySystem" : COP3Cooler,
 "heatingEmissionSystem" : AirConditioning,
 "coolingEmissionSystem" : AirConditioning,
@@ -211,7 +212,7 @@ BuildingProperties={
 SimulationOptions= {
 'setBackTempH' : 4.,
 'setBackTempC' : 4.,
-'Occupancy' : 'Occupancy_COM.csv',
+'Occupancy' : 'schedules_occ_SINGLE_RES.csv',
 'ActuationEnergy' : True,
 'human_heat_emission' : 0.12,
 'Temp_start' : 20} 

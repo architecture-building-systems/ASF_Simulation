@@ -56,6 +56,7 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
                         #Wait until the radiation_results were created    
                         while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_'+  str(int(HOD)) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                             time.sleep(1)
+                            
                                                 
                         else:
                             print 'next step'
