@@ -1,0 +1,8 @@
+total_radiation_(kWh per year)
+0
+panel size
+425
+Hour iteration number, Combination iteration number,  hour of month , month, total Radiation
+0,0,0,0,0
+radiation of each grid point (kWh/m² per year, one panel per line)
+0
