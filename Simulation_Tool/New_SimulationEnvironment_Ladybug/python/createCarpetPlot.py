@@ -18,6 +18,10 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     
     if z_min > 0.25:
         z_min = -0.25
+
+    z_min = -0.30
+    z_max = 0.4
+
    
     fig = plt.figure(figsize=(16, 8))
     #    plt.suptitle("Optimum Altitude and Azimuth Orientation", size=16)
@@ -41,7 +45,7 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     plt.xlabel("Month of the Year",size=16)    
     
     plt.subplot(2,3,6)   
-    carpetPlot(X = monthlyData[E], z_min = z_min, z_max= z_max, title = '(f) Net Demand Including PV', roomFloorArea = roomFloorArea)
+    carpetPlot(X = monthlyData[E], z_min = z_min, z_max= z_max, title = 'Net Energy Demand', roomFloorArea = roomFloorArea)
     plt.xlabel("Month of the Year",size=16)
 
 
@@ -51,7 +55,7 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     
     #setting for the legend
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-    cbar = plt.colorbar(cax=cbar_ax)
+    cbar = plt.colorbar(cax=cbar_ax, ticks = [0.4,0.3,0.2,0.1,0.0,-0.1,-0.2,-0.3])
     cbar.solids.set_rasterized(True) 
     cbart = plt.title("Net Energy [kWh/m2]", fontsize=14)
     cbart.set_position((1.1,1.02))

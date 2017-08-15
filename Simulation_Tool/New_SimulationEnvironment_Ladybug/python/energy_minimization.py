@@ -151,6 +151,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
         #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))
         for comb in range(0, NumberCombinations):
+
     
                     
             Q_internal = (Q_human[hour_of_year] + Q_equipment)
@@ -165,9 +166,14 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             #Illuminance after transmitting through the window         
             TransIll=fenstIll*Office.glass_light_transmittance
             
+            #Determine if people are sleeping
+            if  hour_of_year%24 < 5 or hour_of_year%24 > 20:
+                probLighting = 0
+            else:
+                probLighting = 1
            
             Office.solve_building_lighting(ill = TransIll, 
-                                           occupancy = occupancy['People'][hour_of_year])
+                                           occupancy = occupancy['People'][hour_of_year], probLighting = probLighting)
     
             
             
@@ -233,6 +239,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
                 BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
+
+                if hour_of_year == 2932:
+                    print hourlyData[hour_of_year]['RadiationWindow']
                 
                 equal = checkEqual(Data = E_tot[hour_of_year])
                 
@@ -493,7 +502,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                     BestComb = 0 #chose random Temp
                     BestCombKey = NumberCombinations # make colormap grey
       
-        
+
         T_in = Data_T_in_HOY[hour_of_year][BestComb] #most efficient solution has to be used again
         
     

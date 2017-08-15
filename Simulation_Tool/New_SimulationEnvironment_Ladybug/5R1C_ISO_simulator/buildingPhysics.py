@@ -154,7 +154,7 @@ class Building(object):
 
         #Single Capacitance  5 conductance Model Parameters
         self.c_m=c_m_A_f*self.A_f #[kWh/K] Room Capacitance. Default based on ISO standard 12.3.1.2 for medium heavy buildings
-        self.h_tr_em = U_em*(Room_Height*Room_Width-Fenst_A) #Conductance of opaque surfaces to exterior [W/K]
+        self.h_tr_em = U_em*(Room_Height*Room_Width-Fenst_A + Room_Depth*Room_Height) #Conductance of opaque surfaces to exterior [W/K]
         self.h_tr_w = U_w*Fenst_A  #Conductance to exterior through glazed surfaces [W/K], based on U-wert of 1W/m2K
         
         #Determine the ventilation conductance

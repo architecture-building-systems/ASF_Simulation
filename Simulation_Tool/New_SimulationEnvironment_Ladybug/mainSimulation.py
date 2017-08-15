@@ -133,7 +133,8 @@ SimulationData = {
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True,
 'ShowFig': True,
-'timePeriod': None}
+'timePeriod': None,
+'total_pv_combinations': 49}
 
 
 
@@ -141,14 +142,23 @@ PanelData = {
 "XANGLES": [0, 15, 30, 45, 60, 75, 90],
 "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
 "NoClusters":1,
-"numberHorizontal":6,
-"numberVertical":9,
+"numberHorizontal":5,
+"numberVertical":6,
 "panelOffset":400,
 "panelSize":425,
 "panelSpacing":510, 
 "panelGridSize" : 25}
 
-
+# PanelData = {
+# "XANGLES": [45],
+# "YANGLES" : [0],
+# "NoClusters":1,
+# "numberHorizontal":5,
+# "numberVertical":6,
+# "panelOffset":400,
+# "panelSize":425,
+# "panelSpacing":510, 
+# "panelGridSize" : 25}
             
 BuildingData = {
 "room_width": 3000, 
@@ -170,35 +180,26 @@ BuildingData = {
 
 
 
-# PanelData = {
-#     "XANGLES": [45],
-#     "YANGLES" : [0],
-#     "NoClusters":1,
-#     "numberHorizontal":6,
-#     "numberVertical":9,
-#     "panelOffset":400,
-#     "panelSize":400,
-#     "panelSpacing":500, 
-#     "panelGridSize" : 25}
+
 
 
 ##Set building properties for RC-Model simulator
 ##>@Michael: This will need to be modified to match your code
 BuildingProperties={
-"glass_solar_transmittance" : 0.691 ,
-"glass_light_transmittance" : 0.744 ,#0.68
-"lighting_load" : 11.74 ,
+"glass_solar_transmittance" : 0.6 ,
+"glass_light_transmittance" : 0.6 ,#0.68
+"lighting_load" : 2.79 ,
 "lighting_control" : 300,
 "Lighting_Utilisation_Factor" : 0.6,# 0.75,
 "Lighting_Maintenance_Factor" : 0.9,
-"U_em" : 0.2, 
-"U_w" : 1.1,
+"U_em" : 0.17, 
+"U_w" : 0.75,
 "ACH_vent" : 1.5,
 "ACH_infl" : 0.5,
 "ventilation_efficiency" : 0.6 ,#0.6
 "c_m_A_f" : 165 * 10**3,
-"theta_int_h_set" : 22,
-"theta_int_c_set" : 26,
+"theta_int_h_set" : 21.0,
+"theta_int_c_set" : 26.0,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
 "heatingSupplySystem" : COP3Heater,
@@ -210,12 +211,12 @@ BuildingProperties={
 #
 #Set simulation Properties
 SimulationOptions= {
-'setBackTempH' : 4.,
-'setBackTempC' : 4.,
+'setBackTempH' : 4.0,
+'setBackTempC' : 4.0,
 'Occupancy' : 'schedules_occ_SINGLE_RES.csv',
 'ActuationEnergy' : True,
 'human_heat_emission' : 0.12,
-'Temp_start' : 20} 
+'Temp_start' : 20.0} 
 
 	
 if __name__=='__main__':

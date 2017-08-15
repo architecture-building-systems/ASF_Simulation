@@ -28,8 +28,7 @@ class ASF_Simulation(object):
 
     #@Michael: This initialisation will need to be modified to fit your code
 	def __init__(self,
-            SimulationData = 
-            {'optimizationTypes' : ['E_total'],'DataFolderName' : 'ZH13_49comb', 'FileName' : 'ZH13_49comb', 'geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},
+            SimulationData,
             PanelData = 
             {"XANGLES": [0, 15, 30, 45, 60, 75, 90],"YANGLES" : [-45, -30,-15,0, 15, 30, 45],"NoClusters":1,"numberHorizontal":6,"numberVertical":9,"panelOffset":400,"panelSize":400,"panelSpacing":500, "panelGridSize" : 25},
             BuildingData = 
@@ -222,6 +221,7 @@ class ASF_Simulation(object):
 		
 		
 		self.NumberCombinations = len(self.XANGLES)*len(self.YANGLES) #*NoClusters
+		self.total_pv_combinations = self.SimulationData['total_pv_combinations']
 		
 		
 
@@ -341,16 +341,18 @@ class ASF_Simulation(object):
         			for HOD in self.hour_in_month[monthi]:
         					for jj in range(0,self.daysPerMonth[monthi-1]):
         						DAY = passedHours + jj*24 + HOD     
-        						self.PV[DAY] = self.PV_electricity_results['Pmpp_sum'][count:count+self.NumberCombinations] #Watts
-        					count +=self.NumberCombinations
+        						self.PV[DAY] = self.PV_electricity_results['Pmpp_sum'][count:count+self.total_pv_combinations] #Watts
+        					count +=self.total_pv_combinations
         			passedHours += self.daysPerMonth[monthi-1]*24
 		
           
-          #add the window radiation data to the specific HOY			
+          #add the window radiation data to the specific HOY		TODO: Check number combinations here	
 		for hour_of_year in range(0,8760):
 			if hour_of_year not in hourRadiation:
-					self.BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
-					self.PV[int(hour_of_year)] = np.asarray([0]* self.NumberCombinations, dtype = np.float64)
+				self.BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* self.total_pv_combinations, dtype = np.float64)
+				self.PV[int(hour_of_year)] = np.asarray([0]* self.total_pv_combinations, dtype = np.float64)
+
+
 		   
 		
 		
@@ -481,9 +483,12 @@ class ASF_Simulation(object):
         		#create folder to save figures as svg and png:
                 self.paths['pdf'] = os.path.join(self.paths['result'], 'Figures')
                 os.makedirs(self.paths['pdf'])
+                if ('E_total') in self.optimization_Types:
+                	self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
+                	self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
 			
-                self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
-                self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
+                # self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
+                # self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
 			
                 if ('E_total_elec') in self.optimization_Types:
                     self.fig['figA'].savefig(os.path.join(self.paths['pdf'], 'figureA' + '.pdf'))
