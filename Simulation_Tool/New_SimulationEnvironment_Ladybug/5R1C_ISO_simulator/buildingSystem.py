@@ -1,7 +1,7 @@
 """
 =========================================
 Building System Parameters for Heating and Cooling
-
+WARNING: Depriciated Class
 =========================================
 """
 

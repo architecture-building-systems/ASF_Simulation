@@ -516,6 +516,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                 UncomfHour = True
             else:
                 UncomfHour = False
+
+        # BestComb=24
         
         #save optimal results in a dictionary and convert to a DataFrame   
         results_building_simulation[hour_of_year]['UncomfHour'] = UncomfHour

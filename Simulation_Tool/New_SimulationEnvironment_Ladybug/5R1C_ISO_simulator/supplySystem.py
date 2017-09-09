@@ -227,6 +227,25 @@ class COP3Cooler(SupplyBuilder):
         heater.electricityOut = 0
         return heater
 
+class COP42Heater(SupplyBuilder):
+    #Created by PJ to check accuracy against previous simulation
+    
+    def calcLoads(self):
+        heater=SupplyOut()
+        heater.electricityIn = self.Load/4.2
+        heater.fossilsIn = 0
+        heater.electricityOut = 0
+        return heater
+
+class COP81Cooler(SupplyBuilder):
+    #Created by PJ to check accuracy against previous simulation
+    
+    def calcLoads(self):
+        heater=SupplyOut()
+        heater.electricityIn = self.Load/8.1
+        heater.fossilsIn = 0
+        heater.electricityOut = 0
+        return heater
 
 
 

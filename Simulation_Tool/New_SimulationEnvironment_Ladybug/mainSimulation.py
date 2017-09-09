@@ -111,7 +111,7 @@ from SimulationClass import ASF_Simulation
 
 sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))    
 from buildingPhysics import Building #Importing Building Class
-from supplySystem import *  
+from supplySystem import *
 from emissionSystem import *
 
 
@@ -202,10 +202,10 @@ BuildingProperties={
 "theta_int_c_set" : 26.0,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSupplySystem" : COP3Heater,
-"coolingSupplySystem" : COP3Cooler,
-"heatingEmissionSystem" : AirConditioning,
-"coolingEmissionSystem" : AirConditioning,
+"heatingSupplySystem" : COP42Heater,
+"coolingSupplySystem" : COP81Cooler,
+"heatingEmissionSystem" : FloorHeating,
+"coolingEmissionSystem" : FloorHeating,
 }
 
 #
