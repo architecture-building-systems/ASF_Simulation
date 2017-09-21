@@ -43,6 +43,9 @@ def carpetPlot(X, z_min, z_max, title, roomFloorArea):
 
 results = np.load("monthlyData.npy")
 
+exportmonthly = np.reshape(results[2][0],(12,24))
+np.savetxt("month_total_energy.csv", exportmonthly, delimiter=",")
+
 results_static = np.load("monthlyDataStatic.npy")
 
 actuation = np.reshape(results[0][0],(12,24))
