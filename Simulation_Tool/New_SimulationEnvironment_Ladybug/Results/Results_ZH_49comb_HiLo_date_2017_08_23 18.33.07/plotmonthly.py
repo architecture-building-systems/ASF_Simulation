@@ -43,8 +43,8 @@ def carpetPlot(X, z_min, z_max, title, roomFloorArea):
 
 results = np.load("monthlyData.npy")
 
-exportmonthly = np.reshape(results[2][0],(12,24))
-np.savetxt("month_total_energy.csv", exportmonthly, delimiter=",")
+# exportmonthly = np.reshape(results[5][0],(12,24))
+
 
 results_static = np.load("monthlyDataStatic.npy")
 
@@ -63,19 +63,10 @@ heating_static = np.reshape(results_static[4][0],(12,24))
 lighting_static = np.reshape(results_static[5][0],(12,24))
 pv_static = np.reshape(results_static[6][0],(12,24))
 
+np.savetxt("month_total_static_cooling.csv", cooling_static, delimiter=",")
 
+np.savetxt("month_total_static_pv.csv", pv_static, delimiter=",")
 
-e_hcl_diff = e_hcl - e_hcl_static
-
-for ii,row in enumerate(pv):
-	for jj,value in enumerate(row):
-		if pv[ii][jj] > -0.001:
-			e_hcl_diff[ii][jj] = 0.0
-
-#carpetPlot(X=e_hcl_diff, z_min = -20, z_max= 20, title = '(a) difference', roomFloorArea = 1)
-#plt.show()
-
-annual_hcl_savings =  np.sum(-e_hcl_diff, axis = 1)
 annual_cooling_static =  np.sum(cooling_static, axis = 1)
 annual_heating_static =  np.sum(heating_static, axis = 1)
 annual_lighting_static = np.sum(lighting_static, axis = 1)
@@ -90,6 +81,6 @@ annual_pv = np.sum(-pv, axis=1)
 annual_actuation = np.sum(-actuation, axis=1)
 
 
-FinalResults = pd.DataFrame({'heating':annual_heating,'cooling':annual_cooling, 'lighting':annual_lighting ,'heating_static':annual_heating_static,'cooling_static':annual_cooling_static, 'lighting_static':annual_lighting_static , 'pv':annual_pv , 'pv_static': annual_pv_static,'hvac_saving':annual_hcl_savings, 'actuation_energy': annual_actuation})
+FinalResults = pd.DataFrame({'heating':annual_heating,'cooling':annual_cooling, 'lighting':annual_lighting ,'heating_static':annual_heating_static,'cooling_static':annual_cooling_static, 'lighting_static':annual_lighting_static , 'pv':annual_pv , 'pv_static': annual_pv_static, 'actuation_energy': annual_actuation})
 
 FinalResults.to_csv('Energy_Results.csv')
