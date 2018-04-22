@@ -106,7 +106,7 @@ def SunAnglesTackingAndTemperature(paths, weatherData):
     # find average temperature corresponding to hours evaluated
     TempTracking = []
     for idx, month in enumerate(MonthTracking):
-        TempTracking.append(Temp_month[0,(month-1)*24+HoursInMonthTracking[idx]-1])
+        TempTracking.append(Temp_month[0,int((month-1)*24+HoursInMonthTracking[idx]-1)])
     
     # save everything to dictionary
     SunTrackingData = {'HOY': HoursToEvaluate, 'Xangles': XanglesTracking, 'Yangles': YanglesTracking, 'HoursInMonth' : HoursToEvaluateInMonth, 'MonthTracking': MonthTracking, 'HoursInMonthTracking': HoursInMonthTracking, 'TempTracking' : TempTracking}
