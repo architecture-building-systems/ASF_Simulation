@@ -125,33 +125,21 @@ from emissionSystem import *
 #'ShowFig': True}
 
 
-SimulationData = {
-'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-'DataFolderName' : 'ZH_49comb_HiLo', #'ZH13_49comb',
-'FileName': 'ZH_49comb_HiLo',
-'geoLocation' : 'Zuerich_Kloten_2013',
-'EPWfile': 'Zuerich_Kloten_2013.epw',
-'Save' : True,
-'ShowFig': True,
-'timePeriod': None,
-'total_pv_combinations': 49}
+# SimulationData = {
+# 'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+# 'DataFolderName' : 'ZH_49comb_HiLo', #'ZH13_49comb',
+# 'FileName': 'ZH_49comb_HiLo',
+# 'geoLocation' : 'Zuerich_Kloten_2013',
+# 'EPWfile': 'Zuerich_Kloten_2013.epw',
+# 'Save' : True,
+# 'ShowFig': True,
+# 'timePeriod': None,
+# 'total_pv_combinations': 1}
 
-
-
-PanelData = {
-"XANGLES": [0, 15, 30, 45, 60, 75, 90],
-"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
-"NoClusters":1,
-"numberHorizontal":5,
-"numberVertical":6,
-"panelOffset":400,
-"panelSize":425,
-"panelSpacing":510, 
-"panelGridSize" : 25}
 
 # PanelData = {
-# "XANGLES": [45],
-# "YANGLES" : [0],
+# "XANGLES": [0, 15, 30, 45, 60, 75, 90],
+# "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
 # "NoClusters":1,
 # "numberHorizontal":5,
 # "numberVertical":6,
@@ -159,6 +147,30 @@ PanelData = {
 # "panelSize":425,
 # "panelSpacing":510, 
 # "panelGridSize" : 25}
+
+
+#No ASF
+SimulationData = {
+'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+'DataFolderName' : 'ZH_49comb_HiLo_static', #'ZH13_49comb',
+'FileName': 'ZH_49comb_HiLo_static',
+'geoLocation' : 'Zuerich_Kloten_2013',
+'EPWfile': 'Zuerich_Kloten_2013.epw',
+'Save' : True,
+'ShowFig': True,
+'timePeriod': None,
+'total_pv_combinations': 1}
+
+PanelData = {
+"XANGLES": [45],
+"YANGLES" : [0],
+"NoClusters":1,
+"numberHorizontal":5,
+"numberVertical":6,
+"panelOffset":400,
+"panelSize":425,
+"panelSpacing":510, 
+"panelGridSize" : 25}
             
 BuildingData = {
 "room_width": 3000, 

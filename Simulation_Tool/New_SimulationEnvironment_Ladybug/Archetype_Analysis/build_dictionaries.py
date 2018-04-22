@@ -26,35 +26,19 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     #Manually Set Lighting Control
     lighting_control_d = {  
     "MULTI_RES": 250.,
-    "SINGLE_RES": 200.,
-    "HOTEL": 300.,
     "OFFICE": 350.,
-    "RETAIL": 400.,
-    "FOODSTORE": 400.,
-    "RESTAURANT": 250.,
-    "INDUSTRIAL": 300.,
     "SCHOOL": 350.,
-    "HOSPITAL": 400.,
-    "GYM": 300.
     }
 
     #Set Mean Occupancy as calculated from occupancy profiles. Maybe redundant
     mean_occupancy_d = { 
     "MULTI_RES": 0.014355,
-    "SINGLE_RES": 0.009570,
-    "HOTEL": 0.034377,
     "OFFICE": 0.009951,
-    "RETAIL": 0.033507,
-    "FOODSTORE": 0.055845,
-    "RESTAURANT": 0.072592,
-    "INDUSTRIAL": 0.030994,
     "SCHOOL": 0.010913,
-    "HOSPITAL": 0.073750,
-    "GYM": 0.070977,
     }
 
     #Recreated the above dictionary into a dataframe manually because im an idiot and short of time
-    mean_occupancy_df = pd.DataFrame({"Code": ["MULTI_RES", "SINGLE_RES", "HOTEL", "OFFICE", "RETAIL", "FOODSTORE", "RESTAURANT", "INDUSTRIAL", "SCHOOL", "HOSPITAL", "GYM"], "people_sqm": [0.014355,0.009570,0.034377,0.009951,0.033507,0.055845,0.072592,0.030994,0.010913,0.073750,0.070977]})
+    mean_occupancy_df = pd.DataFrame({"Code": ["MULTI_RES","OFFICE","SCHOOL"], "people_sqm": [0.014355,0.009951,0.010913]})
 
     volume = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000) * (
         BuildingData['room_height'] / 1000)
@@ -69,7 +53,7 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     arch.set_index(['code1'], inplace=True)
 
     # Delete uneeded archetypes and
-    arch.drop(['SERVERROOM', 'PARKING', 'SWIMMING', 'COOLROOM'], inplace=True)
+    arch.drop(['SERVERROOM', 'PARKING', 'SWIMMING', 'COOLROOM', "SINGLE_RES", "HOTEL", "RETAIL", "FOODSTORE", "RESTAURANT", "INDUSTRIAL", "HOSPITAL", "GYM"], inplace=True)
     arch.reset_index(drop=False, inplace=True)
     arch.drop('Es', axis=1, inplace=True)  # Ratio of floor area that has electricity not needed
     arch.drop('Hs', axis=1, inplace=True)  # ratio of gross floor area heated or cooled not needed
@@ -148,8 +132,8 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
         occupancy.append('schedules_occ_%s.csv' % code)
         lighting_control.append(lighting_control_d.get(code))
         mean_occupancy.append(mean_occupancy_d.get(code))
-        glass_solar_transmittance.append(0.687)
-        glass_light_transmittance.append(0.744)
+        glass_solar_transmittance.append(0.6)
+        glass_light_transmittance.append(0.6)
         Lighting_Utilisation_Factor.append(0.45)
         Lighting_Maintenance_Factor.append(0.9)
         ACH_vent.append(1.5)  # TODO: Shoudlnt this be a variable
@@ -233,3 +217,4 @@ if __name__ == '__main__':
         "glazing_percentage_h": 0.97}
 
     b_data = BuildArchetypeDict(BuildingData)
+    print b_data

@@ -68,6 +68,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     Data_Cooling_HOY = {}
     Data_Lighting_HOY = {}
     Data_T_in_HOY = {}
+    Data_T_air_HOY = {}
     results_building_simulation = {}
     BuildingSimulationELEC = {}
     E_tot = {}
@@ -122,6 +123,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         Data_Cooling_HOY[hour_of_year] = {}    
         Data_Lighting_HOY[hour_of_year] =  {}   
         Data_T_in_HOY[hour_of_year] = {}
+        Data_T_air_HOY[hour_of_year] = {}
         Actuation[hour_of_year] = {}
         Data_H_elec[hour_of_year] = {}
         Data_C_elec[hour_of_year] = {}
@@ -181,6 +183,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             Data_Lighting_HOY[hour_of_year][comb] = Office.lighting_demand # Watts
             Data_HC_HOY[hour_of_year][comb] = Office.phi_hc_nd_ac #achtung heating und cooling 
             Data_T_in_HOY[hour_of_year][comb] = Office.theta_m
+            Data_T_air_HOY[hour_of_year][comb] = Office.theta_air
             Data_H_elec[hour_of_year][comb] = Office.heatingEnergy
             Data_C_elec[hour_of_year][comb] = Office.coolingEnergy
             
@@ -229,6 +232,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         hourlyData[hour_of_year]['E_HCL_elec'] = E_HCL_elec[hour_of_year]
         hourlyData[hour_of_year]['T_out'] =T_out[hour_of_year]
         hourlyData[hour_of_year]['T_in'] = Data_T_in_HOY[hour_of_year]
+        hourlyData[hour_of_year]['T_air'] = Data_T_air_HOY[hour_of_year]
         hourlyData[hour_of_year]['AngleComb'] = combinationAngles
         hourlyData[hour_of_year]['RadiationWindow'] = BuildingRadiationData_HOY[hour_of_year] #W
         hourlyData[hour_of_year]['AE'] = Actuation[hour_of_year]
@@ -504,13 +508,14 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
       
 
         T_in = Data_T_in_HOY[hour_of_year][BestComb] #most efficient solution has to be used again
+        T_air = Data_T_air_HOY[hour_of_year][BestComb]
         
     
         #count uncomfortable hours
         # with 10 Precent range
         UncomfHour = None
         if occupancy['People'][hour_of_year] != 0: 
-            if T_in  > Tmax * 1.1 or T_in  < Tmin * 0.9:
+            if T_air  > Tmax * 1.1 or T_air  < Tmin * 0.9:
                 uncomf_hours += 1
                 uncomf_hours_HOY.append(hour_of_year)
                 UncomfHour = True
