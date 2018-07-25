@@ -15,8 +15,7 @@ from emissionSystem import *
 
 
 # TODO: Rename to BuildArchetypeDict
-def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'room_depth': 7000,
-                                 'glazing_percentage_w': 0.92, 'glazing_percentage_h': 0.97}):
+def BuildArchetypeDict(BuildingData):
     """
     Reads the CEA database excel sheet and extracts necessary information to conduct and archetype evaluation
     :param BuildingData: A dictionary containing the necessary room dimension
@@ -40,9 +39,9 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     #Recreated the above dictionary into a dataframe manually because im an idiot and short of time
     mean_occupancy_df = pd.DataFrame({"Code": ["MULTI_RES","OFFICE","SCHOOL"], "people_sqm": [0.014355,0.009951,0.010913]})
 
-    volume = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000) * (
-        BuildingData['room_height'] / 1000)
-    area = (BuildingData['room_width'] / 1000) * (BuildingData['room_depth'] / 1000)
+    volume = (BuildingData['room_width'] / 1000.) * (BuildingData['room_depth'] / 1000.) * (
+        BuildingData['room_height'] / 1000.)
+    area = (BuildingData['room_width'] / 1000.) * (BuildingData['room_depth'] / 1000.)
 
     # read thermal properties for RC model
     arch = pd.read_excel(paths['Archetypes_properties'], sheetname='THERMAL')
@@ -51,6 +50,7 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     # Strip numbers off the building archetypes for matching later on
     arch["code1"] = pd.DataFrame([r.match(string).groups() for string in arch.Code])
     arch.set_index(['code1'], inplace=True)
+    print arch
 
     # Delete uneeded archetypes and
     arch.drop(['SERVERROOM', 'PARKING', 'SWIMMING', 'COOLROOM', "SINGLE_RES", "HOTEL", "RETAIL", "FOODSTORE", "RESTAURANT", "INDUSTRIAL", "HOSPITAL", "GYM"], inplace=True)
@@ -88,7 +88,6 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
 
     #Ventilation rate per person
     b_props['ACH_vent'] = b_props['Ve_lps'] * 3.6 / volume
-    print b_props['ACH_vent']
 
     # Assign values for Cm from ISO13790:2008, Table 12, based on archetypes
     c_m = []
@@ -126,6 +125,7 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     COP_H = []
     COP_C = []
 
+    print b_props['code1']
     #TODO: Change a lot of thees with df.assign(column_name=constant)
     for code in b_props['code1']:
         # variables
@@ -136,16 +136,16 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
         glass_light_transmittance.append(0.6)
         Lighting_Utilisation_Factor.append(0.45)
         Lighting_Maintenance_Factor.append(0.9)
-        ACH_vent.append(1.5)  # TODO: Shoudlnt this be a variable
+        ACH_vent.append(2.0)  # TODO: Shoudlnt this be a variable
         ACH_infl.append(0.5)
         ventilation_efficiency.append(0.6)
         phi_c_max_A_f.append(-np.inf)
         phi_h_max_A_f.append(np.inf)
-        heatingSupplySystem.append(OilBoilerMed)  # DirectHeater, #ResistiveHeater #HeatPumpHeater
-        coolingSupplySystem.append(COP3Cooler)  # DirectCooler, #HeatPumpCooler
-        heatingEmissionSystem.append(AirConditioning)
-        coolingEmissionSystem.append(AirConditioning)
-        heatingEfficiency.append(1)
+        heatingSupplySystem.append(COP42Heater)  # DirectHeater, #ResistiveHeater #HeatPumpHeater
+        coolingSupplySystem.append(COP81Cooler)  # DirectCooler, #HeatPumpCooler
+        heatingEmissionSystem.append(FloorHeating)
+        coolingEmissionSystem.append(FloorHeating)
+        heatingEfficiency.append(1.0)
         coolingEfficiency.append(1.0)
         ActuationEnergy.append(False)
         COP_H.append(1.0)
@@ -191,13 +191,16 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
     #Build Simulation Options dataframe with the same variable definitions as the ASF Simulation tool
     SimulationOptionsDF = b_props[['Code_x', 'setBackTempC', 'setBackTempH', 'Occupancy', 'ActuationEnergy']]
     SimulationOptionsDF= SimulationOptionsDF.assign(human_heat_emission = 0.12)
-    SimulationOptionsDF= SimulationOptionsDF.assign(Temp_start = 20)
+    SimulationOptionsDF= SimulationOptionsDF.assign(Temp_start = 20.0)
     SimulationOptionsDF.set_index(['Code_x'], inplace=True)
 
     # Temp: only analyse the first two lines for testing purposes. Delete the next two lines:
-    # SimulationOptionsDF = SimulationOptionsDF[0:2]
-    # BuildingPropertiesDF=BuildingPropertiesDF[0:2]
+    SimulationOptionsDF = SimulationOptionsDF[12:18]
+    BuildingPropertiesDF=BuildingPropertiesDF[12:18]
     # Temp complete
+
+    print BuildingPropertiesDF
+    print SimulationOptionsDF
 
     #Convert dataframes to dictionaries
     SimulationOptions = SimulationOptionsDF.to_dict(orient='index')
@@ -210,9 +213,9 @@ def BuildArchetypeDict(BuildingData={'room_width': 4900, 'room_height': 3100, 'r
 
 if __name__ == '__main__':
     BuildingData = {
-        "room_width": 4900,
-        "room_height": 3100,
-        "room_depth": 7000,
+        "room_width": 3000,
+        "room_height": 2100,
+        "room_depth": 4000,
         "glazing_percentage_w": 0.92,
         "glazing_percentage_h": 0.97}
 

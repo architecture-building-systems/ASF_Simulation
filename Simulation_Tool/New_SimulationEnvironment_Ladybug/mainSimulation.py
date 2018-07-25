@@ -150,16 +150,27 @@ from emissionSystem import *
 
 
 #No ASF
+# SimulationData = {
+# 'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+# 'DataFolderName' : 'ZH_49comb_HiLo_static', #'ZH13_49comb',
+# 'FileName': 'ZH_49comb_HiLo_static',
+# 'geoLocation' : 'Zuerich_Kloten_2013',
+# 'EPWfile': 'Zuerich_Kloten_2013.epw',
+# 'Save' : True,
+# 'ShowFig': True,
+# 'timePeriod': None,
+# 'total_pv_combinations': 1}
+
 SimulationData = {
-'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-'DataFolderName' : 'ZH_49comb_HiLo_static', #'ZH13_49comb',
-'FileName': 'ZH_49comb_HiLo_static',
-'geoLocation' : 'Zuerich_Kloten_2013',
-'EPWfile': 'Zuerich_Kloten_2013.epw',
-'Save' : True,
-'ShowFig': True,
-'timePeriod': None,
-'total_pv_combinations': 1}
+            'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+            'DataFolderName' : 'CA_49comb_HiLo_static', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+            'FileName': 'CA_49comb_HiLo_static', #'ZH_49comb_HiLo',
+            'geoLocation' : 'EGY_Cairo.623660_IWEC',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+            'EPWfile': 'EGY_Cairo.623660_IWEC.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
+            'Save' : False,
+            'ShowFig': False,
+            'timePeriod': None,
+            'total_pv_combinations': 1}
 
 PanelData = {
 "XANGLES": [45],
@@ -174,7 +185,7 @@ PanelData = {
             
 BuildingData = {
 "room_width": 3000, 
-"room_height":2100, 
+"room_height":3500, 
 "room_depth":4000, 
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97, 
@@ -207,8 +218,8 @@ BuildingProperties={
 "U_em" : 0.17, 
 "U_w" : 0.75,
 "ACH_vent" : 1.5,
-"ACH_infl" : 0.5,
-"ventilation_efficiency" : 0.6 ,#0.6
+"ACH_infl" : 0.8,
+"ventilation_efficiency" : 0.2 ,#0.6
 "c_m_A_f" : 165 * 10**3,
 "theta_int_h_set" : 21.0,
 "theta_int_c_set" : 26.0,
@@ -225,7 +236,7 @@ BuildingProperties={
 SimulationOptions= {
 'setBackTempH' : 4.0,
 'setBackTempC' : 4.0,
-'Occupancy' : 'schedules_occ_SINGLE_RES.csv',
+'Occupancy' : 'schedules_occ_MULTI_RES.csv',
 'ActuationEnergy' : True,
 'human_heat_emission' : 0.12,
 'Temp_start' : 20.0} 
@@ -233,7 +244,7 @@ SimulationOptions= {
 	
 if __name__=='__main__':
     
-    ASF = ASF_Simulation(SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions, PanelData=PanelData)
+    ASF = ASF_Simulation(BuildingData = BuildingData, SimulationData = SimulationData, BuildingProperties = BuildingProperties, SimulationOptions = SimulationOptions, PanelData=PanelData)
     ASF.SolveASF()
     yearlyData = ASF.yearlyData
     Results = ASF.ResultsBuildingSimulation

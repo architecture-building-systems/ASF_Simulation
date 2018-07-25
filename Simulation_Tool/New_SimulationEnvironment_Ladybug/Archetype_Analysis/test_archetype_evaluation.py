@@ -33,47 +33,48 @@ class TestMainSimulation(unittest.TestCase):
 
         paths = PATHS()
 
-        SimulationData = {
-            'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-            'DataFolderName' : 'ZH_49comb_HiLo', #'ZH13_49comb',
-            'FileName': 'ZH_49comb_HiLo',
-            'geoLocation' : 'Zuerich_Kloten_2013',
-            'EPWfile': 'Zuerich_Kloten_2013.epw',
-            'Save' : False,
-            'ShowFig': False,
-            'timePeriod': None,
-            'total_pv_combinations': 49}
-
-
-        # Set Building Parameters in [mm]
         BuildingData = {
             "room_width": 3000, 
-            "room_height":2100, 
+            "room_height":3600, 
             "room_depth":4000, 
             "glazing_percentage_w": 0.92,
             "glazing_percentage_h": 0.97, 
             "WindowGridSize": 200, 
             "BuildingOrientation" : 0}
 
-        PanelData = {
-            "XANGLES": [0, 15, 30, 45, 60, 75, 90],
-            "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
-            "NoClusters":1,
-            "numberHorizontal":5,
-            "numberVertical":6,
-            "panelOffset":400,
-            "panelSize":425,
-            "panelSpacing":510, 
-            "panelGridSize" : 25}
+        #ASF
+
+        # SimulationData = {
+        #     'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+        #     'DataFolderName' : 'HS_49comb_HiLo', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+        #     'FileName': 'HS_49comb_HiLo', #'ZH_49comb_HiLo',
+        #     'geoLocation' : 'FIN_Helsinki.029740_IWEC',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+        #     'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
+        #     'Save' : False,
+        #     'ShowFig': False,
+        #     'timePeriod': None,
+        #     'total_pv_combinations': 49}
+
+
+        # PanelData = {
+        #     "XANGLES": [0, 15, 30, 45, 60, 75, 90],
+        #     "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
+        #     "NoClusters":1,
+        #     "numberHorizontal":5,
+        #     "numberVertical":6,
+        #     "panelOffset":400,
+        #     "panelSize":425,
+        #     "panelSpacing":510, 
+        #     "panelGridSize" : 25}
 
         ##----Static Facade---##
 
         # SimulationData = {
         #     'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-        #     'DataFolderName' : 'ZH_49comb_HiLo_static', #'ZH13_49comb',
-        #     'FileName': 'ZH_49comb_HiLo_static',
-        #     'geoLocation' : 'Zuerich_Kloten_2013',
-        #     'EPWfile': 'Zuerich_Kloten_2013.epw',
+        #     'DataFolderName' : 'HS_49comb_HiLo_static', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+        #     'FileName': 'HS_49comb_HiLo_static', #'ZH_49comb_HiLo',
+        #     'geoLocation' : 'FIN_Helsinki.029740_IWEC',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+        #     'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
         #     'Save' : False,
         #     'ShowFig': False,
         #     'timePeriod': None,
@@ -90,47 +91,33 @@ class TestMainSimulation(unittest.TestCase):
         #     "panelSpacing":510, 
         #     "panelGridSize" : 25}
                     
-        # BuildingData = {
-        #     "room_width": 3000, 
-        #     "room_height":2100, 
-        #     "room_depth":4000, 
-        #     "glazing_percentage_w": 0.92,
-        #     "glazing_percentage_h": 0.97, 
-        #     "WindowGridSize": 200, 
-        #     "BuildingOrientation" : 0}
+
 
         ###----No ASF Simulatin -----
 
-        # SimulationData = {
-        #     'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-        #     'DataFolderName' : 'ZH_49comb_HiLo_noASF', #'ZH13_49comb',
-        #     'FileName': 'ZH_49comb_HiLo_noASF',
-        #     'geoLocation' : 'Zuerich_Kloten_2013',
-        #     'EPWfile': 'Zuerich_Kloten_2013.epw',
-        #     'Save' : False,
-        #     'ShowFig': False,
-        #     'timePeriod': None,
-        #     'total_pv_combinations': 1}
+        SimulationData = {
+            'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+            'DataFolderName' : 'HS_49comb_HiLo_noASF', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+            'FileName': 'HS_49comb_HiLo_noASF', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+            'geoLocation' : 'FIN_Helsinki.029740_IWEC',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+            'EPWfile': 'FIN_Helsinki.029740_IWEC.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
+            'Save' : False,
+            'ShowFig': False,
+            'timePeriod': None,
+            'total_pv_combinations': 1}
 
-        # PanelData = {
-        #     "XANGLES": [0],
-        #     "YANGLES" : [0],
-        #     "NoClusters":1,
-        #     "numberHorizontal":0,
-        #     "numberVertical":0,
-        #     "panelOffset":400,
-        #     "panelSize":425,
-        #     "panelSpacing":510, 
-        #     "panelGridSize" : 25}
+        PanelData = {
+            "XANGLES": [0],
+            "YANGLES" : [0],
+            "NoClusters":1,
+            "numberHorizontal":0,
+            "numberVertical":0,
+            "panelOffset":400,
+            "panelSize":425,
+            "panelSpacing":510, 
+            "panelGridSize" : 25}
                     
-        # BuildingData = {
-        #     "room_width": 3000, 
-        #     "room_height":2100, 
-        #     "room_depth":4000, 
-        #     "glazing_percentage_w": 0.92,
-        #     "glazing_percentage_h": 0.97, 
-        #     "WindowGridSize": 200, 
-        #     "BuildingOrientation" : 0}
+
 
         BP_dict, SO_dict = BuildArchetypeDict(BuildingData)
 
@@ -145,7 +132,7 @@ class TestMainSimulation(unittest.TestCase):
             ASF_archetype = ASF_Simulation(SimulationData=SimulationData, BuildingData=BuildingData,
                                  BuildingProperties=BP_dict[key], SimulationOptions=SO_dict[key], PanelData=PanelData)
             ASF_archetype.SolveASF()
-
+            print ASF_archetype.yearlyData
             # Add building name to dataframe and append subsequent iterations:
             current_result = ASF_archetype.yearlyData.T
             current_result['Name'] = key

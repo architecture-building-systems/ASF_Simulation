@@ -158,7 +158,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                     
             Q_internal = (Q_human[hour_of_year] + Q_equipment)
             Office.solve_building_energy(phi_int = Q_internal, #internal heat gains, humans and equipment [W]
-                                         phi_sol = BuildingRadiationData_HOY[hour_of_year][comb], #W
+                                         phi_sol = BuildingRadiationData_HOY[hour_of_year][comb] * BuildingProperties['glass_solar_transmittance'], #W
                                          theta_e = T_out[hour_of_year], 
                                          theta_m_prev = T_in)
         
@@ -522,7 +522,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             else:
                 UncomfHour = False
 
-        # BestComb=24
+        #BestComb=24
         
         #save optimal results in a dictionary and convert to a DataFrame   
         results_building_simulation[hour_of_year]['UncomfHour'] = UncomfHour
