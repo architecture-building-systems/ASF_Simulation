@@ -1,0 +1,58 @@
+{
+    "folders": [
+        {
+			"name": "1 - Ladybug",
+			"path": "./Simulation_Tool/New_SimulationEnvironment_Ladybug"
+		},
+        {
+			"name": "New Simulation environment",
+			"path": "./Simulation_Tool/New_SimulationEnvironment"
+		},
+        {
+			"name": "Daysim",
+			"path": "./Simulation_Tool/New_SimulationEnvironment_DaySim"
+		},
+        {
+			"name": "Planar Projection",
+			"path": "./Simulation_Tool/New_SimulationEnvironment_PlanarProjection"
+		},
+        {
+			"name": "all",
+			"path": "."
+		}
+    ],
+    "settings": {
+        // Defines type of the language server.
+        //  - Default: Automatically select a language server: Pylance if installed and available, otherwise fallback to Jedi.
+        //  - Jedi: Use Jedi behind the Language Server Protocol (LSP) as a language server.
+        //  - Pylance: Use Pylance as a language server.
+        //  - None: Disable language server capabilities.
+        "python.languageServer": "Pylance",
+
+        // Whether to lint Python files using pylint.
+        "python.linting.pylintEnabled": true,
+
+        // Path to Pylint, you can use a custom version of pylint by modifying this setting to include the full path.
+        "python.linting.pylintPath": "pylint",
+
+        // "python.autoComplete.extraPaths": [
+        //     "${workspaceFolder}/python"
+        // ],
+        // "python.analysis.extraPaths": [
+        //     "${workspaceFolder}/python"
+        // ],
+
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Python: Current File",
+                "type": "python",
+                "request": "launch",
+                "program": "${file}",
+                "console": "integratedTerminal"
+            }
+        ]
+    }
+}

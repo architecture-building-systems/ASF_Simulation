@@ -1,0 +1,14 @@
+name: asf_sim
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=2.7
+  - matplotlib
+  - numpy
+  - pandas
+  - scipy
+  - ipython
+  - sympy
+  - pylint
+  - jedi
