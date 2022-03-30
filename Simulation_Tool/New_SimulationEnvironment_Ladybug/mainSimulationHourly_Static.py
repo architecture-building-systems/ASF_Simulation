@@ -149,12 +149,13 @@ SimulationData= {
 }   
 
 
-PanelData = {
-"YSHADING" : [0.0, 0.4, 1.0],
-"blindSpacing":0,
-"panelOffset":0,
-"panelHeight":1200,
-"panelGridSize" : 25}
+BlindData = {
+    "PERCENT_HEIGHT" : [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+    "TILT_ANGLE": [0, 45, 90],
+    "slat_height" : 100,
+    "slat_thickness" : 2,
+    "BlindOffset": 150,
+}
 
 #Set Building Parameters in [mm]
 BuildingData={
@@ -164,7 +165,9 @@ BuildingData={
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97,
 "WindowGridSize" : 200,
-"BuildingOrientation" : 0} 
+"BuildingOrientation" : 0,
+"panelHeight":1200,
+"panelGridSize" : 25} 
 
 ##@Michael: This will need to be modified to fit your model
 BuildingProperties={
@@ -202,7 +205,7 @@ if __name__=='__main__':
     
     ASFtest = ASF_Simulation(SimulationPeriod = SimulationPeriod, 
                              SimulationData = SimulationData, 
-                             PanelData = PanelData,
+                             BlindData = BlindData,
                              BuildingData = BuildingData,
                              BuildingProperties = BuildingProperties, 
                              SimulationOptions = SimulationOptions)

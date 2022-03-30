@@ -28,10 +28,10 @@ class ASF_Simulation(object):
             'optimizationTypes' : ['E_total'], 'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 'FileName' : 'ZH13_49comb_WinterSunnyDay','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},  
             SimulationPeriod = {
             'FromMonth': 1, 'ToMonth': 1, 'FromDay': 8, 'ToDay': 8, 'FromHour': 5, 'ToHour': 20},
-            PanelData = 
-            {"YSHADING" : [0.0, 0.4, 1.0],"blindSpacing":0, "panelOffset":0,"panelSize":1200, "panelGridSize" : 25},
+            BlindData = 
+            {"PERCENT_HEIGHT" : [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],"TILT_ANGLE": [0, 45, 90],"slat_height" : 100,"slat_thickness" : 2,"BlindOffset": 150,},
             BuildingData = 
-            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200, "BuildingOrientation" : 0},
+            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200, "BuildingOrientation" : 0, "BuildingOrientation" : 0, "panelHeight":1200, "panelGridSize" : 25},
             BuildingProperties = 
             {"glass_solar_transmittance" : 0.691,"glass_light_transmittance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.6,\
             "Lighting_Maintenance_Factor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
@@ -42,13 +42,14 @@ class ASF_Simulation(object):
                             
             #define varibales of object
 		self.SimulationData=SimulationData
-		self.PanelData=PanelData
+		self.BlindData=BlindData
 		self.BuildingData=BuildingData
 		self.BuildingProperties=BuildingProperties
 		self.SimulationOptions=SimulationOptions
 		self.SimulationPeriod = SimulationPeriod
 		
-		self.YSHADING = self.PanelData['YSHADING']		
+		self.PERCENT_HEIGHT = self.BlindData['PERCENT_HEIGHT']
+        self.TILT_ANGLE = self.BlindData['TILT_ANGLE']
 		self.createPlots=False
 		self.geoLocation = SimulationData['geoLocation']
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
@@ -73,8 +74,8 @@ class ASF_Simulation(object):
     def initializeASF(self):
       
         #Save parameters to be imported into grasshopper
-        with open('panel.json','w') as f:
-            f.write(json.dumps(self.PanelData))
+        with open('blinds.json','w') as f:
+            f.write(json.dumps(self.BlindData))
             
     
     def setBuildingParameters(self):
@@ -90,7 +91,7 @@ class ASF_Simulation(object):
     def initializeBuildingSimulation(self):
         #set building properties for the RC-Model analysis 
         self.BuildingProperties.update({
-                "Fenst_A": self.BuildingData['room_width']/1000.0*self.BuildingData['room_height']/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
+                "Fenst_A": self.BuildingData['room_width']/1000.0*(self.BuildingData['room_height']-self.BuildingData['panelHeight'])/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
                 "Room_Depth": self.BuildingData['room_depth']/1000.0,
                 "Room_Width": self.BuildingData['room_width']/1000.0,
                 "Room_Height":self.BuildingData['room_height']/1000.0})                
@@ -216,8 +217,8 @@ class ASF_Simulation(object):
         self.sumHours = sumHours(self.daysPerMonth)
     
         
-        #Make a list of all angle combinations
-        self.ANGLES= [(x, y) for x in self.XANGLES for y in self.YANGLES]
+        #Make a list of all height and angle combinations
+        self.ANGLES= [(x, y) for x in self.PERCENT_HEIGHT for y in self.TILT_ANGLE]
         
         #append to more ANGLES combination option for the angle carpetplot
         self.ANGLES.append((np.nan,np.nan)) # no sun
@@ -230,7 +231,7 @@ class ASF_Simulation(object):
             self.combinationAngles[i] = self.ANGLES[i]
         
         
-        self.NumberCombinations = len(self.XANGLES)*len(self.YANGLES) #*NoClusters
+        self.NumberCombinations = len(self.PERCENT_HEIGHT)*len(self.TILT_ANGLE) #*NoClusters
         
         
     
@@ -239,12 +240,12 @@ class ASF_Simulation(object):
          # Start the simulation
         
     
-        from asf_electricity_production_hourly import asf_electricity_production
+        from classic_electricity_production_hourly import asf_electricity_production
         from RadiationCalculation_hourly import CalculateRadiationData
         #Calculate the Radiation on the solar panels and window with ladybug
         self.HourlyRadiation = CalculateRadiationData(SimulationPeriode = self.SimulationPeriod,
-                                                        XANGLES = self.XANGLES, 
-                                                        YANGLES = self.YANGLES, 
+                                                        PERCENT_HEIGHT = self.PERCENT_HEIGHT, 
+                                                        TILT_ANGLE = self.TILT_ANGLE, 
                                                         paths = self.paths, 
                                                         FolderName = self.SimulationData)
         
@@ -252,7 +253,7 @@ class ASF_Simulation(object):
         
         
        
-        
+        """
         #if there are no panels vertical and horizontal
         if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
             self.PV_electricity_results = {}
@@ -260,59 +261,60 @@ class ASF_Simulation(object):
             print "PV_electricity_results is zero"
             
         else:
-            #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
-            if not os.path.isfile(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
-                if not os.path.isdir(self.paths['PV']):
-                    os.makedirs(self.paths['PV'])
-                    
-                            
-                print '\nCalculating PV electricity production'     
+        """
+        #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
+        if not os.path.isfile(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
+            if not os.path.isdir(self.paths['PV']):
+                os.makedirs(self.paths['PV'])
                 
-                
-                if self.createPlots:
-                    self.PV_electricity_results, self.PV_detailed_results, fig1, fig2 = \
-                    asf_electricity_production(
-                                       createPlots = self.createPlots, 
-                                       lb_radiation_path = self.paths['radiation_results'],
-                                       panelsize = self.PanelData['panelSize'], 
-                                       pvSizeOption = 0,
-                                       save_results_path = self.paths['PV'], 
-                                       lookup_table_path = self.paths['electrical_simulation'], 
-                                       geo_path = self.paths['geo'],
-                                       flipOrientation= False, 
-                                       XANGLES = self.XANGLES, 
-                                       YANGLES= self.YANGLES, 
-                                       hour_in_month = self.hour_in_month, 
-                                       paths = self.paths, 
-                                       DataNamePV = self.SimulationData['FileName'],
-                                       SimulationPeriode = self.SimulationPeriod, 
-                                       weatherData = self.weatherData)
-                                       
-                else:
-                    self.PV_electricity_results, self.PV_detailed_results = \
-                    asf_electricity_production(
-                                       createPlots = self.createPlots, 
-                                       lb_radiation_path = self.paths['radiation_results'],
-                                       panelsize = self.PanelData['panelSize'], 
-                                       pvSizeOption = 0,
-                                       save_results_path = self.paths['PV'], 
-                                       lookup_table_path = self.paths['electrical_simulation'], 
-                                       geo_path = self.paths['geo'],
-                                       flipOrientation= False, 
-                                       XANGLES = self.XANGLES, 
-                                       YANGLES= self.YANGLES, 
-                                       hour_in_month = self.hour_in_month,
-                                       paths = self.paths, 
-                                       DataNamePV = self.SimulationData['FileName'],
-                                       SimulationPeriode = self.SimulationPeriod, 
-                                       weatherData = self.weatherData)
+                        
+            print '\nCalculating PV electricity production'     
             
-            else: 
-                self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')).item()
-                self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_detailed_results_' + self.SimulationData['FileName'] + '.npy')).item()
-                print '\nLadyBug data loaded from Folder:'
-                print 'radiation_results_' + self.FolderName['DataFolderName']  
-                print 'File: ', self.SimulationData['FileName'] 
+            
+            if self.createPlots:
+                self.PV_electricity_results, self.PV_detailed_results, fig1, fig2 = \
+                asf_electricity_production(
+                                    createPlots = self.createPlots, 
+                                    lb_radiation_path = self.paths['radiation_results'],
+                                    panelsize = self.BuildingData['panelHeight'], 
+                                    pvSizeOption = 0,
+                                    save_results_path = self.paths['PV'], 
+                                    lookup_table_path = self.paths['electrical_simulation'], 
+                                    geo_path = self.paths['geo'],
+                                    flipOrientation= False, 
+                                    PERCENT_HEIGHT = self.PERCENT_HEIGHT, 
+                                    TILT_ANGLE= self.TILT_ANGLE, 
+                                    hour_in_month = self.hour_in_month, 
+                                    paths = self.paths, 
+                                    DataNamePV = self.SimulationData['FileName'],
+                                    SimulationPeriode = self.SimulationPeriod, 
+                                    weatherData = self.weatherData)
+                                    
+            else:
+                self.PV_electricity_results, self.PV_detailed_results = \
+                asf_electricity_production(
+                                    createPlots = self.createPlots, 
+                                    lb_radiation_path = self.paths['radiation_results'],
+                                    panelsize = self.BuildingData['panelHeight'], 
+                                    pvSizeOption = 0,
+                                    save_results_path = self.paths['PV'], 
+                                    lookup_table_path = self.paths['electrical_simulation'], 
+                                    geo_path = self.paths['geo'],
+                                    flipOrientation= False, 
+                                    PERCENT_HEIGHT = self.PERCENT_HEIGHT, 
+                                    TILT_ANGLE= self.TILT_ANGLE, 
+                                    hour_in_month = self.hour_in_month,
+                                    paths = self.paths, 
+                                    DataNamePV = self.SimulationData['FileName'],
+                                    SimulationPeriode = self.SimulationPeriod, 
+                                    weatherData = self.weatherData)
+        
+        else: 
+            self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')).item()
+            self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_detailed_results_' + self.SimulationData['FileName'] + '.npy')).item()
+            print '\nLadyBug data loaded from Folder:'
+            print 'radiation_results_' + self.FolderName['DataFolderName']  
+            print 'File: ', self.SimulationData['FileName'] 
 
       
      
