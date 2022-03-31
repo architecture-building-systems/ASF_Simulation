@@ -32,7 +32,8 @@ def static_LB_electicity_production(
     from calculateHOY import calcHOY
 
     create_plots_flag = createPlots
-    Simulation_Data_Folder = lb_radiation_path
+    Simulation_Data_Folder = lb_electricity_path
+
     
     
     filename = ('ElectricityResults')
@@ -41,11 +42,42 @@ def static_LB_electicity_production(
     
     #curr_model_submod_lookup = np.load(os.path.join(lookup_table_path, 'curr_model_submod_lookup.npy'),'r')
     #pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
-    PV_electricity_results = {'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr,  'Hour' : hour, 'Day': day, 'Month':monthi}
-    np.save(os.path.join(save_results_path,'HourlyPV_electricity_results_'  + DataNamePV + '.npy'),PV_electricity_results)    
+
+    #read data
+    # import yearly electricity results from simulation:
+    eldata = np.genfromtxt(Simulation_Data_Folder + '/' + filename + filetype , delimiter=',', skip_header=14) #filenames list of all files, access with indices    
+    # execute all lines of the file:
+
+    # save parameters to dictionary
+    PV_electricity_yearly_results = {'ACenergyPerHour':eldata[0][0:-1], 'ACenergyPerYear':sum(eldata[0][0:-1]), 'DCenergyPerHour':eldata[1][0:-1], 'totalRadiationPerHour':eldata[2][0:-1], 'cellTemperaturePerHour':eldata[3][0:-1], 'HOY':[]}
+    for HOY in range(1, 8761):
+        PV_electricity_yearly_results['HOY'].append(HOY)
+    PV_electricity_results = {'ACenergyPerHour':[], 'DCenergyPerHour':[], 'totalRadiationPerHour':[], 'cellTemperaturePerHour':[], 'HOY': []}
+    #for one hour 
+    numHours = 0 
+
+    filenames = []
+    for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth'] + 1):
+       for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
+            for hour in range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour'] + 1):    
+                
+                HOY = calcHOY(month=monthi,day = day, hour = hour)
+                numHours += 1
+                filenames.append(filename + '_' + str(int(hour-1)) + '_' + str(day) +'_'+ str(monthi) + filetype)
+                PV_electricity_results['ACenergyPerHour'].append(eldata[0][hour])
+                PV_electricity_results['DCenergyPerHour'].append(eldata[1][hour])
+                PV_electricity_results['totalRadiationPerHour'].append(eldata[2][hour])
+                PV_electricity_results['cellTemperaturePerHour'].append(eldata[3][hour])
+                PV_electricity_results['HOY'].append(HOY)
+
+                
+    print "numHours", numHours
     
-    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'Hour': hour, 'Day': day, 'Month':monthi}
-    np.save(os.path.join(save_results_path,'HourlyPV_detailed_results_' + DataNamePV + '.npy'),PV_detailed_results)    
+
+    np.save(os.path.join(save_results_path,'HourlyPV_electricity_results_'  + DataNamePV + '.npy'),PV_electricity_results)    
+    np.save(os.path.join(save_results_path,'HourlyPV_electricity_yearly_results_'  + DataNamePV + '.npy'),PV_electricity_yearly_results) 
+    #PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'Hour': hour, 'Day': day, 'Month':monthi}
+    #np.save(os.path.join(save_results_path,'HourlyPV_detailed_results_' + DataNamePV + '.npy'),PV_detailed_results)    
     
    
 #    print PV_electricity_results
@@ -57,68 +89,67 @@ def static_LB_electicity_production(
         fig1 = plt.figure()
         
         plt.subplot(2, 2, 1)
-        plt.plot(range(1,panelnum+1), np.transpose(Ins_ap) / apertsize)
-        plt.xlim(([0, panelnum]))
-        plt.xlabel(('Module number'), fontsize = 12)
-        plt.ylabel(('aperture insolation (W/m2)'), fontsize = 12)
+        plt.plot(PV_electricity_results['HOY'], PV_electricity_results['ACenergyPerHour'])
+        #plt.xlim(([0, panelnum]))
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('ACenergyPerHour (kWh)'), fontsize = 12)
     
         plt.subplot(2, 2, 2)
-        plt.plot(range(1,panelnum+1), np.transpose(Pmod_mpp)/ apertsize)
-        plt.xlim([0, panelnum])
-        plt.xlabel(('Module number'), fontsize = 12)
-        plt.ylabel(('aperture power (W/m2)'), fontsize = 12)
+        plt.plot(PV_electricity_results['HOY'], PV_electricity_results['DCenergyPerHour'])
+        #plt.xlim([0, panelnum])
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('DCenergyPerHour (kWh)'), fontsize = 12)
     
         plt.subplot(2, 2, 3)
-        plt.plot(np.transpose(Pmod_mpp)/np.transpose(Ins_ap)* 100.)
-        plt.xlim(([0, 50]))
-        plt.xlabel(('Module number'), fontsize = 12)
-        plt.ylabel(('Aperture Efficiency (%)'), fontsize =  12)
+        plt.plot(PV_electricity_results['HOY'], PV_electricity_results['totalRadiationPerHour'])
+        #plt.xlim(([0, 50]))
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('totalRadiationPerHour (kWh/m2)'), fontsize =  12)
     
     
         plt.subplot(2, 2, 4)
-        plt.plot(np.transpose(Pmod_mpp)/np.transpose(Ins_ap)* 100. * apertscale)
-        plt.xlim(([0, 50]))
-        plt.xlabel(('Module number'), fontsize = 12)
-        plt.ylabel(('Module Efficiency (%)'), fontsize =  12)
+        plt.plot(PV_electricity_results['HOY'], PV_electricity_results['cellTemperaturePerHour'])
+        #plt.xlim(([0, 50]))
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('cellTemperaturePerHour (°C)'), fontsize =  12)
                  
                  
                  
         fig2 = plt.figure()
         
         plt.subplot(2, 2, 1)
-        plt.plot(range(numASFit), np.squeeze(Ins_avg),label='average Insolation')
-        plt.hold(True)
-        plt.plot(range(numASFit), np.squeeze(theoreticalMaxRad), label='theoretical maximum Insolation')
-        plt.xlim(([0, numASFit]))
-        plt.legend()
-        plt.xlabel(('Iteration number'), fontsize = 12)
-        plt.ylabel(('Aperture insolation (W/m2)'), fontsize = 12)
+        plt.plot(PV_electricity_yearly_results['HOY'][:], PV_electricity_yearly_results['ACenergyPerHour'][:])
+        #plt.xlim(([0, panelnum]))
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('ACenergyPerHour (kWh)'), fontsize = 12)
     
         plt.subplot(2, 2, 2)
-        plt.plot(range(numASFit), Pmpp_avg)
-        plt.xlim([0, numASFit])
-        plt.xlabel(('Iteration number'), fontsize = 12)
-        plt.ylabel(('Average Aperture Power (W/m2)'), fontsize = 12)
+        plt.plot(PV_electricity_yearly_results['HOY'], PV_electricity_yearly_results['DCenergyPerHour'])
+        #plt.xlim([0, panelnum])
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('DCenergyPerHour (kWh)'), fontsize = 12)
     
         plt.subplot(2, 2, 3)
-        plt.plot(range(numASFit), effap_arr)
-        plt.xlim(([0, numASFit]))
-        plt.xlabel(('Iteration number'), fontsize = 12)
-        plt.ylabel(('Aperture Efficiency (%)'), fontsize =  12)
+        plt.plot(PV_electricity_yearly_results['HOY'], PV_electricity_yearly_results['totalRadiationPerHour'])
+        #plt.xlim(([0, 50]))
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('totalRadiationPerHour (kWh/m2)'), fontsize =  12)
     
     
         plt.subplot(2, 2, 4)
-        plt.plot(range(numASFit), effmod_arr)
-        plt.xlim(([0, numASFit]))
-        plt.xlabel(('Iteration number'), fontsize = 12)
-        plt.ylabel(('Module Efficiency (%)'), fontsize =  12)
+        plt.plot(PV_electricity_yearly_results['HOY'], PV_electricity_yearly_results['cellTemperaturePerHour'])
+        #plt.xlim(([0, 50]))
+        plt.xlabel(('HOY'), fontsize = 12)
+        plt.ylabel(('cellTemperaturePerHour (°C)'), fontsize =  12)
+
+        plt.show()
         
         print 'PV production succesfully calculated'
-        return PV_electricity_results, PV_detailed_results, fig1, fig2
+        return PV_electricity_results, PV_electricity_yearly_results, fig1, fig2
     
     else:
         print 'PV production succesfully calculated'
-        return PV_electricity_results, PV_detailed_results
+        return PV_electricity_results, PV_electricity_yearly_results
         
   
         

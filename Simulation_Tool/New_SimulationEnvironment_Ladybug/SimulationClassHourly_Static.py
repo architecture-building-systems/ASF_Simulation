@@ -53,7 +53,7 @@ class Static_Simulation(object):
 		
 		self.PERCENT_HEIGHT = self.BlindData['PERCENT_HEIGHT']
 		self.TILT_ANGLE = self.BlindData['TILT_ANGLE']
-		self.createPlots=False
+		self.createPlots=True
 		self.geoLocation = SimulationData['geoLocation']
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		self.optimization_Types = self.SimulationData['optimizationTypes']
@@ -133,6 +133,7 @@ class Static_Simulation(object):
         
         self.paths['radiation_results'] = os.path.join(self.paths['RadiationData'],'radiation_results_' + self.SimulationData['DataFolderName'])
         self.paths['radiation_wall'] = os.path.join(self.paths['RadiationData'],  'radiation_wall_' + self.SimulationData['DataFolderName'])
+        self.paths['electricity_LB'] = os.path.join(self.paths['RadiationData'],  'electricity_LB_' + self.SimulationData['DataFolderName'])
         self.paths['PV'] = os.path.join(self.paths['main'], 'PV_results')
         self.paths['save_results_path'] = self.paths['PV']
         self.paths['weather_folder']= os.path.join(os.path.dirname(self.paths['main']), 'WeatherData')
@@ -153,12 +154,16 @@ class Static_Simulation(object):
         
         if not os.path.isdir(self.paths['RadiationData']):
             os.makedirs(self.paths['RadiationData'])
+
         #radiation subfolder is created, there the radiation_results are saved
         if not os.path.isdir(self.paths['radiation_results']):
             os.makedirs(self.paths['radiation_results'])
         
         if not os.path.isdir(self.paths['radiation_wall']):
             os.makedirs(self.paths['radiation_wall'])
+        
+        if not os.path.isdir(self.paths['electricity_LB']):
+            os.makedirs(self.paths['electricity_LB'])
         
         # define path of geographical location:
         self. paths['geo_location'] = os.path.join(self.paths['data'], 'geographical_location')
@@ -243,12 +248,46 @@ class Static_Simulation(object):
         
         
     
+    def electricity_results(self):
+        from electricity_production_hourly_static import static_LB_electicity_production
         
+        if not os.path.isfile(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
+            if not os.path.isdir(self.paths['PV']):
+                os.makedirs(self.paths['PV'])
+
+            print '\nSaving PV electricity production'
+
+            if self.createPlots:
+                self.PV_electricity_results, self.PV_electricity_yearly_results, fig1, fig2 = \
+                    static_LB_electicity_production( createPlots=self.createPlots, 
+                                                    lb_electricity_path=self.paths['electricity_LB'], 
+                                                    save_results_path = self.paths['PV'], 
+                                                    hour_in_month = self.hour_in_month, 
+                                                    paths = self.paths, 
+                                                    DataNamePV = self.SimulationData['FileName'], 
+                                                    SimulationPeriode = self.SimulationPeriod)
+            else: 
+                self.PV_electricity_results, self.PV_electricity_yearly_results = \
+                    static_LB_electicity_production( createPlots=self.createPlots, 
+                                                    lb_electricity_path=self.paths['electricity_LB'], 
+                                                    save_results_path = self.paths['PV'], 
+                                                    hour_in_month = self.hour_in_month, 
+                                                    paths = self.paths, 
+                                                    DataNamePV = self.SimulationData['FileName'], 
+                                                    SimulationPeriode = self.SimulationPeriod)
+        else: 
+            self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy'), allow_pickle=True).item()
+            self.PV_electricity_yearly_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_yearly_results_' + self.SimulationData['FileName'] + '.npy'), allow_pickle=True).item()
+            print '\nLadyBug data loaded from Folder:'
+            print 'radiation_results_' + self.FolderName['DataFolderName']  
+            print 'File: ', self.SimulationData['FileName'] 
+                                    
+
     def runRadiationCalculation(self):
          # Start the simulation
         
     
-        from electricity_production_hourly_static import asf_electricity_production
+        #from electricity_production_hourly_static import asf_electricity_production
         from RadiationCalculation_hourly_static import CalculateRadiationData
         #Calculate the Radiation on the solar panels and window with ladybug
         self.HourlyRadiation = CalculateRadiationData(SimulationPeriode = self.SimulationPeriod,
@@ -268,7 +307,7 @@ class Static_Simulation(object):
             print "PV_electricity_results is zero"
             
         else:
-        """
+        
         #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
         if not os.path.isfile(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
             if not os.path.isdir(self.paths['PV']):
@@ -322,7 +361,7 @@ class Static_Simulation(object):
             print '\nLadyBug data loaded from Folder:'
             print 'radiation_results_' + self.FolderName['DataFolderName']  
             print 'File: ', self.SimulationData['FileName'] 
-
+        """
       
      
     def PrepareRadiationData(self):
@@ -347,7 +386,7 @@ class Static_Simulation(object):
                     
                     #print 'HOY: ' + str(HOY) + ' of ' + str(end)
     
-                    self.PV[HOY] = self.PV_electricity_results['Pmpp_sum'][count:count+ self.NumberCombinations] #Watts
+                    self.PV[HOY] = self.PV_electricity_yearly_results['DCenergyPerHour'][HOY] #Watts
                     count += self.NumberCombinations               
                    
                     passedHours += 1
@@ -361,7 +400,7 @@ class Static_Simulation(object):
         # add python_path to system path, so that all files are available:
         sys.path.insert(0, self.paths['5R1C_ISO_simulator'])     
         
-        from energy_minimization_hourly import RC_Model
+        from energy_minimization_hourly_static import RC_Model
         from prepareDataMain_hourly import prepareAngles
         from read_occupancy import read_occupancy
         
@@ -370,8 +409,8 @@ class Static_Simulation(object):
         self.ResultsBuildingSimulation = {}
         self.UncomfortableH = {}    
         
-        self.x_angles = {} #optimized x-angles
-        self.y_angles = {} #optimized y-angles
+        self.x_angles = {} #optimized percent_blinds
+        self.y_angles = {} #optimized tilt_angles
         self.BestKey = {} #optimized keys of the ANGLES dictionary
         self.TotalHourlyData = {}
         self.TotalHourlyDataELEC = {}
@@ -435,7 +474,7 @@ class Static_Simulation(object):
         
     def createPlotsFunction(self):
         
-        from hourlyPlotFunction import PlotHour 
+        from hourlyPlotFunction_static import PlotHour 
                 
         self.fig = {}
           
@@ -503,7 +542,8 @@ class Static_Simulation(object):
         self.initializeBuildingSimulation()
         self.setPaths()				
         self.CalculateVariables()
-        self.runRadiationCalculation()		  		 
+        self.runRadiationCalculation()
+        self.electricity_results()		  		 
         self.PrepareRadiationData()													   
         self.runBuildingSimulation()
 
@@ -513,4 +553,4 @@ class Static_Simulation(object):
         if self.SimulationData['Save']== True and self.SimulationData['Save']== True:
         	self.createPlotsFunction()
         	self.SaveResults()
-         
+        plt.show()
