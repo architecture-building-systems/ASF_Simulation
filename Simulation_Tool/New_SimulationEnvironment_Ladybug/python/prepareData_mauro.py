@@ -253,7 +253,7 @@ def readLayoutAndCombinations(path):
         exec parameters[i]
     
     # save parameters to dictionary
-    LayoutAndCombinations = {'Xangles':XANGLES, 'Yangles':YANGLES, 'NoClusters':NoClusters, 'panelSize':panelSize, 'panelSpacing':panelSpacing, 'ASFarray':ASFarray, 'desiredGridPointSize':desiredGridPointSize}
+    LayoutAndCombinations = {'PercentHeight':PERCENT_HEIGHT, 'TiltAngle':TILT_ANGLE, 'panelSize':panelHeight*room_width, 'BlindArray':BlindArray, 'desiredGridPointSize':desiredGridPointSize}
    
     return LayoutAndCombinations
    

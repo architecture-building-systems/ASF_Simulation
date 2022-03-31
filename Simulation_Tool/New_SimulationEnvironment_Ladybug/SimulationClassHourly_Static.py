@@ -20,18 +20,20 @@ from buildingPhysics import Building #Importing Building Class
 from supplySystem import *  
 from emissionSystem import *
 
-class ASF_Simulation(object):
+class Static_Simulation(object):
     #initilize ASF_simulation class
 
     def __init__(self,
-            SimulationData= {
-            'optimizationTypes' : ['E_total'], 'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 'FileName' : 'ZH13_49comb_WinterSunnyDay','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},  
-            SimulationPeriod = {
-            'FromMonth': 1, 'ToMonth': 1, 'FromDay': 8, 'ToDay': 8, 'FromHour': 5, 'ToHour': 20},
-            BlindData = 
+            SimulationPeriod = 
+            {'FromMonth': 1, 'ToMonth': 1, 'FromDay': 8, 'ToDay': 8, 'FromHour': 5, 'ToHour': 20},
+            SimulationData=
+            {'optimizationTypes' : ['E_total'], 'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 'FileName' : 'ZH13_49comb_WinterSunnyDay','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},  
+            BlindData =
             {"PERCENT_HEIGHT" : [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],"TILT_ANGLE": [0, 45, 90],"slat_height" : 100,"slat_thickness" : 2,"BlindOffset": 150,},
+            PanelData =
+            {"panelHeight": 1200, "PanelGridSize": 25},
             BuildingData = 
-            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200, "BuildingOrientation" : 0, "BuildingOrientation" : 0, "panelHeight":1200, "panelGridSize" : 25},
+            {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200, "BuildingOrientation" : 0, "BuildingOrientation" : 0},
             BuildingProperties = 
             {"glass_solar_transmittance" : 0.691,"glass_light_transmittance" : 0.744,"lighting_load" : 11.74,"lighting_control" : 300,"Lighting_Utilisation_Factor" :  0.6,\
             "Lighting_Maintenance_Factor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
@@ -43,13 +45,14 @@ class ASF_Simulation(object):
             #define varibales of object
 		self.SimulationData=SimulationData
 		self.BlindData=BlindData
+		self.PanelData=PanelData
 		self.BuildingData=BuildingData
 		self.BuildingProperties=BuildingProperties
 		self.SimulationOptions=SimulationOptions
 		self.SimulationPeriod = SimulationPeriod
 		
 		self.PERCENT_HEIGHT = self.BlindData['PERCENT_HEIGHT']
-        self.TILT_ANGLE = self.BlindData['TILT_ANGLE']
+		self.TILT_ANGLE = self.BlindData['TILT_ANGLE']
 		self.createPlots=False
 		self.geoLocation = SimulationData['geoLocation']
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
@@ -77,7 +80,12 @@ class ASF_Simulation(object):
         with open('blinds.json','w') as f:
             f.write(json.dumps(self.BlindData))
             
-    
+    def setPanelParameters(self):
+        
+        #Save parameters to be imported into grasshopper
+        with open('static_panel.json','w') as f:
+            f.write(json.dumps(self.PanelData))
+
     def setBuildingParameters(self):
         
         #Save parameters to be imported into grasshopper
@@ -91,7 +99,7 @@ class ASF_Simulation(object):
     def initializeBuildingSimulation(self):
         #set building properties for the RC-Model analysis 
         self.BuildingProperties.update({
-                "Fenst_A": self.BuildingData['room_width']/1000.0*(self.BuildingData['room_height']-self.BuildingData['panelHeight'])/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
+                "Fenst_A": self.BuildingData['room_width']/1000.0*(self.BuildingData['room_height']-self.PanelData['panelHeight'])/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
                 "Room_Depth": self.BuildingData['room_depth']/1000.0,
                 "Room_Width": self.BuildingData['room_width']/1000.0,
                 "Room_Height":self.BuildingData['room_height']/1000.0})                
@@ -240,18 +248,17 @@ class ASF_Simulation(object):
          # Start the simulation
         
     
-        from classic_electricity_production_hourly import asf_electricity_production
-        from RadiationCalculation_hourly import CalculateRadiationData
+        from electricity_production_hourly_static import asf_electricity_production
+        from RadiationCalculation_hourly_static import CalculateRadiationData
         #Calculate the Radiation on the solar panels and window with ladybug
         self.HourlyRadiation = CalculateRadiationData(SimulationPeriode = self.SimulationPeriod,
-                                                        PERCENT_HEIGHT = self.PERCENT_HEIGHT, 
-                                                        TILT_ANGLE = self.TILT_ANGLE, 
+                                                        XANGLES = self.PERCENT_HEIGHT, 
+                                                        YANGLES = self.TILT_ANGLE,
                                                         paths = self.paths, 
                                                         FolderName = self.SimulationData)
         
         
-        
-        
+
        
         """
         #if there are no panels vertical and horizontal
@@ -276,14 +283,14 @@ class ASF_Simulation(object):
                 asf_electricity_production(
                                     createPlots = self.createPlots, 
                                     lb_radiation_path = self.paths['radiation_results'],
-                                    panelsize = self.BuildingData['panelHeight'], 
+                                    panelsize = self.PanelData['panelHeight'], 
                                     pvSizeOption = 0,
                                     save_results_path = self.paths['PV'], 
                                     lookup_table_path = self.paths['electrical_simulation'], 
                                     geo_path = self.paths['geo'],
                                     flipOrientation= False, 
-                                    PERCENT_HEIGHT = self.PERCENT_HEIGHT, 
-                                    TILT_ANGLE= self.TILT_ANGLE, 
+                                    XANGLES = self.PERCENT_HEIGHT, 
+                                    YANGLES= self.TILT_ANGLE, 
                                     hour_in_month = self.hour_in_month, 
                                     paths = self.paths, 
                                     DataNamePV = self.SimulationData['FileName'],
@@ -295,14 +302,14 @@ class ASF_Simulation(object):
                 asf_electricity_production(
                                     createPlots = self.createPlots, 
                                     lb_radiation_path = self.paths['radiation_results'],
-                                    panelsize = self.BuildingData['panelHeight'], 
+                                    panelsize = self.PanelData['panelHeight'], 
                                     pvSizeOption = 0,
                                     save_results_path = self.paths['PV'], 
                                     lookup_table_path = self.paths['electrical_simulation'], 
                                     geo_path = self.paths['geo'],
                                     flipOrientation= False, 
-                                    PERCENT_HEIGHT = self.PERCENT_HEIGHT, 
-                                    TILT_ANGLE= self.TILT_ANGLE, 
+                                    XANGLES = self.PERCENT_HEIGHT, 
+                                    YANGLES= self.TILT_ANGLE, 
                                     hour_in_month = self.hour_in_month,
                                     paths = self.paths, 
                                     DataNamePV = self.SimulationData['FileName'],
@@ -491,6 +498,7 @@ class ASF_Simulation(object):
 		
 
         self.initializeASF()
+        self.setPanelParameters()
         self.setBuildingParameters()		
         self.initializeBuildingSimulation()
         self.setPaths()				

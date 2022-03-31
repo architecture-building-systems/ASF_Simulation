@@ -7,14 +7,136 @@ Calculate Electrical Power of ASF
 Authors: Johannes Hofer, Jeremias Schmidli
 
 """
-def asf_electricity_production(createPlots=False, lb_radiation_path=None, 
-                               panelsize = 400, pvSizeOption=0, 
+def static_LB_electicity_production(
+                                createPlots=False, 
+                                lb_electricity_path=None, 
+                                save_results_path = None, 
+                                hour_in_month = None, 
+                                paths = None, 
+                                DataNamePV = None, 
+                                SimulationPeriode = None):
+
+    import sys,os                               
+    # add python_path to system path, so that all files are available:
+                          
+  
+    import json
+    import numpy as np
+    import time
+    import warnings
+    import matplotlib.pyplot as plt
+    from scipy import interpolate
+    from average_monthly import daysPassedMonth
+    from prepareData_mauro import readLayoutAndCombinations, CalcXYAnglesAndLocation
+    from auxFunctions import flatten
+    from calculateHOY import calcHOY
+
+    create_plots_flag = createPlots
+    Simulation_Data_Folder = lb_radiation_path
+    
+    
+    filename = ('ElectricityResults')
+    filetype = ('.csv')
+    
+    
+    #curr_model_submod_lookup = np.load(os.path.join(lookup_table_path, 'curr_model_submod_lookup.npy'),'r')
+    #pointsPerLookupCurve = np.shape(curr_model_submod_lookup)[2]
+    PV_electricity_results = {'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr,  'Hour' : hour, 'Day': day, 'Month':monthi}
+    np.save(os.path.join(save_results_path,'HourlyPV_electricity_results_'  + DataNamePV + '.npy'),PV_electricity_results)    
+    
+    PV_detailed_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_ap': Ins_ap, 'Pmod_mpp': Pmod_mpp, 'Hour': hour, 'Day': day, 'Month':monthi}
+    np.save(os.path.join(save_results_path,'HourlyPV_detailed_results_' + DataNamePV + '.npy'),PV_detailed_results)    
+    
+   
+#    print PV_electricity_results
+#    print PV_detailed_results
+   
+   
+    if create_plots_flag:
+        
+        fig1 = plt.figure()
+        
+        plt.subplot(2, 2, 1)
+        plt.plot(range(1,panelnum+1), np.transpose(Ins_ap) / apertsize)
+        plt.xlim(([0, panelnum]))
+        plt.xlabel(('Module number'), fontsize = 12)
+        plt.ylabel(('aperture insolation (W/m2)'), fontsize = 12)
+    
+        plt.subplot(2, 2, 2)
+        plt.plot(range(1,panelnum+1), np.transpose(Pmod_mpp)/ apertsize)
+        plt.xlim([0, panelnum])
+        plt.xlabel(('Module number'), fontsize = 12)
+        plt.ylabel(('aperture power (W/m2)'), fontsize = 12)
+    
+        plt.subplot(2, 2, 3)
+        plt.plot(np.transpose(Pmod_mpp)/np.transpose(Ins_ap)* 100.)
+        plt.xlim(([0, 50]))
+        plt.xlabel(('Module number'), fontsize = 12)
+        plt.ylabel(('Aperture Efficiency (%)'), fontsize =  12)
+    
+    
+        plt.subplot(2, 2, 4)
+        plt.plot(np.transpose(Pmod_mpp)/np.transpose(Ins_ap)* 100. * apertscale)
+        plt.xlim(([0, 50]))
+        plt.xlabel(('Module number'), fontsize = 12)
+        plt.ylabel(('Module Efficiency (%)'), fontsize =  12)
+                 
+                 
+                 
+        fig2 = plt.figure()
+        
+        plt.subplot(2, 2, 1)
+        plt.plot(range(numASFit), np.squeeze(Ins_avg),label='average Insolation')
+        plt.hold(True)
+        plt.plot(range(numASFit), np.squeeze(theoreticalMaxRad), label='theoretical maximum Insolation')
+        plt.xlim(([0, numASFit]))
+        plt.legend()
+        plt.xlabel(('Iteration number'), fontsize = 12)
+        plt.ylabel(('Aperture insolation (W/m2)'), fontsize = 12)
+    
+        plt.subplot(2, 2, 2)
+        plt.plot(range(numASFit), Pmpp_avg)
+        plt.xlim([0, numASFit])
+        plt.xlabel(('Iteration number'), fontsize = 12)
+        plt.ylabel(('Average Aperture Power (W/m2)'), fontsize = 12)
+    
+        plt.subplot(2, 2, 3)
+        plt.plot(range(numASFit), effap_arr)
+        plt.xlim(([0, numASFit]))
+        plt.xlabel(('Iteration number'), fontsize = 12)
+        plt.ylabel(('Aperture Efficiency (%)'), fontsize =  12)
+    
+    
+        plt.subplot(2, 2, 4)
+        plt.plot(range(numASFit), effmod_arr)
+        plt.xlim(([0, numASFit]))
+        plt.xlabel(('Iteration number'), fontsize = 12)
+        plt.ylabel(('Module Efficiency (%)'), fontsize =  12)
+        
+        print 'PV production succesfully calculated'
+        return PV_electricity_results, PV_detailed_results, fig1, fig2
+    
+    else:
+        print 'PV production succesfully calculated'
+        return PV_electricity_results, PV_detailed_results
+        
+  
+        
+        
+def asf_electricity_production(createPlots=False, 
+                               lb_radiation_path=None, 
+                               panelsize = 400, 
+                               pvSizeOption=0, 
                                save_results_path = None, 
                                lookup_table_path = None, 
-                               geo_path = None, flipOrientation = False, 
-                               PERCENT_HEIGHT = [], TILT_ANGLE = [], 
-                               hour_in_month = None, paths = None, 
-                               DataNamePV = None, SimulationPeriode = None,
+                               geo_path = None, 
+                               flipOrientation = False, 
+                               XANGLES = [], 
+                               YANGLES= [],
+                               hour_in_month = None, 
+                               paths = None, 
+                               DataNamePV = None, 
+                               SimulationPeriode = None,
                                weatherData = None):
                                    
     import sys,os                               
@@ -53,7 +175,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     numHours = 0
     
     # find the number of combinations analysed by ladybug:
-    numCombPerHour = len(XANGLES)*len(YANGLES)
+    numCombPerHour = 1 # static panel (len(PERCENT_HEIGHT)*len(TILT_ANGLE))
     print "CombPerHour: ", numCombPerHour
     # set numCombPerHour to 1 if it appears to be zero (this is the case for suntracking)
     if numCombPerHour == 0:
@@ -71,11 +193,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
                 
                 HOY = calcHOY(month=monthi,day = day, hour = hour)
                 numHours += 1
-                for x_angle in XANGLES:
-                    for y_angle in YANGLES:
-                        # filenames.append(filename + str(i) + filetype)
-                        filenames.append(filename + '_' + str(int(hour-1)) + '_' + str(day) +'_'+ str(monthi) + '_'+ str(x_angle) + '_' + str(y_angle) + filetype)
-                        temp_amb.append(weatherData['drybulb_C'][HOY])
+                
+                # filenames.append(filename + str(i) + filetype)
+                filenames.append(filename + '_' + str(int(hour-1)) + '_' + str(day) +'_'+ str(monthi) + '_' + str(0) +'_'+ str(0) + filetype) #access radiation for first time step     TODO save only onle radiation file for panel sinde 
+                temp_amb.append(weatherData['drybulb_C'][HOY])
     
     print "numHours: ", numHours
     
@@ -88,12 +209,12 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     
     # gridpoint size input of GH, not equal to the actual grid point size if the panelsize is not a multiple of 25mm:
     desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['desiredGridPointSize']  
-    
+    panelwidth = panelsize/1000.
+    panellength = panelsize/1000.
     nparcell = int(round(panelsize/float(desiredGridPointSize)))
     cellsPerGridpoint = 3
     ncell = nparcell*cellsPerGridpoint
-    panelwidth = panelsize/1000.
-    panellength = panelsize/1000.
+    
     panelarea = panelwidth * panellength
     
     scellsize = (panelwidth / ncell) * (panellength / nparcell)
@@ -143,7 +264,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     days_passed_month, days_per_month =  daysPassedMonth()
     
     # number of panels in evaluated ASF:
-    panelnum = len(flatten(readLayoutAndCombinations(lb_radiation_path)['ASFarray']))/2
+    panelnum = 1 # only one panel len(flatten(readLayoutAndCombinations(lb_radiation_path)['ASFarray']))/2
     
     # preallocate data for speed:
     Pmod_mpp = np.empty((numASFit, panelnum))*np.nan
@@ -205,23 +326,23 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         #if the maxRadPoint is equals zero, bypass the calculate since there is no radiation
     
         
-            for mod_sel in range(panelnum):    # module iteration
+            #for mod_sel in range(panelnum):    # module iteration
         
-                # select irradiance per module
-                irr_mod_sel = np.array(1 / gridPsize *irr_gridP[mod_sel, :])
-                
-                # create a grid with all radiation points (nparcellxnparcell)
-                irr_mod_mat_rnd = np.round(irr_mod_sel * 1000)   
-                irr_mod_mat_rnd.resize(nparcell, nparcell)     
-                
-                # flip orientation of PV cells on panels if requested
-                if flipOrientation:
-                    irr_mod_mat_rnd = irr_mod_mat_rnd.transpose()
-                
-                # delete 2 times number of columns and rows specified in varPVsize 
-                if varPVsize > 0:
-                    irr_mod_mat_rnd = irr_mod_mat_rnd[ varPVsize: - varPVsize,varPVsize:- varPVsize]
-        
+            # select irradiance per module
+            irr_mod_sel = np.array(1 / gridPsize *irr_gridP)
+            
+            # create a grid with all radiation points (nparcellxnparcell)
+            irr_mod_mat_rnd = np.round(irr_mod_sel * 1000)   
+            irr_mod_mat_rnd.resize(nparcell, nparcell)     
+            
+            # flip orientation of PV cells on panels if requested
+            if flipOrientation:
+                irr_mod_mat_rnd = irr_mod_mat_rnd.transpose()
+            
+            # delete 2 times number of columns and rows specified in varPVsize 
+            if varPVsize > 0:
+                irr_mod_mat_rnd = irr_mod_mat_rnd[ varPVsize: - varPVsize,varPVsize:- varPVsize]
+    
         
                 # set results for very small radiation equal to zero
         #        if np.mean(irr_mod_mat_rnd)<10:
@@ -418,7 +539,4 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     else:
         print 'PV production succesfully calculated'
         return PV_electricity_results, PV_detailed_results
-        
-  
-        
-        
+

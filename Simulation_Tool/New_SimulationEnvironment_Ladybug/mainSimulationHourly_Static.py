@@ -119,7 +119,7 @@ import os, sys
 import numpy as np
 import pandas as pd
 from buildingSystem import *  
-from SimulationClassHourly_Static import ASF_Simulation
+from SimulationClassHourly_Static import Static_Simulation
 
 sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), '5R1C_ISO_simulator'))    
     
@@ -132,30 +132,32 @@ SimulationPeriod = {
 'ToMonth': 7,#7, #1,
 'FromDay': 6, #6, #8,
 'ToDay': 6, #8,
-'FromHour': 5,#5
-'ToHour': 20}#20
+'FromHour': 10,#5
+'ToHour': 11}#20
 
 
 
 #Set simulation data 
 SimulationData= {
 'optimizationTypes' : ['E_total', 'Cooling'], 
-'DataFolderName' : 'ZH13test_static', 
-'FileName' : 'ZH13test_static',
+'DataFolderName' : 'ZH13test_static2', 
+'FileName' : 'ZH13test_static2',
 'geoLocation' : 'Zuerich_Kloten_2013', 
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True, 
-'ShowFig': True
-}   
+'ShowFig': True}   
 
 
 BlindData = {
-    "PERCENT_HEIGHT" : [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
-    "TILT_ANGLE": [0, 45, 90],
-    "slat_height" : 100,
-    "slat_thickness" : 2,
-    "BlindOffset": 150,
-}
+"PERCENT_HEIGHT" : [0, 50, 100],
+"TILT_ANGLE": [0, 90],
+"slat_height" : 100,
+"slat_thickness" : 2,
+"BlindOffset": 150}
+
+PanelData = {
+"panelHeight": 1200, 
+"PanelGridSize": 25}
 
 #Set Building Parameters in [mm]
 BuildingData={
@@ -165,9 +167,7 @@ BuildingData={
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97,
 "WindowGridSize" : 200,
-"BuildingOrientation" : 0,
-"panelHeight":1200,
-"panelGridSize" : 25} 
+"BuildingOrientation" : 0} 
 
 ##@Michael: This will need to be modified to fit your model
 BuildingProperties={
@@ -203,13 +203,14 @@ SimulationOptions= {
    
 if __name__=='__main__':
     
-    ASFtest = ASF_Simulation(SimulationPeriod = SimulationPeriod, 
-                             SimulationData = SimulationData, 
+    StaticTest = Static_Simulation(SimulationPeriod = SimulationPeriod, 
+                             SimulationData = SimulationData,
                              BlindData = BlindData,
+                             PanelData = PanelData,
                              BuildingData = BuildingData,
                              BuildingProperties = BuildingProperties, 
                              SimulationOptions = SimulationOptions)
-    ASFtest.SolveASF()
-    print ASFtest.TotalHourlyData
+    StaticTest.SolveASF()
+    print StaticTest.TotalHourlyData
         
         
