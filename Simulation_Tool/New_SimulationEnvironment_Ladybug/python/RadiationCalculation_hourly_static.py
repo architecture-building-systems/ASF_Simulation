@@ -61,6 +61,10 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderNam
                         #Wait until the electricity_results were created
                         while not os.path.exists(os.path.join(paths['electricity_LB'],'ElectricityResults' + '.csv')):
                             time.sleep(1)
+                        
+                        #Wait until the electricity_results were created
+                        while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults'+ '_' + str(hour-1) + '_' + str(day) + '_'+ str(monthi) + '.csv')):
+                            time.sleep(1)
                                             
                         #else:
                         print 'next step'

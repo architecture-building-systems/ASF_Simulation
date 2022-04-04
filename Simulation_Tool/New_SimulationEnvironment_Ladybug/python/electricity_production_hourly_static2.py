@@ -154,19 +154,13 @@ def static_LB_electicity_production(
   
         
         
-def static_electricity_production(createPlots=False, 
-                               lb_radiation_path=None, 
-                               panelHeight = 1200, 
-                               room_width = 4900,
-                               pvSizeOption=0, 
+def static_electricity_production(createPlots=False, lb_radiation_path=None, 
+                               moduleHeight = 1600, moduleWidth = 700, pvSizeOption=0, 
                                save_results_path = None, 
                                lookup_table_path = None, 
-                               geo_path = None, 
-                               flipOrientation = False, 
-                               hour_in_month = None, 
-                               paths = None, 
-                               DataNamePV = None, 
-                               SimulationPeriode = None,
+                               geo_path = None, flipOrientation = False, 
+                               hour_in_month = None, paths = None, 
+                               DataNamePV = None, SimulationPeriode = None,
                                weatherData = None):
                                    
     import sys,os                               
@@ -180,7 +174,7 @@ def static_electricity_production(createPlots=False,
     import matplotlib.pyplot as plt
     from scipy import interpolate
     from average_monthly import daysPassedMonth
-    from prepareData_mauro_static import readLayoutAndCombinations, CalcXYAnglesAndLocation
+    from prepareData_mauro import readLayoutAndCombinations, CalcXYAnglesAndLocation
     from auxFunctions import flatten
     from calculateHOY import calcHOY    
     
@@ -223,6 +217,7 @@ def static_electricity_production(createPlots=False,
                 
                 HOY = calcHOY(month=monthi,day = day, hour = hour)
                 numHours += 1
+                
                 # filenames.append(filename + str(i) + filetype)
                 filenames.append(filename + '_' + str(int(hour-1)) + '_' + str(day) +'_'+ str(monthi) + filetype)
                 temp_amb.append(weatherData['drybulb_C'][HOY])
@@ -234,32 +229,35 @@ def static_electricity_production(createPlots=False,
     # module and cell dimensions:
     
      # panelsize used for simulations (sidelength in mm):
-    ModuleHeight = readLayoutAndCombinations(lb_radiation_path)['moduleHeight']
-    room_width = readLayoutAndCombinations(lb_radiation_path)['room_width']  
+    moduleLenth = readLayoutAndCombinations(lb_radiation_path)['moduleHeight'] 
+    moduleWidth= readLayoutAndCombinations(lb_radiation_path)['moduleWidth'] 
     
     # gridpoint size input of GH, not equal to the actual grid point size if the panelsize is not a multiple of 25mm:
     desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['desiredGridPointSize']  
     
-    nparcell_v = int(round(panelHeight/float(desiredGridPointSize)))
-    nparcell_h = int(round(room_width/float(desiredGridPointSize)))
+    nparcell_w = int(round(moduleWidth/float(desiredGridPointSize)))
+    nparcell_l = int(round(moduleHeight/float(desiredGridPointSize)))
     cellsPerGridpoint = 3
-    ncell_v = nparcell_v*cellsPerGridpoint
-    ncell_h = nparcell_h*cellsPerGridpoint
-    panelwidth = room_width/1000.
-    panellength = panelHeight/1000.
+    ncell_w = nparcell_w*cellsPerGridpoint
+    ncell_l = nparcell_l*cellsPerGridpoint
+    panelwidth = moduleWidth/1000.
+    panellength = moduleLenth/1000.
     panelarea = panelwidth * panellength
     
-    scellsize = (panelwidth / ncell_h) * (panellength / nparcell_v) ## TODO check why "panellenght / nparcell"and not"panellenght / ncell"
+    #scellsize = (panelwidth / ncell_w) * (panellength / nparcell_l) #TODO check in ASF code if results are the same when changing this  => this is version Mauro
+    scellsize = (panelwidth / ncell_w) * (panellength / ncell_l)
+
     varPVsize = pvSizeOption#change the size of the PV area, this is done in steps of 2
     # times the radiation gridsize, so 0 corresponds a PV-size of 400mm, 
     # 1 corresponds to PV-size of 350mm, 2 corresponds to 300mm etc. 
     
-    varncell_v = ncell_v - varPVsize * 2 * cellsPerGridpoint
-    varncell_h = ncell_h - varPVsize * 2 * cellsPerGridpoint
-    varnparcell_v = nparcell_v - varPVsize * 2
-    varnparcell_h = nparcell_h - varPVsize * 2
-    apertsize = float(varnparcell_h) / nparcell_h * panelwidth * varncell_v / ncell_v * panellength
-    
+    varncell_w = ncell_w - varPVsize * 2 * cellsPerGridpoint
+    varncell_l = ncell_l - varPVsize * 2 * cellsPerGridpoint
+    varnparcell_w = nparcell_w - varPVsize * 2
+    varnparcell_l = nparcell_l - varPVsize * 2
+    #apertsize = float(varnparcell_w) / nparcell_w * panelwidth * varncell_l / ncell_l * panellength #TODO check => this is version Mauro
+    apertsize = varncell_w / nparcell_w * panelwidth * varncell_l / ncell_l * panellength
+
     # reference module
     refmodwidth = 0.294
     refmodlength = 1.260
@@ -273,8 +271,8 @@ def static_electricity_production(createPlots=False,
     
     # lookup iv curve 
     #temp = 25 + 273.15
-    vmin = -6 * varncell_v
-    vmax = 0.8 * varncell_v#30
+    vmin = -6 * varncell_w      #TODO: understand what that means and how to handle the fact that the panel is not squared
+    vmax = 0.8 * varncell_l#30  ##TODO: understand what that means and how to handle the fact that the panel is not squared
     volt_model_var = np.linspace(vmin, vmax, 1000)
     
     # module efficiency 
@@ -296,9 +294,9 @@ def static_electricity_production(createPlots=False,
     # load days per month
     days_passed_month, days_per_month =  daysPassedMonth()
     
-    # number of panels in evaluated facade:
-    panelnum = 1
-
+    # number of panels in evaluated ASF:
+    panelnum = len(flatten(readLayoutAndCombinations(lb_radiation_path)['PVModuleArray']))/2
+    
     # preallocate data for speed:
     Pmod_mpp = np.empty((numASFit, panelnum))*np.nan
     Vmod_mpp = np.empty((numASFit, panelnum))*np.nan
@@ -343,7 +341,7 @@ def static_electricity_production(createPlots=False,
         
         theoreticalMaxRad[SimulationNumber] = maxRadPoint
         
-        gridPsize = panellength / nparcell_h * panelwidth / nparcell_v# size of each gridpoint
+        gridPsize = panellength / nparcell_l * panelwidth / nparcell_w# size of each gridpoint
         
         
         irr_gridP = endata * gridPsize
@@ -362,11 +360,11 @@ def static_electricity_production(createPlots=False,
             for mod_sel in range(panelnum):    # module iteration
         
                 # select irradiance per module
-                irr_mod_sel = np.array(1 / gridPsize *irr_gridP[mod_sel])
+                irr_mod_sel = np.array(1 / gridPsize *irr_gridP[mod_sel, :])
                 
                 # create a grid with all radiation points (nparcellxnparcell)
                 irr_mod_mat_rnd = np.round(irr_mod_sel * 1000)   
-                irr_mod_mat_rnd.resize(nparcell_h, nparcell_v)     
+                irr_mod_mat_rnd.resize(nparcell_l, nparcell_w)     
                 
                 # flip orientation of PV cells on panels if requested
                 if flipOrientation:
@@ -386,7 +384,7 @@ def static_electricity_production(createPlots=False,
                 #Ins_aparea = Ins_apule / panelarea    # insolation per module area [Wh/m2]
         
                 # preallocate data for currents at each gridpoint:
-                curr_model_submod = np.empty((1,1,pointsPerLookupCurve))*np.nan
+                curr_model_submod = np.empty((len(irr_mod_mat_rnd),len(irr_mod_mat_rnd),pointsPerLookupCurve))*np.nan
                          
                 
                 # lookup current for each gridpoint:     
@@ -404,19 +402,19 @@ def static_electricity_production(createPlots=False,
         
                 # calculate subcell forward and reverse iv curve
                 Vscell = volt_model_var / refncell
-                Iscell = np.empty((varnparcell_h, varnparcell_v, pointsPerLookupCurve))
+                Iscell = np.empty((varnparcell_l, varnparcell_w, pointsPerLookupCurve))
                 RevScale = 1. / (1 - (abs(Vscell) /-vol_bd) ** miller_exp)
         
-                for ii in range(varnparcell_h):
-                    for jj in range(varnparcell_v):
+                for ii in range(varnparcell_l):
+                    for jj in range(varnparcell_w):
         
                         Iscell[ii, jj,:] = curr_model_submod[ii, jj,:] * RevScale /refnparcell
         
-                Icell_comb = np.empty((varncell_h, pointsPerLookupCurve))*np.nan
+                Icell_comb = np.empty((varncell_l, pointsPerLookupCurve))*np.nan
                 
                 #  add currents of subcells per cell
                 pointCounter = 0
-                for kk in range(varncell_h):
+                for kk in range(varncell_l):
                     if kk % 3 == 0:
                         pointCounter = pointCounter + 1
         
@@ -426,13 +424,13 @@ def static_electricity_production(createPlots=False,
                 curr_int_points_cell = np.linspace(-0.0, np.min([np.min(np.max(Icell_comb,1)),5]), 1000)
                 #curr_int_points_cell = np.linspace(-0.5, 5, 1000)
         
-                Vcell_comb_int = np.empty((varncell_h,pointsPerLookupCurve))*np.nan
-                Vmod_curr = np.empty((varncell_h-1,pointsPerLookupCurve))*np.nan
-                Imod_curr =  np.empty((varncell_h-1,pointsPerLookupCurve))*np.nan
-                Vmod_curr_int =  np.empty((varncell_h-1,pointsPerLookupCurve))*np.nan
-                Pmod_curr =  np.empty((varncell_h-1,pointsPerLookupCurve))*np.nan
+                Vcell_comb_int = np.empty((varncell_l,pointsPerLookupCurve))*np.nan
+                Vmod_curr = np.empty((varncell_l-1,pointsPerLookupCurve))*np.nan
+                Imod_curr =  np.empty((varncell_l-1,pointsPerLookupCurve))*np.nan
+                Vmod_curr_int =  np.empty((varncell_l-1,pointsPerLookupCurve))*np.nan
+                Pmod_curr =  np.empty((varncell_l-1,pointsPerLookupCurve))*np.nan
         
-                for kk in range(varncell_h - 1):
+                for kk in range(varncell_l - 1):
                     if kk == 0:
                         interpFunction = interpolate.interp1d( Icell_comb[kk, :], Vscell)
                         Vcell_comb_int[kk, :] = interpFunction(curr_int_points_cell)
@@ -565,6 +563,7 @@ def static_electricity_production(createPlots=False,
         plt.xlim(([0, numASFit]))
         plt.xlabel(('Iteration number'), fontsize = 12)
         plt.ylabel(('Module Efficiency (%)'), fontsize =  12)
+        plt.plot()
         
         print 'PV production succesfully calculated'
         return PV_electricity_results, PV_detailed_results, fig1, fig2
@@ -572,6 +571,3 @@ def static_electricity_production(createPlots=False,
     else:
         print 'PV production succesfully calculated'
         return PV_electricity_results, PV_detailed_results
-        
-  
-        

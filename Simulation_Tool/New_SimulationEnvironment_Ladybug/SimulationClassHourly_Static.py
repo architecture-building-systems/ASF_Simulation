@@ -29,9 +29,9 @@ class Static_Simulation(object):
             SimulationData=
             {'optimizationTypes' : ['E_total'], 'DataFolderName' : 'ZH13_49comb_WinterSunnyDay', 'FileName' : 'ZH13_49comb_WinterSunnyDay','geoLocation' : 'Zuerich_Kloten_2013', 'EPWfile': 'Zuerich_Kloten_2013.epw','Save' : True, 'ShowFig': False, 'timePeriod': None},  
             BlindData =
-            {"PERCENT_HEIGHT" : [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],"TILT_ANGLE": [0, 45, 90],"slat_height" : 100,"slat_thickness" : 2,"BlindOffset": 150,},
+            {"PERCENT_HEIGHT" : [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],"TILT_ANGLE": [0, 45, 90],"slat_height" : 100,"slat_thickness" : 2,"BlindOffset": 150, "BlindGridSize":50},
             PanelData =
-            {"panelHeight": 1200, "PanelGridSize": 25},
+            {"moduleHeight": 1600, "moduleWidth":700, "PV_Height":1600,"PanelGridSize": 25},
             BuildingData = 
             {"room_width": 4900, "room_height":3100, "room_depth":7000, "glazing_percentage_w": 0.92,"glazing_percentage_h": 0.97, "WindowGridSize": 200, "BuildingOrientation" : 0, "BuildingOrientation" : 0},
             BuildingProperties = 
@@ -99,7 +99,7 @@ class Static_Simulation(object):
     def initializeBuildingSimulation(self):
         #set building properties for the RC-Model analysis 
         self.BuildingProperties.update({
-                "Fenst_A": self.BuildingData['room_width']/1000.0*(self.BuildingData['room_height']-self.PanelData['panelHeight'])/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
+                "Fenst_A": self.BuildingData['room_width']/1000.0*(self.BuildingData['room_height']-self.PanelData['moduleHeight'])/1000.0*self.BuildingData['glazing_percentage_h']*self.BuildingData['glazing_percentage_w'],
                 "Room_Depth": self.BuildingData['room_depth']/1000.0,
                 "Room_Width": self.BuildingData['room_width']/1000.0,
                 "Room_Height":self.BuildingData['room_height']/1000.0})                
@@ -244,11 +244,11 @@ class Static_Simulation(object):
             self.combinationAngles[i] = self.ANGLES[i]
         
         
-        self.NumberCombinations = len(self.PERCENT_HEIGHT)*len(self.TILT_ANGLE) #*NoClusters
+        self.NumberCombinations = 1 #*NoClusters
         
         
     
-    def electricity_results(self):
+    def electricity_results_LB(self):
         from electricity_production_hourly_static import static_LB_electicity_production
         
         if not os.path.isfile(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
@@ -287,7 +287,7 @@ class Static_Simulation(object):
          # Start the simulation
         
     
-        #from electricity_production_hourly_static import asf_electricity_production
+        from electricity_production_hourly_static3 import static_electricity_production
         from RadiationCalculation_hourly_static import CalculateRadiationData
         #Calculate the Radiation on the solar panels and window with ladybug
         self.HourlyRadiation = CalculateRadiationData(SimulationPeriode = self.SimulationPeriod,
@@ -296,18 +296,7 @@ class Static_Simulation(object):
                                                         paths = self.paths, 
                                                         FolderName = self.SimulationData)
         
-        
 
-       
-        """
-        #if there are no panels vertical and horizontal
-        if self.PanelData['numberHorizontal'] == 0 and self.PanelData['numberVertical'] == 0:
-            self.PV_electricity_results = {}
-            self.PV_electricity_results['Pmpp_sum'] = np.array(self.NumberCombinations * (self.end - self.start) * [0])
-            print "PV_electricity_results is zero"
-            
-        else:
-        
         #with the radiation_results the Pv_results are calcualted, make sure you know where the results are saved, otherwise they will just be loaded
         if not os.path.isfile(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')): 
             if not os.path.isdir(self.paths['PV']):
@@ -319,17 +308,15 @@ class Static_Simulation(object):
             
             if self.createPlots:
                 self.PV_electricity_results, self.PV_detailed_results, fig1, fig2 = \
-                asf_electricity_production(
+                static_electricity_production(
                                     createPlots = self.createPlots, 
                                     lb_radiation_path = self.paths['radiation_results'],
-                                    panelsize = self.PanelData['panelHeight'], 
+                                    panelsize = self.PanelData['moduleHeight'],
                                     pvSizeOption = 0,
                                     save_results_path = self.paths['PV'], 
                                     lookup_table_path = self.paths['electrical_simulation'], 
                                     geo_path = self.paths['geo'],
                                     flipOrientation= False, 
-                                    XANGLES = self.PERCENT_HEIGHT, 
-                                    YANGLES= self.TILT_ANGLE, 
                                     hour_in_month = self.hour_in_month, 
                                     paths = self.paths, 
                                     DataNamePV = self.SimulationData['FileName'],
@@ -338,30 +325,28 @@ class Static_Simulation(object):
                                     
             else:
                 self.PV_electricity_results, self.PV_detailed_results = \
-                asf_electricity_production(
+                static_electricity_production(
                                     createPlots = self.createPlots, 
                                     lb_radiation_path = self.paths['radiation_results'],
-                                    panelsize = self.PanelData['panelHeight'], 
+                                    panelsize = self.PanelData['moduleHeight'],
                                     pvSizeOption = 0,
                                     save_results_path = self.paths['PV'], 
                                     lookup_table_path = self.paths['electrical_simulation'], 
                                     geo_path = self.paths['geo'],
                                     flipOrientation= False, 
-                                    XANGLES = self.PERCENT_HEIGHT, 
-                                    YANGLES= self.TILT_ANGLE, 
-                                    hour_in_month = self.hour_in_month,
+                                    hour_in_month = self.hour_in_month, 
                                     paths = self.paths, 
                                     DataNamePV = self.SimulationData['FileName'],
                                     SimulationPeriode = self.SimulationPeriod, 
                                     weatherData = self.weatherData)
         
         else: 
-            self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')).item()
-            self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_detailed_results_' + self.SimulationData['FileName'] + '.npy')).item()
+            self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy'),allow_pickle=True).item()
+            self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_detailed_results_' + self.SimulationData['FileName'] + '.npy'),allow_pickle=True).item()
             print '\nLadyBug data loaded from Folder:'
             print 'radiation_results_' + self.FolderName['DataFolderName']  
             print 'File: ', self.SimulationData['FileName'] 
-        """
+        
       
      
     def PrepareRadiationData(self):
@@ -386,7 +371,8 @@ class Static_Simulation(object):
                     
                     #print 'HOY: ' + str(HOY) + ' of ' + str(end)
     
-                    self.PV[HOY] = self.PV_electricity_yearly_results['DCenergyPerHour'][HOY] #Watts
+                    #self.PV[HOY] = self.PV_electricity_yearly_results['DCenergyPerHour'][HOY] #Watts # Use if LB electricity computations
+                    self.PV[HOY] = self.PV_electricity_results['Pmpp_sum'][count:count+ self.NumberCombinations] #Watts
                     count += self.NumberCombinations               
                    
                     passedHours += 1
@@ -400,7 +386,7 @@ class Static_Simulation(object):
         # add python_path to system path, so that all files are available:
         sys.path.insert(0, self.paths['5R1C_ISO_simulator'])     
         
-        from energy_minimization_hourly_static import RC_Model
+        from energy_minimization_hourly_static2 import RC_Model
         from prepareDataMain_hourly import prepareAngles
         from read_occupancy import read_occupancy
         
@@ -484,7 +470,7 @@ class Static_Simulation(object):
             self.fig[ii] = PlotHour(E = self.ResultsBuildingSimulation[ii]['E_tot'], PV = self.ResultsBuildingSimulation[ii]['PV'], L = self.ResultsBuildingSimulation[ii]['L'], 
                            H = self.ResultsBuildingSimulation[ii]['H'], C = self.ResultsBuildingSimulation[ii]['C'], x_angle = self.x_angles[ii], y_angle = self.y_angles[ii], 
                             start = self.start, end = self.end, title = ii, TotalHOY = self.TotalHOY)
-        
+        plt.show()
        
         
     def SaveResults(self): 
@@ -543,7 +529,7 @@ class Static_Simulation(object):
         self.setPaths()				
         self.CalculateVariables()
         self.runRadiationCalculation()
-        self.electricity_results()		  		 
+        #self.electricity_results_LB()		  		 
         self.PrepareRadiationData()													   
         self.runBuildingSimulation()
 

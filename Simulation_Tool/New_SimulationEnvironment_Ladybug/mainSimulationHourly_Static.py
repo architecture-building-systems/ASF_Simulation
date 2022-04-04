@@ -128,12 +128,12 @@ from supplySystem import *
 from emissionSystem import *
     
 SimulationPeriod = {
-'FromMonth': 5, #7, #1,
-'ToMonth': 5,#7, #1,
-'FromDay': 6, #6, #8,
-'ToDay': 8, #8,
-'FromHour': 0,#5
-'ToHour': 24}#20
+'FromMonth': 7, #7, #1,
+'ToMonth': 7,#7, #1,
+'FromDay': 1, #6, #8,
+'ToDay': 1, #8,
+'FromHour':6,#5
+'ToHour': 12}#20
 
 
 
@@ -153,10 +153,13 @@ BlindData = {
 "TILT_ANGLE": [0, 90],
 "slat_height" : 100,
 "slat_thickness" : 2,
+"BlindGridSize":50,
 "BlindOffset": 150}
 
 PanelData = {
-"panelHeight": 1200, 
+"moduleHeight": 400,
+"moduleWidth": 400, 
+"PV_Height": 1600,
 "PanelGridSize": 25}
 
 #Set Building Parameters in [mm]
