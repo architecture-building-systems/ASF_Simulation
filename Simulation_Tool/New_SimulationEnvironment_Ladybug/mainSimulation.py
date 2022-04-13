@@ -162,31 +162,31 @@ from emissionSystem import *
 # 'total_pv_combinations': 1}
 
 SimulationData = {
-            'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-            'DataFolderName' : 'CA_49comb_HiLo_static', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
-            'FileName': 'CA_49comb_HiLo_static', #'ZH_49comb_HiLo',
-            'geoLocation' : 'EGY_Cairo.623660_IWEC',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
-            'EPWfile': 'EGY_Cairo.623660_IWEC.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
-            'Save' : False,
-            'ShowFig': False,
+            'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
+            'DataFolderName' : 'ZH13_comb_HiLo', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+            'FileName': 'ZH_comb_HiLo', #'ZH_49comb_HiLo',
+            'geoLocation' : 'Zuerich_Kloten_2013',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+            'EPWfile': 'Zuerich_Kloten_2013.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
+            'Save' : True,
+            'ShowFig': True,
             'timePeriod': None,
-            'total_pv_combinations': 1}
+            'total_pv_combinations': 49}
 
 PanelData = {
-"XANGLES": [45],
-"YANGLES" : [0],
+"XANGLES": [0, 15, 30, 45, 60, 75, 90],
+"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
 "NoClusters":1,
 "numberHorizontal":5,
 "numberVertical":6,
 "panelOffset":400,
-"panelSize":425,
+"panelSize":420,
 "panelSpacing":510, 
 "panelGridSize" : 25}
             
 BuildingData = {
-"room_width": 3000, 
-"room_height":3500, 
-"room_depth":4000, 
+"room_width": 4200, 
+"room_height":3100, 
+"room_depth":5230,
 "glazing_percentage_w": 0.92,
 "glazing_percentage_h": 0.97, 
 "WindowGridSize": 200, 
@@ -209,26 +209,26 @@ BuildingData = {
 ##Set building properties for RC-Model simulator
 ##>@Michael: This will need to be modified to match your code
 BuildingProperties={
-"glass_solar_transmittance" : 0.6 ,
-"glass_light_transmittance" : 0.6 ,#0.68
-"lighting_load" : 2.79 ,
+"glass_solar_transmittance" : 0.691, #0.6 ,
+"glass_light_transmittance" : 0.744, #0.6 ,#0.68
+"lighting_load" : 11.74, #2.79 ,
 "lighting_control" : 300,
-"Lighting_Utilisation_Factor" : 0.6,# 0.75,
+"Lighting_Utilisation_Factor" : 0.45, #0.6,# 0.75,
 "Lighting_Maintenance_Factor" : 0.9,
-"U_em" : 0.17, 
-"U_w" : 0.75,
+"U_em" : 0.2, #0.17, 
+"U_w" : 1.1, #0.75,
 "ACH_vent" : 1.5,
-"ACH_infl" : 0.8,
-"ventilation_efficiency" : 0.2 ,#0.6
+"ACH_infl" : 0.5, #0.8,
+"ventilation_efficiency" : 0.6, #0.2 ,#0.6
 "c_m_A_f" : 165 * 10**3,
 "theta_int_h_set" : 21.0,
 "theta_int_c_set" : 26.0,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSupplySystem" : COP42Heater,
-"coolingSupplySystem" : COP81Cooler,
+"heatingSupplySystem" : COP3Heater,
+"coolingSupplySystem" : COP3Cooler,
 "heatingEmissionSystem" : FloorHeating,
-"coolingEmissionSystem" : FloorHeating,
+"coolingEmissionSystem" : AirConditioning,
 }
 
 #
@@ -236,7 +236,7 @@ BuildingProperties={
 SimulationOptions= {
 'setBackTempH' : 4.0,
 'setBackTempC' : 4.0,
-'Occupancy' : 'schedules_occ_MULTI_RES.csv',
+'Occupancy' :  'Occupancy_COM.csv', #'schedules_occ_MULTI_RES.csv',
 'ActuationEnergy' : True,
 'human_heat_emission' : 0.12,
 'Temp_start' : 20.0} 

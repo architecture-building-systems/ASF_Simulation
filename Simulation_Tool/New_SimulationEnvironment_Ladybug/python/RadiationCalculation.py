@@ -84,7 +84,7 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
         print "\nEnd of radiation calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
     else:
-        BuildingRadiationData_HOD = np.load(os.path.join(paths['PV'], 'BuildingRadiationData_' + FolderName['FileName'] + '.npy')).item()
+        BuildingRadiationData_HOD = np.load(os.path.join(paths['PV'], 'BuildingRadiationData_' + FolderName['FileName'] + '.npy'), allow_pickle=True).item()
         print '\nLadyBug data loaded from Folder:'
         print 'radiation_wall_'+ FolderName['DataFolderName']
         print 'File: ', FolderName['FileName']

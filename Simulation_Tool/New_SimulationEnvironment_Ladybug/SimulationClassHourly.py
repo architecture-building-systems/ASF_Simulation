@@ -309,8 +309,8 @@ class ASF_Simulation(object):
                                        weatherData = self.weatherData)
             
             else: 
-                self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy')).item()
-                self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_detailed_results_' + self.SimulationData['FileName'] + '.npy')).item()
+                self.PV_electricity_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_electricity_results_' + self.SimulationData['FileName'] + '.npy'), allow_pickle=True).item()
+                self.PV_detailed_results = np.load(os.path.join(self.paths['PV'], 'HourlyPV_detailed_results_' + self.SimulationData['FileName'] + '.npy'), allow_pickle=True).item()
                 print '\nLadyBug data loaded from Folder:'
                 print 'radiation_results_' + self.FolderName['DataFolderName']  
                 print 'File: ', self.SimulationData['FileName'] 

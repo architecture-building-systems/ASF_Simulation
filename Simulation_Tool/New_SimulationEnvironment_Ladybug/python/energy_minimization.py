@@ -239,9 +239,9 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
                
         if optimization_type == 'E_total':
             #Best comb for overall energy demand
-                        
             if max(hourlyData[hour_of_year]['PV']) != 0:
                 #get key with min value from the E_tot dictionary
+
                 BestComb = min(E_tot[hour_of_year], key=lambda comb: E_tot[hour_of_year][comb])
 
                 if hour_of_year == 2932:

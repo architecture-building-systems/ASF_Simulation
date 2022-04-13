@@ -174,7 +174,7 @@ def static_electricity_production(createPlots=False, lb_radiation_path=None,
     import matplotlib.pyplot as plt
     from scipy import interpolate
     from average_monthly import daysPassedMonth
-    from prepareData_mauro import readLayoutAndCombinations, CalcXYAnglesAndLocation
+    from prepareData_mauro_static import readLayoutAndCombinations, CalcXYAnglesAndLocation
     from auxFunctions import flatten
     from calculateHOY import calcHOY    
     
@@ -232,7 +232,7 @@ def static_electricity_production(createPlots=False, lb_radiation_path=None,
     panelsize = readLayoutAndCombinations(lb_radiation_path)['moduleHeight']  
     
     # gridpoint size input of GH, not equal to the actual grid point size if the panelsize is not a multiple of 25mm:
-    desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['desiredGridPointSize']  
+    desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['PanelDesiredGridPointSize']  
     
     nparcell = int(round(panelsize/float(desiredGridPointSize)))
     cellsPerGridpoint = 3

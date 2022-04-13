@@ -27,7 +27,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     import matplotlib.pyplot as plt
     from scipy import interpolate
     from average_monthly import daysPassedMonth
-    from prepareData_mauro import readLayoutAndCombinations, CalcXYAnglesAndLocation
+    from prepareData_mauro_static import readLayoutAndCombinations, CalcXYAnglesAndLocation
     from auxFunctions import flatten
     
     create_plots_flag = createPlots
@@ -116,10 +116,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     # module and cell dimensions:
     
      # panelsize used for simulations (sidelength in mm):
-    panelsize = readLayoutAndCombinations(lb_radiation_path)['panelSize']  
+    panelsize = readLayoutAndCombinations(lb_radiation_path)['moduleWidth']  
     
     # gridpoint size input of GH, not equal to the actual grid point size if the panelsize is not a multiple of 25mm:
-    desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['desiredGridPointSize']  
+    desiredGridPointSize = readLayoutAndCombinations(lb_radiation_path)['PanelDesiredGridPointSize']  
     
     nparcell = int(round(panelsize/float(desiredGridPointSize)))
     cellsPerGridpoint = 3
@@ -174,7 +174,7 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     days_passed_month, days_per_month =  daysPassedMonth()
     
     # number of panels in evaluated ASF:
-    panelnum = len(flatten(readLayoutAndCombinations(lb_radiation_path)['ASFarray']))/2
+    panelnum = len(flatten(readLayoutAndCombinations(lb_radiation_path)['PVModuleArray']))/2
     
     # preallocate data for speed:
     Pmod_mpp = np.empty((numASFit, panelnum))*np.nan
