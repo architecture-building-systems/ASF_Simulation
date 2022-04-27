@@ -225,10 +225,10 @@ BuildingProperties={
 "theta_int_c_set" : 26.0,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSupplySystem" : COP3Heater,
-"coolingSupplySystem" : COP3Cooler,
+"heatingSupplySystem" : HeatPumpGround, #COP42Heater, #COP3Heater,
+"coolingSupplySystem" : HeatPumpGround, #COP81Cooler, #COP3Cooler, #
 "heatingEmissionSystem" : FloorHeating,
-"coolingEmissionSystem" : AirConditioning,
+"coolingEmissionSystem" : FloorHeating, #AirConditioning,
 }
 
 #
@@ -250,6 +250,7 @@ if __name__=='__main__':
     Results = ASF.ResultsBuildingSimulation
 
     print ASF.yearlyData
+    print ASF.monthlyData
 
     
    

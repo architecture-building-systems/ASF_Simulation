@@ -89,6 +89,33 @@ VARIABLE DEFINITION
    COP_H = heating cop
    COP_C = cooling cop
 
+   From "buildingPhysics" 
+        Fenst_A: Area of the Glazed Surface  [m2]
+        Room_Depth=7.0 Depth of the modeled room [m]
+        Room_Width=4.9 Width of the modeled room [m]
+        Room_Height=3.1 Height of the modeled room [m]
+        glass_solar_transmittance: Fraction of Radiation transmitting through the window []
+        glass_light_transmittance: Fraction of visible light (luminance) transmitting through the window []
+        lighting_load: Lighting Load [W/m2] 
+        lighting_control: Lux threshold at which the lights turn on [Lx]
+        U_em: U value of opaque surfaces  [W/m2K]
+        U_w: U value of glazed surfaces [W/m2K]
+        ACH_vent: Air changes per hour through ventilation [Air Changes Per Hour]
+        ACH_infl: Air changes per hour through infiltration [Air Changes Per Hour]
+        ventilation_efficiency: The efficiency of the heat recovery system for ventilation. Set to 0 if there is no heat recovery []
+        c_m_A_f: Thermal capacitance of the room per floor area [J/m2K]
+        theta_int_h_set : Thermal heating set point [C]
+        theta_int_c_set: Thermal cooling set point [C]
+        phi_c_max_A_f: Maximum cooling load. Set to -np.inf for unresctricted cooling [C]
+        phi_h_max_A_f: Maximum heating load. Set to no.inf for unrestricted heating [C]
+        heatingSupplySystem: The type of heating system. Choices are DirectHeater, ResistiveHeater, HeatPumpHeater. Direct heater 
+            has no changes to the heating demand load, a resistive heater takes an efficiency into account, and a HeatPumpHeater
+            calculates a COP based on the outdoor and indoor temperature 
+        coolingSupplySystem: The type of cooling system. Choices are DirectCooler HeatPumpCooler. DirectCooler
+            has no changes to the cooling demand load, a HeatPumpCooler calculates a COP based on the outdoor and indoor temperature 
+        heatingEfficiency: Efficiency of the heating system (note for DirectHeater this is always 1)
+        coolingEfficiency: Efficiency of the cooling system (note for DirectCooler this is always 1)
+
    
    SimulationOptions
    
@@ -163,8 +190,8 @@ from emissionSystem import *
 
 SimulationData = {
             'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'E_HCL'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL' #IF blinds no optimization accoriding to solar energy
-            'DataFolderName' : 'ZH13_HiLo_static_new', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
-            'FileName': 'ZH13_HiLo_static_new', #'ZH_49comb_HiLo',
+            'DataFolderName' : 'ZH13_HiLo_static_highPV', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+            'FileName': 'ZH13_HiLo_static_highPV', #'ZH_49comb_HiLo',
             'geoLocation' : 'Zuerich_Kloten_2013',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
             'EPWfile': 'Zuerich_Kloten_2013.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
             'Save' : True,
@@ -231,11 +258,11 @@ BuildingProperties={
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
 "blind_threshold":150, #W/m2
-"blinds_control": False,
-"heatingSupplySystem" : COP3Heater, #COP42Heater,
-"coolingSupplySystem" : COP3Heater, #COP81Cooler,
+"blinds_control": True,
+"heatingSupplySystem" : HeatPumpGround, #COP42Heater, #COP3Heater,
+"coolingSupplySystem" : HeatPumpGround, #COP81Cooler, #COP3Cooler, #
 "heatingEmissionSystem" : FloorHeating,
-"coolingEmissionSystem" : AirConditioning, #FloorHeating,
+"coolingEmissionSystem" : FloorHeating, #AirConditioning,
 }
 
 #

@@ -81,7 +81,7 @@ def prepareResults (Building_Simulation_df):
     #Calculate the summed monthly values and store it in dicitionary (24 hour per every month)
     monthlyData = {}
     yearlyData = {}
-        
+    monthlyData['Total'] = []    
     # summed data for each hour of a month in kWh:
     monthlyData['L'] = sum_monthly(X = np.array(Building_Simulation_df['L']) *0.001)
     monthlyData['E'] = sum_monthly(X = np.array(Building_Simulation_df['E_tot']) *0.001)
@@ -89,7 +89,9 @@ def prepareResults (Building_Simulation_df):
     monthlyData['C'] = sum_monthly(X = np.array(Building_Simulation_df['C']) *0.001)
     monthlyData['H'] = sum_monthly(X = np.array(Building_Simulation_df['H']) *0.001)
     monthlyData['PV'] = -1* sum_monthly(X = np.array(Building_Simulation_df['PV']) *0.001)
-    
+    #monthlyData['Total'] = sum_monthly.sum(axis=0)
+    for i in range(len(monthlyData['E'])):
+        monthlyData['Total'].append(monthlyData['L'][i]+monthlyData['C'][i]+monthlyData['H'][i]+monthlyData['PV'][i])
     
     #in kWh/year
     yearlyData['E'] = monthlyData['E'].sum() 
