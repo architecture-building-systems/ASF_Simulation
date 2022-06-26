@@ -6,7 +6,7 @@ Created on Fri Oct 28 09:44:38 2016
 """
 
 import matplotlib.pyplot as plt
-
+import numpy as np
 from carpetPlot import carpetPlot, carpetPlotMask
 
 def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
@@ -19,8 +19,10 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     if z_min > 0.25:
         z_min = -0.25
 
-    z_min = -0.30
-    z_max = 0.4
+    #z_min = -0.30
+    #z_max = 0.4
+    z_min = -0.40
+    z_max = 1.0
 
    
     fig = plt.figure(figsize=(16, 8))
@@ -55,7 +57,8 @@ def createCarpetPlot (monthlyData, roomFloorArea, H, C, E, E_HCL):
     
     #setting for the legend
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-    cbar = plt.colorbar(cax=cbar_ax, ticks = [0.4,0.3,0.2,0.1,0.0,-0.1,-0.2,-0.3])
+    tick = np.arange(z_min, z_max, 0.2)
+    cbar = plt.colorbar(cax=cbar_ax, ticks = tick ) #[0.4,0.3,0.2,0.1,0.0,-0.1,-0.2,-0.3])
     cbar.solids.set_rasterized(True) 
     cbart = plt.title("Net Energy [kWh/m2]", fontsize=14)
     cbart.set_position((1.1,1.02))

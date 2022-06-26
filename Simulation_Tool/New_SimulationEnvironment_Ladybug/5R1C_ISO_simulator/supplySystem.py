@@ -91,6 +91,18 @@ class OilBoilerMed(SupplyBuilder):
 
     name = 'Standard Oil Boiler'
 
+class GasBoilerNew(SupplyBuilder):
+    #New oil boiler with fuel efficiency of 94 percent 
+    #Condensation boiler, latest generation
+
+    def calcLoads(self):
+        heater = SupplyOut()
+        heater.fossilsIn = self.Load/0.94
+        heater.electricityIn = 0
+        heater.electricityOut = 0
+        return heater
+    
+    name = 'Top-Notch Gas Boiler'
 
 class OilBoilerNew(SupplyBuilder):
     #New oil boiler with fuel efficiency of 98 percent (value from report of semester project M. Fehr)

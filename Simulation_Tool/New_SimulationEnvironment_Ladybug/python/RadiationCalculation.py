@@ -78,7 +78,8 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
                 for jj in range(0,daysPerMonth[monthi-1]):
                     #Radiation data is calculated for all days per month, so the data is divided through the amount of days per month
                     BuildingRadiationData_HOD[monthi][HOD+24*jj]= BuildingRadiationData * 1/daysPerMonth[monthi-1] *1000. #W/h
-                    
+                
+                #print len(BuildingRadiationData_HOD[monthi][HOD+24*jj])
         
         np.save(os.path.join(paths['save_results_path'],'BuildingRadiationData_' + FolderName['FileName'] + '.npy'),BuildingRadiationData_HOD)
         print "\nEnd of radiation calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())

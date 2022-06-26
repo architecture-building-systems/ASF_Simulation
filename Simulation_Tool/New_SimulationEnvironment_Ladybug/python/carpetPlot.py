@@ -24,9 +24,12 @@ def carpetPlot(X, z_min, z_max, title, roomFloorArea):
     y, x = np.mgrid[slice(0, 24 + dy, dy),
                     slice(0, 12 + dx, dx)]
     
+    if (z_min-z_max)!=0: 
+        # define the location of the middle number (where 0 is):
+        z_middle = float(abs(z_min)) / (z_max-z_min) 
     
-    # define the location of the middle number (where 0 is):
-    z_middle = float(abs(z_min)) / (z_max-z_min) 
+    else: 
+        z_middle = 0
                 
     cmap = LinearSegmentedColormap.from_list('mycmap', [(0, 'navy'), (z_middle, 'white'), (1, 'firebrick')])
                 

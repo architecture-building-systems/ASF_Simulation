@@ -175,6 +175,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     # number of panels in evaluated ASF:
     panelnum = len(flatten(readLayoutAndCombinations(lb_radiation_path)['PVModuleArray']))/2
     
+    print "panelnum", panelnum
+
     # preallocate data for speed:
     Pmod_mpp = np.empty((numASFit, panelnum))*np.nan
     Vmod_mpp = np.empty((numASFit, panelnum))*np.nan

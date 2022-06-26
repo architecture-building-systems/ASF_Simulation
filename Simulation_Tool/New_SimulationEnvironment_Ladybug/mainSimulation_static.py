@@ -189,11 +189,12 @@ from emissionSystem import *
 # 'total_pv_combinations': 1}
 
 SimulationData = {
-            'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'Lighting', 'E_HCL'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL' #IF blinds no optimization accoriding to solar energy
-            'DataFolderName' : 'ZH13_HiLo_static_highPV', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
-            'FileName': 'ZH13_HiLo_static_highPV', #'ZH_49comb_HiLo',
-            'geoLocation' : 'Zuerich_Kloten_2013',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
-            'EPWfile': 'Zuerich_Kloten_2013.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
+            'optimizationTypes' : ['E_total'],#, 'Cooling', 'Heating', 'Lighting', 'E_HCL'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL' #IF blinds no optimization accoriding to solar energy
+            'DataFolderName' : 'ZH_Classic_WWR015', #'IDN_Classic', 'OSLO_Classic', 'ZH_Classic'                  'ZH13_Classic', 'HEL_Classic', 'SGP_Classic', 'Test_Classic'                                   'SGP_static_new', 'ZH13_HiLo_static_highPV', 'ZH13_HiLo_static_new', 'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+            'FileName': 'ZH_Classic_WWR015', #'IDN_Classic', 'OSLO_Classic', 'ZH_Classic'                              'ZH13_Classic', 'HEL_Classic', 'SGP_Classic', 'Test_Classic'                                         'SGP_static_new', 'ZH13_HiLo_static_highPV', 'ZH13_HiLo_static_new', 'ZH_49comb_HiLo', 'SGP_Singapore.486980_IWEC'
+            'ResultName': 'CaseA', #'Brick_CaseA', 'Brick_CaseB', 'Wood_CaseA', 'Wood_CaseB',       ArchA, ArchB, ArchC, ArchD, ArchE, ArchF
+            'geoLocation' : 'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021',#'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021', 'IDN_SM_Pekanbaru-Kasim.Intl.AP.961090_TMYx.2007-2021', 'NOR_OS_Oslo.Blindern.014920_TMYx.2007-2021, 'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC, 'SGP_Singapore.486980_IWEC'
+            'EPWfile': 'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021.epw',#'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021.epw', 'IDN_SM_Pekanbaru-Kasim.Intl.AP.961090_TMYx.2007-2021.epw', 'NOR_OS_Oslo.Blindern.014920_TMYx.2007-2021.epw, 'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw, 'SGP_Singapore.486980_IWEC.epw'
             'Save' : True,
             'ShowFig': True,
             'timePeriod': None,
@@ -201,8 +202,8 @@ SimulationData = {
             'total_blind_combinations': 0}
 
 BlindData = {
-"PERCENT_HEIGHT" : [0, 100], #[100], #
-"TILT_ANGLE": [0, 30, 45, 60, 90], #[45], #
+"PERCENT_HEIGHT" : [0], #[100], #[0, 50, 100]
+"TILT_ANGLE": [0], #[0,45,90], [0, 30, 45, 60, 90], #
 "slat_height" : 100,
 "slat_thickness" : 2,
 "BlindBoxThickness": 160,
@@ -212,15 +213,17 @@ BlindData = {
 PanelData = {
 "moduleHeight": 400,
 "moduleWidth": 400, 
-"PV_Height": 1200,
+"PV_Height": 1200, #1200
 "PanelGridSize": 25}
 
 BuildingData = {
 "room_width": 4200, 
 "room_height":3100, 
 "room_depth":5230, 
-"glazing_percentage_w": 0.92,
-"glazing_percentage_h": 0.97, 
+"glazing_percentage_w": 0.86,
+"glazing_percentage_h": 0.48, 
+"window_percentage_w": 1.0, 
+"window_percentage_h": 0.55, 
 "WindowGridSize": 200, 
 "BuildingOrientation" : 0}
             
@@ -247,8 +250,8 @@ BuildingProperties={
 "lighting_control" : 300,
 "Lighting_Utilisation_Factor" : 0.45, #0.6,# 0.75,
 "Lighting_Maintenance_Factor" : 0.9,
-"U_em" : 0.2, #0.17, 
-"U_w" : 1.1, #0.75,
+"U_em" : 0.17, #0.31, #0.17, 
+"U_w" : 0.927, #0.6, #1.1, #0.75,
 "ACH_vent" : 1.5,
 "ACH_infl" : 0.5, #0.8,
 "ventilation_efficiency" : 0.6, #0.2 ,#0.6
@@ -258,9 +261,9 @@ BuildingProperties={
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
 "blind_threshold":150, #W/m2
-"blinds_control": True,
-"heatingSupplySystem" : HeatPumpGround, #COP42Heater, #COP3Heater,
-"coolingSupplySystem" : HeatPumpGround, #COP81Cooler, #COP3Cooler, #
+"blinds_control": True, #False , True
+"heatingSupplySystem" : OilBoilerNew, #HeatPumpGround, #COP42Heater, #COP3Heater, OilBoilerNew
+"coolingSupplySystem" : HeatPumpAir, #HeatPumpGround, #COP81Cooler, #COP3Cooler, #HeatPumpAir
 "heatingEmissionSystem" : FloorHeating,
 "coolingEmissionSystem" : FloorHeating, #AirConditioning,
 }
@@ -271,9 +274,15 @@ SimulationOptions= {
 'setBackTempH' : 4.0,
 'setBackTempC' : 4.0,
 'Occupancy' : 'Occupancy_COM.csv', #'schedules_occ_MULTI_RES.csv'
-'ActuationEnergy' : False,
+'ActuationEnergy' : True,
 'human_heat_emission' : 0.12,
 'Temp_start' : 20.0} 
+
+"""CO2ComputationOptions={
+    'CO2_embedded': 0, #kg CO2-eq for BIPV system only
+    'Lifetime':20, #years
+    'CO2_content_produced_electricity': 0 #kg CO2-eq per kWh
+}"""
 
 	
 if __name__=='__main__':
@@ -283,12 +292,15 @@ if __name__=='__main__':
                             BuildingProperties = BuildingProperties, 
                             SimulationOptions = SimulationOptions, 
                             BlindData = BlindData,
-                            PanelData=PanelData)
+                            PanelData=PanelData,
+                            CO2ComputationOptions=CO2ComputationOptions)
     ASF.SolveASF()
     yearlyData = ASF.yearlyData
     Results = ASF.ResultsBuildingSimulation
 
     print ASF.yearlyData
+    print ASF.yearlyCO2
+    print ASF.yearlyFlowElec
 
     
    

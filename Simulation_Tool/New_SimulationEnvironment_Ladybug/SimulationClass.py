@@ -38,7 +38,9 @@ class ASF_Simulation(object):
 			"Lighting_Maintenance_Factor" : 0.9,"U_em" : 0.2,"U_w" : 1.1,"ACH_vent" : 1.5,"ACH_infl" :0.5,"ventilation_efficiency" : 0.6 ,"c_m_A_f" : 165 * 10**3,"theta_int_h_set" : 22,\
 			"theta_int_c_set" : 26,"phi_c_max_A_f": -np.inf,"phi_h_max_A_f":np.inf,"heatingSupplySystem" : DirectHeater,"coolingSupplySystem" : DirectCooler, "heatingEmissionSystem" : AirConditioning,"coolingEmissionSystem" : AirConditioning,},
 			SimulationOptions= 
-			{'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False, "Temp_start" : 20, 'human_heat_emission' : 0.12,}):
+			{'setBackTempH' : 4.,'setBackTempC' : 4., 'Occupancy' : 'Occupancy_COM.csv','ActuationEnergy' : False, "Temp_start" : 20, 'human_heat_emission' : 0.12,}, 
+			CO2ComputationOptions=
+            {'CO2_content_produced_electricity': 40}):
 						
 							
 			#define varibales of object
@@ -55,6 +57,8 @@ class ASF_Simulation(object):
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		self.optimization_Types = self.SimulationData['optimizationTypes']
 
+		self.CO2ComputationOptions = CO2ComputationOptions
+		
 		#Set folder name and chosen epw-file
 		self.FolderName={
 		"DataFolderName": SimulationData['DataFolderName'],
@@ -124,7 +128,10 @@ class ASF_Simulation(object):
 		print self.geoLocation
 		self.paths['weather'] = os.path.join(self.paths['weather_folder'], self.geoLocation + '.epw')
 
-		
+		#define path for CO2 electrcitiy calculations
+		self.paths['CO2_electricity'] = os.path.join(self.paths['main'],'CO2_electricity')
+
+
 		# add python_path to system path, so that all files are available:
 		sys.path.insert(0, self.paths['python'])
 		
@@ -322,11 +329,9 @@ class ASF_Simulation(object):
 				passedHours = sumHours[monthi-2]     
 			
 			for HOD in self.hour_in_month[monthi]:
-				for ii in range(0,self.daysPerMonth[monthi-1]):             
-					DAY = ii*24 + int(HOD)   
-					self.BuildingRadiationData_HOY[passedHours + DAY] = self.BuildingRadiationData_HOD[monthi][DAY] #W
-			
-				
+				for ii in range(0,self.daysPerMonth[monthi-1]):   
+					DAY = ii*24 + int(HOD)
+					self.BuildingRadiationData_HOY[passedHours + DAY] = self.BuildingRadiationData_HOD[monthi][DAY] #W		
 		count = 0
 		DAY = 0
 		passedHours = 0
@@ -408,16 +413,33 @@ class ASF_Simulation(object):
 			if optimizationType == ('E_total' or 'Heating' or 'Cooling' or 'E_HCL' or 'SolarEnergy' or 'Lighting'):
 				# prepare Building simulation Data into final form, monthly Data [kWh/DaysPerMonth], self.yearlyData [kWh/year]
 				self.monthlyData[optimizationType], self.yearlyData[optimizationType] = prepareResults(Building_Simulation_df = self.ResultsBuildingSimulation[optimizationType])
+				#self.monthlyDataELEC[optimizationType], self.yearlyDataELEC[optimizationType] = prepareResults(Building_Simulation_df = self.ResultsBuildingSimulationELEC[optimizationType])
 			
 			elif optimizationType == ('E_total_elec' or 'Heating_elec' or 'Cooling_elec'  or 'E_HCL_elec' ):                                                           
 				self.monthlyData[optimizationType], self.yearlyData[optimizationType] = prepareResultsELEC(Building_Simulation_df = self.BuildingSimulationELEC[optimizationType])
-			
+	
+	def computeElecFlow(self):
+
+		from hourlySelfConsumption import computeSelfConsumption, monthlyAndYearlyFLows, impacts_energy_flows
+		
+		self.flow_elec_df = {}
+		self.monthlyFlowElec = {}
+		self.yearlyFlowElec = {}
+		self.totalMonthlyData = {}
+		self.monthlyImpactFlow = {}
+		self.av_monthly_impact_el = {}
+		
+		for optimizationType in self.optimization_Types:
+			self.flow_elec_df[optimizationType] = computeSelfConsumption(SimulationData_dict = self.ResultsBuildingSimulation[optimizationType])
+			self.monthlyFlowElec[optimizationType],  self.totalMonthlyData[optimizationType], self.yearlyFlowElec[optimizationType]= monthlyAndYearlyFLows(Energy_Flow_df = self.flow_elec_df[optimizationType])	#W , floor_area = self.roomFloorArea
+			self.monthlyImpactFlow[optimizationType], self.av_monthly_impact_el[optimizationType], self.yearlyImpactFlow = impacts_energy_flows(paths = self.paths, monthlyData = self.monthlyFlowElec[optimizationType])
 
 	def createAllPlots(self):
 		#create energy- and angle- carpet plots
 		
 		from createCarpetPlot import createCarpetPlot, createCarpetPlotXAngles, createCarpetPlotYAngles
-		
+		from hourlySelfConsumption import plotFlowElec, plotCO2, plotAver_CO2
+
 		self.fig = {}    
 		
 		# carpet plot for total energy values
@@ -454,30 +476,59 @@ class ASF_Simulation(object):
 				figC = createCarpetPlotYAngles(self.y_angles, self.hour_in_month, H = 'Heating_elec', C = 'Cooling_elec', E = 'E_total_elec', E_HCL = 'E_HCL_elec')
 				
 				self.fig.update({'figB' : figB, 'figC' : figC})
+		
+		if ('E_total') in self.optimization_Types:
+			fig_elec = plotFlowElec(self.flow_elec_df['E_total'], self.monthlyFlowElec['E_total'], self.yearlyFlowElec['E_total'], self.totalMonthlyData['E_total'], self.roomFloorArea)
+			self.fig.update({'fig_elec' : fig_elec})
+
+			#fig_CO2 = plotCO2(self.monthlyImpactFlow['E_total'], FloorArea = self.roomFloorArea)
+			#self.fig.update({'fig_CO2' : fig_CO2})
+
+			fig_avCO2 = plotAver_CO2(self.av_monthly_impact_el['E_total'])
+			self.fig.update({'fig_avCO2' : fig_avCO2})
 
 
 	def SaveResults(self):
 		#method which saves the data and plots 
 			
-		self.monthlyData = pd.DataFrame(self.monthlyData)
+		#self.monthlyData = pd.DataFrame(self.monthlyData)
 		self.yearlyData = pd.DataFrame(self.yearlyData)
+		#self.totalMonthlyData = pd.DataFrame(self.totalMonthlyData)
+		self.monthlyImpactFlow = pd.DataFrame(self.monthlyImpactFlow)
+		#self.monthlyFlowElec = pd.DataFrame(self.monthlyFlowElec)
+		self.yearlyFlowElec = pd.DataFrame(self.yearlyFlowElec)
 		#BestKeyDF = pd.DataFrame(self.BestKey_df)    
 
 		if self.SimulationData['Save']: 
 		
 			# create folder where results will be saved:
 			self.paths['result_folder'] = os.path.join(self.paths['main'], 'Results') 
-			self.paths['result']= os.path.join(self.paths['result_folder'], 'Results_' + self.SimulationData['FileName'] + '_date_' + self.now)
+			#self.paths['result']= os.path.join(self.paths['result_folder'], 'Results_' + self.SimulationData['FileName'] + '_date_' + self.now)
+			self.paths['result']= os.path.join(self.paths['result_folder'], 'Results_' + self.SimulationData['FileName'] + '_'+ self.SimulationData['ResultName'])
 				
 			if not os.path.isdir(self.paths['result']):
 				os.makedirs(self.paths['result'])    
 				
 			#create folder to save figures as svg and png:
 			self.paths['pdf'] = os.path.join(self.paths['result'], 'Figures')
-			os.makedirs(self.paths['pdf'])
+			if not os.path.isdir(self.paths['pdf']):
+				os.makedirs(self.paths['pdf'])    
 			if ('E_total') in self.optimization_Types:
 				self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
 				self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
+
+				self.fig['fig_elec'].savefig(os.path.join(self.paths['pdf'], 'figure_elec' + '.pdf'))
+				self.fig['fig_elec'].savefig(os.path.join(self.paths['pdf'], 'figure_elec' + '.png'))
+
+				#self.fig['fig_elec'].get_figure().savefig(os.path.join(self.paths['pdf'], 'figure_elec' + '.pdf'))
+				#self.fig['fig_elec'].get_figure().savefig(os.path.join(self.paths['pdf'], 'figure_elec' + '.png'))
+
+				#self.fig['fig_CO2'].savefig(os.path.join(self.paths['pdf'], 'figure_CO2' + '.pdf'))
+				#self.fig['fig_CO2'].savefig(os.path.join(self.paths['pdf'], 'figure_CO2' + '.png'))
+
+				self.fig['fig_avCO2'].savefig(os.path.join(self.paths['pdf'], 'figure_AvCO2' + '.pdf'))
+				self.fig['fig_avCO2'].savefig(os.path.join(self.paths['pdf'], 'figure_AvCO2' + '.png'))
+
 		
 			# self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.pdf'))
 			# self.fig['fig0'].savefig(os.path.join(self.paths['pdf'], 'figure0' + '.png'))
@@ -519,10 +570,29 @@ class ASF_Simulation(object):
 			y_angles_df = pd.DataFrame(self.y_angles)           
 		
 			np.save(os.path.join(self.paths['result'], 'monthlyData.npy'), self.monthlyData)
-			self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
+			#self.monthlyData.to_csv(os.path.join(self.paths['result'], 'monthlyData.csv'))
 			self.yearlyData.to_csv(os.path.join(self.paths['result'], 'yearlyData.csv'))
+			#self.totalMonthlyData.to_csv(os.path.join(self.paths['result'], 'totalMonthlyElecFlow.csv'))
+			#self.monthlyFlowElec.to_csv(os.path.join(self.paths['result'], 'MonthlyElecFlow.csv'))
+			self.yearlyFlowElec.to_csv(os.path.join(self.paths['result'], 'YearlyElecFlow.csv'))
+			self.monthlyImpactFlow.to_csv(os.path.join(self.paths['result'], 'monthlyImpactFlow.csv'))
 			x_angles_df.to_csv(os.path.join(self.paths['result'], 'X-Angles.csv'))
 			y_angles_df.to_csv(os.path.join(self.paths['result'], 'Y-Angles.csv'))
+
+			
+			
+			class NumpyEncoder(json.JSONEncoder):
+				def default(self, obj):
+					if isinstance(obj, np.ndarray):
+						return obj.tolist()
+					return json.JSONEncoder.default(self, obj)
+
+			with open(os.path.join(self.paths['result'], 'MonthlyElecFlow.json'), 'w') as f:
+				f.write(json.dumps(self.monthlyFlowElec, cls=NumpyEncoder))
+
+			with open(os.path.join(self.paths['result'], 'monthlyData.json'), 'w') as f:
+				f.write(json.dumps(self.monthlyData, cls=NumpyEncoder))
+
 						
 			#convert heating/cooling system variables into strings			
 			self.BuildingProperties["heatingSupplySystem"] = str(self.BuildingProperties["heatingSupplySystem"])
@@ -561,6 +631,8 @@ class ASF_Simulation(object):
 			self.PrepareRadiationData()	
 			print 'running simulation'												   
 			self.runBuildingSimulation()
+			print 'electricity flow'												   
+			self.computeElecFlow()
 			
 			if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
 				self.createAllPlots()
