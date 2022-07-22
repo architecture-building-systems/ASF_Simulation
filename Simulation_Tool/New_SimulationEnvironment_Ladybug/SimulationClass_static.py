@@ -204,7 +204,7 @@ class ASF_Simulation(object):
             self.SunTrackingData = json.load(fp)
             fp.close()
         
-        
+    
         
     def CalculateVariables(self):
         #Calculate variables
@@ -509,7 +509,13 @@ class ASF_Simulation(object):
 
             fig_avCO2 = plotAver_CO2(self.av_monthly_impact_el['E_total'])
             self.fig.update({'fig_avCO2' : fig_avCO2})
-    
+    def totalRadiation(self): 
+        self.totalGlobalHorizontalRad = self.radiation['glohorrad_Whm2'].sum()/1000 #kWh/m2/year
+        print 'total global horizontal radiation =', self.totalGlobalHorizontalRad, 'Wh/m2'
+        with open(os.path.join(self.paths['RadiationData'], 'TotalRadiation_'+self.FolderName['DataFolderName']+'.txt'), 'w') as f: 
+            f.write('total global horizontal radiation [kWh/m2/year]: {}'.format(self.totalGlobalHorizontalRad))
+        return self.totalGlobalHorizontalRad
+
     def SaveResults(self):
         #method which saves the data and plots    
         #self.monthlyData = pd.DataFrame(self.monthlyData)
@@ -657,6 +663,7 @@ class ASF_Simulation(object):
             self.runBuildingSimulation()
             print 'electricity flow'												   
             self.computeElecFlow()
+            self.totalRadiation()
             
             if self.SimulationData['ShowFig'] or self.SimulationData['Save']:   
                 self.createAllPlots()

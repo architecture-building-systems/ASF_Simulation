@@ -163,9 +163,9 @@ from emissionSystem import *
 
 SimulationData = {
             'optimizationTypes' : ['E_total'], #'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-            'DataFolderName' : 'ZH_REPOS', #OSL_Hilo_ASF, ZH_Hilo_ASF, PKU_Hilo_ASF, Oslo_Hilo_without, ZH_Hilo_without, , PKU_Hilo_without, ZH_WWR00_ASF, ZH_WWR21_ASF, ZH_WWR27_ASF, ZH_WWR31_ASF, ZH_WWR40_ASF, ZH_WWR60_ASF, ZH_WWR80_ASF
-            'FileName': 'ZH_REPOS', #OSL_Hilo_ASF, ZH_Hilo_ASF, PKU_Hilo_ASF, Oslo_Hilo_without, ZH_Hilo_without, , PKU_Hilo_without, ZH_WWR00_ASF, ZH_WWR21_ASF, ZH_WWR27_ASF, ZH_WWR31_ASF, ZH_WWR40_ASF, ZH_WWR60_ASF, ZH_WWR80_ASF                                     'ZH_49comb_HiLo',
-            'ResultName': 'CaseA', #CaseA, CaseB, ArchA, ArchB, ArchC, ArchD, ArchE, ArchF                                                          
+            'DataFolderName' : 'ZH_WWR40_ASF', #OSL_Hilo_ASF, ZH_Hilo_ASF, PKU_Hilo_ASF, OSL_Hilo_without, ZH_Hilo_without, , PKU_Hilo_without, ZH_WWR00_ASF, ZH_WWR21_ASF, ZH_WWR27_ASF, ZH_WWR31_ASF, ZH_WWR40_ASF, ZH_WWR60_ASF, ZH_WWR80_ASF
+            'FileName': 'ZH_WWR40_ASF', #OSL_Hilo_ASF, ZH_Hilo_ASF, PKU_Hilo_ASF, OSL_Hilo_without, ZH_Hilo_without, , PKU_Hilo_without, ZH_WWR00_ASF, ZH_WWR21_ASF, ZH_WWR27_ASF, ZH_WWR31_ASF, ZH_WWR40_ASF, ZH_WWR60_ASF, ZH_WWR80_ASF                                     'ZH_49comb_HiLo',
+            'ResultName': 'EnergyDemand_ArchF', #CaseA, CaseB, ArchA, ArchB, ArchC, ArchD, ArchE, ArchF                                                          
             'geoLocation' : 'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021',#'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021', 'IDN_SM_Pekanbaru-Kasim.Intl.AP.961090_TMYx.2007-2021', 'NOR_OS_Oslo.Blindern.014920_TMYx.2007-2021, 'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC, 'SGP_Singapore.486980_IWEC'
             'EPWfile': 'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021.epw',#'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021.epw', 'IDN_SM_Pekanbaru-Kasim.Intl.AP.961090_TMYx.2007-2021.epw', 'NOR_OS_Oslo.Blindern.014920_TMYx.2007-2021.epw, 'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw, 'SGP_Singapore.486980_IWEC.epw'
             'Save' : True,
@@ -188,8 +188,8 @@ BuildingData = {
 "room_width": 4200, 
 "room_height":3100, 
 "room_depth":5230,
-"glazing_percentage_w": 1**0.5, #0.86, 1, 0.27**0.5, 0.31**0.5, 0.4**0.5
-"glazing_percentage_h": 0.87**0.5, #0.81, 0.87, 0.27**0.5, 0.31**0.5, 0.4**0.5
+"glazing_percentage_w": 0.40**0.5, #0.86, 1, 0.27**0.5, 0.31**0.5, 0.4**0.5
+"glazing_percentage_h": 0.40**0.5, #0.81, 0.87, 0.27**0.5, 0.31**0.5, 0.4**0.5
 "WindowGridSize": 200, 
 "BuildingOrientation" : 0}
             
@@ -216,8 +216,8 @@ BuildingProperties={
 "lighting_control" : 300,
 "Lighting_Utilisation_Factor" : 0.45, #0.6,# 0.75,
 "Lighting_Maintenance_Factor" : 0.9,
-"U_em" : 0.14, #0.17, 
-"U_w" : 1.6, #0.75,
+"U_em" :0.11, #0.17, 
+"U_w" : 0.9, #0.75,1.6
 "ACH_vent" : 1.5,
 "ACH_infl" : 0.5, #0.8,
 "ventilation_efficiency" : 0.6, #0.2 ,#0.6
@@ -226,8 +226,8 @@ BuildingProperties={
 "theta_int_c_set" : 26.0,
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
-"heatingSupplySystem" : HeatPumpGround, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP
-"coolingSupplySystem" : HeatPumpGround, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP
+"heatingSupplySystem" : DirectHeater, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP, DirectHeater
+"coolingSupplySystem" : DirectCooler, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP, DirectCooler
 "heatingEmissionSystem" : FloorHeating,#OldRadiators, NewRadiators, ChilledBeams, AirConditioning, FloorHeating, TABS
 "coolingEmissionSystem" : FloorHeating, #OldRadiators, NewRadiators, ChilledBeams, AirConditioning, FloorHeating, TABS
 }

@@ -190,9 +190,9 @@ from emissionSystem import *
 
 SimulationData = {
             'optimizationTypes' : ['E_total'],#, 'Cooling', 'Heating', 'Lighting', 'E_HCL'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL' #IF blinds no optimization accoriding to solar energy
-            'DataFolderName' : 'ZH_REPOS', #OSL_Classic_BIPV_CORR, ZH_Classic_BIPV_CORR, PKU_Classic_BIPV_CORR, OSL_Classic_without_CORR2, ZH_Classic_without_CORR, , PKU_Classic_without_CORR2, ZH_WWR00_BIPV, ZH_WWR21_BIPV, ZH_WWR27_BIPV, ZH_WWR31_BIPV, ZH_WWR40_BIPV, ZH_WWR60_BIPV, ZH_WWR80_BIPV, ZH_WWR27_wihtout_CORR, ZH_WWR31_withoutCORR, ZH_WWR40_without_CORR
-            'FileName': 'ZH_REPOS', #OSL_Classic_BIPV_CORR, ZH_Classic_BIPV_CORR, PKU_Classic_BIPV_CORR, OSL_Classic_without_CORR2, ZH_Classic_without_CORR, , PKU_Classic_without_CORR2, ZH_WWR00_BIPV, ZH_WWR21_BIPV, ZH_WWR27_BIPV, ZH_WWR31_BIPV, ZH_WWR40_BIPV, ZH_WWR60_BIPV, ZH_WWR80_BIPV, ZH_WWR27_wihtout_CORR, ZH_WWR31_withoutCORR, ZH_WWR40_without_CORR
-            'ResultName': 'CaseB', #CaseA, CaseB, ArchA, ArchB, ArchC, ArchD, ArchE, ArchF
+            'DataFolderName' : 'ZH_WWR40_without_CORR', #OSL_Classic_BIPV_CORR, ZH_Classic_BIPV_CORR, PKU_Classic_BIPV_CORR, OSL_Classic_without_CORR2, ZH_Classic_without_CORR, , PKU_Classic_without_CORR2, ZH_WWR00_BIPV, ZH_WWR21_BIPV, ZH_WWR27_BIPV, ZH_WWR31_BIPV, ZH_WWR40_BIPV, ZH_WWR60_BIPV, ZH_WWR80_BIPV, ZH_WWR27_wihtout_CORR, ZH_WWR31_withoutCORR, ZH_WWR40_without_CORR
+            'FileName': 'ZH_WWR40_without_CORR', #OSL_Classic_BIPV_CORR, ZH_Classic_BIPV_CORR, PKU_Classic_BIPV_CORR, OSL_Classic_without_CORR2, ZH_Classic_without_CORR, , PKU_Classic_without_CORR2, ZH_WWR00_BIPV, ZH_WWR21_BIPV, ZH_WWR27_BIPV, ZH_WWR31_BIPV, ZH_WWR40_BIPV, ZH_WWR60_BIPV, ZH_WWR80_BIPV, ZH_WWR27_wihtout_CORR, ZH_WWR31_withoutCORR, ZH_WWR40_without_CORR
+            'ResultName': 'EnergyDemand_ArchD', #CaseA, CaseB, ArchA, ArchB, ArchC, ArchD, ArchE, ArchF
             'geoLocation' : 'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021',#'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021', 'IDN_SM_Pekanbaru-Kasim.Intl.AP.961090_TMYx.2007-2021', 'NOR_OS_Oslo.Blindern.014920_TMYx.2007-2021, 'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC, 'SGP_Singapore.486980_IWEC'
             'EPWfile': 'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021.epw',#'CHE_ZH_Zurich.AP.066700_TMYx.2007-2021.epw', 'IDN_SM_Pekanbaru-Kasim.Intl.AP.961090_TMYx.2007-2021.epw', 'NOR_OS_Oslo.Blindern.014920_TMYx.2007-2021.epw, 'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw, 'SGP_Singapore.486980_IWEC.epw'
             'Save' : True,
@@ -202,8 +202,8 @@ SimulationData = {
             'total_blind_combinations': 0}
 
 BlindData = {
-"PERCENT_HEIGHT" : [0, 50, 100], #[0, 50, 100], #[0, 50, 100], #[100], #
-"TILT_ANGLE": [0,45,90], #[0,45,90], #[0, 30, 45, 60, 90], #[0,45,90], [0, 30, 45, 60, 90], #
+"PERCENT_HEIGHT" : [0], #[0, 50, 100], #[0, 50, 100], #[100], #
+"TILT_ANGLE": [0], #[0,45,90], #[0, 30, 45, 60, 90], #[0,45,90], [0, 30, 45, 60, 90], #
 "slat_height" : 100,
 "slat_thickness" : 2,
 "BlindBoxThickness": 160,
@@ -213,8 +213,8 @@ BlindData = {
 PanelData = {
 "moduleHeight": 400, #400
 "moduleWidth": 400, #
-"PV_Height": 0, #1200
-"PV_coverage": 0.88, #percent of opaque wall covered with PV cells 0.88, 0.0, 0.762
+"PV_Height": 1200, #1200
+"PV_coverage": 88, #percent of opaque wall covered with PV cells 0.88, 0.0, 0.762
 "PanelGridSize": 25}
 
 BuildingData = {
@@ -223,7 +223,7 @@ BuildingData = {
 "room_depth":5230,
 "FrameThickness":100, #mm
 #"glazing_percentage_h": 0.31**0.5, 
-"WWR": 55.0, #%
+"WWR": 40.0, #%
 "WindowGridSize": 200, 
 "BuildingOrientation" : 0}
             
@@ -250,8 +250,8 @@ BuildingProperties={
 "lighting_control" : 300,
 "Lighting_Utilisation_Factor" : 0.45, #0.6,# 0.75,
 "Lighting_Maintenance_Factor" : 0.9,
-"U_em" : 0.14, #0.31, #0.17, 
-"U_w" : 0.927 , #0.6, #1.1, #0.75,
+"U_em" : 0.27, #0.31, #0.17, 
+"U_w" : 3.1, #0.6, #1.1, #0.75,
 "ACH_vent" : 1.5,
 "ACH_infl" : 0.5, #0.8,
 "ventilation_efficiency" : 0.6, #0.2 ,#0.6
@@ -261,10 +261,10 @@ BuildingProperties={
 "phi_c_max_A_f": -np.inf,
 "phi_h_max_A_f":np.inf,
 "blind_threshold":150, #W/m2
-"blinds_control": True, #False , True
-"heatingSupplySystem" : OilBoilerNew, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP
-"coolingSupplySystem" : HeatPumpAir, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP
-"heatingEmissionSystem" : NewRadiators, #OldRadiators, NewRadiators, ChilledBeams, AirConditioning, FloorHeating, TABS
+"blinds_control": False, #False , True
+"heatingSupplySystem" : DirectHeater, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP, DirectHeater
+"coolingSupplySystem" : DirectCooler, #OilBoilerOld, OilBoilerMed, OilBoilerNew, HeatPumpAir, HeatPumpWater, HeatPumpGround, ElectricHeating, CHP, DirectCooler
+"heatingEmissionSystem" : OldRadiators, #OldRadiators, NewRadiators, ChilledBeams, AirConditioning, FloorHeating, TABS
 "coolingEmissionSystem" : AirConditioning, #OldRadiators, NewRadiators, ChilledBeams, AirConditioning, FloorHeating, TABS
 }
 
