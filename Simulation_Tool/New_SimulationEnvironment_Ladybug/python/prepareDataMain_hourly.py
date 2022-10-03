@@ -23,7 +23,7 @@ def prepareAngles(Building_Simulation_df, ANGLES, start, end, TotalHOY):
         key_dict[HOY] = Building_Simulation_df['BestCombKey'][HOY]
         
     #create an comb_array with the combination belonging to the given key
-    key_array = np.int_(key_array)
+    #key_array = np.int_(key_array)
     comb_array= [ANGLES[ii] for ii in key_array]
     
     x_angle_array = np.array([], dtype = int)
