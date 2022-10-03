@@ -25,7 +25,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     from optimzeTemperatureFunction import optimzeTemp, checkEqual
     from ActuationEnergyCalc import ActuationDemand
     
- 
+    import progressbar
     
     #Temperature value, to start the simulation with
     T_in = SimulationOptions['Temp_start']
@@ -154,7 +154,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         #check all angle combinations and determine, which combination results in the smallest energy demand (min(E_tot))
         for comb in range(0, NumberCombinations):
 
-    
+            # HACK: skip if hour was not calculated
+            if len(BuildingRadiationData_HOY[hour_of_year]) == 1 and comb > 0:
+                continue
+            # elif len(BuildingRadiationData_HOY[hour_of_year])
                     
             Q_internal = (Q_human[hour_of_year] + Q_equipment)
             Office.solve_building_energy(phi_int = Q_internal, #internal heat gains, humans and equipment [W]
@@ -211,7 +214,8 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
 
             #determine best combination for the evaluated HOY
             #integrate the needed actuation energy to calculate the real total energy demand 
-            E_tot[hour_of_year][comb]=  Data_Heating_HOY[hour_of_year][comb] + Data_Cooling_HOY[hour_of_year][comb] + Data_Lighting_HOY[hour_of_year][comb] + Actuation[hour_of_year][comb] - hourlyData[hour_of_year]['PV'][comb]
+            E_tot[hour_of_year][comb]=  Data_Heating_HOY[hour_of_year][comb] + Data_Cooling_HOY[hour_of_year][comb] + \
+                 Data_Lighting_HOY[hour_of_year][comb] + Actuation[hour_of_year][comb] - hourlyData[hour_of_year]['PV'][comb]
             E_HCL[hour_of_year][comb] = Data_Heating_HOY[hour_of_year][comb] + Data_Cooling_HOY[hour_of_year][comb] + Data_Lighting_HOY[hour_of_year][comb]
             
             # calculated with electrical heating and cooling            
@@ -563,10 +567,13 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             
             
         #show which HOY is calculated
-        if hour_of_year % 1000 == 0 and hour_of_year != 0:
-            print 'HOY:', hour_of_year
-            toc = time.time() - tic
-            print 'time passed (sec): ' + str(round(toc,2))
+        # if hour_of_year % 1000 == 0 and hour_of_year != 0:
+        #     # print 'HOY:', hour_of_year
+        #     toc = time.time() - tic
+        #     # print 'time passed (sec): ' + str(round(toc,2))
+        toc = time.time() - tic
+        progressbar.printProgressBar(hour_of_year, 8760, suffix="Time passed (min): %2.1f" % (toc/60.0))
+            
             
     
     #store results of the best angle combinations in DataFrame   

@@ -9,6 +9,7 @@ import time
 import json
 import csv
 import numpy as np
+import progressbar
 
 def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderName):
 
@@ -26,11 +27,17 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderNam
         print 'Time: ' + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
     
         tic = time.time()
-            
+        
+        total_combinations = len(range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth']+1)) * \
+            len(range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1)) * \
+            len(range(SimulationPeriode['FromHour'], SimulationPeriode['ToHour']+1)) * \
+            len(XANGLES) * len(YANGLES)
+        
         for monthi in range(SimulationPeriode['FromMonth'], SimulationPeriode['ToMonth']+1): #month:
-            
+            # print("Calculate radiation data for month %d. time passed: %3.1f" % (monthi, ((time.time()-tic)/60.0)))
+
             BuilRadData[monthi]= {}
-            
+
             for day in range(SimulationPeriode['FromDay'], SimulationPeriode['ToDay'] + 1):
                     
                 BuilRadData[monthi][day] = {}
@@ -54,16 +61,17 @@ def CalculateRadiationData(SimulationPeriode, XANGLES, YANGLES, paths, FolderNam
                             with open('comb.json','w') as f:
                                 f.write(json.dumps(comb_data))
                                 
-                            print hour, day, monthi, x_angle, y_angle, resultsdetected
-                            toc = time.time() - tic
-                            print 'time passed (min): ' + str(toc/60.)
+                            # print hour, day, monthi, x_angle, y_angle, resultsdetected
+                            # toc = time.time() - tic
+                            # print 'time passed (min): ' + str(toc/60.)
+                            progressbar.printProgressBar(resultsdetected, total_combinations,"Total", "Date: %s, x:%d, y:%d" % ((str(monthi) +"-"+str(day)+ ":" + str(hour)), x_angle, y_angle),decimals=1)
 
                             #Wait until the radiation_results were created    
                             while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_' +  str(hour-1) + '_' + str(day) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
                                 time.sleep(1)
                                                
                             else:
-                                print 'next step'
+                                # print 'next step'
                                 resultsdetected += 1
                                                                                                 
                                 #read total radition on wall and save it in BuildingRadiationData              

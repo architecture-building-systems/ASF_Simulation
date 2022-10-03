@@ -21,6 +21,7 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
     from read_occupancy import Equate_Ill, BuildingData
     from optimzeTemperatureFunction import optimzeTemp, checkEqual
     from ActuationEnergyCalc import ActuationDemand   
+    import progressbar
     
     #Temperature value, to start the simulation with    
     T_in = SimulationOptions['Temp_start']
@@ -107,9 +108,10 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
         
     
     tic = time.time()
+    hour_it = 0
     #run for every hour of year the RC-Model    
     for hour_of_year in range(start,end+1):
-          
+        hour_it += 1
         
         #class Building   
         Office=Building (
@@ -536,12 +538,14 @@ def RC_Model (optimization_type, paths ,building_data, weatherData, BuildingRadi
             results_building_simulation[hour_of_year]['OptAngles'] = combinationAngles[BestComb]
            
         #show which HOY is calculated
-        if hour_of_year % 5 == 0:
-            print 'HOY:', hour_of_year
-            toc = time.time() - tic
-            print 'time passed (sec): ' + str(round(toc,2))
+        # if hour_of_year % 5 == 0:
+        #     print 'HOY:', hour_of_year
+        #     toc = time.time() - tic
+        #     print 'time passed (sec): ' + str(round(toc,2))
             
-    
+        toc = time.time() - tic
+        progressbar.printProgressBar(hour_it, len(range(start,end+1)), suffix="Time passed (s): %2.1f" % (toc))
+
     #store results of the best angle combinations in DataFrame   
     Building_Simulation_df= pd.DataFrame(results_building_simulation).T    
     hourlyData_df = pd.DataFrame(hourlyData)

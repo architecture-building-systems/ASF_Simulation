@@ -9,6 +9,7 @@ import time
 import json
 import csv
 import numpy as np
+import progressbar
 
 def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month, FolderName):
                    
@@ -28,16 +29,16 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
         
     
         for monthi in range(1,13): #month:
-              
+            print("Calculate radiation data for month %d. time passed: %3.1f" % (monthi, ((time.time()-tic)/60.0)))
             BuildingRadiationData_HOD[monthi] = {}
-            
+            _current_step = 0
             for HOD in hour_in_month[monthi]:
                 
                 BuildingRadiationData = np.array([])
                 
                 for x_angle in XANGLES:
                     for y_angle in YANGLES:
-                        
+                        _current_step += 1
                         comb_data={"x_angle":x_angle,
                                    "y_angle":y_angle,
                                    "HOD":HOD,
@@ -48,10 +49,10 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
                         with open('comb.json','w') as f:
                             f.write(json.dumps(comb_data))
                             
-                        print HOD, monthi, x_angle, y_angle, resultsdetected
-                        toc = time.time() - tic
-                        print 'time passed (min): ' + str(toc/60.)
-                        
+                        # print HOD, monthi, x_angle, y_angle, resultsdetected
+                        # toc = time.time() - tic
+                        # print 'time passed (min): ' + str(toc/60.)
+                        progressbar.printProgressBar(_current_step, len(hour_in_month[monthi])*len(XANGLES)*len(YANGLES),str(monthi), "HOD: %d, x:%d, y:%d, Result: %3.1f" % (HOD, x_angle, y_angle, resultsdetected),decimals=3)
    
                         #Wait until the radiation_results were created    
                         while not os.path.exists(os.path.join(paths['radiation_results'],'RadiationResults' +'_'+  str(int(HOD)) + '_' + str(monthi)  + '_' + str(x_angle) + '_' + str(y_angle)+ '.csv')):
@@ -59,7 +60,7 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
                             
                                                 
                         else:
-                            print 'next step'
+                            # print 'next step'
                             resultsdetected += 1
                                                                                             
                             #read total radition on wall and save it in BuildingRadiationData              
@@ -84,6 +85,7 @@ def CalculateRadiationData(XANGLES, YANGLES, paths, daysPerMonth, hour_in_month,
         print "\nEnd of radiation calculation: " + time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 
     else:
+        print("found old file: %s " % os.path.join(paths['PV'], 'BuildingRadiationData_' + FolderName['FileName'] + '.npy'))
         BuildingRadiationData_HOD = np.load(os.path.join(paths['PV'], 'BuildingRadiationData_' + FolderName['FileName'] + '.npy')).item()
         print '\nLadyBug data loaded from Folder:'
         print 'radiation_wall_'+ FolderName['DataFolderName']

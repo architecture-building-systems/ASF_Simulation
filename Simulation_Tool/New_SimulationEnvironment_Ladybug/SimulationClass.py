@@ -50,7 +50,7 @@ class ASF_Simulation(object):
 		
 		self.XANGLES=self.PanelData['XANGLES']
 		self.YANGLES = self.PanelData['YANGLES']		
-		self.createPlots=False
+		self.createPlots=True
 		self.geoLocation = SimulationData['geoLocation']
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		self.optimization_Types = self.SimulationData['optimizationTypes']
@@ -345,14 +345,16 @@ class ASF_Simulation(object):
         					count +=self.total_pv_combinations
         			passedHours += self.daysPerMonth[monthi-1]*24
 		
-          
+		print(self.PV[8])
+
+
           #add the window radiation data to the specific HOY		TODO: Check number combinations here	
 		for hour_of_year in range(0,8760):
 			if hour_of_year not in hourRadiation:
 				self.BuildingRadiationData_HOY[int(hour_of_year)] = np.asarray([0]* self.total_pv_combinations, dtype = np.float64)
 				self.PV[int(hour_of_year)] = np.asarray([0]* self.total_pv_combinations, dtype = np.float64)
 
-
+		print(self.PV[8])
 		   
 		
 		

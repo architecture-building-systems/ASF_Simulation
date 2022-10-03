@@ -31,7 +31,8 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
     from prepareData_mauro import readLayoutAndCombinations, CalcXYAnglesAndLocation
     from auxFunctions import flatten
     from calculateHOY import calcHOY    
-    
+    import progressbar
+
     create_plots_flag = createPlots
     Simulation_Data_Folder = lb_radiation_path
     
@@ -336,9 +337,10 @@ def asf_electricity_production(createPlots=False, lb_radiation_path=None,
         
         toc = time.time() - tic
         
-        print 'time passed (min): ' + str(toc/60.)
-        print 'iteration number: ' + str(SimulationNumber + 1) + ' of ' + str(numASFit)
-    
+        # print 'time passed (min): ' + str(toc/60.)
+        # print 'iteration number: ' + str(SimulationNumber + 1) + ' of ' + str(numASFit)
+        progressbar.printProgressBar(SimulationNumber,numASFit,prefix="PV Production ", suffix=" time passed (min): %0.1f" % (toc/60.0))
+
     
     PV_electricity_results = {'numComb': numCombPerHour, 'numHours': numHours, 'Ins_sum': Ins_sum, 'Ins_avg': Ins_avg, 'theoreticalMaxRad': theoreticalMaxRad, 'Pmpp_sum': Pmpp_sum, 'Pmpp_avg': Pmpp_avg, 'eff_ap' : effap_arr, 'eff_mod': effmod_arr,  'Hour' : hour, 'Day': day, 'Month':monthi}
     np.save(os.path.join(save_results_path,'HourlyPV_electricity_results_'  + DataNamePV + '.npy'),PV_electricity_results)    

@@ -50,7 +50,7 @@ class ASF_Simulation(object):
 		
 		self.XANGLES=self.PanelData['XANGLES']
 		self.YANGLES = self.PanelData['YANGLES']		
-		self.createPlots=False
+		self.createPlots=True
 		self.geoLocation = SimulationData['geoLocation']
 		self.now = time.strftime("%Y_%m_%d %H.%M.%S", time.localtime())
 		self.optimization_Types = self.SimulationData['optimizationTypes']
@@ -140,7 +140,7 @@ class ASF_Simulation(object):
         self.weatherData = epw_reader(self.paths['weather'])
         
         if not os.path.isdir(self.paths['PV']):
-		os.makedirs(self.paths['PV']) 
+		    os.makedirs(self.paths['PV']) 
         
         
         if not os.path.isdir(self.paths['RadiationData']):

@@ -162,35 +162,41 @@ from emissionSystem import *
 # 'total_pv_combinations': 1}
 
 SimulationData = {
-            'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
-            'DataFolderName' : 'CA_49comb_HiLo_static', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
-            'FileName': 'CA_49comb_HiLo_static', #'ZH_49comb_HiLo',
-            'geoLocation' : 'EGY_Cairo.623660_IWEC',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
-            'EPWfile': 'EGY_Cairo.623660_IWEC.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw
-            'Save' : False,
-            'ShowFig': False,
+            'optimizationTypes' : ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'],
+            'DataFolderName' : 'Keller-non-fixed', #'ZH13_49comb_HiLo', #'ZH13_49comb',Cairo_49comb_HiLo
+            'FileName': 'Keller-non-fixed', #'ZH_49comb_HiLo',
+            # 'geoLocation' : 'EGY_Cairo.623660_IWEC',#'Zuerich_Kloten_2013',EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+            # 'EPWfile': 'EGY_Cairo.623660_IWEC.epw',#'Zuerich_Kloten_2013.epw',EGY_Cairo.623660_IWEC.epw, FIN_Helsinki.029740_IWEC.epw+
+            # 'geoLocation' : 'Zuerich_Kloten_2013', #EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+            # 'EPWfile': 'Zuerich_Kloten_2013.epw',
+            'geoLocation' : 'Zuerich_Kloten_2013', #EGY_Cairo.623660_IWEC, FIN_Helsinki.029740_IWEC
+            'EPWfile': 'Zuerich_Kloten_2013.epw',
+            'Save' : True,
+            'ShowFig': True,
             'timePeriod': None,
             'total_pv_combinations': 1}
 
 PanelData = {
-"XANGLES": [45],
-"YANGLES" : [0],
+# "XANGLES": [0],
+# "YANGLES" : [0],
+"XANGLES": [0, 15, 30, 45, 60, 75, 90],
+"YANGLES" : [-45, -30,-15,0, 15, 30, 45],
 "NoClusters":1,
-"numberHorizontal":5,
-"numberVertical":6,
-"panelOffset":400,
-"panelSize":425,
-"panelSpacing":510, 
+"numberHorizontal":8,
+"numberVertical":9,
+"panelOffset":420,
+"panelSize":420,
+"panelSpacing":530, 
 "panelGridSize" : 25}
             
-BuildingData = {
-"room_width": 3000, 
-"room_height":3500, 
-"room_depth":4000, 
-"glazing_percentage_w": 0.92,
-"glazing_percentage_h": 0.97, 
-"WindowGridSize": 200, 
-"BuildingOrientation" : 0}
+BuildingData={
+"room_width": 5866,     
+"room_height":3750,
+"room_depth":6000,
+"glazing_percentage_w": 0.98,  # 50cm per width
+"glazing_percentage_h": 0.6613,  # 1.1/3.5 (or 100)
+"WindowGridSize" : 200,
+"BuildingOrientation" : 0}   # 5 east (175)
             
 # SimulationData = {
 #     'optimizationTypes' : ['E_total'], #, 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'
@@ -216,11 +222,11 @@ BuildingProperties={
 "Lighting_Utilisation_Factor" : 0.6,# 0.75,
 "Lighting_Maintenance_Factor" : 0.9,
 "U_em" : 0.17, 
-"U_w" : 0.75,
+"U_w" : 0.5,  # triple 0.5 and double 1.1
 "ACH_vent" : 1.5,
 "ACH_infl" : 0.8,
 "ventilation_efficiency" : 0.2 ,#0.6
-"c_m_A_f" : 165 * 10**3,
+"c_m_A_f" : 300 * 10**3,
 "theta_int_h_set" : 21.0,
 "theta_int_c_set" : 26.0,
 "phi_c_max_A_f": -np.inf,
@@ -236,8 +242,9 @@ BuildingProperties={
 SimulationOptions= {
 'setBackTempH' : 4.0,
 'setBackTempC' : 4.0,
-'Occupancy' : 'schedules_occ_MULTI_RES.csv',
-'ActuationEnergy' : True,
+# 'Occupancy' : 'schedules_occ_MULTI_RES.csv',
+'Occupancy' : 'Occupancy_COM.csv',
+'ActuationEnergy' : False,
 'human_heat_emission' : 0.12,
 'Temp_start' : 20.0} 
 

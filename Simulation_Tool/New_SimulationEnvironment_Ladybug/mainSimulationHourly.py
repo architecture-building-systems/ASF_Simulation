@@ -127,16 +127,17 @@ SimulationPeriod = {
 'ToMonth': 7,#7, #1,
 'FromDay': 6, #6, #8,
 'ToDay': 6, #8,
-'FromHour': 5,#5
-'ToHour': 20}#20
+'FromHour': 10,#5
+'ToHour': 11}#20
 
 
 
 #Set simulation data 
 SimulationData= {
-'optimizationTypes' : ['E_total', 'Cooling'], 
-'DataFolderName' : 'ZH13test', 
-'FileName' : 'ZH13test',
+#'optimizationTypes' : ['E_total', 'Cooling'], 
+'optimizationTypes' :  ['E_total', 'Cooling', 'Heating', 'SolarEnergy', 'Lighting', 'E_HCL'], 
+'DataFolderName' : 'Keller-quicktest', 
+'FileName' : 'Keller-quicktest',
 'geoLocation' : 'Zuerich_Kloten_2013', 
 'EPWfile': 'Zuerich_Kloten_2013.epw',
 'Save' : True, 
@@ -145,11 +146,13 @@ SimulationData= {
 
 
 PanelData = {
+# "XANGLES": [0, 45, 90],
+# "YANGLES" : [-45, 0, 45],
 "XANGLES": [0, 15, 30, 45, 60, 75, 90],
 "YANGLES" : [-45, -30,-15,0, 15, 30, 45],
 "NoClusters":1,
 "numberHorizontal":6,
-"numberVertical":9,
+"numberVertical":5,
 "panelOffset":400,
 "panelSize":400,
 "panelSpacing":500, 
@@ -157,20 +160,20 @@ PanelData = {
 
 #Set Building Parameters in [mm]
 BuildingData={
-"room_width": 4900,     
-"room_height":3100,
-"room_depth":7000,
-"glazing_percentage_w": 0.92,
-"glazing_percentage_h": 0.97,
+"room_width": 4250,     
+"room_height":3540,
+"room_depth":6000,
+"glazing_percentage_w": 0.98,  # 50cm per width
+"glazing_percentage_h": 0.685,  # 1.1/3.5 (or 100)
 "WindowGridSize" : 200,
-"BuildingOrientation" : 0} 
+"BuildingOrientation" : -5}   # 5 east (175)
 
 ##@Michael: This will need to be modified to fit your model
 BuildingProperties={
 "glass_solar_transmittance" : 0.691 ,
 "glass_light_transmittance" : 0.744 ,
 "lighting_load" : 11.74 ,
-"lighting_control" : 300,
+"lighting_control" : 500,  # 300, should be 500 for a workstation
 "Lighting_Utilisation_Factor" :  0.45, # 0.75
 "Lighting_Maintenance_Factor" : 0.9,
 "U_em" : 0.2, 
